@@ -7,9 +7,8 @@
 #include <random>
 #include <cmath>
 #include <cstdlib>
-#include <ctime>
 
-const int PRIME = 2000000011;
+const int PRIME = 2000000011, SHIFT = 1000000000;
 
 void fillArray(std::vector<int> &numbers, const int &length){
     srand(int(time(NULL)));
@@ -38,8 +37,10 @@ public:
         //srand(int(time(NULL)));
         return (rand() % (PRIME-12));
     }
-    int hashCount(const int a, const int b, const int n, const int key){
-        int x = abs(((a * key + b) % PRIME) % n);
+    __int64_t hashCount(const int a, const int b, const int n, const int key){
+        __int64_t x = ((a * key + b) % PRIME) % n;
+        if (x < 0)
+            x*= -1;
         return (x);
     }
     void fillWithNull(std::vector<int> &v){
@@ -71,7 +72,7 @@ public:
             first_hash.a = getRand()+1;
             first_hash.b = getRand();
             for (int iter = 0; iter != numbers.size(); ++iter){
-                hash_pos = hashCount(first_hash.a, first_hash.b, int(numbers.size()), numbers[iter]);
+                hash_pos = int(hashCount(first_hash.a, first_hash.b, int(numbers.size()), numbers[iter]));
                 hashTable[hash_pos].push_back(numbers[iter]);
             }
             for (int iter = 0; iter != numbers.size(); ++iter){
@@ -89,7 +90,7 @@ public:
                 second_hash.a = getRand()+1;
                 second_hash.b = getRand();
                 for (pos = 0; pos != tempFrom.size(); ++pos){
-                    hash_pos = hashCount(second_hash.a, second_hash.b, int(tempFrom.size()*tempFrom.size()), tempFrom[pos]);
+                    hash_pos = int(hashCount(second_hash.a, second_hash.b, std::max(1,int(tempFrom.size()*tempFrom.size())), tempFrom[pos]));
                     if (hashTable[iter][hash_pos] != PRIME){
                         error = 1;
                     };
@@ -101,28 +102,44 @@ public:
         }
     };
     bool Contains(const int &number){
-        int i = hashCount(first_hash.a, first_hash.b, sizeOfSet, number);
-        int j = hashCount(second_hashes[i].a, second_hashes[i].b, second_hashes[i].size, number);
-        if (hashTable[i][j] == number){
-            return 1;
-        }else {
+        int i = int(hashCount(first_hash.a, first_hash.b, std::max(1,sizeOfSet), number));
+        int j = int(hashCount(second_hashes[i].a, second_hashes[i].b, std::max(second_hashes[i].size,1), number));
+        if (hashTable[i].size() != 0){
+            if (hashTable[i][j] == number){
+                return 1;
+            }else {
+                return 0;
+            }
+        }else{
             return 0;
         }
     }
 };
 
 int main() {
-    
-    int length, number;;
+    int number;
+    size_t length, i;
     std::cin >> length;
     std::cout << "\n";
     std::vector<int> numbers;
-    fillArray(numbers, length);
-    FixedSet hashTable(numbers);
-    hashTable.outTable();
-    std::cout << "\n";
-    std::cin >> number;
-    std::cout << "\n" << hashTable.Contains(number) << "\n";
+    for (i = 0; i < length; ++i){
+        std::cin >> number;
+        number += SHIFT;
+        numbers.push_back(number);
+    }
     
+    FixedSet hashTable(numbers);
+    
+
+    std::cin >> length;
+    for (i = 0; i < length; ++i){
+        std::cin >> number;
+        number += SHIFT;
+        if (hashTable.Contains(number) == 1){
+            std::cout << "Yes\n";
+        }else{
+            std::cout << "No\n";
+        }
+    }
     return 0;
 }
