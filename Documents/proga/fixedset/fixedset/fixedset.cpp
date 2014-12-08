@@ -10,14 +10,14 @@
 
 const int PRIME = 2000000011, SHIFT = 1000000000;
 
-void fillArray(std::vector<int> &numbers, const int &length){
-    srand(int(time(NULL)));
-    for (int iter = 0; iter < length; ++iter){
-        int x = rand() % (PRIME - 1000);
-       // int x = rand() % 1000000;
-        numbers.push_back(x);
-    }
-}
+//void fillArray(std::vector<int> &numbers, const int &length){
+//    srand(int(time(NULL)));
+//    for (int iter = 0; iter < length; ++iter){
+//        int x = rand() % (PRIME - 1000);
+//       // int x = rand() % 1000000;
+//        numbers.push_back(x);
+//    }
+//}
 
 class FixedSet {
 public:
@@ -34,9 +34,9 @@ public:
     std::vector<ab> second_hashes;
     
     int getRand(){
-        //srand(int(time(NULL)));
         return (rand() % (PRIME-12));
     }
+    
     __int64_t hashCount(const int a, const int b, const int n, const int key){
         __int64_t x = ((a * key + b) % PRIME) % n;
         if (x < 0)
@@ -44,7 +44,7 @@ public:
         return (x);
     }
     void fillWithNull(std::vector<int> &v){
-        for (int iter = 0; iter != v.size(); ++iter){
+        for (int iter = 0; iter < v.size(); ++iter){
             v[iter] = PRIME;
         }
     }
@@ -86,7 +86,11 @@ public:
                 error = 0;
                 hashTable[iter].clear();
                 hashTable[iter].resize(Size*Size);
-                fillWithNull(hashTable[iter]);
+                if (hashTable[iter].size() != 0){
+                    fillWithNull(hashTable[iter]);
+                }else{
+                    hashTable[iter].resize(1);
+                }
                 second_hash.a = getRand()+1;
                 second_hash.b = getRand();
                 for (pos = 0; pos != tempFrom.size(); ++pos){
@@ -117,6 +121,7 @@ public:
 };
 
 int main() {
+    std::ios_base::sync_with_stdio(false);
     int number;
     size_t length, i;
     std::cin >> length;
@@ -127,7 +132,6 @@ int main() {
         number += SHIFT;
         numbers.push_back(number);
     }
-    
     FixedSet hashTable(numbers);
     
 
@@ -141,5 +145,11 @@ int main() {
             std::cout << "No\n";
         }
     }
+//    std::cout << "\n\n";
+//    for (i = 0; i <10; i++)
+//        std::cout << getRand() << " ";
+//    std::cout << "\n\n";
+//    for (i = 0; i < 10; i++)
+//        std::cout << getRand() << " ";
     return 0;
 }
