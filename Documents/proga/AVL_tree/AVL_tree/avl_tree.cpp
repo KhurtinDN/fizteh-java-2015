@@ -366,13 +366,14 @@ public:
             }
         }
         
-        if (!balancingNode->parent){
-            balancingNode = balance(balancingNode);
-        }
         
         while(balancingNode->parent){                 //балансируем, поднимаясь до корня
             balancingNode = balance(balancingNode);
             balancingNode = balancingNode->parent;
+        }
+        
+        if (!balancingNode->parent){
+            balancingNode = balance(balancingNode);
         }
         
         return balancingNode;
