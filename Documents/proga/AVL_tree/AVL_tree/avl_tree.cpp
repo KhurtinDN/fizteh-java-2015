@@ -366,6 +366,10 @@ public:
             }
         }
         
+        if (!balancingNode->parent){
+            balancingNode = balance(balancingNode);
+        }
+        
         while(balancingNode->parent){                 //балансируем, поднимаясь до корня
             balancingNode = balance(balancingNode);
             balancingNode = balancingNode->parent;
@@ -442,7 +446,7 @@ int main(){
     while(true){
         std::cin >> input;
         if (input == "STOP"){
-            break;
+            return 0;
         }
         if (input == "PUSH"){
             std::cin >> x;
