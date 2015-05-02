@@ -1,0 +1,69 @@
+#include <iostream>
+#include <cstdio>
+#include <fstream>
+#include <vector>
+#include <cmath>
+#include <limits.h>
+using namespace std;
+
+int main(int argc, char* argv[]) {
+    
+    ifstream in;
+    
+    in.open("input.txt");
+    //in.open(argv[0]);
+    
+    vector<int> data, medians;
+    int x, counter = 0, sum = 0, max = (-1) * INT_MAX, min = INT_MAX, procentile, freeDegree;
+    
+    //перед всеми данными введены процентиль и число степеней свободы (для дисперсиии)
+    in >> procentile;
+    in >> freeDegree;
+    
+    while (!in.eof()){
+        counter++;
+        in >> x;
+        sum += x;
+        if (x < min)
+            min = x;
+        if (x > max)
+            max = x;
+        data.push_back(x);
+    }
+    
+    in.close();
+    
+    sort(data.begin(), data.end());
+    int median = data[data.size()/2];
+    double leftMedian = 0.75 * median, rightMedian = 1.25 * median;
+    for (int i = 0; i < data.size(); ++i){
+        if (data[i] > leftMedian && data[i] < rightMedian)
+            medians.push_back(data[i]);
+    }
+    
+    cout << "arithmetical mean: " << sum/counter;
+    cout << "\namplitude: " << max - min;
+    cout << "\nmax: " << max;
+    cout << "\nmin: " << min;
+    cout << "\nmedian: " << median;
+    cout << "\nnumbers around median: ";
+    
+    for (int i = 0; i < medians.size(); ++i)
+        cout << medians[i] << "; ";
+    
+    int avg = sum/counter, disp = 0;
+    for (int i = 0; i < counter; ++i){
+        disp += (data[i] - avg)*(data[i] - avg);
+    }
+    disp /= freeDegree;
+    
+    cout << "\nvariance (disp): " << disp;
+    cout << "\nstandart deviation (stdev)" << sqrt(disp);
+    cout << "\nconfidence interval for 95%: [" << avg - 1.44*disp/sqrt(counter)
+        << ", " << avg + 1.44*disp/pow(counter*1.0, 0.5) << "]";
+    cout << "\nconfidence interval for 99%: [" << avg - 1.6*disp/sqrt(counter)
+        << ", " << avg + 1.6*disp/pow(counter*1.0, 0.5) << "]";
+    cout << "\nprocentile X: " << data[int((procentile/100)*counter)];
+    
+    return 0;
+}
