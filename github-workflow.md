@@ -11,7 +11,7 @@
 2. Решить задачу и протестировать ее.
 3. Зафиксировать свои изменения в git-репозитории (commit + push)
 3. После того, как задание выполнено и протестировано в собственном репозитории, необходимо создать
-[pull request](https://help.github.com/articles/using-pull-requests) в репозиторий [fizteh-java-2015](https://github.com/akormushin/fizteh-java-2015). В заголовке
+[pull request](https://help.github.com/articles/using-pull-requests) в репозиторий [fizteh-java-2015](https://github.com/KhurtinDN/fizteh-java-2015). В заголовке
 к pull request необходимо написать: ```Имя Фамилия, № группы, задание``` (например, ```Василий Иванов, 123, Reverser```).
 Также необходимо назначить pull request на своего семинариста.
 В одном pull request должно быть решение только одной задачи. Если хочется сдавать параллельно несколько заданий,
