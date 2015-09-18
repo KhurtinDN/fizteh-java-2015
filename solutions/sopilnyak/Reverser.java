@@ -5,8 +5,8 @@ public class Reverser {
 
         ArrayList<String> newVector = new ArrayList<>();
 
-        int flag = 0; // индикатор числа
-        int k = 0; // счетчик по новому вектору
+        int flag = 0; // number indicator
+        int k = 0; // newVector count
         newVector.add("");
 
         for (int i = 0; i < args.length; i++) {
@@ -14,11 +14,11 @@ public class Reverser {
                 String string = Character.toString(args[i].charAt(j));
                 if (string.matches("\\d")) {
                     newVector.set(k, newVector.get(k) + string);
-                    flag = 1; // встретили число
+                    flag = 1; // have met a number
                 }
                 else {
                     if (flag == 1) {
-                        k++; // следующее слово
+                        k++; // next string
                         newVector.add("");
                         flag = 0;
                     }
