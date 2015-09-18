@@ -6,6 +6,7 @@
 ## Семинары
 * [Темы семинаров и список литературы для самостоятельной подготовки](seminars.md)
 * [Общие правила по ведению задач на github](github-workflow.md) 
+* [Журнал успеваемости](https://docs.google.com/spreadsheets/d/1okSG7WMZF8uSJZEfC2UdrC8IumNPtXNdXQwwK6vYK5M/edit?usp=sharing)
 
 ## Лекции
 1. [Java, JVM, примитивные типы](https://yadi.sk/d/_ZgbGf9NbXraZ)
