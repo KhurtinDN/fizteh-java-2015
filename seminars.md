@@ -13,7 +13,11 @@
 
 ## Семинар 2: Сборка проекта
 * Сборка java проектов
+<<<<<<< HEAD
     * [How Classes are Found](https://docs.oracle.com/javase/8/docs/technotes/tools/findingclasses.html)
+=======
+    * [Setting the Class Path](https://docs.oracle.com/javase/8/docs/technotes/tools/windows/classpath.html)
+>>>>>>> upstream/master
     * [Lesson: Packaging Programs in JAR Files](https://docs.oracle.com/javase/tutorial/deployment/jar/index.html)
 * Apache Maven
     * [Project page](https://maven.apache.org)
@@ -29,3 +33,7 @@
     * [JUnit](http://junit.org)
     * [Mockito](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html)
 * Задание на дом: [TBD](/tasks)
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream/master
