@@ -1,6 +1,8 @@
 public class Reverser {
     public static void main(String[] args) {
-        System.out.println(new StringBuffer(String.join(" ", args))
-                .reverse().toString().replaceAll("\\s+", " ").trim());
+        String[] numbers = String.join(" ", args).trim().split("\\s+");
+        for (int i = numbers.length - 1; i >= 0; --i)
+            System.out.print(numbers[i] + " ");
+        System.out.println();
     }  
 }
