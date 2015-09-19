@@ -32,6 +32,6 @@
 по многопоточности в Java)
 
 Code style:
-* [Code Conventions for the Java](http://www.oracle.com/technetwork/java/codeconvtoc-136057.html)
+* [Code Conventions for the Java](http://www.oracle.com/technetwork/java/codeconvtoc-136057.html) (1999 года, немного устарела)
 * [Java Coding Style Guide (by Google)](https://google.github.io/styleguide/javaguide.html)
 
