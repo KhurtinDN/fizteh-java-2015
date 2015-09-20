@@ -15,8 +15,8 @@ public class JCommanderList {
 		return tweetLimit;
 	}
 	 
-	@Parameter(names = {"-p", "--place"}, description = "Place of looking for, without args eq nearby")
-	private String place;
+	@Parameter(names = {"-p", "--place"}, description = "Location of looking for, without args eq nearby - in your location")
+	private String place = "anywhere";
 	
 	public String getPlace() {
 		return place;
