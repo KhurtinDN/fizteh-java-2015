@@ -1,12 +1,14 @@
 package main.java.ru.fizteh.fivt.pitovsky;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.List;
+
 import com.beust.jcommander.JCommander;
 
 import twitter4j.FilterQuery;
@@ -28,7 +30,7 @@ import twitter4j.TwitterStream;
 /**
  * 
  * @author Peter Pitovsky
- *
+ * 
  */
 public class Main {
 	
@@ -148,6 +150,7 @@ public class Main {
 					Status tweet = tweetsQueue.poll();
 					System.out.println(tweetOneString(tweet));
 				}
+				//TODO: break by EOF or <ESC>
 				try {
 				    Thread.sleep(1000);                 //1000 milliseconds is one second.
 				} catch(InterruptedException ex) {
