@@ -4,6 +4,12 @@
   <artifactId>TwitterStream</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   
+  <parent>
+    <groupId>ru.mipt.diht.students</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  
   <dependencies>
      <dependency>
          <groupId>org.twitter4j</groupId>
