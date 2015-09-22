@@ -146,11 +146,11 @@ public class Main {
 			fquery.track(jcl.getQuery());
 			tstream.filter(fquery); //start a new thread for listing new tweets
 			while (true) {
-				if (!tweetsQueue.isEmpty()) {
+				while (!tweetsQueue.isEmpty()) {
 					Status tweet = tweetsQueue.poll();
 					System.out.println(tweetOneString(tweet));
 				}
-				//TODO: break by EOF or <ESC>
+				//TODO: break by EOF or <ESC>. Is it possible without new thread?
 				try {
 				    Thread.sleep(1000);                 //1000 milliseconds is one second.
 				} catch(InterruptedException ex) {
