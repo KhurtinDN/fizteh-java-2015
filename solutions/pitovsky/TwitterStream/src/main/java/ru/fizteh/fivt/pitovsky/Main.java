@@ -27,6 +27,9 @@ import twitter4j.TwitterStreamFactory;
 import twitter4j.User;
 import twitter4j.TwitterStream;
 
+import main.java.ru.fizteh.fivt.pitovsky.StringUtils;
+import main.java.ru.fizteh.fivt.pitovsky.StringUtils.textColor;
+
 /**
  * 
  * @author Peter Pitovsky
@@ -34,6 +37,8 @@ import twitter4j.TwitterStream;
  */
 public class Main {
 	
+	private final static int STREAM_SLEEP_TIME = 1000; //in ms
+	private final static int COUNTRY_CODE_LEN = 2; //like RU, EN
 	/**
 	 * get html-source of internet site
 	 * @param url - url of site
@@ -53,8 +58,8 @@ public class Main {
         return retstr.toString();
     }
 	
-	private static String setClr(int color) {
-		return "" + (char)27 + "[" + color + "m"; //Esc-line
+	private static String prettyName(User user) {
+		return StringUtils.setClr(textColor.BLUE) + "@" + user.getScreenName() + StringUtils.setStClr();
 	}
 	
 	/**
@@ -62,20 +67,27 @@ public class Main {
 	 * @param tweet tweet to resolve
 	 * @return string with time, author, retweets and other
 	 */
-	private static String tweetOneString(Status tweet) {
-		String tweetOut = "[" + tweet.getCreatedAt() + "] " + 
-				setClr(34) + "@" + tweet.getUser().getScreenName() + setClr(0);
+	private static String tweetOneString(Status tweet, boolean withDate) {
+		String tweetOut = "";
+		if (withDate) {
+			tweetOut = "[" + StringUtils.setClr(textColor.GREEN) + StringUtils.ConvertDate(tweet.getCreatedAt())
+					+ StringUtils.setStClr() + "] ";
+		}
+		tweetOut = tweetOut + prettyName(tweet.getUser());
 		if (tweet.isRetweet()) {
-			tweetOut = tweetOut + " (retweeted from " + tweet.getRetweetedStatus().getUser().getScreenName() + ")";
+			tweetOut = tweetOut + " (ретвитнул " + prettyName(tweet.getRetweetedStatus().getUser()) + "): " +
+					tweet.getRetweetedStatus().getText();
 		}
-		tweetOut = tweetOut + ": " + tweet.getText();
+		else {
+			tweetOut = tweetOut + ": " + tweet.getText();
+		}
 		if (tweet.getRetweetCount() > 0) {
-			tweetOut = tweetOut + " (" + tweet.getRetweetCount() + " retweets)";
+			tweetOut = tweetOut + " (" + tweet.getRetweetCount() + " ретвитов)";
 		}
-		Place place = tweet.getPlace();
+		/*Place place = tweet.getPlace();
 		if (place != null) {
 			tweetOut = tweetOut + "<" + place.getFullName() + ":" + place.getCountryCode() + ">";
-		}
+		}*/
 		return tweetOut;
 	}
 	
@@ -119,10 +131,6 @@ public class Main {
 			jcomm.usage();
 			return;
 		}
-		/*String[] rquery = jcl.getQuery();
-		System.out.println(jcl.getPlace() + " and " + jcl.getTweetLimit() + "; " + jcl.isStream());
-		for (int i = 0; i < rquery.length; ++i)
-			System.out.println(rquery[i]);*/
 		
 		Twitter twitter = new TwitterFactory().getInstance();
 			
@@ -130,7 +138,7 @@ public class Main {
 		if (jcl.getPlace().equals("nearby")) {
 			try {
 				String wipsource = getUrlSource("http://api.wipmania.com/");
-				searchPlace = wipsource.substring(wipsource.length() - 2); //this site look like "ip.ip.ip.ip</br>cc"
+				searchPlace = wipsource.substring(wipsource.length() - COUNTRY_CODE_LEN); //this site look like "ip.ip.ip.ip</br>cc"
 			} catch (IOException e) {
 				e.printStackTrace();
 				searchPlace = "anywhere";
@@ -148,11 +156,11 @@ public class Main {
 			while (true) {
 				while (!tweetsQueue.isEmpty()) {
 					Status tweet = tweetsQueue.poll();
-					System.out.println(tweetOneString(tweet));
+					System.out.println(tweetOneString(tweet, false));
 				}
 				//TODO: break by EOF or <ESC>. Is it possible without new thread?
 				try {
-				    Thread.sleep(1000);                 //1000 milliseconds is one second.
+				    Thread.sleep(STREAM_SLEEP_TIME);
 				} catch(InterruptedException ex) {
 				    Thread.currentThread().interrupt();
 				}
@@ -163,17 +171,18 @@ public class Main {
 	        try {
 	            Query query = new Query(jcl.getQueryString());
 	            QueryResult result;
+	            query.setCount(jcl.getTweetLimit());
 	            int count = 0;
 	            while (query != null) {
 	                result = twitter.search(query);
 	                List<Status> tweets = result.getTweets();
 	                for (Status tweet : tweets) {
 	                	if (isGoodTweet(tweet)) {
-		                    System.out.println(tweetOneString(tweet));
+		                    System.out.println(tweetOneString(tweet, true));
 		                    ++count;
 	                	}
 	                    query = result.nextQuery();
-	                    if (jcl.getTweetLimit() > 0 && count >= jcl.getTweetLimit()) {
+	                    if (count >= jcl.getTweetLimit()) {
 	                    	query = null;
 	                    	break;
 	                    }

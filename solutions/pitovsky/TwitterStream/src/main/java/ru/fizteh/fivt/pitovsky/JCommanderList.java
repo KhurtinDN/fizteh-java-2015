@@ -7,9 +7,11 @@ import com.beust.jcommander.Parameter;
 public class JCommanderList {
 	@Parameter
 	private List<String> parameters = new ArrayList<>();
+	
+	private final static int MAX_TWEET_LIMIT = 300;
 	 
 	@Parameter(names = { "-l", "--limit" }, description = "Maximum tweets for out. Only if --stream is disabled")
-	private int tweetLimit = 10;
+	private int tweetLimit = MAX_TWEET_LIMIT;
 	
 	public int getTweetLimit() {
 		return tweetLimit;
