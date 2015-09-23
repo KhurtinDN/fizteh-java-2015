@@ -28,9 +28,9 @@
 
     <modules>
         <module>dkhurtin</module>
-        <!--Add you module here-->
         <module>ale3otik</module>
-  </modules>
+        <!--Add you module here-->
+    </modules>
 
     <dependencyManagement>
         <dependencies>
