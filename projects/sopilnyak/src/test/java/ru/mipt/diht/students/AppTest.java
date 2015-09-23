@@ -1,4 +1,4 @@
-package ru.sopilnyak;
+package ru.mipt.diht.students;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
