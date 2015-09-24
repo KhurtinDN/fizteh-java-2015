@@ -117,7 +117,7 @@ public class App {
 
         if ((queryString == null
                 || queryString.equals("")) && locationString == null) {
-            System.err.println("Нет запроса, искать нечего");
+            System.err.println("No query, nothing to find");
         } else {
             addQuery();
         }
@@ -185,7 +185,6 @@ public class App {
             }
             System.out.println(":");
 
-
             int attempts = 0;
 
             // print the results of the query
@@ -212,59 +211,80 @@ public class App {
                         }
                     }
 
-                    QueryResult result = twitter.search(query); // send a query
+                    if (!isStreamEnabled) {
 
-                    for (Status status : result.getTweets()) { // print tweets
-                        if ((!status.isRetweet()
-                                || !hideRetweets)) { // hide retweets
+                        QueryResult result = twitter.search(query);
+                        // send a query
 
-                            if (!isStreamEnabled) {
+                        for (Status status : result.getTweets()) {
+                            // print tweets
+                            if ((!status.isRetweet()
+                                    || !hideRetweets)) { // hide retweets
+
                                 System.out.print("["
                                         + getDate(status.getCreatedAt())
                                         + "] ");
+
+                                System.out.println("@" + BLUE
+                                        + status.getUser().getScreenName()
+                                        + RESET + getRetweetSource(status)
+                                        + ": " + status.getText()
+                                        + retweetCount(status));
                             }
+                        }
 
-                            System.out.println("@" + BLUE
-                                    + status.getUser().getScreenName() + RESET
-                                    + getRetweetSource(status)
-                                    + ": " + status.getText()
-                                    + retweetCount(status));
+                        if (result.getTweets().isEmpty()) {
+                            // nothing was found
+                            System.out.println("По вашему запросу "
+                                    + "ничего не найдено.");
+                        }
 
-                            if (isStreamEnabled) {
-                                try {
-                                    Thread.sleep(SLEEP_TIME);
-                                    // sleep for 1 second
-                                } catch (InterruptedException e) {
-                                    Thread.currentThread().interrupt();
+                    } else {
+
+                        while (true) {
+                            QueryResult result = twitter.search(query);
+                            for (Status status : result.getTweets()) {
+                                if (!status.isRetweet() || !hideRetweets) {
+                                    // hide retweets
+
+                                    System.out.println("@" + BLUE
+                                            + status.getUser().getScreenName()
+                                            + RESET + getRetweetSource(status)
+                                            + ": " + status.getText()
+                                            + retweetCount(status));
+
+                                    try {
+                                        Thread.sleep(SLEEP_TIME);
+                                        // sleep for 1 second
+                                    } catch (InterruptedException e) {
+                                        Thread.currentThread().interrupt();
+                                    }
                                 }
                             }
 
+                            if (!result.getTweets().isEmpty()) {
+                                Status status = result.getTweets().get(0);
+                                query.setSinceId(status.getId());
+                            }
                         }
                     }
-
-                    if (result.getTweets().isEmpty()) { // nothing was found
-                        System.out.println("По вашему запросу "
-                                + "ничего не найдено.");
-                    }
                     break; // no need to try again
+
                 } catch (TwitterException e) {
                     if (e.isCausedByNetworkIssue()) {
                         System.err.println("Ошибка соединения: "
                                 + e.getErrorMessage()
                                 + ". Повторная попытка...");
-
                         try {
                             Thread.sleep(SLEEP_TIME); // sleep for 1 second
                         } catch (InterruptedException ie) {
                             Thread.currentThread().interrupt();
                         }
-
                         // try again
                         if (++attempts == ATTEMPTS) {
                             System.err.println("Не удалось.");
                             break;
                         }
-
                     } else {
                         System.err.println("Ошибка TwitterAPI: "
                                 + e.getErrorMessage());
