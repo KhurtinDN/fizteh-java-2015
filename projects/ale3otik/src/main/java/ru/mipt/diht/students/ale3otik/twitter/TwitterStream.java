@@ -3,7 +3,7 @@
  * Created by alex on 21.09.15.
  */
 
-package ru.mipt.diht.students.ale3otik.Twitter;
+package ru.mipt.diht.students.ale3otik.twitter;
 
 import com.beust.jcommander.JCommander;
 import twitter4j.*;

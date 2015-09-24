@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.ale3otik.Twitter;
+package ru.mipt.diht.students.ale3otik.twitter;
 
 /**
  * Created by alex on 23.09.15.
