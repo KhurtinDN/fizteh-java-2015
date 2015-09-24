@@ -1,8 +1,4 @@
-/*
-TODO: обработка Ctrl+Break (Ctrl+D) и ESC
-*/
-
-package ru.sopilnyak;
+package ru.mipt.diht.students.sopilnyak.TwitterStream;
 
 import twitter4j.*;
 
@@ -15,21 +11,31 @@ import java.util.concurrent.TimeUnit;
 
 public class App {
 
-    protected static String queryString;
-    protected static boolean isQueryStarted = false;
-    protected static String locationString;
-    protected static boolean isLocationStarted = false;
-    protected static boolean isNearbyEnabled = false;
-    protected static boolean isStreamEnabled = false;
-    protected static boolean isSetLimitStarted = false;
-    protected static int limit = -1;
-    protected static boolean hideRetweets = false;
+    private static String queryString;
+    private static boolean isQueryStarted = false;
+    private static String locationString;
+    private static boolean isLocationStarted = false;
+    private static boolean isNearbyEnabled = false;
+    private static boolean isStreamEnabled = false;
+    private static boolean isSetLimitStarted = false;
+    private static int limit = -1;
+    private static boolean hideRetweets = false;
 
     public static final String BLUE = "\u001B[34m";
     public static final String RESET = "\u001B[0m";
     public static final String HELP = "help.txt";
     public static final int MAX_TWEETS = 100;
     public static final int RADIUS = 10;
+    public static final int SLEEP_TIME = 1000;
+    public static final int ATTEMPTS = 20;
+
+    public static final int C1 = 1;
+    public static final int C2 = 2;
+    public static final int C3 = 3;
+    public static final int C4 = 4;
+    public static final int C5 = 5;
+    public static final int C6 = 6;
+    public static final int C7 = 7;
 
     public static void main(String[] args) {
 
@@ -50,60 +56,68 @@ public class App {
                     }
                     break;
 
-                case 1: // start new query
+                case C1: // start new query
                     queryString = "";
                     isQueryStarted = true;
                     isLocationStarted = false;
                     break;
 
-                case 2: // location
+                case C2: // location
                     locationString = "";
                     isLocationStarted = true;
                     isQueryStarted = false;
                     break;
 
-                case 3: // stream mode
+                case C3: // stream mode
                     isStreamEnabled = true;
                     isQueryStarted = false;
                     isLocationStarted = false;
                     break;
 
-                case 4: // hide retweets
+                case C4: // hide retweets
                     hideRetweets = true;
                     isQueryStarted = false;
                     isLocationStarted = false;
                     break;
 
-                case 5: // set limit
+                case C5: // set limit
                     isSetLimitStarted = true;
                     isQueryStarted = false;
                     isLocationStarted = false;
                     break;
 
-                case 6: // help
+                case C6: // help
                     isQueryStarted = false;
                     isLocationStarted = false;
                     showHelp();
                     break;
 
-                case 7: // nearby
+                case C7: // nearby
                     isNearbyEnabled = true;
                     isQueryStarted = false;
                     isLocationStarted = false;
                     break;
+
+                default:
+                    break;
             }
         }
 
-        if (queryString != null && !queryString.equals("")) { // remove space in the end
-            queryString = queryString.substring(0, queryString.length() - 1);
+        if (queryString != null
+                && !queryString.equals("")) { // remove space in the end
+            queryString = queryString.substring(0,
+                    queryString.length() - 1);
         }
 
-        if (locationString != null && !locationString.equals("")) { // remove space in the end
-            locationString = locationString.substring(0, locationString.length() - 1);
+        if (locationString != null
+                && !locationString.equals("")) { // remove space in the end
+            locationString = locationString.substring(0,
+                    locationString.length() - 1);
         }
 
-        if ((queryString == null || queryString.equals("")) && locationString == null) {
-            System.err.println("No query, nothing to find");
+        if ((queryString == null
+                || queryString.equals("")) && locationString == null) {
+            System.err.println("Нет запроса, искать нечего");
         } else {
             addQuery();
         }
@@ -111,13 +125,27 @@ public class App {
     }
 
     protected static short commandNumber(String arg) {
-        if (arg.equals("--query") || arg.equals("-q")) return 1;
-        if (arg.equals("--place") || arg.equals("-p")) return 2;
-        if (arg.equals("--stream") || arg.equals("-s")) return 3;
-        if (arg.equals("--hideRetweets")) return 4;
-        if (arg.equals("--limit") || arg.equals("-l")) return 5;
-        if (arg.equals("--help") || arg.equals("-h")) return 6;
-        if (arg.equals("nearby") && isLocationStarted) return 7;
+        if (arg.equals("--query") || arg.equals("-q")) {
+            return C1;
+        }
+        if (arg.equals("--place") || arg.equals("-p")) {
+            return C2;
+        }
+        if (arg.equals("--stream") || arg.equals("-s")) {
+            return C3;
+        }
+        if (arg.equals("--hideRetweets")) {
+            return C4;
+        }
+        if (arg.equals("--limit") || arg.equals("-l")) {
+            return C5;
+        }
+        if (arg.equals("--help") || arg.equals("-h")) {
+            return C6;
+        }
+        if (arg.equals("nearby") && isLocationStarted) {
+            return C7;
+        }
         return 0;
     }
 
@@ -142,11 +170,14 @@ public class App {
             if (isStreamEnabled) {
                 System.out.print(" в режиме потока");
             }
-            if (locationString != null && !locationString.equals("") && !isNearbyEnabled) {
-                System.out.print(" возле местоположения \"" + locationString + "\"");
+            if (locationString != null && !locationString.equals("")
+                    && !isNearbyEnabled) {
+                System.out.print(" возле местоположения \""
+                        + locationString + "\"");
                 geoQuery.setQuery(locationString);
             }
-            if (locationString != null && (isNearbyEnabled || locationString.equals(""))) {
+            if (locationString != null && (isNearbyEnabled
+                    || locationString.equals(""))) {
                 System.out.print(" возле вашего местоположения");
                 isNearbyEnabled = true;
             } else {
@@ -156,7 +187,6 @@ public class App {
 
 
             int attempts = 0;
-            final int MAX_ATTEMPTS = 20;
 
             // print the results of the query
             while (true) {
@@ -164,36 +194,46 @@ public class App {
                 try {
 
                     if (locationString != null) {
-                        ResponseList<Place> places = twitter.searchPlaces(geoQuery);
+                        ResponseList<Place> places =
+                                twitter.searchPlaces(geoQuery);
 
                         if (places.size() == 0) {
-                            System.out.println("Невозможно определить местоположение");
+                            System.out.
+                                    println("Невозможно определить "
+                                            + "местоположение");
                             return;
 
                         } else {
                             Place place = places.get(0); // get first place
                             // search in radius by coordinates
-                            query.setGeoCode(place.getBoundingBoxCoordinates()[0][0], RADIUS, Query.KILOMETERS);
+                            query.setGeoCode(place.
+                                            getBoundingBoxCoordinates()[0][0],
+                                    RADIUS, Query.KILOMETERS);
                         }
                     }
 
                     QueryResult result = twitter.search(query); // send a query
 
                     for (Status status : result.getTweets()) { // print tweets
-                        if ((!status.isRetweet() || !hideRetweets)) { // if necessary, hide retweets
+                        if ((!status.isRetweet()
+                                || !hideRetweets)) { // hide retweets
 
                             if (!isStreamEnabled) {
-                                System.out.print("[" + getDate(status.getCreatedAt()) + "] ");
+                                System.out.print("["
+                                        + getDate(status.getCreatedAt())
+                                        + "] ");
                             }
 
-                            System.out.println("@" + BLUE + status.getUser().getScreenName() + RESET +
-                                    (status.isRetweet() ? " ретвитнул " + "@" + BLUE +
-                                            status.getRetweetedStatus().getUser().getScreenName() + RESET : "") +
-                                    ": " + status.getText() + retweetCount(status));
+                            System.out.println("@" + BLUE
+                                    + status.getUser().getScreenName() + RESET
+                                    + getRetweetSource(status)
+                                    + ": " + status.getText()
+                                    + retweetCount(status));
 
                             if (isStreamEnabled) {
                                 try {
-                                    Thread.sleep(1000); // sleep for 1 second
+                                    Thread.sleep(SLEEP_TIME);
+                                    // sleep for 1 second
                                 } catch (InterruptedException e) {
                                     Thread.currentThread().interrupt();
                                 }
@@ -203,27 +243,31 @@ public class App {
                     }
 
                     if (result.getTweets().isEmpty()) { // nothing was found
-                        System.out.println("По вашему запросу ничего не найдено.");
+                        System.out.println("По вашему запросу "
+                                + "ничего не найдено.");
                     }
                     break; // no need to try again
                 } catch (TwitterException e) {
                     if (e.isCausedByNetworkIssue()) {
-                        System.err.println("Ошибка соединения: " + e.getErrorMessage() + ". Повторная попытка...");
+                        System.err.println("Ошибка соединения: "
+                                + e.getErrorMessage()
+                                + ". Повторная попытка...");
 
                         try {
-                            Thread.sleep(1000); // sleep for 1 second
+                            Thread.sleep(SLEEP_TIME); // sleep for 1 second
                         } catch (InterruptedException ie) {
                             Thread.currentThread().interrupt();
                         }
 
                         // try again
-                        if (++attempts == MAX_ATTEMPTS) {
+                        if (++attempts == ATTEMPTS) {
                             System.err.println("Не удалось.");
                             break;
                         }
 
                     } else {
-                        System.err.println("Ошибка TwitterAPI: " + e.getErrorMessage());
+                        System.err.println("Ошибка TwitterAPI: "
+                                + e.getErrorMessage());
                         break;
                     }
                 }
@@ -243,22 +287,27 @@ public class App {
 
         final long diffFull = current.getTime() - date.getTime();
 
-        if (calendar.get(Calendar.YEAR) == currentCal.get(Calendar.YEAR) &&
-                calendar.get(Calendar.DAY_OF_YEAR) == currentCal.get(Calendar.DAY_OF_YEAR) - 1) { // yesterday
+        if (calendar.get(Calendar.YEAR)
+                == currentCal.get(Calendar.YEAR)
+                && calendar.get(Calendar.DAY_OF_YEAR)
+                == currentCal.get(Calendar.DAY_OF_YEAR) - 1) { // yesterday
             return "Вчера";
         }
 
-        long diffDays = TimeUnit.DAYS.convert(diffFull, TimeUnit.MILLISECONDS);
+        long diffDays = TimeUnit.DAYS.convert(
+                diffFull, TimeUnit.MILLISECONDS);
         if (diffDays > 0) {
             return "" + diffDays + " дней назад";
         }
 
-        long diffHours = TimeUnit.HOURS.convert(diffFull, TimeUnit.MILLISECONDS);
+        long diffHours = TimeUnit.HOURS.convert(
+                diffFull, TimeUnit.MILLISECONDS);
         if (diffHours >= 1) {
             return "" + diffHours + " часов назад";
         }
 
-        long diffMinutes = TimeUnit.MINUTES.convert(diffFull, TimeUnit.MILLISECONDS);
+        long diffMinutes = TimeUnit.MINUTES.convert(
+                diffFull, TimeUnit.MILLISECONDS);
         if (diffMinutes >= 2) {
             return "" + diffMinutes + " минут назад";
         }
@@ -268,7 +317,10 @@ public class App {
     }
 
     protected static String retweetCount(Status status) {
-        return status.getRetweetCount() > 0 ? "" + status.getRetweetCount() : "";
+        if (status.getRetweetCount() > 0) {
+            return status.getRetweetCount() + "";
+        }
+        return "";
     }
 
     protected static void showHelp() {
@@ -281,7 +333,8 @@ public class App {
                 return;
             }
 
-            BufferedReader in = new BufferedReader(new FileReader(file.getAbsoluteFile()));
+            BufferedReader in = new BufferedReader(
+                    new FileReader(file.getAbsoluteFile()));
 
             try {
                 String string;
@@ -298,6 +351,16 @@ public class App {
         } catch (IOException e) {
             System.err.println("Проблема с чтением файла");
         }
+    }
+
+    protected static String getRetweetSource(Status status) {
+        if (status.isRetweet()) {
+            return " ретвитнул "
+                    + "@" + BLUE
+                    + status.getRetweetedStatus().
+                    getUser().getScreenName() + RESET;
+        }
+        return "";
     }
 
 }
