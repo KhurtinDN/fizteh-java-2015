@@ -36,6 +36,8 @@ public class Main {
     private static final int STREAM_SLEEP_TIME = 1000; //in ms
     private static final int COUNTRY_CODE_LEN = 2; //like RU, EN
 
+    private static final int EXIT_KEY = 27; //escape-key
+
     private static String getUrlSource(String url) throws IOException {
         URL realurl = new URL(url);
         URLConnection urlcon = realurl.openConnection();
@@ -136,8 +138,8 @@ public class Main {
                         - COUNTRY_CODE_LEN); //is site like"ip.ip.ip.ip</br>cc"
             } catch (IOException e) {
                 e.printStackTrace();
-                System.err.println("Failed to calculate your location by IP." +
-                		" Searching tweets from anywhere.");
+                System.err.println("Failed to calculate your location by IP."
+                        + " Searching tweets from anywhere.");
                 searchPlace = "anywhere";
             }
         }
@@ -158,7 +160,26 @@ public class Main {
                             Status tweet = tweetsQueue.poll();
                             System.out.println(tweetOneString(tweet, false));
                         }
-                        //ToDO:break by <ESC>.Is it possible without new thread?
+                        try {
+                            /* Unfortunately, we have not 'raw' mode in java
+                             * for its console, and we can read only after
+                             * '\n' symbol.
+                             */
+                            boolean needExit = false;
+                            while (System.in.available() > 0) {
+                                int cm = System.in.read();
+                                if (cm == 'q' || cm == EXIT_KEY || cm == -1) {
+                                    tstream.shutdown();
+                                    needExit = true;
+                                    break;
+                                }
+                            }
+                            if (needExit) {
+                                break;
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         try {
                             Thread.sleep(STREAM_SLEEP_TIME);
                         } catch (InterruptedException ex) {
@@ -189,6 +210,9 @@ public class Main {
                 break;
             } catch (TwitterException te) {
                 te.printStackTrace();
+                if (jcl.isStream()) {
+                    Thread.currentThread().interrupt();
+                }
                 System.err.println("Failed to search: " + te.getMessage()
                         + ". Try again? [y/n]");
                 char ans = 0;
