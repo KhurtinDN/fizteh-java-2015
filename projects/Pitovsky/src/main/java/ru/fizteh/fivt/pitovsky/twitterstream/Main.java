@@ -136,54 +136,73 @@ public class Main {
                         - COUNTRY_CODE_LEN); //is site like"ip.ip.ip.ip</br>cc"
             } catch (IOException e) {
                 e.printStackTrace();
+                System.err.println("Failed to calculate your location by IP." +
+                		" Searching tweets from anywhere.");
                 searchPlace = "anywhere";
             }
         }
         hideRetweets = jcl.isRetweetsHidden();
 
-        if (jcl.isStream()) {
-            tweetsQueue = new LinkedList<Status>();
-            TwitterStream tstream = new TwitterStreamFactory().getInstance();
-            tstream.addListener(tweetListener);
-            FilterQuery fquery = new FilterQuery();
-            fquery.track(jcl.getQuery());
-            tstream.filter(fquery); //start a new thread for listing new tweets
-            while (true) {
-                while (!tweetsQueue.isEmpty()) {
-                    Status tweet = tweetsQueue.poll();
-                    System.out.println(tweetOneString(tweet, false));
-                }
-                //ToDO: break by EOF or <ESC>.Is it possible without new thread?
-                try {
-                    Thread.sleep(STREAM_SLEEP_TIME);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        } else {
+        while (true) {
             try {
-                Query query = new Query(jcl.getQueryString());
-                QueryResult result;
-                query.setCount(jcl.getTweetLimit());
-                int count = 0;
-                while (query != null) {
-                    result = twitter.search(query);
-                    List<Status> tweets = result.getTweets();
-                    for (Status tweet : tweets) {
-                        if (isGoodTweet(tweet)) {
-                            System.out.println(tweetOneString(tweet, true));
-                            ++count;
+                if (jcl.isStream()) {
+                    tweetsQueue = new LinkedList<Status>();
+                    TwitterStream tstream = new
+                            TwitterStreamFactory().getInstance();
+                    tstream.addListener(tweetListener);
+                    FilterQuery fquery = new FilterQuery();
+                    fquery.track(jcl.getQuery());
+                    tstream.filter(fquery); //start a new thread for listing
+                    while (true) {
+                        while (!tweetsQueue.isEmpty()) {
+                            Status tweet = tweetsQueue.poll();
+                            System.out.println(tweetOneString(tweet, false));
                         }
-                        query = result.nextQuery();
-                        if (count >= jcl.getTweetLimit()) {
-                            query = null;
-                            break;
+                        //ToDO:break by <ESC>.Is it possible without new thread?
+                        try {
+                            Thread.sleep(STREAM_SLEEP_TIME);
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                } else {
+                    Query query = new Query(jcl.getQueryString());
+                    QueryResult result;
+                    query.setCount(jcl.getTweetLimit());
+                    int count = 0;
+                    while (query != null) {
+                        result = twitter.search(query);
+                        List<Status> tweets = result.getTweets();
+                        for (Status tweet : tweets) {
+                            if (isGoodTweet(tweet)) {
+                                System.out.println(tweetOneString(tweet, true));
+                                ++count;
+                            }
+                            query = result.nextQuery();
+                            if (count >= jcl.getTweetLimit()) {
+                                query = null;
+                                break;
+                            }
                         }
                     }
                 }
+                break;
             } catch (TwitterException te) {
                 te.printStackTrace();
-                System.err.println("Failed to search: " + te.getMessage());
+                System.err.println("Failed to search: " + te.getMessage()
+                        + ". Try again? [y/n]");
+                char ans = 0;
+                try {
+                    while (ans <= ' ') {
+                        ans = (char) System.in.read();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    ans = 'e';
+                }
+                if (ans != 'y' && ans != 'Y') {
+                    break;
+                }
             }
         }
     }
