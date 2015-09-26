@@ -36,22 +36,22 @@ public class StringUtils {
     private static final int NUM_DEC = 10; //checkstyle ask for it
     private static final int NUM_RU_ENDING = 5; //start for new endings
     public static String convertDate(Date date) {
-        Calendar curCal = Calendar.getInstance();
-        Calendar tweetCal = Calendar.getInstance();
-        tweetCal.setTime(date);
-        if (tweetCal.compareTo(curCal) > 0) {
+        Calendar currentCalendar = Calendar.getInstance();
+        Calendar tweetCalendar = Calendar.getInstance();
+        tweetCalendar.setTime(date);
+        if (tweetCalendar.compareTo(currentCalendar) > 0) {
             return "еще не опубликовано";
         }
-        curCal.roll(Calendar.MINUTE, false);
-        curCal.roll(Calendar.MINUTE, false); //for two minutes, checkstyle:(
-        if (tweetCal.compareTo(curCal) > 0) {
+        currentCalendar.roll(Calendar.MINUTE, false);
+        currentCalendar.roll(Calendar.MINUTE, false);
+        if (tweetCalendar.compareTo(currentCalendar) > 0) {
             return "только что";
         }
-        curCal = Calendar.getInstance();
-        curCal.roll(Calendar.HOUR, false);
-        if (tweetCal.compareTo(curCal) > 0) {
-            int minutes = (int) ((HOUR + curCal.getTimeInMillis()
-                    - tweetCal.getTimeInMillis()) / MINUTE);
+        currentCalendar = Calendar.getInstance();
+        currentCalendar.roll(Calendar.HOUR, false);
+        if (tweetCalendar.compareTo(currentCalendar) > 0) {
+            int minutes = (int) ((HOUR + currentCalendar.getTimeInMillis()
+                    - tweetCalendar.getTimeInMillis()) / MINUTE);
             if (minutes / NUM_DEC != 1 && minutes % NUM_DEC == 1) {
                 return minutes + " минуту назад"; //like 1, 21, 31...
             }
@@ -61,12 +61,13 @@ public class StringUtils {
             }
             return minutes + " минут назад";
         }
-        curCal = Calendar.getInstance();
-        if (curCal.get(Calendar.DAY_OF_YEAR)
-                == tweetCal.get(Calendar.DAY_OF_YEAR)
-                && curCal.get(Calendar.YEAR) == tweetCal.get(Calendar.YEAR)) {
-            int hours = curCal.get(Calendar.HOUR_OF_DAY)
-                    - tweetCal.get(Calendar.HOUR_OF_DAY);
+        currentCalendar = Calendar.getInstance();
+        if (currentCalendar.get(Calendar.DAY_OF_YEAR)
+                    == tweetCalendar.get(Calendar.DAY_OF_YEAR)
+                && currentCalendar.get(Calendar.YEAR)
+                    == tweetCalendar.get(Calendar.YEAR)) {
+            int hours = currentCalendar.get(Calendar.HOUR_OF_DAY)
+                    - tweetCalendar.get(Calendar.HOUR_OF_DAY);
             if (hours / NUM_DEC != 1 && hours % NUM_DEC == 1) {
                 return hours + " час назад";
             }
@@ -76,16 +77,17 @@ public class StringUtils {
             }
             return hours + " часов назад";
         }
-        curCal = Calendar.getInstance();
-        curCal.roll(Calendar.DATE, false);
-        if (curCal.get(Calendar.DAY_OF_YEAR)
-                == tweetCal.get(Calendar.DAY_OF_YEAR)
-                && curCal.get(Calendar.YEAR) == tweetCal.get(Calendar.YEAR)) {
+        currentCalendar = Calendar.getInstance();
+        currentCalendar.roll(Calendar.DATE, false);
+        if (currentCalendar.get(Calendar.DAY_OF_YEAR)
+                    == tweetCalendar.get(Calendar.DAY_OF_YEAR)
+                && currentCalendar.get(Calendar.YEAR)
+                    == tweetCalendar.get(Calendar.YEAR)) {
             return "вчера";
         }
-        curCal = Calendar.getInstance();
-        int days = (int) ((curCal.getTimeInMillis()
-                - tweetCal.getTimeInMillis()) / DAY) + 1;
+        currentCalendar = Calendar.getInstance();
+        int days = (int) ((currentCalendar.getTimeInMillis()
+                - tweetCalendar.getTimeInMillis()) / DAY) + 1;
         if (days / NUM_DEC != 1 && days % NUM_DEC == 1) {
             return days + " день назад";
         }

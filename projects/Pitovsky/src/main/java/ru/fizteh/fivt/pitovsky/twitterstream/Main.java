@@ -38,15 +38,20 @@ public class Main {
 
     private static final int EXIT_KEY = 27; //escape-key
 
+    private static boolean hideRetweets;
+    private static String searchPlace;
+    private static LinkedList<Status> tweetsQueue;
+
     private static String getUrlSource(String url) throws IOException {
         URL realurl = new URL(url);
         URLConnection urlcon = realurl.openConnection();
         BufferedReader brin = new BufferedReader(
                 new InputStreamReader(urlcon.getInputStream(), "UTF-8"));
-        String inputLine;
+        String inputLine = brin.readLine();
         StringBuilder retstr = new StringBuilder();
-        while ((inputLine = brin.readLine()) != null) {
+        while (inputLine != null) {
             retstr.append(inputLine);
+            inputLine = brin.readLine();
         }
         brin.close();
 
@@ -59,34 +64,31 @@ public class Main {
     }
 
     private static String tweetOneString(Status tweet, boolean withDate) {
-        String tweetOut = "";
+        StringBuilder tweetOut = new StringBuilder();
         if (withDate) {
-            tweetOut = "[" + StringUtils.setClr(TextColor.GREEN)
+            tweetOut.append("["
+                    + StringUtils.setClr(TextColor.GREEN)
                     + StringUtils.convertDate(tweet.getCreatedAt())
-                    + StringUtils.setStClr() + "] ";
+                    + StringUtils.setStClr() + "] ");
         }
-        tweetOut = tweetOut + prettyName(tweet.getUser());
+        tweetOut.append(prettyName(tweet.getUser()));
         if (tweet.isRetweet()) {
-            tweetOut = tweetOut + " (ретвитнул "
+            tweetOut.append(" (ретвитнул "
                     + prettyName(tweet.getRetweetedStatus().getUser()) + "): "
-                    + tweet.getRetweetedStatus().getText();
+                    + tweet.getRetweetedStatus().getText());
         } else {
-            tweetOut = tweetOut + ": " + tweet.getText();
+            tweetOut.append(": " + tweet.getText());
         }
         if (tweet.getRetweetCount() > 0) {
-            tweetOut = tweetOut + " (" + tweet.getRetweetCount() + " ретвитов)";
+            tweetOut.append(" (" + tweet.getRetweetCount() + " ретвитов)");
         }
         /*Place place = tweet.getPlace();
         if (place != null) {
             tweetOut = tweetOut + "<" + place.getFullName() + ":"
              + place.getCountryCode() + ">";
         }*/
-        return tweetOut;
+        return tweetOut.toString();
     }
-
-    private static boolean hideRetweets;
-    private static String searchPlace;
-    private static LinkedList<Status> tweetsQueue;
 
     private static boolean isGoodTweet(Status tweet) {
         return (!hideRetweets || !tweet.isRetweet())
@@ -188,11 +190,10 @@ public class Main {
                     }
                 } else {
                     Query query = new Query(jcl.getQueryString());
-                    QueryResult result;
                     query.setCount(jcl.getTweetLimit());
                     int count = 0;
                     while (query != null) {
-                        result = twitter.search(query);
+                        QueryResult result = twitter.search(query);
                         List<Status> tweets = result.getTweets();
                         for (Status tweet : tweets) {
                             if (isGoodTweet(tweet)) {
