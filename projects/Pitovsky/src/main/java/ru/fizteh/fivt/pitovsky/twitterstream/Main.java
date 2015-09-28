@@ -13,8 +13,11 @@ import main.java.ru.fizteh.fivt.pitovsky.twitterstream.StringUtils.TextColor;
 import com.beust.jcommander.JCommander;
 
 import twitter4j.FilterQuery;
+import twitter4j.GeoQuery;
+import twitter4j.Place;
 import twitter4j.Query;
 import twitter4j.QueryResult;
+import twitter4j.ResponseList;
 import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
@@ -34,13 +37,13 @@ import twitter4j.TwitterStream;
 public class Main {
 
     private static final int STREAM_SLEEP_TIME = 1000; //in ms
-    private static final int COUNTRY_CODE_LEN = 2; //like RU, EN
 
     private static final int EXIT_KEY = 27; //escape-key
 
     private static boolean hideRetweets;
     private static String searchPlace;
     private static LinkedList<Status> tweetsQueue;
+    private static SearchLocation searchLocation = null;
 
     private static String getUrlSource(String url) throws IOException {
         URL realurl = new URL(url);
@@ -84,17 +87,14 @@ public class Main {
         }
         /*Place place = tweet.getPlace();
         if (place != null) {
-            tweetOut = tweetOut + "<" + place.getFullName() + ":"
-             + place.getCountryCode() + ">";
+            tweetOut.append(StringUtils.setClr(TextColor.MAGENTA) + "<" + place.getFullName() + ":"
+             + place.getCountryCode() + ">" + StringUtils.setStClr());
         }*/
         return tweetOut.toString();
     }
 
     private static boolean isGoodTweet(Status tweet) {
-        return (!hideRetweets || !tweet.isRetweet())
-                && (searchPlace.equals("anywhere")
-                || (tweet.getPlace() != null
-                && tweet.getPlace().getCountryCode().equals(searchPlace)));
+        return (!hideRetweets || !tweet.isRetweet());
     }
 
     private static StatusListener tweetListener = new StatusListener() {
@@ -135,13 +135,19 @@ public class Main {
         searchPlace = jcl.getPlace();
         if (jcl.getPlace().equals("nearby")) {
             try {
-                String wipsource = getUrlSource("http://api.wipmania.com/");
-                searchPlace = wipsource.substring(wipsource.length()
-                        - COUNTRY_CODE_LEN); //is site like"ip.ip.ip.ip</br>cc"
+                //telize site output look like "getgeoip({"parametr":"value","parametr":"value",...})"
+                String[] wipsource = getUrlSource("http://www.telize.com/geoip?callback=getgeoip").split("[,\":]+");
+                for (int i = 0; i < wipsource.length; ++i) {
+                    if (wipsource[i].equals("city") && i < wipsource.length - 1) {
+                        searchPlace = wipsource[i + 1];
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 System.err.println("Failed to calculate your location by IP."
                         + " Searching tweets from anywhere.");
+            }
+            if (searchPlace.equals("nearby")) {
                 searchPlace = "anywhere";
             }
         }
@@ -149,13 +155,23 @@ public class Main {
 
         while (true) {
             try {
+                if (searchLocation == null && !searchPlace.equals("anywhere")) {
+                    GeoQuery gquery = new GeoQuery("192.168.1.1"); //an useless ip
+                    gquery.setQuery(searchPlace);
+                    ResponseList<Place> searchPlaces = twitter.searchPlaces(gquery);
+                    searchLocation = new SearchLocation(searchPlaces);
+                }
                 if (jcl.isStream()) {
                     tweetsQueue = new LinkedList<Status>();
-                    TwitterStream tstream = new
-                            TwitterStreamFactory().getInstance();
+                    TwitterStream tstream = new TwitterStreamFactory().getInstance();
                     tstream.addListener(tweetListener);
                     FilterQuery fquery = new FilterQuery();
-                    fquery.track(jcl.getQuery());
+                    String[] queryArray = new String[1];
+                    queryArray[0] = jcl.getQueryString();
+                    fquery.track(queryArray);
+                    if (searchLocation != null) {
+                        fquery.locations(searchLocation.getBoundingBox());
+                    }
                     tstream.filter(fquery); //start a new thread for listing
                     while (true) {
                         while (!tweetsQueue.isEmpty()) {
@@ -190,6 +206,11 @@ public class Main {
                     }
                 } else {
                     Query query = new Query(jcl.getQueryString());
+                    if (searchLocation != null) {
+                        query.setGeoCode(searchLocation.getCenter(), searchLocation.getRadius(), Query.Unit.km);
+                        /*System.err.println("from (" + searchLocation.getCenter().getLatitude() + "; "
+                                + searchLocation.getCenter().getLongitude() + "), r = " + searchLocation.getRadius());*/
+                    }
                     query.setCount(jcl.getTweetLimit());
                     int count = 0;
                     while (query != null) {
@@ -231,4 +252,5 @@ public class Main {
             }
         }
     }
+
 }
