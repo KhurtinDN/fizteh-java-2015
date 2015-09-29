@@ -10,26 +10,25 @@ public class TimeDeterminer {
     public static final int SECONDS_IN_MINUTE = 60;
     public static final int MINUTES_IN_HOUR = 60;
     public static final int HOURS_IN_DAY = 24;
-    public static final int MILISECONDS_IN_SECONDS = 1000;
+    public static final int MILLISECONDS_IN_SECONDS = 1000;
 
-    public static final String getTimeDifference(Date createdAt) {
-        final FormDeclenser formDeclenser = new FormDeclenser();
+    public static String getTimeDifference(Date createdAt) {
 
         long localTime = System.currentTimeMillis();
         long createdTime = createdAt.getTime();
         long todaySeconds = LocalTime.now().getSecond();
 
-        long secondDifference = (localTime - createdTime) / MILISECONDS_IN_SECONDS;
+        long secondDifference = (localTime - createdTime) / MILLISECONDS_IN_SECONDS;
         if (secondDifference / SECONDS_IN_MINUTE < 2) {
             return "Только что";
         }
 
         long minutDifference = (localTime - createdTime)
-                / (MILISECONDS_IN_SECONDS * SECONDS_IN_MINUTE);
+                / (MILLISECONDS_IN_SECONDS * SECONDS_IN_MINUTE);
 
         if (minutDifference / MINUTES_IN_HOUR < 1) {
             return minutDifference + " "
-                    + formDeclenser.getMinutsDeclension(minutDifference)
+                    + FormDeclenser.getMinutsDeclension(minutDifference)
                     + " назад";
         }
 
@@ -37,7 +36,7 @@ public class TimeDeterminer {
 
         if (secondDifference < todaySeconds) {
             return hoursDifference + " "
-                    + formDeclenser.getHoursDeclension(hoursDifference)
+                    + FormDeclenser.getHoursDeclension(hoursDifference)
                     + " назад";
         }
 
@@ -51,8 +50,7 @@ public class TimeDeterminer {
         }
 
         return (daysDifference) + " "
-                + formDeclenser.getDaysDeclension(daysDifference)
+                + FormDeclenser.getDaysDeclension(daysDifference)
                 + " назад";
-
     }
 }

@@ -9,8 +9,8 @@ public final class FormDeclenser {
     private static final int HOURS_INDEX = 2;
     private static final int DAYS_INDEX = 3;
 
-    private static final int HUNDREED_MOD = 100;
-    private static final int TEN_MOD = 10;
+    private static final int MOD100 = 100;
+    private static final int MOD10 = 10;
     private static final int SMALL_LEFT_BOUND = 2;
     private static final int SMALL_RIGHT_BOUND = 4;
     private static final int HUGE_RIGHT_BOUND = 19;
@@ -28,13 +28,13 @@ public final class FormDeclenser {
     }
 
     private static int getRightForm(long count) {
-        long hundreedMod = count % HUNDREED_MOD;
-        if (hundreedMod > SMALL_RIGHT_BOUND
-                && hundreedMod <= HUGE_RIGHT_BOUND) {
+        long hundredMod = count % MOD100;
+        if (hundredMod > SMALL_RIGHT_BOUND
+                && hundredMod <= HUGE_RIGHT_BOUND) {
             return 2;
         }
 
-        long tenMod = count % TEN_MOD;
+        long tenMod = count % MOD10;
         if (tenMod >= SMALL_LEFT_BOUND
                 && tenMod <= SMALL_RIGHT_BOUND) {
             return 1;
@@ -48,22 +48,22 @@ public final class FormDeclenser {
 
     }
 
-    public String getTweetsDeclension(int count) {
+    public static String getTweetsDeclension(int count) {
         int formIndex = getRightForm(count);
         return FORM_ARRAY[RETWEET_INDEX][formIndex];
     }
 
-    public String getMinutsDeclension(long count) {
+    public static String getMinutsDeclension(long count) {
         int formIndex = getRightForm(count);
         return FORM_ARRAY[MINUTS_INDEX][formIndex];
     }
 
-    public String getHoursDeclension(long count) {
+    public static String getHoursDeclension(long count) {
         int formIndex = getRightForm(count);
         return FORM_ARRAY[HOURS_INDEX][formIndex];
     }
 
-    public String getDaysDeclension(long count) {
+    public static String getDaysDeclension(long count) {
         int formIndex = getRightForm(count);
         return FORM_ARRAY[DAYS_INDEX][formIndex];
     }

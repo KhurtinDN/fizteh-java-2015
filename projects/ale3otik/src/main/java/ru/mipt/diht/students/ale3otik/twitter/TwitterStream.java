@@ -48,7 +48,7 @@ public class TwitterStream {
         if (countTweets > 0) {
 
             String retweetDeclension =
-                    new FormDeclenser().getTweetsDeclension(countTweets);
+                    FormDeclenser.getTweetsDeclension(countTweets);
             answerStr += "(" + ANSI_BOLD
                     + countTweets
                     + ANSI_RESET
@@ -60,10 +60,8 @@ public class TwitterStream {
 
     private static void printFormattedTweet(Status status, JCommanderParser jcp) {
 
-        SplitLine splitLine = new SplitLine();
         String tweetText = status.getText();
         String time = "";
-        TimeDeterminer timeDeterminer = new TimeDeterminer();
 
         if (!jcp.isStream()) {
             time = "["
@@ -93,7 +91,7 @@ public class TwitterStream {
 
         System.out.println(outputString);
 
-        splitLine.print();
+        SplitLine.print();
 
     }
 
@@ -117,7 +115,7 @@ public class TwitterStream {
         FilterQuery query = new FilterQuery(jcp.getQuery());
 
         twStream.addListener(listener);
-        twStream.filter(jcp.getQuery());
+        twStream.filter(query);
     }
 
     private static void printSingleTwitterQuery(final JCommanderParser jCommanderParser) {
@@ -196,7 +194,6 @@ public class TwitterStream {
             JCommander jcm = new JCommander(jcp, "");
             jcm.setProgramName("TwitterStream");
             jcm.usage();
-            return;
         }
     }
 }
