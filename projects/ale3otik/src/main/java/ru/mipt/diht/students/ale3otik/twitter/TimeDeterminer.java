@@ -29,7 +29,7 @@ public class TimeDeterminer {
 
         if (minutDifference / MINUTES_IN_HOUR < 1) {
             return minutDifference + " "
-                    + formDeclenser.getMinutsDeclention(minutDifference)
+                    + formDeclenser.getMinutsDeclension(minutDifference)
                     + " назад";
         }
 
@@ -37,7 +37,7 @@ public class TimeDeterminer {
 
         if (secondDifference < todaySeconds) {
             return hoursDifference + " "
-                    + formDeclenser.getHoursDeclention(hoursDifference)
+                    + formDeclenser.getHoursDeclension(hoursDifference)
                     + " назад";
         }
 
@@ -51,7 +51,7 @@ public class TimeDeterminer {
         }
 
         return (daysDifference) + " "
-                + formDeclenser.getDaysDeclention(daysDifference)
+                + formDeclenser.getDaysDeclension(daysDifference)
                 + " назад";
 
     }

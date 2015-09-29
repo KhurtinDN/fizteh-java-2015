@@ -48,7 +48,7 @@ public class TwitterStream {
         if (countTweets > 0) {
 
             String retweetDeclension =
-                    new FormDeclenser().getTweetsDeclention(countTweets);
+                    new FormDeclenser().getTweetsDeclension(countTweets);
             answerStr += "(" + ANSI_BOLD
                     + countTweets
                     + ANSI_RESET

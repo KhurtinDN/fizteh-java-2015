@@ -48,22 +48,22 @@ public final class FormDeclenser {
 
     }
 
-    public String getTweetsDeclention(int count) {
+    public String getTweetsDeclension(int count) {
         int formIndex = getRightForm(count);
         return FORM_ARRAY[RETWEET_INDEX][formIndex];
     }
 
-    public String getMinutsDeclention(long count) {
+    public String getMinutsDeclension(long count) {
         int formIndex = getRightForm(count);
         return FORM_ARRAY[MINUTS_INDEX][formIndex];
     }
 
-    public String getHoursDeclention(long count) {
+    public String getHoursDeclension(long count) {
         int formIndex = getRightForm(count);
         return FORM_ARRAY[HOURS_INDEX][formIndex];
     }
 
-    public String getDaysDeclention(long count) {
+    public String getDaysDeclension(long count) {
         int formIndex = getRightForm(count);
         return FORM_ARRAY[DAYS_INDEX][formIndex];
     }
