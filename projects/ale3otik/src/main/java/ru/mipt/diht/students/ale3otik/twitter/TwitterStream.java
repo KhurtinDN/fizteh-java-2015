@@ -9,6 +9,7 @@ import com.beust.jcommander.JCommander;
 import twitter4j.*;
 import twitter4j.StatusListener;
 
+import java.util.Collections;
 import java.util.List;
 
 
@@ -16,14 +17,9 @@ public class TwitterStream {
 
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
     private static final int TRIES_LIMIT = 1;
-    private static final int HUNDREED_NUM = 100;
-    private static final int TWENTY_NUM = 20;
-    private static final int TEN_NUM = 10;
-    private static final int TWO_NUM = 2;
-    private static final int FIVE_NUM = 5;
-    private static final int FOUR_NUM = 4;
-    private static final int ONE_NUM = 1;
+
     private static final String ANSI_BOLD = "\033[1m";
 
     private static class SplitLine {
@@ -50,24 +46,13 @@ public class TwitterStream {
 
         int countTweets = status.getRetweetCount();
         if (countTweets > 0) {
-            String ending = "";
-            if (countTweets % HUNDREED_NUM >= FIVE_NUM
-                    && countTweets % HUNDREED_NUM <= TWENTY_NUM) {
-                ending = "ов";
-            } else {
-                int lastNumber = status.getRetweetCount() % TEN_NUM;
-                if (lastNumber >= TWO_NUM && lastNumber <= FOUR_NUM) {
-                    ending = "а";
-                } else if (!(lastNumber == ONE_NUM)) {
-                    ending = "ов";
-                }
-            }
 
+            String retweetDeclension =
+                    new FormDeclenser().getTweetsDeclention(countTweets);
             answerStr += "(" + ANSI_BOLD
                     + countTweets
                     + ANSI_RESET
-                    + " ретвит"
-                    + ending
+                    + " " + retweetDeclension
                     + ")";
         }
         return answerStr;
@@ -78,9 +63,12 @@ public class TwitterStream {
         SplitLine splitLine = new SplitLine();
         String tweetText = status.getText();
         String time = "";
+        TimeDeterminer timeDeterminer = new TimeDeterminer();
 
         if (!jcp.isStream()) {
-            time = "[" + status.getCreatedAt().toString() + "]" + " ";
+            time = "["
+                    + TimeDeterminer.getTimeDifference(status.getCreatedAt())
+                    + "]" + " ";
         }
         String outputString = time + ANSI_BLUE + ANSI_BOLD + "@"
                 + status.getUser()
@@ -111,6 +99,11 @@ public class TwitterStream {
 
     private static void streamStart(JCommanderParser jcp) {
 
+        if (jcp.getQuery().length() == 0) {
+            System.out.println("Can't work with empty query");
+            System.exit(-1);
+        }
+
         twitter4j.TwitterStream twStream = twitter4j
                 .TwitterStreamFactory.getSingleton();
 
@@ -120,6 +113,8 @@ public class TwitterStream {
                 printFormattedTweet(status, jcp);
             }
         };
+
+        FilterQuery query = new FilterQuery(jcp.getQuery());
 
         twStream.addListener(listener);
         twStream.filter(jcp.getQuery());
@@ -157,6 +152,7 @@ public class TwitterStream {
         }
 
         List<Status> tweets = result.getTweets();
+        Collections.reverse(tweets);
 
         int countTweets = 0;
         for (Status status : tweets) {
@@ -173,20 +169,34 @@ public class TwitterStream {
     }
 
     public static void main(String[] args) throws TwitterException {
-        System.out.println("\n\nTwitter 0.1 welcome\n\n");
-        JCommanderParser jcp = new JCommanderParser();
-        JCommander jcm = new JCommander(jcp, args);
-        jcm.setProgramName("TwitterStream");
 
-        if (jcp.isHelp()) {
+        System.out.print(ANSI_PURPLE
+                + ANSI_BOLD
+                + "\nTwitter 0.1 ::: welcome \n\n"
+                + ANSI_RESET);
+
+        JCommanderParser jcp = new JCommanderParser();
+        try {
+            JCommander jcm = new JCommander(jcp, args);
+            jcm.setProgramName("TwitterStream");
+
+            if (jcp.isHelp()) {
+                jcm.usage();
+                return;
+            }
+
+            if (jcp.isStream()) {
+                streamStart(jcp);
+            } else {
+                printSingleTwitterQuery(jcp);
+            }
+        } catch (Exception e) {
+
+            System.out.println(e.getMessage());
+            JCommander jcm = new JCommander(jcp, "");
+            jcm.setProgramName("TwitterStream");
             jcm.usage();
             return;
-        }
-
-        if (jcp.isStream()) {
-            streamStart(jcp);
-        } else {
-            printSingleTwitterQuery(jcp);
         }
     }
 }
