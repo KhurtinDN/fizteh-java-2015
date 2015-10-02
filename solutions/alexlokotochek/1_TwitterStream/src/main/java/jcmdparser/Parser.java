@@ -1,4 +1,4 @@
-package JCmdParser;
+package jcmdparser;
 
 import com.beust.jcommander.Parameter;
 import java.util.ArrayList;
