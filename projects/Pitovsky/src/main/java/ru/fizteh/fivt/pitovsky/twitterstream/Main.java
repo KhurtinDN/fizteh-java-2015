@@ -1,4 +1,4 @@
-package main.java.ru.fizteh.fivt.pitovsky.twitterstream;
+package ru.fizteh.fivt.pitovsky.twitterstream;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,19 +18,19 @@ import com.beust.jcommander.JCommander;
 public class Main {
 
     private static String getUrlSource(String url) throws IOException {
-        URL realurl = new URL(url);
-        URLConnection urlcon = realurl.openConnection();
-        BufferedReader brin = new BufferedReader(
+        URL realURL = new URL(url);
+        URLConnection urlcon = realURL.openConnection();
+        BufferedReader urlReader = new BufferedReader(
                 new InputStreamReader(urlcon.getInputStream(), "UTF-8"));
-        String inputLine = brin.readLine();
-        StringBuilder retstr = new StringBuilder();
+        String inputLine = urlReader.readLine();
+        StringBuilder sourceString = new StringBuilder();
         while (inputLine != null) {
-            retstr.append(inputLine);
-            inputLine = brin.readLine();
+            sourceString.append(inputLine);
+            inputLine = urlReader.readLine();
         }
-        brin.close();
+        urlReader.close();
 
-        return retstr.toString();
+        return sourceString.toString();
     }
 
     private static String getMyCityFromTelize() throws IOException {
@@ -76,8 +76,11 @@ public class Main {
 
         while (true) {
             try {
-                if (searchLocation == null && searchPlace.equals("anywhere")) {
+                if (searchLocation == null && !searchPlace.equals("anywhere")) {
                     searchLocation = client.findLocation(searchPlace);
+                    System.err.println("ur (" + searchLocation.getCenter().getLatitude() + ", "
+                            + searchLocation.getCenter().getLongitude() + ") with r = "
+                            + searchLocation.getRadius() + ".");
                 }
                 if (jcl.isStream()) {
                     client.startStreaming(jcl.getQueryString(), jcl.isRetweetsHidden(), searchLocation);

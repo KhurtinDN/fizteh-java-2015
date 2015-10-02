@@ -1,4 +1,4 @@
-package main.java.ru.fizteh.fivt.pitovsky.twitterstream;
+package ru.fizteh.fivt.pitovsky.twitterstream;
 
 import java.util.Vector;
 
@@ -10,7 +10,7 @@ public class SearchLocation {
     private static final double DEG_TO_KM = 60 * 1.1515 * 1.609344;
     private static final double DEG_TO_RAD = Math.PI / 180.0;
     private static final double RAD_TO_DEG = 180 / Math.PI;
-    private static Vector<GeoLocation> searchLocations;
+    private Vector<GeoLocation> searchLocations;
 
     public SearchLocation(ResponseList<Place> searchPlaces) {
         searchLocations = new Vector<GeoLocation>(); //*4 becouse all nodes of place box
@@ -23,10 +23,12 @@ public class SearchLocation {
         }
     }
 
-    private static double getCoordinatesDistance(double lat1, double lon1, double lat2, double lon2) {
-        double theta = lon1 - lon2;
-        double dist = Math.sin(lat1 * DEG_TO_RAD) * Math.sin(lat2 * DEG_TO_RAD)
-                + Math.cos(lat1  * DEG_TO_RAD) * Math.cos(lat2 * DEG_TO_RAD) * Math.cos(theta * DEG_TO_RAD);
+    private static double getCoordinatesDistance(double latitudeFrom, double longitudeFrom,
+            double latitudeTo, double longitudeTo) {
+        double theta = longitudeFrom - longitudeTo;
+        double dist = Math.sin(latitudeFrom * DEG_TO_RAD) * Math.sin(latitudeTo * DEG_TO_RAD)
+                + Math.cos(latitudeFrom  * DEG_TO_RAD) * Math.cos(latitudeTo * DEG_TO_RAD)
+                    * Math.cos(theta * DEG_TO_RAD);
         dist = Math.acos(dist);
         dist = dist * RAD_TO_DEG;
         dist = dist * DEG_TO_KM;
@@ -81,7 +83,6 @@ public class SearchLocation {
                 maxY = location.getLongitude();
             }
         }
-        double[][] locations = {{minX, minY}, {maxX, maxY}};
-        return locations;
+        return new double[][] {{minX, minY}, {maxX, maxY}};
     }
 }

@@ -36,7 +36,6 @@
 	 </dependency>
   </dependencies>
   <build>
-    <sourceDirectory>src</sourceDirectory>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -54,7 +53,7 @@
         </descriptorRefs>
         <archive>
          <manifest>
-           <mainClass>main.java.ru.fizteh.fivt.pitovsky.twitterstream.Main</mainClass>
+           <mainClass>ru.fizteh.fivt.pitovsky.twitterstream.Main</mainClass>
          </manifest>
        </archive>
       </configuration>

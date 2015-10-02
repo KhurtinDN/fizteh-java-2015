@@ -1,10 +1,12 @@
-package main.java.ru.fizteh.fivt.pitovsky.twitterstream;
+package ru.fizteh.fivt.pitovsky.twitterstream;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import main.java.ru.fizteh.fivt.pitovsky.twitterstream.StringUtils.TextColor;
+import ru.fizteh.fivt.pitovsky.twitterstream.ConsoleUtils.TextColor;
 import twitter4j.FilterQuery;
 import twitter4j.GeoQuery;
 import twitter4j.Place;
@@ -27,22 +29,93 @@ class TwitterClient {
     private static final int STREAM_SLEEP_TIME = 1000; //in ms
     private static final int EXIT_KEY = 27; //escape-key
 
+    private static final int MINUTE = 60 * 1000;
+    private static final int HOUR = 60 * MINUTE;
+    private static final int DAY = 24 * HOUR;
+    private static final int NUM_DEC = 10; //checkstyle ask for it
+    private static final int NUM_RU_ENDING = 5; //start for new endings in ru lang
+
     private Twitter twitter;
     private LinkedList<Status> tweetsQueue;
     private boolean hideRetweets;
 
+    private static String getStringMinutesAgo(int minutes) {
+        if (minutes / NUM_DEC != 1 && minutes % NUM_DEC == 1) {
+            return minutes + " минуту назад"; //like 1, 21, 31...
+        }
+        if (minutes / NUM_DEC != 1 && minutes % NUM_DEC > 1
+                && minutes % NUM_DEC < NUM_RU_ENDING) {
+            return minutes + " минуты назад";
+        }
+        return minutes + " минут назад";
+    }
+
+    private static String getStringHoursAgo(int hours) {
+        if (hours / NUM_DEC != 1 && hours % NUM_DEC == 1) {
+            return hours + " час назад";
+        }
+        if (hours / NUM_DEC != 1 && hours % NUM_DEC > 1
+                && hours % NUM_DEC < NUM_RU_ENDING) {
+            return hours + " часа назад";
+        }
+        return hours + " часов назад";
+    }
+
+    private static String getStringDaysAgo(int days) {
+        if (days / NUM_DEC != 1 && days % NUM_DEC == 1) {
+            return days + " день назад";
+        }
+        if (days / NUM_DEC != 1 && days % NUM_DEC > 1
+                && days % NUM_DEC < NUM_RU_ENDING) {
+            return days + " дня назад";
+        }
+        return days + " дней назад";
+    }
+
+    public static String convertDate(Date date) {
+        Calendar currentCalendar = Calendar.getInstance();
+        Calendar tweetCalendar = Calendar.getInstance();
+        tweetCalendar.setTime(date);
+        if (tweetCalendar.compareTo(currentCalendar) > 0) {
+            return "еще не опубликовано";
+        }
+        currentCalendar.add(Calendar.MINUTE, -1);
+        currentCalendar.add(Calendar.MINUTE, -1); //because "-2 is a magic number"
+        if (tweetCalendar.compareTo(currentCalendar) > 0) {
+            return "только что";
+        }
+        currentCalendar = Calendar.getInstance();
+        currentCalendar.add(Calendar.HOUR, -1);
+        if (tweetCalendar.compareTo(currentCalendar) > 0) {
+            return getStringMinutesAgo((int) ((HOUR + currentCalendar.getTimeInMillis()
+                    - tweetCalendar.getTimeInMillis()) / MINUTE));
+        }
+        currentCalendar = Calendar.getInstance();
+        if (currentCalendar.get(Calendar.DAY_OF_YEAR) == tweetCalendar.get(Calendar.DAY_OF_YEAR)
+                && currentCalendar.get(Calendar.YEAR) == tweetCalendar.get(Calendar.YEAR)) {
+            return getStringHoursAgo(currentCalendar.get(Calendar.HOUR_OF_DAY)
+                    - tweetCalendar.get(Calendar.HOUR_OF_DAY));
+        }
+        currentCalendar = Calendar.getInstance();
+        currentCalendar.add(Calendar.DATE, -1);
+        if (currentCalendar.get(Calendar.DAY_OF_YEAR) == tweetCalendar.get(Calendar.DAY_OF_YEAR)
+                && currentCalendar.get(Calendar.YEAR) == tweetCalendar.get(Calendar.YEAR)) {
+            return "вчера";
+        }
+        currentCalendar = Calendar.getInstance();
+        return getStringDaysAgo((int) ((currentCalendar.getTimeInMillis()
+                - tweetCalendar.getTimeInMillis()) / DAY) + 1);
+    }
+
     private static String prettyName(User user) {
-        return StringUtils.setClr(TextColor.BLUE) + "@" + user.getScreenName()
-                + StringUtils.setStClr();
+        return ConsoleUtils.colorizeString("@" + user.getScreenName(), TextColor.BLUE);
     }
 
     private static String tweetOneString(Status tweet, boolean withDate) {
         StringBuilder tweetOut = new StringBuilder();
         if (withDate) {
-            tweetOut.append("["
-                    + StringUtils.setClr(TextColor.GREEN)
-                    + StringUtils.convertDate(tweet.getCreatedAt())
-                    + StringUtils.setStClr() + "] ");
+            tweetOut.append(ConsoleUtils.colorizeString("[" + convertDate(tweet.getCreatedAt()) + "]",
+                    TextColor.GREEN));
         }
         tweetOut.append(prettyName(tweet.getUser()));
         if (tweet.isRetweet()) {
@@ -57,8 +130,8 @@ class TwitterClient {
         }
         /*Place place = tweet.getPlace();
         if (place != null) {
-            tweetOut.append(StringUtils.setClr(TextColor.MAGENTA) + "<" + place.getFullName() + ":"
-             + place.getCountryCode() + ">" + StringUtils.setStClr());
+            tweetOut.append(ConsoleUtils.colorizeString("<" + place.getFullName() + ":"
+             + place.getCountryCode() + ">", TextColor.MAGENTA));
         }*/
         return tweetOut.toString();
     }

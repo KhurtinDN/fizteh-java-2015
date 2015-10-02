@@ -1,4 +1,4 @@
-package main.java.ru.fizteh.fivt.pitovsky.twitterstream;
+package ru.fizteh.fivt.pitovsky.twitterstream;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +39,15 @@ public class JCommanderList {
     public final int getTweetLimit() {
         return tweetLimit;
     }
+
     public final String getPlace() {
         return place;
     }
+
     public final String getQueryString() {
         return query;
     }
+
     public final String[] getQuery() {
         if (query == null) {
             String[] emptyarr = {};
@@ -52,12 +55,15 @@ public class JCommanderList {
         }
         return query.split("[\\s,.]+");
     }
+
     public final boolean isStream() {
         return stream;
     }
+
     public final boolean isRetweetsHidden() {
         return hideretweets;
     }
+
     public final boolean isHelp() {
         return help;
     }
