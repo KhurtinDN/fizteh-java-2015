@@ -5,29 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.LinkedList;
-import java.util.List;
 
-import main.java.ru.fizteh.fivt.pitovsky.twitterstream.StringUtils.TextColor;
+import twitter4j.TwitterException;
 
 import com.beust.jcommander.JCommander;
-
-import twitter4j.FilterQuery;
-import twitter4j.GeoQuery;
-import twitter4j.Place;
-import twitter4j.Query;
-import twitter4j.QueryResult;
-import twitter4j.ResponseList;
-import twitter4j.StallWarning;
-import twitter4j.Status;
-import twitter4j.StatusDeletionNotice;
-import twitter4j.StatusListener;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.TwitterStreamFactory;
-import twitter4j.User;
-import twitter4j.TwitterStream;
 
 /**
  *
@@ -35,15 +16,6 @@ import twitter4j.TwitterStream;
  *
  */
 public class Main {
-
-    private static final int STREAM_SLEEP_TIME = 1000; //in ms
-
-    private static final int EXIT_KEY = 27; //escape-key
-
-    private static boolean hideRetweets;
-    private static String searchPlace;
-    private static LinkedList<Status> tweetsQueue;
-    private static SearchLocation searchLocation = null;
 
     private static String getUrlSource(String url) throws IOException {
         URL realurl = new URL(url);
@@ -61,62 +33,16 @@ public class Main {
         return retstr.toString();
     }
 
-    private static String prettyName(User user) {
-        return StringUtils.setClr(TextColor.BLUE) + "@" + user.getScreenName()
-                + StringUtils.setStClr();
-    }
-
-    private static String tweetOneString(Status tweet, boolean withDate) {
-        StringBuilder tweetOut = new StringBuilder();
-        if (withDate) {
-            tweetOut.append("["
-                    + StringUtils.setClr(TextColor.GREEN)
-                    + StringUtils.convertDate(tweet.getCreatedAt())
-                    + StringUtils.setStClr() + "] ");
-        }
-        tweetOut.append(prettyName(tweet.getUser()));
-        if (tweet.isRetweet()) {
-            tweetOut.append(" (ретвитнул "
-                    + prettyName(tweet.getRetweetedStatus().getUser()) + "): "
-                    + tweet.getRetweetedStatus().getText());
-        } else {
-            tweetOut.append(": " + tweet.getText());
-        }
-        if (tweet.getRetweetCount() > 0) {
-            tweetOut.append(" (" + tweet.getRetweetCount() + " ретвитов)");
-        }
-        /*Place place = tweet.getPlace();
-        if (place != null) {
-            tweetOut.append(StringUtils.setClr(TextColor.MAGENTA) + "<" + place.getFullName() + ":"
-             + place.getCountryCode() + ">" + StringUtils.setStClr());
-        }*/
-        return tweetOut.toString();
-    }
-
-    private static boolean isGoodTweet(Status tweet) {
-        return (!hideRetweets || !tweet.isRetweet());
-    }
-
-    private static StatusListener tweetListener = new StatusListener() {
-        public void onStatus(Status tweet) {
-            if (isGoodTweet(tweet)) {
-                tweetsQueue.add(tweet);
+    private static String getMyCityFromTelize() throws IOException {
+      //telize site output look like "getgeoip({"parametr":"value","parametr":"value",...})"
+        String[] wipsource = getUrlSource("http://www.telize.com/geoip?callback=getgeoip").split("[,\":]+");
+        for (int i = 0; i < wipsource.length; ++i) {
+            if (wipsource[i].equals("city") && i < wipsource.length - 1) {
+                return wipsource[i + 1];
             }
         }
-        public void onDeletionNotice(StatusDeletionNotice statusDN) {
-        }
-        public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-        }
-        public void onException(Exception ex) {
-            ex.printStackTrace();
-        }
-        @Override
-        public void onScrubGeo(long arg0, long arg1) {
-        }
-        @Override
-        public void onStallWarning(StallWarning arg0) {
-        }
-    };
+        return "anywhere";
+    }
 
     public static void main(String[] args) {
         //String[] argstmp = {"-q", "#Moscow", "-s"};
@@ -130,18 +56,12 @@ public class Main {
             return;
         }
 
-        Twitter twitter = new TwitterFactory().getInstance();
+        TwitterClient client = new TwitterClient();
 
-        searchPlace = jcl.getPlace();
+        String searchPlace = jcl.getPlace();
         if (jcl.getPlace().equals("nearby")) {
             try {
-                //telize site output look like "getgeoip({"parametr":"value","parametr":"value",...})"
-                String[] wipsource = getUrlSource("http://www.telize.com/geoip?callback=getgeoip").split("[,\":]+");
-                for (int i = 0; i < wipsource.length; ++i) {
-                    if (wipsource[i].equals("city") && i < wipsource.length - 1) {
-                        searchPlace = wipsource[i + 1];
-                    }
-                }
+                searchPlace = getMyCityFromTelize();
             } catch (IOException e) {
                 e.printStackTrace();
                 System.err.println("Failed to calculate your location by IP."
@@ -151,83 +71,19 @@ public class Main {
                 searchPlace = "anywhere";
             }
         }
-        hideRetweets = jcl.isRetweetsHidden();
+
+        SearchLocation searchLocation = null;
 
         while (true) {
             try {
-                if (searchLocation == null && !searchPlace.equals("anywhere")) {
-                    GeoQuery gquery = new GeoQuery("192.168.1.1"); //an useless ip
-                    gquery.setQuery(searchPlace);
-                    ResponseList<Place> searchPlaces = twitter.searchPlaces(gquery);
-                    searchLocation = new SearchLocation(searchPlaces);
+                if (searchLocation == null && searchPlace.equals("anywhere")) {
+                    searchLocation = client.findLocation(searchPlace);
                 }
                 if (jcl.isStream()) {
-                    tweetsQueue = new LinkedList<Status>();
-                    TwitterStream tstream = new TwitterStreamFactory().getInstance();
-                    tstream.addListener(tweetListener);
-                    FilterQuery fquery = new FilterQuery();
-                    String[] queryArray = new String[1];
-                    queryArray[0] = jcl.getQueryString();
-                    fquery.track(queryArray);
-                    if (searchLocation != null) {
-                        fquery.locations(searchLocation.getBoundingBox());
-                    }
-                    tstream.filter(fquery); //start a new thread for listing
-                    while (true) {
-                        while (!tweetsQueue.isEmpty()) {
-                            Status tweet = tweetsQueue.poll();
-                            System.out.println(tweetOneString(tweet, false));
-                        }
-                        try {
-                            /* Unfortunately, we have not 'raw' mode in java
-                             * for its console, and we can read only after
-                             * '\n' symbol.
-                             */
-                            boolean needExit = false;
-                            while (System.in.available() > 0) {
-                                int cm = System.in.read();
-                                if (cm == 'q' || cm == EXIT_KEY || cm == -1) {
-                                    tstream.shutdown();
-                                    needExit = true;
-                                    break;
-                                }
-                            }
-                            if (needExit) {
-                                break;
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            Thread.sleep(STREAM_SLEEP_TIME);
-                        } catch (InterruptedException ex) {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
+                    client.startStreaming(jcl.getQueryString(), jcl.isRetweetsHidden(), searchLocation);
                 } else {
-                    Query query = new Query(jcl.getQueryString());
-                    if (searchLocation != null) {
-                        query.setGeoCode(searchLocation.getCenter(), searchLocation.getRadius(), Query.Unit.km);
-                        /*System.err.println("from (" + searchLocation.getCenter().getLatitude() + "; "
-                                + searchLocation.getCenter().getLongitude() + "), r = " + searchLocation.getRadius());*/
-                    }
-                    query.setCount(jcl.getTweetLimit());
-                    int count = 0;
-                    while (query != null) {
-                        QueryResult result = twitter.search(query);
-                        List<Status> tweets = result.getTweets();
-                        for (Status tweet : tweets) {
-                            if (isGoodTweet(tweet)) {
-                                System.out.println(tweetOneString(tweet, true));
-                                ++count;
-                            }
-                            query = result.nextQuery();
-                            if (count >= jcl.getTweetLimit()) {
-                                query = null;
-                                break;
-                            }
-                        }
-                    }
+                    client.printTweets(jcl.getQueryString(), jcl.isRetweetsHidden(),
+                            searchLocation, jcl.getTweetLimit());
                 }
                 break;
             } catch (TwitterException te) {
@@ -235,7 +91,7 @@ public class Main {
                 if (jcl.isStream()) {
                     Thread.currentThread().interrupt();
                 }
-                System.err.println("Failed to search: " + te.getMessage()
+                System.err.println("Failed to run TwitterClient: " + te.getMessage()
                         + ". Try again? [y/n]");
                 char ans = 0;
                 try {
@@ -252,5 +108,4 @@ public class Main {
             }
         }
     }
-
 }

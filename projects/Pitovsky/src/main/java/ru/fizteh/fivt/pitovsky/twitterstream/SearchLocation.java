@@ -60,6 +60,9 @@ public class SearchLocation {
         return (radius / searchLocations.size()) + 1;
     }
     public final double[][] getBoundingBox() {
+        if (searchLocations.size() == 0) {
+            return null;
+        }
         double minX = searchLocations.get(0).getLatitude();
         double maxX = searchLocations.get(0).getLatitude();
         double minY = searchLocations.get(0).getLongitude();

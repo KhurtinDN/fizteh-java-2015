@@ -92,7 +92,7 @@ public class StringUtils {
             return days + " день назад";
         }
         if (days / NUM_DEC != 1 && days % NUM_DEC > 1
-                && days % NUM_RU_ENDING < NUM_RU_ENDING) {
+                && days % NUM_DEC < NUM_RU_ENDING) {
             return days + " дня назад";
         }
         return days + " дней назад";
