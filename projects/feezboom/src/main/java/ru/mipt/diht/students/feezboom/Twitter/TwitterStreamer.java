@@ -1,11 +1,7 @@
 package ru.mipt.diht.students.feezboom.Twitter;
 
 import twitter4j.*;
-
-
-import java.util.List;
-import java.util.Scanner;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Created by avk on 02.10.15.
@@ -15,9 +11,19 @@ public class TwitterStreamer {
     private static final double DEG_TO_KM = 60 * 1.1515 * 1.609344;
     private static final double DEG_TO_RAD = Math.PI / 180.0;
     private static final double RAD_TO_DEG = 180 / Math.PI;
+    private static final long SEC = 1000;
+    private static final long MIN = SEC * 60;
+    private static final long HOUR = MIN * 60;
+    private static final long DAY = HOUR * 24;
+    private static final long WEEK = DAY * 7;
+    private static final long YEAR = DAY * 365;
+
+
+
 
     private String[] args;
     private final int sleepTime = 1000;
+    private final int tweetsLimit = 100;
 
     public TwitterStreamer(String[] myargs) {
         this.args = myargs;
@@ -68,6 +74,15 @@ public class TwitterStreamer {
 
             String queryString = args[requestedParams[queryNum]];
             Query query = new Query(queryString);
+            int index = requestedParams[limitNum];
+            if ((index) != -1) {
+                int limit = Integer.parseInt(args[index]);
+
+                if (limit < 0 || limit > tweetsLimit) {
+                    throw new Exception("wrong limit!");
+                }
+                query.setCount(limit);
+            }
             //Here, if we are requested to do it,
             // we must ADD LOCATION for the query
             String location = "no location";
@@ -137,6 +152,7 @@ public class TwitterStreamer {
 
     private void printTweet(Status tweet, boolean hideRetweets) {
         System.out.println("-----------------------------------------");
+        getTimeFormattedString(tweet.getCreatedAt());
         System.out.print("[" + tweet.getCreatedAt() + "]" + "@");
         System.out.print(tweet.getUser().getScreenName() + " : "
                 + tweet.getText());
@@ -232,5 +248,24 @@ public class TwitterStreamer {
         dist = dist * RAD_TO_DEG;
         dist = dist * DEG_TO_KM;
         return dist;
+    }
+
+    private String getTimeFormattedString(Date createdAt) {
+        //Getting today's date and current time.
+        Date date = Calendar.getInstance().getTime();
+
+        long delta = date.getTime() - createdAt.getTime();
+        assert (delta >= 0);
+        if (delta < 2 * MIN) {
+            return "Только что";
+        } else if (delta < HOUR) {
+            return (delta / MIN) + " минут назад";
+        } else if (delta < DAY) {
+            return (delta / HOUR) + " часов назад";
+        } else if (delta < 2 * DAY) {
+            return "Вчера";
+        } else {
+            return (delta / DAY) + " дней назад";
+        }
     }
 }
