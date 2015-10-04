@@ -11,7 +11,10 @@ import twitter4j.StatusListener;
 
 import java.util.Collections;
 import java.util.List;
+import java.io.IOException;
 
+import ru.mipt.diht.students.ale3otik.twitter.exceptions.LocationException;
+import javafx.util.Pair;
 
 public class TwitterStream {
 
@@ -98,8 +101,8 @@ public class TwitterStream {
     private static void streamStart(JCommanderParser jcp) {
 
         if (jcp.getQuery().length() == 0) {
-            System.out.println("Can't work with empty query");
-            System.exit(-1);
+            System.out.println("Задан пустой запрос. Невозможно осуществить поиск");
+            System.exit(1);
         }
 
         twitter4j.TwitterStream twStream = twitter4j
@@ -113,7 +116,6 @@ public class TwitterStream {
         };
 
         FilterQuery query = new FilterQuery(jcp.getQuery());
-
         twStream.addListener(listener);
         twStream.filter(query);
     }
@@ -135,6 +137,30 @@ public class TwitterStream {
                 Query query = new Query(jCommanderParser.getQuery());
 
                 query.setCount(jCommanderParser.getLimit());
+                String curLocationRequest = "";
+                try {
+                    if (jCommanderParser.getLocation() != "") {
+                        if (jCommanderParser.getLocation().equals("nearby")) {
+                            curLocationRequest = GeoLocationResolver.getNameOfCurrentLocation();
+                        } else {
+                            curLocationRequest = jCommanderParser.getLocation();
+                        }
+                        Pair<GeoLocation, Double> geoParams = GeoLocationResolver
+                                .getGeoLocation(curLocationRequest);
+                        query.geoCode(geoParams.getKey(),
+                                geoParams.getValue(), GeoLocationResolver.RADIUS_UNIT);
+                        System.out.println("location is " + curLocationRequest
+                                + ", latitude :"
+                                + geoParams.getKey().getLatitude()
+                                + " longitude :"
+                                + geoParams.getKey().getLongitude()
+                                + ", radius(km): "
+                                + geoParams.getValue());
+                    }
+                } catch (IOException | LocationException e) {
+                    e.getMessage();
+                    System.out.println("Can't detect location\n" + "Region: World :");
+                }
 
                 result = twitter.search(query);
             } catch (TwitterException e) {
@@ -168,6 +194,7 @@ public class TwitterStream {
 
     public static void main(String[] args) throws TwitterException {
 
+        Twitter twitter = TwitterFactory.getSingleton();
         System.out.print(ANSI_PURPLE
                 + ANSI_BOLD
                 + "\nTwitter 0.1 ::: welcome \n\n"
