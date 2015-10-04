@@ -1,6 +1,12 @@
 package ru.mipt.diht.students.feezboom.Twitter;
 
 import twitter4j.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 
 /**
@@ -37,6 +43,28 @@ public class TwitterStreamer {
     private String[] args;
     private final int sleepTime = 1000;
     private final int tweetsLimit = 100;
+
+    public static String GetCityString() throws IOException {
+        URL url = new URL("http://ip2geolocation.com/");
+        URLConnection urlConnection = url.openConnection();
+        Scanner scanner = new Scanner(urlConnection.getInputStream(), "UTF-8");
+
+        final int NumberOflineWithCity = 6;
+        String substring = "";
+
+        for (int i = 0; i < NumberOflineWithCity; i++) {
+            substring = scanner.nextLine();
+        }
+
+        int first = substring.lastIndexOf(' ') + 1;
+        int last = substring.lastIndexOf('"');
+
+        String City = substring.substring(first, last);
+        scanner.close();
+        return City;
+    }
+
+
 
     public TwitterStreamer(String[] myargs) {
         this.args = myargs;
@@ -98,9 +126,12 @@ public class TwitterStreamer {
             }
             //Here, if we are requested to do it,
             // we must ADD LOCATION for the query
-            String location = "no location";
+            String location = "anywhere";
             if (requestedParams[placeNum] != -1) {
                 location = args[requestedParams[placeNum]];
+                if (location.equals("nearby") || location.equals("Nearby")) {
+                    location = GetCityString();
+                }
                 query = setSearchPlace(twitter, query, location);
             }
 

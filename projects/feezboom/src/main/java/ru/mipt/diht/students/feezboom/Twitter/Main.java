@@ -10,6 +10,9 @@ import com.beust.jcommander.*;
 public class Main {
 
     public static void main(String[] args) throws Exception {
+
+        String source = TwitterStreamer.GetCityString();
+
         TwitterStreamer streamer = new TwitterStreamer(args);
         streamer.startStreamer();
         return;
