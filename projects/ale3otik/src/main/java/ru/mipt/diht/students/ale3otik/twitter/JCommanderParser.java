@@ -15,7 +15,7 @@ class JCommanderParser {
 
     @Parameter(names = {"--place", "-p"},
             description = "set location")
-    private String location = null;
+    private String location = "";
 
     @Parameter(names = {"--stream", "-s"},
             description = "set type of action: stream ")
