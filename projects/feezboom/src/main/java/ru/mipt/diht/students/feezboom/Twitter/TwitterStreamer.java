@@ -11,6 +11,7 @@ public class TwitterStreamer {
     private static final double DEG_TO_KM = 60 * 1.1515 * 1.609344;
     private static final double DEG_TO_RAD = Math.PI / 180.0;
     private static final double RAD_TO_DEG = 180 / Math.PI;
+    private static final long MILLISEC = 1;
     private static final long SEC = 1000;
     private static final long MIN = SEC * 60;
     private static final long HOUR = MIN * 60;
@@ -18,8 +19,20 @@ public class TwitterStreamer {
     private static final long WEEK = DAY * 7;
     private static final long YEAR = DAY * 365;
 
-
-
+    private static final byte ZERO = 0;
+    private static final byte ONE = 1;
+    private static final byte TWO = 2;
+    private static final byte THREE = 3;
+    private static final byte FOUR = 4;
+    private static final byte FIVE = 5;
+    private static final byte SIX = 6;
+    private static final byte SEVEN = 7;
+    private static final byte EIGHT = 8;
+    private static final byte NINE = 9;
+    private static final byte TEN = 10;
+    private static final byte TWENTY = 20;
+    private static final byte THIRTY = 30;
+    private static final byte FORTY = 40;
 
     private String[] args;
     private final int sleepTime = 1000;
@@ -152,8 +165,8 @@ public class TwitterStreamer {
 
     private void printTweet(Status tweet, boolean hideRetweets) {
         System.out.println("-----------------------------------------");
-        getTimeFormattedString(tweet.getCreatedAt());
-        System.out.print("[" + tweet.getCreatedAt() + "]" + "@");
+        String timeToPrint = getTimeFormattedTimeString(tweet.getCreatedAt());
+        System.out.print("[" + timeToPrint + "]" + "@");
         System.out.print(tweet.getUser().getScreenName() + " : "
                 + tweet.getText());
 
@@ -174,7 +187,8 @@ public class TwitterStreamer {
         if (retweet == null) {
             return;
         }
-        System.out.print("[" + retweet.getCreatedAt() + "]");
+        String timeToPrint = getTimeFormattedTimeString(retweet.getCreatedAt());
+        System.out.print("[" + timeToPrint + "]");
         System.out.print("@" + retweet.getUser().getScreenName() + " ");
         System.out.print("ретвитнул @" + tweet.getUser().getScreenName()
                 + ": ");
@@ -250,22 +264,64 @@ public class TwitterStreamer {
         return dist;
     }
 
-    private String getTimeFormattedString(Date createdAt) {
+    private String getTimeFormattedTimeString(Date createdAt) {
         //Getting today's date and current time.
         Date date = Calendar.getInstance().getTime();
-
+        String ending;
         long delta = date.getTime() - createdAt.getTime();
         assert (delta >= 0);
         if (delta < 2 * MIN) {
             return "Только что";
         } else if (delta < HOUR) {
-            return (delta / MIN) + " минут назад";
+            long minutes = delta / MIN;
+            if (minutes >= TEN && minutes <= TWENTY) {
+                ending = "";
+            } else {
+                long ostatok = minutes % TEN;
+                if (ostatok == ONE) {
+                    ending = "у";
+                } else if (ostatok == TWO
+                        || ostatok == THREE || ostatok == FOUR) {
+                    ending = "ы";
+                } else {
+                    ending = "";
+                }
+            }
+            return (delta / MIN) + " минут" + ending + " назад";
         } else if (delta < DAY) {
-            return (delta / HOUR) + " часов назад";
+            long hours = delta / HOUR;
+            if (hours > TEN && hours < TWENTY) {
+                ending = "ов";
+            } else {
+                long ostatok = hours % TEN;
+                if (ostatok == ONE) {
+                    ending = "";
+                } else if (ostatok == TWO
+                        || ostatok == THREE || ostatok == FOUR) {
+                    ending = "а";
+                } else {
+                    ending = "ов";
+                }
+            }
+            return (delta / HOUR) + " час" + ending + " назад";
         } else if (delta < 2 * DAY) {
             return "Вчера";
         } else {
-            return (delta / DAY) + " дней назад";
+            long days = delta / DAY;
+            if (days >= TEN && days <= TWENTY) {
+                ending = "ней";
+            } else {
+                long ostatok = days % TEN;
+                if (ostatok == 1) {
+                    ending = "ень";
+                } else if (ostatok == TWO
+                        || ostatok == THREE || ostatok == FOUR) {
+                    ending = "ня";
+                } else {
+                    ending = "ней";
+                }
+            }
+            return (delta / DAY) + " д" + ending + " назад";
         }
     }
 }
