@@ -2,6 +2,7 @@ package ru.mipt.diht.students.ale3otik.twitter;
 
 /**
  * Created by alex on 05.10.15.
+ * Used http://habrahabr.ru/post/148986/
  */
 
 import com.beust.jcommander.internal.Maps;
@@ -26,7 +27,6 @@ final class GeoLocationResolver {
     static final int MAX_QUANTITY_OF_TRIES = 2;
     static final double EARTH_RADIUS = 6371;
     static final String RADIUS_UNIT = "km";
-    static final String NEARBY = "nearby";
 
     public static double getSphereDist(double latitude1, double longitude1,
                                        double latitude2, double longitude2) {
@@ -51,10 +51,7 @@ final class GeoLocationResolver {
         params.put("address", geoRequest);
         final String url = baseUrl + '?' + encodeParams(params);
         final JSONObject response = GeoLocationResolver.read(url);
-        double northEastBoundLongitude, northEastBoundLatitude;
-        double southWestBoundLongitude, southWestBoundLatitude;
-        double latitude, longitude;
-        double approximatedRadius;
+
         JSONObject location = response.getJSONArray("results").getJSONObject(0);
         location = location.getJSONObject("geometry");
         JSONObject northEastBound = location.getJSONObject("bounds");
@@ -62,17 +59,22 @@ final class GeoLocationResolver {
         location = location.getJSONObject("location");
         northEastBound = northEastBound.getJSONObject("northeast");
         southWestBound = southWestBound.getJSONObject("southwest");
-        latitude = location.getDouble("lat");
-        longitude = location.getDouble("lng");
-        northEastBoundLatitude = northEastBound.getDouble("lat");
-        northEastBoundLongitude = northEastBound.getDouble("lng");
-        southWestBoundLatitude = southWestBound.getDouble("lat");
-        southWestBoundLongitude = southWestBound.getDouble("lng");
-        approximatedRadius = getSphereDist(
+        double latitude = location.getDouble("lat");
+        double longitude = location.getDouble("lng");
+        double northEastBoundLatitude = northEastBound.getDouble("lat");
+        double northEastBoundLongitude = northEastBound.getDouble("lng");
+        double southWestBoundLatitude = southWestBound.getDouble("lat");
+        double southWestBoundLongitude = southWestBound.getDouble("lng");
+
+        /*
+        * Radius must be different in different regions
+        */
+        double approximatedRadius = getSphereDist(
                 northEastBoundLatitude, northEastBoundLongitude,
                 southWestBoundLatitude, southWestBoundLongitude
         );
         approximatedRadius /= 2;
+
         return new Pair((new GeoLocation(latitude, longitude)), new Double(approximatedRadius));
     }
 

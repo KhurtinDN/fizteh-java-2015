@@ -6,6 +6,7 @@
 package ru.mipt.diht.students.ale3otik.twitter;
 
 import com.beust.jcommander.JCommander;
+import org.json.JSONException;
 import twitter4j.*;
 import twitter4j.StatusListener;
 
@@ -16,14 +17,15 @@ import java.io.IOException;
 import ru.mipt.diht.students.ale3otik.twitter.exceptions.LocationException;
 import javafx.util.Pair;
 
+
 public class TwitterStream {
 
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    private static final int TRIES_LIMIT = 1;
-
+    private static final String ANSI_PURPLE = "\u001B[35m";
     private static final String ANSI_BOLD = "\033[1m";
+    private static final int TRIES_LIMIT = 1; // limit of connections attempts
+    private static final long SLEEP_TIME = 1000;
 
     private static class SplitLine {
         private static final int SPLIT_LINE_LENGTH = 80;
@@ -98,12 +100,8 @@ public class TwitterStream {
 
     }
 
-    private static void streamStart(JCommanderParser jcp) {
-
-        if (jcp.getQuery().length() == 0) {
-            System.out.println("Задан пустой запрос. Невозможно осуществить поиск");
-            System.exit(1);
-        }
+    private static void streamStart(JCommanderParser jcp,
+                                    Pair<GeoLocation, Double> geoParams) {
 
         twitter4j.TwitterStream twStream = twitter4j
                 .TwitterStreamFactory.getSingleton();
@@ -111,16 +109,64 @@ public class TwitterStream {
         StatusListener listener = new StatusAdapter() {
             @Override
             public void onStatus(Status status) {
+                if (jcp.isHideRetweets() && status.isRetweet()) {
+                    return;
+                }
+                if (geoParams != null) {
+                    GeoLocation tweetLocation = null;
+                    if (status.getGeoLocation() != null) {
+                        tweetLocation = status.getGeoLocation();
+                    } else {
+//                    if (status.getUser().getLocation() != null) {
+//                        try {
+//
+//                            tweetLocation =
+//                                GeoLocationResolver
+//                                    .getGeoLocation(status.getUser().getLocation()).getKey();
+//
+//                            } catch (Exception e) {
+//                                return;
+//                            }
+//                    } else {
+                        return;
+                    }
+
+                    double myLatitude = geoParams.getKey().getLatitude();
+                    double myLongitude = geoParams.getKey().getLongitude();
+                    double tweetLatitude = tweetLocation.getLatitude();
+                    double tweetLongitude = tweetLocation.getLongitude();
+
+                    if (GeoLocationResolver.getSphereDist(
+                            myLatitude, myLongitude,
+                            tweetLatitude, tweetLongitude) > geoParams.getValue()) {
+                        return;
+                    }
+                }
+
                 printFormattedTweet(status, jcp);
+
+                try {
+                    Thread.sleep(SLEEP_TIME);
+                } catch (InterruptedException e) {
+                    System.err.println(e.getMessage());
+                    Thread.currentThread().interrupt();
+                }
+
             }
         };
 
         FilterQuery query = new FilterQuery(jcp.getQuery());
         twStream.addListener(listener);
-        twStream.filter(query);
+
+        if (jcp.getQuery().length() == 0) {
+            twStream.sample();
+        } else {
+            twStream.filter(query);
+        }
     }
 
-    private static void printSingleTwitterQuery(final JCommanderParser jCommanderParser) {
+    private static void printSingleTwitterQuery(final JCommanderParser jCommanderParser,
+                                                Pair<GeoLocation, Double> geoParams) {
 
         int tries = 0;
         QueryResult result = null;
@@ -137,29 +183,10 @@ public class TwitterStream {
                 Query query = new Query(jCommanderParser.getQuery());
 
                 query.setCount(jCommanderParser.getLimit());
-                String curLocationRequest = "";
-                try {
-                    if (jCommanderParser.getLocation() != "") {
-                        if (jCommanderParser.getLocation().equals("nearby")) {
-                            curLocationRequest = GeoLocationResolver.getNameOfCurrentLocation();
-                        } else {
-                            curLocationRequest = jCommanderParser.getLocation();
-                        }
-                        Pair<GeoLocation, Double> geoParams = GeoLocationResolver
-                                .getGeoLocation(curLocationRequest);
-                        query.geoCode(geoParams.getKey(),
-                                geoParams.getValue(), GeoLocationResolver.RADIUS_UNIT);
-                        System.out.println("location is " + curLocationRequest
-                                + ", latitude :"
-                                + geoParams.getKey().getLatitude()
-                                + " longitude :"
-                                + geoParams.getKey().getLongitude()
-                                + ", radius(km): "
-                                + geoParams.getValue());
-                    }
-                } catch (IOException | LocationException e) {
-                    e.getMessage();
-                    System.out.println("Can't detect location\n" + "Region: World :");
+
+                if (geoParams != null) {
+                    query.geoCode(geoParams.getKey(),
+                            geoParams.getValue(), GeoLocationResolver.RADIUS_UNIT);
                 }
 
                 result = twitter.search(query);
@@ -194,7 +221,6 @@ public class TwitterStream {
 
     public static void main(String[] args) throws TwitterException {
 
-        Twitter twitter = TwitterFactory.getSingleton();
         System.out.print(ANSI_PURPLE
                 + ANSI_BOLD
                 + "\nTwitter 0.1 ::: welcome \n\n"
@@ -210,10 +236,37 @@ public class TwitterStream {
                 return;
             }
 
+
+            String curLocationRequest = "";
+
+            Pair<GeoLocation, Double> geoParams = null;
+            try {
+                if (jcp.getLocation() != "") {
+                    if (jcp.getLocation().equals("nearby")) {
+                        curLocationRequest = GeoLocationResolver.getNameOfCurrentLocation();
+                    } else {
+                        curLocationRequest = jcp.getLocation();
+                    }
+                    geoParams = GeoLocationResolver
+                            .getGeoLocation(curLocationRequest);
+
+                    System.out.println("location is " + curLocationRequest
+                            + ", latitude :"
+                            + geoParams.getKey().getLatitude()
+                            + " longitude :"
+                            + geoParams.getKey().getLongitude()
+                            + ", radius(km): "
+                            + geoParams.getValue());
+                }
+            } catch (IOException | LocationException | JSONException e) {
+                e.getMessage();
+                System.out.println("Can't detect location\n" + "Region: World ");
+            }
+
             if (jcp.isStream()) {
-                streamStart(jcp);
+                streamStart(jcp, geoParams);
             } else {
-                printSingleTwitterQuery(jcp);
+                printSingleTwitterQuery(jcp, geoParams);
             }
         } catch (Exception e) {
 
