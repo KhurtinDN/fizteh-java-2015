@@ -8,8 +8,7 @@ import twitter4j.ResponseList;
 
 public class SearchLocation {
     private static final double DEG_TO_KM = 60 * 1.1515 * 1.609344;
-    private static final double DEG_TO_RAD = Math.PI / 180.0;
-    private static final double RAD_TO_DEG = 180 / Math.PI;
+
     private Vector<GeoLocation> searchLocations;
 
     public SearchLocation(ResponseList<Place> searchPlaces) {
@@ -23,16 +22,18 @@ public class SearchLocation {
         }
     }
 
+    public final boolean isValid() {
+        return (searchLocations != null) && (searchLocations.size() > 0);
+    }
+
     private static double getCoordinatesDistance(double latitudeFrom, double longitudeFrom,
             double latitudeTo, double longitudeTo) {
         double theta = longitudeFrom - longitudeTo;
-        double dist = Math.sin(latitudeFrom * DEG_TO_RAD) * Math.sin(latitudeTo * DEG_TO_RAD)
-                + Math.cos(latitudeFrom  * DEG_TO_RAD) * Math.cos(latitudeTo * DEG_TO_RAD)
-                    * Math.cos(theta * DEG_TO_RAD);
+        double dist = Math.sin(Math.toRadians(latitudeFrom)) * Math.sin(Math.toRadians(latitudeTo))
+                + Math.cos(Math.toRadians(latitudeFrom)) * Math.cos(Math.toRadians(latitudeTo))
+                    * Math.cos(Math.toRadians(theta));
         dist = Math.acos(dist);
-        dist = dist * RAD_TO_DEG;
-        dist = dist * DEG_TO_KM;
-        return dist;
+        return Math.toDegrees(dist) * DEG_TO_KM;
     }
     private double getLocationsDistance(int from, int to) {
         return getCoordinatesDistance(
@@ -41,7 +42,7 @@ public class SearchLocation {
     }
 
     public final GeoLocation getCenter() {
-        if (searchLocations == null) {
+        if (!isValid()) {
             return null;
         }
         double xCenter = 0;
@@ -53,6 +54,9 @@ public class SearchLocation {
         return new GeoLocation(xCenter / searchLocations.size(), yCenter / searchLocations.size());
     }
     public final double getRadius() {
+        if (!isValid()) {
+            return 1;
+        }
         double radius = 0;
         GeoLocation center = getCenter();
         for (GeoLocation location : searchLocations) {
@@ -62,7 +66,7 @@ public class SearchLocation {
         return (radius / searchLocations.size()) + 1;
     }
     public final double[][] getBoundingBox() {
-        if (searchLocations.size() == 0) {
+        if (!isValid()) {
             return null;
         }
         double minX = searchLocations.get(0).getLatitude();

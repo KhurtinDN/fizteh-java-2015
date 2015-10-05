@@ -111,7 +111,7 @@ class TwitterClient {
         return ConsoleUtils.colorizeString("@" + user.getScreenName(), TextColor.BLUE);
     }
 
-    private static String tweetOneString(Status tweet, boolean withDate) {
+    private static String tweetOneString(Status tweet, boolean withDate, boolean withPlace) {
         StringBuilder tweetOut = new StringBuilder();
         if (withDate) {
             tweetOut.append(ConsoleUtils.colorizeString("[" + convertDate(tweet.getCreatedAt()) + "]",
@@ -128,11 +128,13 @@ class TwitterClient {
         if (tweet.getRetweetCount() > 0) {
             tweetOut.append(" (" + tweet.getRetweetCount() + " ретвитов)");
         }
-        /*Place place = tweet.getPlace();
-        if (place != null) {
-            tweetOut.append(ConsoleUtils.colorizeString("<" + place.getFullName() + ":"
-             + place.getCountryCode() + ">", TextColor.MAGENTA));
-        }*/
+        if (withPlace) {
+            Place place = tweet.getPlace();
+            if (place != null) {
+                tweetOut.append(ConsoleUtils.colorizeString("<" + place.getFullName() + ":"
+                 + place.getCountryCode() + ">", TextColor.MAGENTA));
+            }
+        }
         return tweetOut.toString();
     }
 
@@ -161,7 +163,11 @@ class TwitterClient {
         GeoQuery gquery = new GeoQuery("192.168.1.1"); //an useless ip
         gquery.setQuery(region);
         ResponseList<Place> searchPlaces = twitter.searchPlaces(gquery);
-        return new SearchLocation(searchPlaces);
+        SearchLocation location = new SearchLocation(searchPlaces);
+        if (!location.isValid()) {
+            return null;
+        }
+        return location;
     }
 
     TwitterClient() {
@@ -169,7 +175,7 @@ class TwitterClient {
     }
 
     public void startStreaming(String queryString, boolean hideretweets,
-            SearchLocation searchLocation) throws TwitterException {
+            SearchLocation searchLocation, boolean debug) throws TwitterException {
         tweetsQueue = new LinkedList<Status>();
         hideRetweets = hideretweets; //for use it in tweetListener
         TwitterStream tstream = new TwitterStreamFactory().getInstance();
@@ -185,7 +191,7 @@ class TwitterClient {
         while (true) {
             while (!tweetsQueue.isEmpty()) {
                 Status tweet = tweetsQueue.poll();
-                System.out.println(tweetOneString(tweet, false));
+                System.out.println(tweetOneString(tweet, false, debug));
             }
             try {
                 /* Unfortunately, we have not 'raw' mode in java
@@ -216,7 +222,7 @@ class TwitterClient {
     }
 
     public void printTweets(String queryString, boolean hideretweets,
-            SearchLocation searchLocation, int limit) throws TwitterException {
+            SearchLocation searchLocation, int limit, boolean debug) throws TwitterException {
         hideRetweets = hideretweets;
         Query query = new Query(queryString);
         if (searchLocation != null) {
@@ -232,7 +238,7 @@ class TwitterClient {
             List<Status> tweets = result.getTweets();
             for (Status tweet : tweets) {
                 if (!hideRetweets || !tweet.isRetweet()) {
-                    System.out.println(tweetOneString(tweet, true));
+                    System.out.println(tweetOneString(tweet, true, debug));
                     ++count;
                 }
                 query = result.nextQuery();

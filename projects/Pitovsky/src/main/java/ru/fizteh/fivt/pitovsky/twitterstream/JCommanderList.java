@@ -35,6 +35,10 @@ public class JCommanderList {
             description = "Print this page and exit", help = true)
     private boolean help = false;
 
+    @Parameter(names = {"-d", "--debug"},
+            description = "Print some debug info while working", help = true)
+    private boolean debug = false;
+
 
     public final int getTweetLimit() {
         return tweetLimit;
@@ -66,5 +70,9 @@ public class JCommanderList {
 
     public final boolean isHelp() {
         return help;
+    }
+
+    public final boolean isDebugMode() {
+        return debug;
     }
 }

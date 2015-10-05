@@ -33,8 +33,8 @@ public class Main {
         return sourceString.toString();
     }
 
-    private static String getMyCityFromTelize() throws IOException {
-      //telize site output look like "getgeoip({"parametr":"value","parametr":"value",...})"
+    private static String getMyCityByIP() throws IOException {
+      //telize site JSON output look like "getgeoip({"parameter":"value","parameter":"value",...})"
         String[] wipsource = getUrlSource("http://www.telize.com/geoip?callback=getgeoip").split("[,\":]+");
         for (int i = 0; i < wipsource.length; ++i) {
             if (wipsource[i].equals("city") && i < wipsource.length - 1) {
@@ -61,7 +61,7 @@ public class Main {
         String searchPlace = jcl.getPlace();
         if (jcl.getPlace().equals("nearby")) {
             try {
-                searchPlace = getMyCityFromTelize();
+                searchPlace = getMyCityByIP();
             } catch (IOException e) {
                 e.printStackTrace();
                 System.err.println("Failed to calculate your location by IP."
@@ -78,24 +78,32 @@ public class Main {
             try {
                 if (searchLocation == null && !searchPlace.equals("anywhere")) {
                     searchLocation = client.findLocation(searchPlace);
-                    System.err.println("ur (" + searchLocation.getCenter().getLatitude() + ", "
-                            + searchLocation.getCenter().getLongitude() + ") with r = "
-                            + searchLocation.getRadius() + ".");
+                    if (jcl.isDebugMode()) {
+                        if (searchLocation != null) {
+                            System.err.println("[debug]: place is (" + searchLocation.getCenter().getLatitude() + ", "
+                                    + searchLocation.getCenter().getLongitude() + ") with r = "
+                                    + searchLocation.getRadius() + ".");
+                        } else {
+                            System.err.println("[debug]: cannot find place '" + jcl.getPlace() + "', search anywhere.");
+                        }
+                    }
                 }
                 if (jcl.isStream()) {
-                    client.startStreaming(jcl.getQueryString(), jcl.isRetweetsHidden(), searchLocation);
+                    client.startStreaming(jcl.getQueryString(), jcl.isRetweetsHidden(),
+                            searchLocation, jcl.isDebugMode());
                 } else {
                     client.printTweets(jcl.getQueryString(), jcl.isRetweetsHidden(),
-                            searchLocation, jcl.getTweetLimit());
+                            searchLocation, jcl.getTweetLimit(), jcl.isDebugMode());
                 }
                 break;
             } catch (TwitterException te) {
-                te.printStackTrace();
+                if (jcl.isDebugMode()) {
+                    te.printStackTrace();
+                }
                 if (jcl.isStream()) {
                     Thread.currentThread().interrupt();
                 }
-                System.err.println("Failed to run TwitterClient: " + te.getMessage()
-                        + ". Try again? [y/n]");
+                System.err.println("Failed to run TwitterClient: " + te.getMessage() + "Try again? [y/n]");
                 char ans = 0;
                 try {
                     while (ans <= ' ') {
