@@ -117,6 +117,7 @@ public class TwitterStream {
                     if (status.getGeoLocation() != null) {
                         tweetLocation = status.getGeoLocation();
                     } else {
+
 //                    if (status.getUser().getLocation() != null) {
 //                        try {
 //
@@ -238,7 +239,6 @@ public class TwitterStream {
 
 
             String curLocationRequest = "";
-
             Pair<GeoLocation, Double> geoParams = null;
             try {
                 if (jcp.getLocation() != "") {
