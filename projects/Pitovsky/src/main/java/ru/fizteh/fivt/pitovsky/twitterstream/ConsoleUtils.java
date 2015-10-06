@@ -13,6 +13,7 @@ public class ConsoleUtils {
         WHITE (37);
 
         private int color;
+
         TextColor(int clr) {
             color = clr;
         }
@@ -23,6 +24,7 @@ public class ConsoleUtils {
     private static String setClr(TextColor tcolor) {
         return "" + ESCAPE + "[" + tcolor.color + "m";
     }
+
     private static String setStClr() {
         return setClr(TextColor.STANDART);
     }

@@ -12,7 +12,7 @@ public class SearchLocation {
     private Vector<GeoLocation> searchLocations;
 
     public SearchLocation(ResponseList<Place> searchPlaces) {
-        searchLocations = new Vector<GeoLocation>(); //*4 becouse all nodes of place box
+        searchLocations = new Vector<GeoLocation>(); //*4 because all nodes of place box
         for (Place place : searchPlaces) {
             for (int x = 0; x < place.getBoundingBoxCoordinates().length; ++x) {
                 for (int y = 0; y < place.getBoundingBoxCoordinates()[x].length; ++y) {
