@@ -27,7 +27,7 @@ class TwitterClient {
 
     private static final int STREAM_SLEEP_TIME = 1000; //in ms
     private static final int STREAM_EXIT_KEY = 27; //escape-key
-    private static final int STREAM_MAX_QUEUE_SIZE = 1000;
+    private static final int STREAM_MAX_QUEUE_SIZE = 1000; //i think, it is impossible, more than 1000 tweets per sec
 
     private static final int MINUTE = 60 * 1000;
     private static final int HOUR = 60 * MINUTE;
@@ -130,7 +130,7 @@ class TwitterClient {
         return location;
     }
 
-    public TwitterClient() {
+    TwitterClient() { //codestyler says, that 'public' modifier is redundant in this case
         twitter = new TwitterFactory().getInstance();
     }
 

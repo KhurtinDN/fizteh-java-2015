@@ -49,7 +49,7 @@ public class SearchLocation {
         }
         return new GeoLocation(xCenter / searchLocations.size(), yCenter / searchLocations.size());
     }
-    
+
     public final double getRadius() {
         if (!isValid()) {
             return 1;
@@ -61,7 +61,7 @@ public class SearchLocation {
         }
         return (radius / searchLocations.size()) + 1;
     }
-    
+
     public final double[][] getBoundingBox() {
         if (!isValid()) {
             return null;
@@ -70,7 +70,7 @@ public class SearchLocation {
         double maxX = searchLocations.get(0).getLatitude();
         double minY = searchLocations.get(0).getLongitude();
         double maxY = searchLocations.get(0).getLongitude();
-        
+
         for (GeoLocation location: searchLocations) {
             if (location.getLatitude() < minX) {
                 minX = location.getLatitude();
@@ -87,8 +87,8 @@ public class SearchLocation {
         }
         return new double[][] {{minX, minY}, {maxX, maxY}};
     }
-    
-    public String toString() {
+
+    public final String toString() {
         return "(" + getCenter().getLatitude() + ", "
                 + getCenter().getLongitude() + ") with r = "
                 + getRadius() + ".";

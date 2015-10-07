@@ -17,7 +17,7 @@ import com.beust.jcommander.ParameterException;
  *
  */
 public class Main {
-    
+
     public static final String PLACE_ANYWHERE = "anywhere";
     public static final String PLACE_NEARBY = "nearby";
 
@@ -39,10 +39,10 @@ public class Main {
 
     private static String getMyCityByIP() throws IOException {
       //telize site JSON output look like "getgeoip({"parameter":"value","parameter":"value",...})"
-        String[] GeoSiteSource = getUrlSource("http://www.telize.com/geoip?callback=getgeoip").split("[,\":]+");
-        for (int i = 0; i < GeoSiteSource.length; ++i) {
-            if (GeoSiteSource[i].equals("city") && i < GeoSiteSource.length - 1) {
-                return GeoSiteSource[i + 1];
+        String[] geoSiteSource = getUrlSource("http://www.telize.com/geoip?callback=getgeoip").split("[,\":]+");
+        for (int i = 0; i < geoSiteSource.length; ++i) {
+            if (geoSiteSource[i].equals("city") && i < geoSiteSource.length - 1) {
+                return geoSiteSource[i + 1];
             }
         }
         return PLACE_ANYWHERE;
@@ -54,8 +54,9 @@ public class Main {
         JCommander jcommander;
         try {
             jcommander = new JCommander(jcParams, args);
-        } catch(ParameterException pe) {
+        } catch (ParameterException pe) {
             System.out.println(pe.getMessage());
+            System.out.println("You can use --help to learn more.");
             return;
         }
 
