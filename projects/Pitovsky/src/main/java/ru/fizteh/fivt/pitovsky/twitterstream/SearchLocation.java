@@ -1,18 +1,18 @@
 package ru.fizteh.fivt.pitovsky.twitterstream;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import twitter4j.GeoLocation;
 import twitter4j.Place;
 import twitter4j.ResponseList;
 
 public class SearchLocation {
-    private static final double DEG_TO_KM = 60 * 1.1515 * 1.609344;
+    private static final double DEGREES_TO_KM = 60 * 1.1515 * 1.609344;
 
-    private Vector<GeoLocation> searchLocations;
+    private List<GeoLocation> searchLocations = new ArrayList<GeoLocation>();
 
     public SearchLocation(ResponseList<Place> searchPlaces) {
-        searchLocations = new Vector<GeoLocation>(); //*4 because all nodes of place box
         for (Place place : searchPlaces) {
             for (int x = 0; x < place.getBoundingBoxCoordinates().length; ++x) {
                 for (int y = 0; y < place.getBoundingBoxCoordinates()[x].length; ++y) {
@@ -26,19 +26,15 @@ public class SearchLocation {
         return (searchLocations != null) && (searchLocations.size() > 0);
     }
 
-    private static double getCoordinatesDistance(double latitudeFrom, double longitudeFrom,
-            double latitudeTo, double longitudeTo) {
-        double theta = longitudeFrom - longitudeTo;
-        double dist = Math.sin(Math.toRadians(latitudeFrom)) * Math.sin(Math.toRadians(latitudeTo))
-                + Math.cos(Math.toRadians(latitudeFrom)) * Math.cos(Math.toRadians(latitudeTo))
+    private static double getCoordinatesDistance(GeoLocation locationFrom, GeoLocation locationTo) {
+        double theta = locationFrom.getLongitude() - locationTo.getLongitude();
+        double dist = Math.sin(Math.toRadians(locationFrom.getLatitude()))
+                * Math.sin(Math.toRadians(locationTo.getLatitude()))
+                + Math.cos(Math.toRadians(locationFrom.getLatitude()))
+                * Math.cos(Math.toRadians(locationTo.getLatitude()))
                     * Math.cos(Math.toRadians(theta));
         dist = Math.acos(dist);
-        return Math.toDegrees(dist) * DEG_TO_KM;
-    }
-    private double getLocationsDistance(int from, int to) {
-        return getCoordinatesDistance(
-                searchLocations.get(from).getLatitude(), searchLocations.get(from).getLongitude(),
-                searchLocations.get(to).getLatitude(), searchLocations.get(to).getLongitude());
+        return Math.toDegrees(dist) * DEGREES_TO_KM;
     }
 
     public final GeoLocation getCenter() {
@@ -53,6 +49,7 @@ public class SearchLocation {
         }
         return new GeoLocation(xCenter / searchLocations.size(), yCenter / searchLocations.size());
     }
+    
     public final double getRadius() {
         if (!isValid()) {
             return 1;
@@ -60,11 +57,11 @@ public class SearchLocation {
         double radius = 0;
         GeoLocation center = getCenter();
         for (GeoLocation location : searchLocations) {
-            radius = radius + getCoordinatesDistance(center.getLatitude(), center.getLongitude(),
-                    location.getLatitude(), location.getLongitude());
+            radius = radius + getCoordinatesDistance(center, location);
         }
         return (radius / searchLocations.size()) + 1;
     }
+    
     public final double[][] getBoundingBox() {
         if (!isValid()) {
             return null;
@@ -73,6 +70,7 @@ public class SearchLocation {
         double maxX = searchLocations.get(0).getLatitude();
         double minY = searchLocations.get(0).getLongitude();
         double maxY = searchLocations.get(0).getLongitude();
+        
         for (GeoLocation location: searchLocations) {
             if (location.getLatitude() < minX) {
                 minX = location.getLatitude();
@@ -88,5 +86,11 @@ public class SearchLocation {
             }
         }
         return new double[][] {{minX, minY}, {maxX, maxY}};
+    }
+    
+    public String toString() {
+        return "(" + getCenter().getLatitude() + ", "
+                + getCenter().getLongitude() + ") with r = "
+                + getRadius() + ".";
     }
 }

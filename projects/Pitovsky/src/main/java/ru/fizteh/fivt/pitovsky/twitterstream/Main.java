@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import twitter4j.TwitterException;
 
 import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 
 /**
  *
@@ -16,12 +17,15 @@ import com.beust.jcommander.JCommander;
  *
  */
 public class Main {
+    
+    public static final String PLACE_ANYWHERE = "anywhere";
+    public static final String PLACE_NEARBY = "nearby";
 
     private static String getUrlSource(String url) throws IOException {
         URL realURL = new URL(url);
-        URLConnection urlcon = realURL.openConnection();
+        URLConnection connection = realURL.openConnection();
         BufferedReader urlReader = new BufferedReader(
-                new InputStreamReader(urlcon.getInputStream(), "UTF-8"));
+                new InputStreamReader(connection.getInputStream(), "UTF-8"));
         String inputLine = urlReader.readLine();
         StringBuilder sourceString = new StringBuilder();
         while (inputLine != null) {
@@ -35,40 +39,48 @@ public class Main {
 
     private static String getMyCityByIP() throws IOException {
       //telize site JSON output look like "getgeoip({"parameter":"value","parameter":"value",...})"
-        String[] wipsource = getUrlSource("http://www.telize.com/geoip?callback=getgeoip").split("[,\":]+");
-        for (int i = 0; i < wipsource.length; ++i) {
-            if (wipsource[i].equals("city") && i < wipsource.length - 1) {
-                return wipsource[i + 1];
+        String[] GeoSiteSource = getUrlSource("http://www.telize.com/geoip?callback=getgeoip").split("[,\":]+");
+        for (int i = 0; i < GeoSiteSource.length; ++i) {
+            if (GeoSiteSource[i].equals("city") && i < GeoSiteSource.length - 1) {
+                return GeoSiteSource[i + 1];
             }
         }
-        return "anywhere";
+        return PLACE_ANYWHERE;
     }
 
     public static void main(String[] args) {
         //String[] argstmp = {"-q", "#Moscow", "-s"};
-        JCommanderList jcl = new JCommanderList();
-        JCommander jcomm = new JCommander(jcl, args);
+        JCommanderList jcParams = new JCommanderList();
+        JCommander jcommander;
+        try {
+            jcommander = new JCommander(jcParams, args);
+        } catch(ParameterException pe) {
+            System.out.println(pe.getMessage());
+            return;
+        }
 
-        if (jcl.isHelp() || jcl.getQueryString() == null) {
+        if (jcParams.isHelp()) {
             System.out.println("This program can print in stdout some tweets,"
                     + "searched at twitter.com and filtered by options:");
-            jcomm.usage();
+            jcommander.usage();
             return;
         }
 
         TwitterClient client = new TwitterClient();
 
-        String searchPlace = jcl.getPlace();
-        if (jcl.getPlace().equals("nearby")) {
+        String searchPlace = jcParams.getPlace();
+        if (jcParams.getPlace().equals(PLACE_NEARBY)) {
             try {
                 searchPlace = getMyCityByIP();
             } catch (IOException e) {
-                e.printStackTrace();
-                System.err.println("Failed to calculate your location by IP."
-                        + " Searching tweets from anywhere.");
+                if (jcParams.isDebugMode()) {
+                    e.printStackTrace();
+                }
+                System.err.println("Failed to calculate your location by IP, " + e.getMessage()
+                        + ". Searching tweets from anywhere.");
             }
-            if (searchPlace.equals("nearby")) {
-                searchPlace = "anywhere";
+            if (searchPlace.equals(PLACE_NEARBY)) {
+                searchPlace = PLACE_ANYWHERE;
             }
         }
 
@@ -76,31 +88,30 @@ public class Main {
 
         while (true) {
             try {
-                if (searchLocation == null && !searchPlace.equals("anywhere")) {
+                if (searchLocation == null && !searchPlace.equals(PLACE_ANYWHERE)) {
                     searchLocation = client.findLocation(searchPlace);
-                    if (jcl.isDebugMode()) {
+                    if (jcParams.isDebugMode()) {
                         if (searchLocation != null) {
-                            System.err.println("[debug]: place is (" + searchLocation.getCenter().getLatitude() + ", "
-                                    + searchLocation.getCenter().getLongitude() + ") with r = "
-                                    + searchLocation.getRadius() + ".");
+                            System.err.println("[debug]: place is " + searchLocation);
                         } else {
-                            System.err.println("[debug]: cannot find place '" + jcl.getPlace() + "', search anywhere.");
+                            System.err.println("[debug]: cannot find place '" + jcParams.getPlace()
+                                    + "', search anywhere.");
                         }
                     }
                 }
-                if (jcl.isStream()) {
-                    client.startStreaming(jcl.getQueryString(), jcl.isRetweetsHidden(),
-                            searchLocation, jcl.isDebugMode());
+                if (jcParams.isStream()) {
+                    client.startStreaming(jcParams.getQueryString(), jcParams.isRetweetsHidden(),
+                            searchLocation, jcParams.isDebugMode());
                 } else {
-                    client.printTweets(jcl.getQueryString(), jcl.isRetweetsHidden(),
-                            searchLocation, jcl.getTweetLimit(), jcl.isDebugMode());
+                    client.printTweets(jcParams.getQueryString(), jcParams.isRetweetsHidden(),
+                            searchLocation, jcParams.getTweetLimit(), jcParams.isDebugMode());
                 }
                 break;
             } catch (TwitterException te) {
-                if (jcl.isDebugMode()) {
+                if (jcParams.isDebugMode()) {
                     te.printStackTrace();
                 }
-                if (jcl.isStream()) {
+                if (jcParams.isStream()) {
                     Thread.currentThread().interrupt();
                 }
                 System.err.println("Failed to run TwitterClient: " + te.getMessage() + "Try again? [y/n]");
@@ -110,7 +121,9 @@ public class Main {
                         ans = (char) System.in.read();
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    if (jcParams.isDebugMode()) {
+                        e.printStackTrace();
+                    }
                     ans = 'e';
                 }
                 if (ans != 'y' && ans != 'Y') {

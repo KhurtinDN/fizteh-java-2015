@@ -16,11 +16,11 @@ public class JCommanderList {
 
     @Parameter(names = {"-p", "--place"},
             description = "Location of looking for, without args"
-            + "is equals nearby - near of your location")
-    private String place = "anywhere";
+            + "is equals '-p " + Main.PLACE_NEARBY + "' - near of your location")
+    private String place = Main.PLACE_ANYWHERE;
 
     @Parameter(names = {"-q", "--query"},
-            description = "Keywords for looking for, separating by whitespaces")
+            description = "Necessary to use! Keywords for looking for, separating by whitespaces", required = true)
     private String query;
 
     @Parameter(names = {"-s", "--stream"},
@@ -29,7 +29,7 @@ public class JCommanderList {
 
     @Parameter(names = {"-r", "--hideRetweets"},
             description = "Don't print any retweeted posts")
-    private boolean hideretweets = false;
+    private boolean hideRetweets = false;
 
     @Parameter(names = {"-h", "--help"},
             description = "Print this page and exit", help = true)
@@ -54,8 +54,7 @@ public class JCommanderList {
 
     public final String[] getQuery() {
         if (query == null) {
-            String[] emptyarr = {};
-            return emptyarr;
+            return new String[0];
         }
         return query.split("[\\s,.]+");
     }
@@ -65,7 +64,7 @@ public class JCommanderList {
     }
 
     public final boolean isRetweetsHidden() {
-        return hideretweets;
+        return hideRetweets;
     }
 
     public final boolean isHelp() {

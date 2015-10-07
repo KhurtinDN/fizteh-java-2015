@@ -13,9 +13,8 @@ import twitter4j.Place;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.ResponseList;
-import twitter4j.StallWarning;
 import twitter4j.Status;
-import twitter4j.StatusDeletionNotice;
+import twitter4j.StatusAdapter;
 import twitter4j.StatusListener;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -27,50 +26,17 @@ import twitter4j.User;
 class TwitterClient {
 
     private static final int STREAM_SLEEP_TIME = 1000; //in ms
-    private static final int EXIT_KEY = 27; //escape-key
+    private static final int STREAM_EXIT_KEY = 27; //escape-key
+    private static final int STREAM_MAX_QUEUE_SIZE = 1000;
 
     private static final int MINUTE = 60 * 1000;
     private static final int HOUR = 60 * MINUTE;
     private static final int DAY = 24 * HOUR;
-    private static final int NUM_DEC = 10; //checkstyle ask for it
-    private static final int NUM_RU_ENDING = 5; //start for new endings in ru lang
 
     private Twitter twitter;
     private LinkedList<Status> tweetsQueue;
     private boolean hideRetweets;
 
-    private static String getStringMinutesAgo(int minutes) {
-        if (minutes / NUM_DEC != 1 && minutes % NUM_DEC == 1) {
-            return minutes + " минуту назад"; //like 1, 21, 31...
-        }
-        if (minutes / NUM_DEC != 1 && minutes % NUM_DEC > 1
-                && minutes % NUM_DEC < NUM_RU_ENDING) {
-            return minutes + " минуты назад";
-        }
-        return minutes + " минут назад";
-    }
-
-    private static String getStringHoursAgo(int hours) {
-        if (hours / NUM_DEC != 1 && hours % NUM_DEC == 1) {
-            return hours + " час назад";
-        }
-        if (hours / NUM_DEC != 1 && hours % NUM_DEC > 1
-                && hours % NUM_DEC < NUM_RU_ENDING) {
-            return hours + " часа назад";
-        }
-        return hours + " часов назад";
-    }
-
-    private static String getStringDaysAgo(int days) {
-        if (days / NUM_DEC != 1 && days % NUM_DEC == 1) {
-            return days + " день назад";
-        }
-        if (days / NUM_DEC != 1 && days % NUM_DEC > 1
-                && days % NUM_DEC < NUM_RU_ENDING) {
-            return days + " дня назад";
-        }
-        return days + " дней назад";
-    }
 
     public static String convertDate(Date date) {
         Calendar currentCalendar = Calendar.getInstance();
@@ -87,13 +53,13 @@ class TwitterClient {
         currentCalendar = Calendar.getInstance();
         currentCalendar.add(Calendar.HOUR, -1);
         if (tweetCalendar.compareTo(currentCalendar) > 0) {
-            return getStringMinutesAgo((int) ((HOUR + currentCalendar.getTimeInMillis()
+            return StringRuUtils.getNumeralsAgo("минута", ((int) (HOUR + currentCalendar.getTimeInMillis()
                     - tweetCalendar.getTimeInMillis()) / MINUTE));
         }
         currentCalendar = Calendar.getInstance();
         if (currentCalendar.get(Calendar.DAY_OF_YEAR) == tweetCalendar.get(Calendar.DAY_OF_YEAR)
                 && currentCalendar.get(Calendar.YEAR) == tweetCalendar.get(Calendar.YEAR)) {
-            return getStringHoursAgo(currentCalendar.get(Calendar.HOUR_OF_DAY)
+            return StringRuUtils.getNumeralsAgo("час", currentCalendar.get(Calendar.HOUR_OF_DAY)
                     - tweetCalendar.get(Calendar.HOUR_OF_DAY));
         }
         currentCalendar = Calendar.getInstance();
@@ -103,7 +69,7 @@ class TwitterClient {
             return "вчера";
         }
         currentCalendar = Calendar.getInstance();
-        return getStringDaysAgo((int) ((currentCalendar.getTimeInMillis()
+        return StringRuUtils.getNumeralsAgo("день", (int) ((currentCalendar.getTimeInMillis()
                 - tweetCalendar.getTimeInMillis()) / DAY) + 1);
     }
 
@@ -119,14 +85,19 @@ class TwitterClient {
         }
         tweetOut.append(prettyName(tweet.getUser()));
         if (tweet.isRetweet()) {
-            tweetOut.append(" (ретвитнул "
-                    + prettyName(tweet.getRetweetedStatus().getUser()) + "): "
-                    + tweet.getRetweetedStatus().getText());
+            tweetOut.append(" (ретвитнул ");
+            tweetOut.append(prettyName(tweet.getRetweetedStatus().getUser()));
+            tweetOut.append("): ");
+            tweetOut.append(tweet.getRetweetedStatus().getText());
         } else {
-            tweetOut.append(": " + tweet.getText());
+            tweetOut.append(": ");
+            tweetOut.append(tweet.getText());
         }
         if (tweet.getRetweetCount() > 0) {
-            tweetOut.append(" (" + tweet.getRetweetCount() + " ретвитов)");
+            tweetOut.append(" (");
+            tweetOut.append(tweet.getRetweetCount() + " ");
+            tweetOut.append(StringRuUtils.getNumeralWord("ретвит", tweet.getRetweetCount()));
+            tweetOut.append(")");
         }
         if (withPlace) {
             Place place = tweet.getPlace();
@@ -138,24 +109,13 @@ class TwitterClient {
         return tweetOut.toString();
     }
 
-    private StatusListener tweetListener = new StatusListener() {
+    private StatusListener tweetListener = new StatusAdapter() {
         public void onStatus(Status tweet) {
             if ((!hideRetweets || !tweet.isRetweet())) {
-                tweetsQueue.add(tweet);
+                if (tweetsQueue.size() < STREAM_MAX_QUEUE_SIZE) {
+                    tweetsQueue.add(tweet);
+                }
             }
-        }
-        public void onDeletionNotice(StatusDeletionNotice statusDN) {
-        }
-        public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-        }
-        public void onException(Exception ex) {
-            ex.printStackTrace();
-        }
-        @Override
-        public void onScrubGeo(long arg0, long arg1) {
-        }
-        @Override
-        public void onStallWarning(StallWarning arg0) {
         }
     };
 
@@ -170,7 +130,7 @@ class TwitterClient {
         return location;
     }
 
-    TwitterClient() {
+    public TwitterClient() {
         twitter = new TwitterFactory().getInstance();
     }
 
@@ -201,7 +161,7 @@ class TwitterClient {
                 boolean needExit = false;
                 while (System.in.available() > 0) {
                     int cm = System.in.read();
-                    if (cm == 'q' || cm == EXIT_KEY || cm == -1) {
+                    if (cm == 'q' || cm == STREAM_EXIT_KEY || cm == -1) {
                         tstream.shutdown();
                         needExit = true;
                         break;
@@ -217,6 +177,7 @@ class TwitterClient {
                 Thread.sleep(STREAM_SLEEP_TIME);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
+                throw new TwitterException("Cannot wait in this thread, interrupted");
             }
         }
     }
@@ -227,8 +188,6 @@ class TwitterClient {
         Query query = new Query(queryString);
         if (searchLocation != null) {
             query.setGeoCode(searchLocation.getCenter(), searchLocation.getRadius(), Query.Unit.km);
-            //System.err.println("from (" + searchLocation.getCenter().getLatitude() + "; "
-            //        + searchLocation.getCenter().getLongitude() + "), r = " + searchLocation.getRadius());
         }
 
         query.setCount(limit);
