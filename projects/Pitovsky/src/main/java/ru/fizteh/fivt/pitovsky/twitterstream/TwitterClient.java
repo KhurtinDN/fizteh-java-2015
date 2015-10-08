@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import ru.fizteh.fivt.pitovsky.twitterstream.ConsoleUtils.TextColor;
+import ru.fizteh.fivt.pitovsky.twitterstream.SearchLocation.SearchLocationException;
 import twitter4j.FilterQuery;
 import twitter4j.GeoQuery;
 import twitter4j.Place;
@@ -123,9 +124,11 @@ class TwitterClient {
         GeoQuery gquery = new GeoQuery("192.168.1.1"); //an useless ip
         gquery.setQuery(region);
         ResponseList<Place> searchPlaces = twitter.searchPlaces(gquery);
-        SearchLocation location = new SearchLocation(searchPlaces);
-        if (!location.isValid()) {
-            return null;
+        SearchLocation location;
+        try {
+            location = new SearchLocation(searchPlaces);
+        } catch (SearchLocationException sle) {
+            location = null;
         }
         return location;
     }

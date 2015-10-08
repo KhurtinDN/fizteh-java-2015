@@ -47,7 +47,7 @@ public class Main {
         }
         return PLACE_ANYWHERE;
     }
-    
+
     private static String resolvePlaceString(String queryString) {
         if (queryString.equals(PLACE_NEARBY)) {
             try {
@@ -84,7 +84,7 @@ public class Main {
         TwitterClient client = new TwitterClient();
 
         String searchPlace = resolvePlaceString(jcParams.getPlace());
-        
+
         SearchLocation searchLocation = null;
 
         while (true) {

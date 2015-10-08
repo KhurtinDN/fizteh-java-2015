@@ -12,7 +12,16 @@ public class SearchLocation {
 
     private List<GeoLocation> searchLocations = new ArrayList<GeoLocation>();
 
-    public SearchLocation(ResponseList<Place> searchPlaces) {
+    class SearchLocationException extends Exception {
+        SearchLocationException() {
+            super();
+        }
+        SearchLocationException(String message) {
+            super(message);
+        }
+    }
+
+    public SearchLocation(ResponseList<Place> searchPlaces) throws SearchLocationException {
         for (Place place : searchPlaces) {
             for (int x = 0; x < place.getBoundingBoxCoordinates().length; ++x) {
                 for (int y = 0; y < place.getBoundingBoxCoordinates()[x].length; ++y) {
@@ -20,10 +29,9 @@ public class SearchLocation {
                 }
             }
         }
-    }
-
-    public final boolean isValid() {
-        return (searchLocations != null) && (searchLocations.size() > 0);
+        if (searchLocations.size() == 0) {
+            throw new SearchLocationException("too few places in placelist");
+        }
     }
 
     private static double getCoordinatesDistance(GeoLocation locationFrom, GeoLocation locationTo) {
@@ -38,9 +46,6 @@ public class SearchLocation {
     }
 
     public final GeoLocation getCenter() {
-        if (!isValid()) {
-            return null;
-        }
         double xCenter = 0;
         double yCenter = 0;
         for (GeoLocation location: searchLocations) {
@@ -51,9 +56,6 @@ public class SearchLocation {
     }
 
     public final double getRadius() {
-        if (!isValid()) {
-            return 1;
-        }
         double radius = 0;
         GeoLocation center = getCenter();
         for (GeoLocation location : searchLocations) {
@@ -63,9 +65,6 @@ public class SearchLocation {
     }
 
     public final double[][] getBoundingBox() {
-        if (!isValid()) {
-            return null;
-        }
         double minX = searchLocations.get(0).getLatitude();
         double maxX = searchLocations.get(0).getLatitude();
         double minY = searchLocations.get(0).getLongitude();
