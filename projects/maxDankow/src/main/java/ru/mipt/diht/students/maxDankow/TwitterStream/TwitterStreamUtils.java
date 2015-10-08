@@ -4,9 +4,7 @@ import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.GeocodingApiRequest;
 import com.google.maps.model.GeocodingResult;
-import com.google.maps.model.LatLng;
-import twitter4j.GeoLocation;
-import twitter4j.Twitter;
+import com.google.maps.model.Geometry;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -36,32 +34,19 @@ public class TwitterStreamUtils {
         }
         return "" + timeDeltaMs / DAY_MS + " дней назад";
     }
-    /*public static void findLocation(String placeName) {
-        GeoApiContext context = new GeoApiContext().setApiKey("AIzaSyCltC9cSKnrnqOApw5TQ155nwEBW-ZUt1E");
-        GeocodingApiRequest result = GeocodingApi.geocode(context, placeName);
-        //GeocodingResult[] locations;
-        LatLng coords = null;
-        try {
-            GeocodingResult[] locations = result.await();
-            coords = locations[0].geometry.location;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //System.out.println(coords.lat + " - " + coords.lng);
-    }*/
 
-    public static GeoLocation findLocation(Twitter twitter, String placeName){
+    public static Geometry findLocation(String placeName){
         GeoApiContext context = new GeoApiContext().setApiKey("AIzaSyCltC9cSKnrnqOApw5TQ155nwEBW-ZUt1E");
         GeocodingApiRequest geoRequest = GeocodingApi.geocode(context, placeName);
-        LatLng coords = null;
+        Geometry place = null;
         try {
             GeocodingResult[] locations = geoRequest.await();
-            coords = locations[0].geometry.location;
+            place = locations[0].geometry;
         } catch (Exception e) {
             System.err.println("Google geolocation error.");
             System.exit(0);
         }
-        return new GeoLocation(coords.lat, coords.lng);
+        return place;
     }
 
 }
