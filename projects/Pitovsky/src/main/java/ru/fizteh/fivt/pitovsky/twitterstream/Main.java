@@ -47,6 +47,19 @@ public class Main {
         }
         return PLACE_ANYWHERE;
     }
+    
+    private static String resolvePlaceString(String queryString) {
+        if (queryString.equals(PLACE_NEARBY)) {
+            try {
+                return getMyCityByIP();
+            } catch (IOException e) {
+                System.err.println("Failed to calculate your location by IP, " + e.getMessage()
+                        + ". Searching tweets from anywhere.");
+                return PLACE_ANYWHERE;
+            }
+        }
+        return queryString;
+    }
 
     public static void main(String[] args) {
         //String[] argstmp = {"-q", "#Moscow", "-s"};
@@ -57,6 +70,7 @@ public class Main {
         } catch (ParameterException pe) {
             System.out.println(pe.getMessage());
             System.out.println("You can use --help to learn more.");
+            System.exit(1);
             return;
         }
 
@@ -69,22 +83,8 @@ public class Main {
 
         TwitterClient client = new TwitterClient();
 
-        String searchPlace = jcParams.getPlace();
-        if (jcParams.getPlace().equals(PLACE_NEARBY)) {
-            try {
-                searchPlace = getMyCityByIP();
-            } catch (IOException e) {
-                if (jcParams.isDebugMode()) {
-                    e.printStackTrace();
-                }
-                System.err.println("Failed to calculate your location by IP, " + e.getMessage()
-                        + ". Searching tweets from anywhere.");
-            }
-            if (searchPlace.equals(PLACE_NEARBY)) {
-                searchPlace = PLACE_ANYWHERE;
-            }
-        }
-
+        String searchPlace = resolvePlaceString(jcParams.getPlace());
+        
         SearchLocation searchLocation = null;
 
         while (true) {
