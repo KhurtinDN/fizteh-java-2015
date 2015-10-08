@@ -2,9 +2,7 @@ package ru.mipt.diht.students.feezboom.Twitter;
 
 import twitter4j.*;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
@@ -44,7 +42,92 @@ public class TwitterStreamer {
     private final int sleepTime = 1000;
     private final int tweetsLimit = 100;
 
-    public static String GetCityString() throws IOException {
+    public static String translitToRussian(String input) {
+        String answer = "";
+        input.toLowerCase();
+        for (int i = 0; i < input.length(); i++) {
+            boolean check = (i + 1) < input.length();
+            switch (input.charAt(i)) {
+                case 'a' : answer += 'а';
+                case 'b' : answer += 'б';
+                case 'c' | 'C' : {
+                    if (check && input.charAt(i + 1) == 'h') {
+                        answer += 'ч';
+                        i++;
+                    } else {
+                        answer += 'ц';
+                    }
+                }
+                case 'd' | 'D' : answer += 'д';
+                case 'e' | 'E' : answer += 'е';
+                case 'f' | 'F' : answer += 'ф';
+                case 'g' | 'G' : answer += 'г';
+                case 'h' | 'H' : answer += 'х';
+                case 'i' | 'I' : answer += 'и';
+                case 'j' | 'J' : {
+                    if (check) {
+                        i++;
+                        switch (input.charAt(i)) {
+                            case 'e' : answer += 'э';
+                            case 'u' : answer += 'ю';
+                            case 'a' : answer += 'я';
+                            default : {
+                                answer += 'й';
+                                i--;
+                            }
+                        }
+                    } else {
+                        answer += 'й';
+                    }
+                }
+                case 'k' | 'K' : answer += 'к';
+                case 'l' | 'L' : answer += 'л';
+                case 'm' | 'M' : answer += 'м';
+                case 'n' | 'N' : answer += 'н';
+                case 'o' | 'O' : answer += 'о';
+                case 'p' | 'P' : answer += 'п';
+//                case 'q' | 'Q' : answer += '';
+                case 'r' | 'R' : answer += 'р';
+                case 's' | 'S' : {
+                    if (check) {
+                        i++;
+                        if (input.charAt(i) == 'h') {
+                            if (i + 1 < input.length()) {
+                                if (input.charAt(i + 1) == 'h') {
+                                    answer += 'щ';
+                                }
+                            } else {
+                                answer += 'ш';
+                            }
+                        } else {
+                            i--;
+                            answer += 'с';
+                        }
+                    }
+                    else {
+                        answer += 'с';
+                    }
+                }
+                case 't' | 'T' : answer += 'т';
+                case 'u' | 'U' : answer += 'у';
+                case 'v' | 'V' : answer += 'в';
+//                case 'w' | 'W' : answer += '';
+//                case 'x' | 'X' : answer += '';
+                case 'y' | 'Y' : answer += 'ы';
+                case 'z' | 'Z' : {
+                    if (check && input.charAt(i + 1) == 'h') {
+                        answer += 'ж';
+                        i++;
+                    } else {
+                        answer += 'з';
+                    }
+                }
+            }
+        }
+        return answer;
+    }
+
+    public static String getCityString() throws IOException {
         URL url = new URL("http://ip2geolocation.com/");
         URLConnection urlConnection = url.openConnection();
         Scanner scanner = new Scanner(urlConnection.getInputStream(), "UTF-8");
@@ -64,7 +147,35 @@ public class TwitterStreamer {
         return City;
     }
 
+    public static GeoLocation getGeoLocation() throws Exception {
+        URL url = new URL("http://ip2geolocation.com/");
+        URLConnection urlConnection = url.openConnection();
+        Scanner scanner = new Scanner(urlConnection.getInputStream(), "UTF-8");
 
+        final int latitudeLine = 132;
+        //longitude line is 133, there is no need to make variable
+
+        for (int i = 1; i < latitudeLine; i++) {
+            scanner.nextLine();
+        }
+
+        String latStr = scanner.nextLine();
+        String lonStr = scanner.nextLine();
+
+        double latitude, longitude;
+
+        int first = latStr.lastIndexOf("\">") + "\">".length();
+        int last  = latStr.lastIndexOf("</td>");
+
+        latitude = Double.parseDouble(latStr.substring(first, last));
+
+        first = lonStr.lastIndexOf("\">") + "\">".length();
+        last  = lonStr.lastIndexOf("</td>");
+
+        longitude = Double.parseDouble(lonStr.substring(first, last));
+
+        return new GeoLocation(latitude, longitude);
+    }
 
     public TwitterStreamer(String[] myargs) {
         this.args = myargs;
@@ -130,7 +241,7 @@ public class TwitterStreamer {
             if (requestedParams[placeNum] != -1) {
                 location = args[requestedParams[placeNum]];
                 if (location.equals("nearby") || location.equals("Nearby")) {
-                    location = GetCityString();
+                    location = getCityString();
                 }
                 query = setSearchPlace(twitter, query, location);
             }
@@ -204,11 +315,11 @@ public class TwitterStreamer {
         int retweetCount = tweet.getRetweetCount();
         if (retweetCount != 0) {
             System.out.println(" (" + tweet.getRetweetCount() + " ретвитов)");
+            if (!hideRetweets) {
+                printRetweets(tweet);
+            }
         } else {
             System.out.println();
-        }
-        if (!hideRetweets && retweetCount != 0) {
-            printRetweets(tweet);
         }
 
     }

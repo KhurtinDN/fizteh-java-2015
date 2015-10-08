@@ -11,10 +11,12 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        String source = TwitterStreamer.GetCityString();
+//        String source = TwitterStreamer.getCityString();
 
-        TwitterStreamer streamer = new TwitterStreamer(args);
-        streamer.startStreamer();
+//        TwitterStreamer streamer = new TwitterStreamer(args);
+//        streamer.startStreamer();
+
+        System.out.println(TwitterStreamer.translitToRussian("Dolgoprudyj"));
         return;
     }
 
