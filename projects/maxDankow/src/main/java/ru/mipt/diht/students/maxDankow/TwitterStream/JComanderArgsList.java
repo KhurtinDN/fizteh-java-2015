@@ -27,27 +27,27 @@ public class JComanderArgsList {
     @Parameter(names = {"-h", "--help"}, description = "Print this page and exit", help = true)
     private boolean help = false;
 
-    public String getQueryText() {
+    public final String getQueryText() {
         return queryText;
     }
 
-    public String getLocationStr() {
+    public final String getLocationStr() {
         return locationStr;
     }
 
-    public boolean isStreamMode() {
+    public final boolean isStreamMode() {
         return streamMode;
     }
 
-    public boolean isHideRetweets() {
+    public final boolean shouldHideRetweets() {
         return hideRetweets;
     }
 
-    public int getTweetsNumberLimit() {
+    public final int getTweetsNumberLimit() {
         return tweetNumberLimit;
     }
 
-    public boolean isHelp() {
+    public final boolean isHelp() {
         return help;
 
     }

@@ -35,7 +35,7 @@ public class TwitterStreamUtils {
         return "" + timeDeltaMs / DAY_MS + " дней назад";
     }
 
-    public static Geometry findLocation(String placeName){
+    public static Geometry findLocation(String placeName) {
         GeoApiContext context = new GeoApiContext().setApiKey("AIzaSyCltC9cSKnrnqOApw5TQ155nwEBW-ZUt1E");
         GeocodingApiRequest geoRequest = GeocodingApi.geocode(context, placeName);
         Geometry place = null;
@@ -44,7 +44,7 @@ public class TwitterStreamUtils {
             place = locations[0].geometry;
         } catch (Exception e) {
             System.err.println("Google geolocation error.");
-            System.exit(0);
+            return null;
         }
         return place;
     }
