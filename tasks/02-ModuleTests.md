@@ -18,5 +18,5 @@
 2. Не реализуйте никакой логики в конструкторе, в нём только сохранение параметров. 
 2. Классы разбить на небольшие, с обособленной функциональностью. 
 3. Смотрите мои примеры: 
-    * [Библиотека](/akormushin/src/main/java/ru/fizteh/fivt/students/akormushin/moduletests/library)
-    * [Тесты](/akormushin/src/test/java/ru/fizteh/fivt/students/akormushin/moduletests/library)
+    * [Библиотека](/projects/dkhurtin/src/main/java/ru/fizteh/fivt/students/dkhurtin/moduletests/library)
+    * [Тесты](/projects/dkhurtin/src/test/java/ru/fizteh/fivt/students/dkhurtin/moduletests/library)
