@@ -5,6 +5,7 @@ public class Reverser {
 			String[] numbers = args[i].split("\\s+");
 			for (int j = numbers.length - 1; j >= 0; j--)
 				System.out.print(numbers[j] + " ");
-		}	
+		}
 	}
 }
+
