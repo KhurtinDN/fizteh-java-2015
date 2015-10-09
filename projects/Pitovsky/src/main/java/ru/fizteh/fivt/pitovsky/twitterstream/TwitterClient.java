@@ -3,8 +3,9 @@ package ru.fizteh.fivt.pitovsky.twitterstream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import ru.fizteh.fivt.pitovsky.twitterstream.ConsoleUtils.TextColor;
 import ru.fizteh.fivt.pitovsky.twitterstream.SearchLocation.SearchLocationException;
@@ -35,7 +36,7 @@ class TwitterClient {
     private static final int DAY = 24 * HOUR;
 
     private Twitter twitter;
-    private LinkedList<Status> tweetsQueue;
+    private BlockingQueue<Status> tweetsQueue;
     private boolean hideRetweets;
 
 
@@ -113,7 +114,7 @@ class TwitterClient {
     private StatusListener tweetListener = new StatusAdapter() {
         public void onStatus(Status tweet) {
             if ((!hideRetweets || !tweet.isRetweet())) {
-                if (tweetsQueue.size() < STREAM_MAX_QUEUE_SIZE) {
+                if (tweetsQueue.size() < STREAM_MAX_QUEUE_SIZE - 1) {
                     tweetsQueue.add(tweet);
                 }
             }
@@ -137,10 +138,10 @@ class TwitterClient {
         twitter = new TwitterFactory().getInstance();
     }
 
-    public void startStreaming(String queryString, boolean hideretweets,
+    public void startStreaming(String queryString, boolean ifHideRetweets,
             SearchLocation searchLocation, boolean debug) throws TwitterException {
-        tweetsQueue = new LinkedList<Status>();
-        hideRetweets = hideretweets; //for use it in tweetListener
+        tweetsQueue = new ArrayBlockingQueue<Status>(STREAM_MAX_QUEUE_SIZE);
+        hideRetweets = ifHideRetweets; //for use it in tweetListener
         TwitterStream tstream = new TwitterStreamFactory().getInstance();
         tstream.addListener(tweetListener);
         FilterQuery fquery = new FilterQuery();
@@ -179,8 +180,7 @@ class TwitterClient {
             try {
                 Thread.sleep(STREAM_SLEEP_TIME);
             } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                throw new TwitterException("Cannot wait in this thread, interrupted");
+                throw new TwitterException("Cannot wait in this thread, interrupted", ex);
             }
         }
     }
