@@ -21,12 +21,6 @@ public class Mainclass {
 
         makeQuery();
 
-        //todo вот эту часть кода, очевидно, надо будет отсюда куда-то убрать
-      /*  twitter.setOAuthConsumer("IwWQQhD7Ksmflz0DSHDH0lARy", "Jj9Uvz7fpS98ndkBFcqtFlrOVZd61Tu43Fgy54fsnzSoxDjHng");
-        AccessToken accessToken = new AccessToken("3892021875-3VGuiQGdrgUMLMCG4IAlLncb0oOWKBRiDFDOx6C",
-                "CfZ7Tz2JXeuckQH9aXulbM4Ew6kUb2pqPxnbWZDGPic0E");
-        twitter.setOAuthAccessToken(accessToken);*/
-
         if(twitterStreamArgs.isStreamUse()) {
             workInStreamMode(); //если задан флаг --stream
         } else {
