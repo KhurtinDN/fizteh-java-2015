@@ -2,9 +2,7 @@ package ru.mipt.diht.students.feezboom.Twitter;
 
 import twitter4j.*;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
@@ -63,7 +61,17 @@ public class TwitterStreamer {
         scanner.close();
         return City;
     }
+    public static double[] GetCoordinates() throws Exception{
+        URL url = new URL("http://ip2geolocation.com/");
+        URLConnection urlConnection = url.openConnection();
+        Scanner scanner = new Scanner(urlConnection.getInputStream(), "UTF-8");
 
+        String line = "";
+
+        while (line.indexOf())
+        double[] coord = {0, 0};
+        return coord;
+    }
 
 
     public TwitterStreamer(String[] myargs) {
@@ -129,9 +137,6 @@ public class TwitterStreamer {
             String location = "anywhere";
             if (requestedParams[placeNum] != -1) {
                 location = args[requestedParams[placeNum]];
-                if (location.equals("nearby") || location.equals("Nearby")) {
-                    location = GetCityString();
-                }
                 query = setSearchPlace(twitter, query, location);
             }
 
@@ -228,6 +233,9 @@ public class TwitterStreamer {
 
     private Query setSearchPlace(Twitter twitter, Query query,
                                  String placeString) throws Exception {
+        if (placeString.equals("nearby") || placeString.equals("Nearby")) {
+            placeString = GetCityString();
+        }
         //Search by places
 
         Vector<GeoLocation> locations = new Vector<GeoLocation>();
