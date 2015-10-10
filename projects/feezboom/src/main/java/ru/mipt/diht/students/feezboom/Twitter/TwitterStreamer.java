@@ -121,8 +121,8 @@ public class TwitterStreamer {
                 limitNum = 4,
                 helpNum = 5;
 
+        boolean isStream = false;
         int[] requestedParams = {-1, -1, -1, -1, -1, -1};
-
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--query") || args[i].equals("-q")) {
@@ -135,7 +135,8 @@ public class TwitterStreamer {
                 requestedParams[placeNum] = i + 1;
             }
             if (args[i].equals("--stream") || args[i].equals("-s")) {
-                requestedParams[streamNum] = i + 1;
+                requestedParams[streamNum] = i;
+                isStream = true;
             }
             if (args[i].equals("--hideRetweets")) {
                 requestedParams[hideNum] = i;
@@ -181,13 +182,11 @@ public class TwitterStreamer {
             if (requestedParams[streamNum] != -1) {
                 runStreamer(query);
             } else {
-
                 //Next, searching tweets by query, get Class QueryResult
                 QueryResult queryResult = twitter.search(query);
                 //Next Getting list of tweets by list <Status>
                 List<Status> statusList = queryResult.getTweets();
                 //Then trying to print it on the screen
-
                 System.out.println(
                         "Твиты по запросу "
                                 + queryString
@@ -196,7 +195,7 @@ public class TwitterStreamer {
                                 + ":"
                 );
                 for (Status tweet : statusList) {
-                    printTweet(tweet, requestedParams[hideNum] != -1);
+                    printTweet(tweet, requestedParams[hideNum] != -1, isStream);
                 }
             }
         }
@@ -211,7 +210,7 @@ public class TwitterStreamer {
         StatusAdapter listener = new StatusAdapter() {
                     @Override
                     public void onStatus(Status status) {
-                        printTweet(status, true);
+                        printTweet(status, true, true);
                         try {
                             Thread.sleep(sleepTime);
                         } catch (InterruptedException e) {
@@ -237,33 +236,46 @@ public class TwitterStreamer {
         }
     }
 
-    private void printTweet(Status tweet, boolean hideRetweets) {
-        System.out.println("-----------------------------------------");
+
+    private void printTweetTime(Status tweet) {
         String timeToPrint = getTimeFormattedTimeString(tweet.getCreatedAt());
-        System.out.print("[" + timeToPrint + "]" + "@");
-        System.out.print(tweet.getUser().getScreenName() + " : "
+        System.out.print("[" + timeToPrint + "]");
+    }
+    private void printTweet(Status tweet,
+                            boolean hideRetweets,
+                            boolean isStream) {
+        System.out.println("-----------------------------------------");
+        if (!isStream) {
+            printTweetTime(tweet);
+        }
+        System.out.print("@"
+                + StringUtils.toColor(tweet.getUser().getScreenName(), "cyan")
+                + " : "
                 + tweet.getText());
 
         int retweetCount = tweet.getRetweetCount();
         if (retweetCount != 0) {
             System.out.println(" (" + tweet.getRetweetCount() + " ретвитов)");
             if (!hideRetweets) {
-                printRetweets(tweet);
+                printRetweets(tweet, isStream);
             }
         } else {
             System.out.println();
         }
-
     }
 
-    private void printRetweets(Status tweet) {
+    private void printRetweets(Status tweet, boolean isStream) {
         Status retweet = tweet.getRetweetedStatus();
         if (retweet == null) {
             return;
         }
-        String timeToPrint = getTimeFormattedTimeString(retweet.getCreatedAt());
-        System.out.print("[" + timeToPrint + "]");
-        System.out.print("@" + retweet.getUser().getScreenName() + " ");
+        if (!isStream) {
+            printTweetTime(retweet);
+        }
+        System.out.print(
+                "@"
+                + StringUtils.toColor(retweet.getUser().getScreenName(), "cyan")
+                + " ");
         System.out.print("ретвитнул @" + tweet.getUser().getScreenName()
                 + ": ");
         System.out.println(retweet.getText());
