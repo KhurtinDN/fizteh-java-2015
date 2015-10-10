@@ -47,29 +47,37 @@ public class TwitterStreamer {
     public static String getCityString() throws IOException {
         URL url = new URL("http://ip2geolocation.com/");
         URLConnection urlConnection = url.openConnection();
-        Scanner scanner = new Scanner(urlConnection.getInputStream(), "UTF-8");
+        Scanner scanner =
+                new Scanner(urlConnection.getInputStream(), "MacCyrillic");
 
         //I must find it from a source code (country)
-        String country = "Russian Federation";
-        final int NumberOflineWithCity = 6;
+        final int neededLine = 6;
         String substring = "";
 
-        for (int i = 0; i < NumberOflineWithCity; i++) {
+        for (int i = 0; i < neededLine; i++) {
             substring = scanner.nextLine();
         }
 
-        int first = substring.lastIndexOf(' ') + 1;
-        int last = substring.lastIndexOf('"');
+        //Finding country from source code
+        int first = substring.indexOf("—трана: ") + "—трана: ".length();
+        int last = substring.indexOf(", –егион");
+        String country = substring.substring(first, last);
 
-        String City = substring.substring(first, last);
+        //Finding city from source code
+        first = substring.indexOf("√ород: ") + "√ород: ".length();
+        last = substring.indexOf("\">");
+        String city = substring.substring(first, last);
+
+
         scanner.close();
 
+        //If country == Russia -> city's name has russian equivalent
         if (country.equals("Russian Federation")) {
-            City = StringUtils.translitToRussian(City);
+            city = StringUtils.translitToRussian(city);
         }
-        return City;
+        return city;
     }
-    public static double[] GetCoordinates() throws Exception{
+    public static double[] getCoordinates() throws Exception {
         URL url = new URL("http://ip2geolocation.com/");
         URLConnection urlConnection = url.openConnection();
         Scanner scanner = new Scanner(urlConnection.getInputStream(), "UTF-8");

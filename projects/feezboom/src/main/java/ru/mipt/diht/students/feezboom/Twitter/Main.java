@@ -1,9 +1,5 @@
 package ru.mipt.diht.students.feezboom.Twitter;
 
-import twitter4j.*;
-import com.beust.jcommander.*;
-
-
 /**
  * Created by avk on 30.09.15.
  */
@@ -14,8 +10,8 @@ public class Main {
         String source = TwitterStreamer.getCityString();
         System.out.println(source);
 
-        TwitterStreamer streamer = new TwitterStreamer(args);
-        streamer.startStreamer();
+//        TwitterStreamer streamer = new TwitterStreamer(args);
+//        streamer.startStreamer();
         return;
     }
 }

@@ -18,287 +18,219 @@ public class StringUtils {
     public static String toColor(String string, String color)   {
         String answer;
         switch (color) {
-            case "black" :case "Black" :case "BLACK" : {
+            case "black" :case "Black" :case "BLACK" :
                 answer = ANSI_BLACK + string + ANSI_RESET;
                 break;
-            }
-            case "red" :case "Red" :case "RED" : {
+            case "red" :case "Red" :case "RED" :
                 answer = ANSI_RED + string + ANSI_RESET;
                 break;
-            }
-            case "green" :case "Green" :case "GREEN" : {
+            case "green" :case "Green" :case "GREEN" :
                 answer = ANSI_GREEN + string + ANSI_RESET;
                 break;
-            }
-            case "yellow" :case "Yellow" :case "YELLOW" : {
+            case "yellow" :case "Yellow" :case "YELLOW" :
                 answer = ANSI_YELLOW + string + ANSI_RESET;
                 break;
-            }
-            case "blue" :case "Blue" :case "BLUE" : {
+            case "blue" :case "Blue" :case "BLUE" :
                 answer = ANSI_BLUE + string + ANSI_RESET;
                 break;
-            }
-            case "purple" :case "Purple" :case "PURPLE" : {
+            case "purple" :case "Purple" :case "PURPLE" :
                 answer = ANSI_PURPLE + string + ANSI_RESET;
                 break;
-            }
-            case "cyan" :case "Cyan" :case "CYAN" : {
+            case "cyan" :case "Cyan" :case "CYAN" :
                 answer = ANSI_CYAN + string + ANSI_RESET;
                 break;
-            }
-            case "white" :case "White" :case "WHITE" : {
+            case "white" :case "White" :case "WHITE" :
                 answer = ANSI_WHITE + string + ANSI_RESET;
                 break;
-            }
-            default : {
+            default :
                 answer = string;
-            }
         }
         return answer;
     }
     private static char getRussianChar(char in) {
         char answer;
         switch (in) {
-            case 'a' :case 'A' : {
+            case 'a' :case 'A' :
                 answer = 'а';
                 break;
-            }
-            case 'b' :case 'B' : {
+            case 'b' :case 'B' :
                 answer = 'б';
                 break;
-            }
-            case 'c' :case 'C' : {
+            case 'c' :case 'C' :
                 answer = 'с';
                 break;
-            }
-            case 'D' : case 'd' : {
+            case 'D' : case 'd' :
                 answer = 'д';
                 break;
-            }
-            case 'e' :case 'E' : {
+            case 'e' :case 'E' :
                 answer = 'е';
                 break;
-            }
-            case 'f' :case 'F' : {
+            case 'f' :case 'F' :
                 answer = 'ф';
                 break;
-            }
-            case 'g' :case 'G' :  {
+            case 'g' :case 'G' :
                 answer = 'г';
                 break;
-            }
-            case 'h' :case 'H' : {
+            case 'h' :case 'H' :
                 answer = 'х';
                 break;
-            }
-            case 'i' :case 'I' : {
+            case 'i' :case 'I' :
                 answer = 'и';
                 break;
-            }
-            case 'j' :case 'J' : {
+            case 'j' :case 'J' :
                 answer = 'й';
                 break;
-            }
-            case 'k':case 'K' : {
+            case 'k':case 'K' :
                 answer = 'к';
                 break;
-            }
-            case 'l' :case 'L' : {
+            case 'l' :case 'L' :
                 answer = 'л';
                 break;
-            }
-            case 'm' :case 'M' : {
+            case 'm' :case 'M' :
                 answer = 'м';
                 break;
-            }
-            case 'n' :case 'N' : {
+            case 'n' :case 'N' :
                 answer = 'н';
                 break;
-            }
-            case 'o' :case 'O' : {
+            case 'o' :case 'O' :
                 answer = 'о';
                 break;
-            }
-            case 'p' :case 'P' : {
+            case 'p' :case 'P' :
                 answer = 'п';
                 break;
-            }
-            case 'r' :case 'R' : {
+            case 'r' :case 'R' :
                 answer = 'р';
                 break;
-            }
-            case 's' : case 'S' : {
+            case 's' : case 'S' :
                 answer = 'с';
                 break;
-            }
-            case 't':case 'T' : {
+            case 't':case 'T' :
                 answer = 'т';
                 break;
-            }
-            case 'u' :case 'U' : {
+            case 'u' :case 'U' :
                 answer = 'у';
                 break;
-            }
-            case 'v' :case 'V' : {
+            case 'v' :case 'V' :
                 answer = 'в';
                 break;
-            }
-            case 'y' :case 'Y' : {
+            case 'y' :case 'Y' :
                 answer = 'ы';
                 break;
-            }
-            case 'z' :case 'Z' : {
+            case 'z' :case 'Z' :
                 answer = 'з';
                 break;
-            }
-            case '\'' : {
+            case '\'' :
                 answer = 'ь';
                 break;
-            }
-            default : {
+            default :
                 answer = in;
-            }
-
+                break;
         }
         return answer;
     }
     private static String getEnglishChar(char in) {
         String answer = "";
         switch (in) {
-            case 'а' :case 'А' : {
+            case 'а' :case 'А' :
                 answer += "a";
                 break;
-            }
-            case 'б' :case 'Б' : {
+            case 'б' :case 'Б' :
                 answer += "b";
                 break;
-            }
-            case 'в' :case 'В' : {
+            case 'в' :case 'В' :
                 answer += "v";
                 break;
-            }
-            case 'г' :case 'Г' : {
+            case 'г' :case 'Г' :
                 answer += "g";
                 break;
-            }
-            case 'д' :case 'Д' : {
+            case 'д' :case 'Д' :
                 answer += "d";
                 break;
-            }
-            case 'е' :case 'Е' : {
+            case 'е' :case 'Е' :
                 answer += "e";
                 break;
-            }
-            case 'ё' :case 'Ё' : {
+            case 'ё' :case 'Ё' :
                 answer += "yo";
                 break;
-            }
-            case 'ж' :case 'Ж' : {
+            case 'ж' :case 'Ж' :
                 answer += "zh";
                 break;
-            }
-            case 'з' :case 'З' : {
+            case 'з' :case 'З' :
                 answer += "z";
                 break;
-            }
-            case 'и' :case 'И' : {
+            case 'и' :case 'И' :
                 answer += "i";
                 break;
-            }
-            case 'й' :case 'Й' : {
+            case 'й' :case 'Й' :
                 answer += "y";
                 break;
-            }
-            case 'к' :case 'К' : {
+            case 'к' :case 'К' :
                 answer += "k";
                 break;
-            }
-            case 'л' :case 'Л' : {
+            case 'л' :case 'Л' :
                 answer += "l";
                 break;
-            }
-            case 'м' :case 'М' : {
+            case 'м' :case 'М' :
                 answer += "m";
                 break;
-            }
-            case 'н' :case 'Н' : {
+            case 'н' :case 'Н' :
                 answer += "n";
                 break;
-            }
-            case 'о' :case 'О' : {
+            case 'о' :case 'О' :
                 answer += "o";
                 break;
-            }
-            case 'п' :case 'П' : {
+            case 'п' :case 'П' :
                 answer += "p";
                 break;
-            }
-            case 'р' :case 'Р' : {
+            case 'р' :case 'Р' :
                 answer += "r";
                 break;
-            }
-            case 'с' :case 'С' : {
+            case 'с' :case 'С' :
                 answer += "s";
                 break;
-            }
-            case 'т' :case 'Т' : {
+            case 'т' :case 'Т' :
                 answer += "t";
                 break;
-            }
-            case 'у' :case 'У' : {
+            case 'у' :case 'У' :
                 answer += "u";
                 break;
-            }
-            case 'ф' :case 'Ф' : {
+            case 'ф' :case 'Ф' :
                 answer += "f";
                 break;
-            }
-            case 'х' :case 'Х' : {
+            case 'х' :case 'Х' :
                 answer += "kh";
                 break;
-            }
-            case 'ц' :case 'Ц' : {
+            case 'ц' :case 'Ц' :
                 answer += "ts";
                 break;
-            }
-            case 'ч' :case 'Ч' : {
+            case 'ч' :case 'Ч' :
                 answer += "ch";
                 break;
-            }
-            case 'ш' :case 'Ш' : {
+            case 'ш' :case 'Ш' :
                 answer += "sh";
                 break;
-            }
-            case 'щ' :case 'Щ' : {
+            case 'щ' :case 'Щ' :
                 answer += "shh";
                 break;
-            }
-            case 'ъ' : {
+            case 'ъ' :
                 break;
-            }
-            case 'ы' :case 'Ы' : {
+            case 'ы' :case 'Ы' :
                 answer += "y";
                 break;
-            }
-            case 'ь' : {
+            case 'ь' :
                 answer += "'";
                 break;
-            }
-            case 'э' :case 'Э' : {
+            case 'э' :case 'Э' :
                 answer += "e";
                 break;
-            }
-            case 'ю' :case 'Ю' : {
+            case 'ю' :case 'Ю' :
                 answer += "yu";
                 break;
-            }
-            case 'я' :case 'Я' : {
+            case 'я' :case 'Я' :
                 answer += "ya";
                 break;
-            }
-            default : {
+            default :
                 answer += in;
-            }
         }
         return answer;
     }
@@ -309,7 +241,7 @@ public class StringUtils {
             char t = input.charAt(i);
             boolean check = i + 1 < input.length();
             switch (t) {
-                case 'c' :case 'C': {
+                case 'c' :case 'C':
                     if (check && input.charAt(i + 1) == 'h') {
                         answer += 'ч';
                         i++;
@@ -317,8 +249,7 @@ public class StringUtils {
                         answer += 'ц';
                     }
                     break;
-                }
-                case 'z': case 'Z' : {
+                case 'z': case 'Z' :
                     if (check && input.charAt(i + 1) == 'h') {
                         answer += 'ж';
                         i++;
@@ -326,12 +257,11 @@ public class StringUtils {
                         answer += 'з';
                     }
                     break;
-                }
-                case 's' : case 'S' : {
+                case 's' : case 'S' :
                     if (check) {
                         i++;
                         switch (input.charAt(i)) {
-                            case 'h': {
+                            case 'h':
                                 if (i + 1 < input.length()
                                         && input.charAt(i + 1) == 'h') {
                                     i++;
@@ -340,78 +270,63 @@ public class StringUtils {
                                 }
                                 answer += 'ш';
                                 break;
-                            }
-                            default: {
+                            default:
                                 answer += 'с';
                                 i--;
                                 break;
-                            }
                         }
                     } else {
                         answer += 'с';
                     }
                     break;
-                }
-                case 'j': case 'J' : {
+                case 'j': case 'J' :
                     if (check) {
                         i++;
                         switch (input.charAt(i)) {
-                            case 'e': {
+                            case 'e':
                                 answer += 'э';
                                 break;
-                            }
-                            case 'o' : {
+                            case 'o' :
                                 answer += 'ё';
                                 break;
-                            }
-                            default: {
+                            default:
                                 answer += 'й';
                                 i--;
                                 break;
-                            }
                         }
                     } else {
                         answer += 'й';
                     }
                     break;
-                }
-                case 'y' : case 'Y' : {
+                case 'y' : case 'Y' :
                     if (check) {
                         i++;
                         switch (input.charAt(i)) {
-                            case 'a': {
+                            case 'a':
                                 answer += 'я';
                                 break;
-                            }
-                            case 'y' : {
+                            case 'y' :
                                 answer += "ый";
                                 break;
-                            }
-                            case 'o' : {
+                            case 'o' :
                                 answer += "йо";
                                 break;
-                            }
-                            case 'e' : {
+                            case 'e' :
                                 answer += 'е';
                                 break;
-                            }
-                            case 'u': {
+                            case 'u':
                                 answer += 'ю';
                                 break;
-                            }
-                            default: {
+                            default:
                                 answer += 'ы';
                                 i--;
                                 break;
-                            }
                         }
                     } else {
                         answer += getRussianChar(t);
                     }
                     break;
-                }
-
-                case 't' :case 'T' : {
+                case 't' :case 'T' :
                     if (check) {
                         i++;
                         if (input.charAt(i) == 's') {
@@ -424,28 +339,22 @@ public class StringUtils {
                         answer += 'т';
                     }
                     break;
-                }
-                case 'k' : case 'K' : {
+                case 'k' : case 'K' :
                     if (check) {
                         i++;
                         if (input.charAt(i) == 'h') {
                             answer += 'х';
-                        }
-                        else {
+                        } else {
                             answer += 'к';
                             i--;
                         }
-                    }
-                    else {
+                    } else {
                         answer += 'к';
                     }
-                }
-                default : {
+                default :
                     answer += StringUtils.getRussianChar(input.charAt(i));
                     break;
-                }
             }
-
         }
         if (input.charAt(input.length() - 1) == 'y'
                 && input.charAt(input.length() - 2) != 'y') {
