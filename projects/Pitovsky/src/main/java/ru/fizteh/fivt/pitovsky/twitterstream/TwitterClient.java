@@ -1,7 +1,9 @@
 package ru.fizteh.fivt.pitovsky.twitterstream;
 
 import java.io.IOException;
-import java.util.Calendar;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -30,10 +32,6 @@ class TwitterClient {
     private static final int STREAM_EXIT_KEY = 27; //escape-key
     private static final int STREAM_MAX_QUEUE_SIZE = 1000; //i know, it is impossible, more than 1000 tweets per sec
 
-    private static final int MINUTE = 60 * 1000;
-    private static final int HOUR = 60 * MINUTE;
-    private static final int DAY = 24 * HOUR;
-
     private Twitter twitter;
     private BlockingQueue<Status> tweetsQueue;
     private boolean hideRetweets;
@@ -41,38 +39,26 @@ class TwitterClient {
 
 
     public static String convertDate(Date date) {
-        Calendar currentCalendar = Calendar.getInstance();
-        Calendar tweetCalendar = Calendar.getInstance();
-        tweetCalendar.setTime(date);
-        if (tweetCalendar.compareTo(currentCalendar) > 0) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime tweetDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (tweetDateTime.isAfter(currentDateTime)) {
             return "еще не опубликовано";
         }
-        currentCalendar.add(Calendar.MINUTE, -1);
-        currentCalendar.add(Calendar.MINUTE, -1); //because "-2 is a magic number"
-        if (tweetCalendar.compareTo(currentCalendar) > 0) {
+        Duration timeAfterTweet = Duration.between(tweetDateTime, currentDateTime);
+        if (timeAfterTweet.toMinutes() < 2) {
             return "только что";
         }
-        currentCalendar = Calendar.getInstance();
-        currentCalendar.add(Calendar.HOUR, -1);
-        if (tweetCalendar.compareTo(currentCalendar) > 0) {
-            return StringRuUtils.getNumeralsAgo("минута", ((int) (HOUR + currentCalendar.getTimeInMillis()
-                    - tweetCalendar.getTimeInMillis()) / MINUTE));
+        if (timeAfterTweet.toHours() < 1) {
+            return StringRuUtils.getNumeralsAgo("минута", (int) (timeAfterTweet.toMinutes()));
         }
-        currentCalendar = Calendar.getInstance();
-        if (currentCalendar.get(Calendar.DAY_OF_YEAR) == tweetCalendar.get(Calendar.DAY_OF_YEAR)
-                && currentCalendar.get(Calendar.YEAR) == tweetCalendar.get(Calendar.YEAR)) {
-            return StringRuUtils.getNumeralsAgo("час", currentCalendar.get(Calendar.HOUR_OF_DAY)
-                    - tweetCalendar.get(Calendar.HOUR_OF_DAY));
+        if (currentDateTime.toLocalDate().equals(tweetDateTime.toLocalDate())) {
+            return StringRuUtils.getNumeralsAgo("час", (int) (timeAfterTweet.toHours()));
         }
-        currentCalendar = Calendar.getInstance();
-        currentCalendar.add(Calendar.DATE, -1);
-        if (currentCalendar.get(Calendar.DAY_OF_YEAR) == tweetCalendar.get(Calendar.DAY_OF_YEAR)
-                && currentCalendar.get(Calendar.YEAR) == tweetCalendar.get(Calendar.YEAR)) {
+
+        if (currentDateTime.toLocalDate().minusDays(1).equals(tweetDateTime.toLocalDate())) {
             return "вчера";
         }
-        currentCalendar = Calendar.getInstance();
-        return StringRuUtils.getNumeralsAgo("день", (int) ((currentCalendar.getTimeInMillis()
-                - tweetCalendar.getTimeInMillis()) / DAY) + 1);
+        return StringRuUtils.getNumeralsAgo("день", (int) (timeAfterTweet.toDays()));
     }
 
     private static String prettyName(User user) {
