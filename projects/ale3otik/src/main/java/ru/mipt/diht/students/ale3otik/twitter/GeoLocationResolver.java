@@ -11,6 +11,8 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import org.json.JSONException;
 import org.json.JSONObject;
+import ru.mipt.diht.students.ale3otik.twitter.exceptions.LocationException;
+import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 import twitter4j.GeoLocation;
 
 import java.io.*;
@@ -19,9 +21,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Map;
-
-import javafx.util.Pair;
-import ru.mipt.diht.students.ale3otik.twitter.exceptions.LocationException;
 
 final class GeoLocationResolver {
     static final int MAX_QUANTITY_OF_TRIES = 2;
@@ -43,7 +42,7 @@ final class GeoLocationResolver {
     }
 
 
-    public static Pair<GeoLocation, Double> getGeoLocation(final String geoRequest)
+    public static GeoLocationInfo getGeoLocation(final String geoRequest)
             throws IOException, JSONException {
         final String baseUrl = "http://maps.googleapis.com/maps/api/geocode/json";
         final Map<String, String> params = Maps.newHashMap();
@@ -75,7 +74,7 @@ final class GeoLocationResolver {
         );
         approximatedRadius /= 2;
 
-        return new Pair((new GeoLocation(latitude, longitude)), new Double(approximatedRadius));
+        return new GeoLocationInfo((new GeoLocation(latitude, longitude)), approximatedRadius);
     }
 
     public static String readAll(final Reader rd) throws IOException {

@@ -5,9 +5,13 @@ package ru.mipt.diht.students.ale3otik.twitter;
  */
 
 import com.beust.jcommander.Parameter;
+import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 
-class JCommanderParser {
-    private static final int STANDART_LIMIT = 200;
+class ArgumentsStorage {
+    private static final int STANDART_LIMIT = 30;
+
+    private GeoLocationInfo geoLocationInfo;
+    private String curLocationName;
 
     @Parameter(names = {"--query", "-q"},
             description = "set query parameters")
@@ -60,6 +64,21 @@ class JCommanderParser {
         return help;
     }
 
+    public void setGeoLocationInfo(GeoLocationInfo newGeoLocationInfo) {
+        this.geoLocationInfo = newGeoLocationInfo;
+    }
+
+    public GeoLocationInfo getGeoLocationInfo() {
+        return this.geoLocationInfo;
+    }
+
+    public String getCurLocationName() {
+        return this.curLocationName;
+    }
+
+    public void setCurLocationName(String locationName) {
+        this.curLocationName = locationName;
+    }
 }
 /**
  * [--query|-q <query or keywords for stream>] \

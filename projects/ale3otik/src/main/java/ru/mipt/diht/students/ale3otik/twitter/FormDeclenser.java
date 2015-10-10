@@ -5,7 +5,7 @@ package ru.mipt.diht.students.ale3otik.twitter;
  */
 public final class FormDeclenser {
     private static final int RETWEET_INDEX = 0;
-    private static final int MINUTS_INDEX = 1;
+    private static final int MINUTES_INDEX = 1;
     private static final int HOURS_INDEX = 2;
     private static final int DAYS_INDEX = 3;
 
@@ -55,7 +55,7 @@ public final class FormDeclenser {
 
     public static String getMinutsDeclension(long count) {
         int formIndex = getRightForm(count);
-        return FORM_ARRAY[MINUTS_INDEX][formIndex];
+        return FORM_ARRAY[MINUTES_INDEX][formIndex];
     }
 
     public static String getHoursDeclension(long count) {
