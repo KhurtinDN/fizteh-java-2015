@@ -8,7 +8,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import ru.fizteh.fivt.pitovsky.twitterstream.ConsoleUtils.TextColor;
-import ru.fizteh.fivt.pitovsky.twitterstream.SearchLocation.SearchLocationException;
 import twitter4j.FilterQuery;
 import twitter4j.GeoQuery;
 import twitter4j.Place;
@@ -29,7 +28,7 @@ class TwitterClient {
 
     private static final int STREAM_SLEEP_TIME = 1000; //in ms
     private static final int STREAM_EXIT_KEY = 27; //escape-key
-    private static final int STREAM_MAX_QUEUE_SIZE = 1000; //i think, it is impossible, more than 1000 tweets per sec
+    private static final int STREAM_MAX_QUEUE_SIZE = 1000; //i know, it is impossible, more than 1000 tweets per sec
 
     private static final int MINUTE = 60 * 1000;
     private static final int HOUR = 60 * MINUTE;
@@ -38,6 +37,7 @@ class TwitterClient {
     private Twitter twitter;
     private BlockingQueue<Status> tweetsQueue;
     private boolean hideRetweets;
+    private boolean isDebugMode;
 
 
     public static String convertDate(Date date) {
@@ -114,9 +114,7 @@ class TwitterClient {
     private StatusListener tweetListener = new StatusAdapter() {
         public void onStatus(Status tweet) {
             if ((!hideRetweets || !tweet.isRetweet())) {
-                if (tweetsQueue.size() < STREAM_MAX_QUEUE_SIZE - 1) {
-                    tweetsQueue.add(tweet);
-                }
+                tweetsQueue.add(tweet);
             }
         }
     };
@@ -134,28 +132,26 @@ class TwitterClient {
         return location;
     }
 
-    TwitterClient() { //codestyler says, that 'public' modifier is redundant in this case
+    TwitterClient(boolean needHideRetweets, boolean withDebug) {
+        hideRetweets = needHideRetweets;
+        isDebugMode = withDebug;
         twitter = new TwitterFactory().getInstance();
     }
 
-    public void startStreaming(String queryString, boolean ifHideRetweets,
-            SearchLocation searchLocation, boolean debug) throws TwitterException {
+    public void startStreaming(String queryString, SearchLocation searchLocation) throws TwitterException {
         tweetsQueue = new ArrayBlockingQueue<Status>(STREAM_MAX_QUEUE_SIZE);
-        hideRetweets = ifHideRetweets; //for use it in tweetListener
-        TwitterStream tstream = new TwitterStreamFactory().getInstance();
-        tstream.addListener(tweetListener);
-        FilterQuery fquery = new FilterQuery();
-        String[] queryArray = new String[1];
-        queryArray[0] = queryString;
-        fquery.track(queryArray);
+        TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
+        twitterStream.addListener(tweetListener);
+        FilterQuery filterQuery = new FilterQuery();
+        filterQuery.track(new String[] {queryString});
         if (searchLocation != null) {
-            fquery.locations(searchLocation.getBoundingBox());
+            filterQuery.locations(searchLocation.getBoundingBox());
         }
-        tstream.filter(fquery); //start a new thread for listing
+        twitterStream.filter(filterQuery); //start a new thread for listing
         while (true) {
             while (!tweetsQueue.isEmpty()) {
                 Status tweet = tweetsQueue.poll();
-                System.out.println(tweetOneString(tweet, false, debug));
+                System.out.println(tweetOneString(tweet, false, isDebugMode));
             }
             try {
                 /* Unfortunately, we have not 'raw' mode in java
@@ -166,7 +162,7 @@ class TwitterClient {
                 while (System.in.available() > 0) {
                     int cm = System.in.read();
                     if (cm == 'q' || cm == STREAM_EXIT_KEY || cm == -1) {
-                        tstream.shutdown();
+                        twitterStream.shutdown();
                         needExit = true;
                         break;
                     }
@@ -175,7 +171,7 @@ class TwitterClient {
                     break;
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("cannot read from stdin: " + e.getMessage());
             }
             try {
                 Thread.sleep(STREAM_SLEEP_TIME);
@@ -185,9 +181,7 @@ class TwitterClient {
         }
     }
 
-    public void printTweets(String queryString, boolean hideretweets,
-            SearchLocation searchLocation, int limit, boolean debug) throws TwitterException {
-        hideRetweets = hideretweets;
+    public void printTweets(String queryString,  SearchLocation searchLocation, int limit) throws TwitterException {
         Query query = new Query(queryString);
         if (searchLocation != null) {
             query.setGeoCode(searchLocation.getCenter(), searchLocation.getRadius(), Query.Unit.km);
@@ -200,7 +194,7 @@ class TwitterClient {
             List<Status> tweets = result.getTweets();
             for (Status tweet : tweets) {
                 if (!hideRetweets || !tweet.isRetweet()) {
-                    System.out.println(tweetOneString(tweet, true, debug));
+                    System.out.println(tweetOneString(tweet, true, isDebugMode));
                     ++count;
                 }
                 query = result.nextQuery();

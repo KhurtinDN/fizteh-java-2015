@@ -1,6 +1,8 @@
 package ru.fizteh.fivt.pitovsky.twitterstream;
 
 public class ConsoleUtils {
+    private static final char ESCAPE = (char) 27;
+
     public static enum TextColor {
         STANDART (0),
         BLACK (30),
@@ -14,22 +16,20 @@ public class ConsoleUtils {
 
         private int color;
 
+        private String start() {
+            return "" + ESCAPE + "[" + color + "m";
+        }
+
+        private String stop() {
+            return STANDART.start();
+        }
+
         TextColor(int clr) {
             color = clr;
         }
     }
 
-    private static final char ESCAPE = (char) 27;
-
-    private static String setClr(TextColor tcolor) {
-        return "" + ESCAPE + "[" + tcolor.color + "m";
-    }
-
-    private static String setStClr() {
-        return setClr(TextColor.STANDART);
-    }
-
     public static String colorizeString(String string, TextColor tcolor) {
-        return setClr(tcolor) + string + setStClr();
+        return tcolor.start() + string + tcolor.stop();
     }
 }

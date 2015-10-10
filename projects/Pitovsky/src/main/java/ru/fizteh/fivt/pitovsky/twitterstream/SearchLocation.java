@@ -12,15 +12,6 @@ public class SearchLocation {
 
     private List<GeoLocation> searchLocations = new ArrayList<GeoLocation>();
 
-    class SearchLocationException extends Exception {
-        SearchLocationException() {
-            super();
-        }
-        SearchLocationException(String message) {
-            super(message);
-        }
-    }
-
     public SearchLocation(ResponseList<Place> searchPlaces) throws SearchLocationException {
         for (Place place : searchPlaces) {
             for (int x = 0; x < place.getBoundingBoxCoordinates().length; ++x) {
@@ -29,20 +20,20 @@ public class SearchLocation {
                 }
             }
         }
-        if (searchLocations.size() == 0) {
+        if (searchLocations.isEmpty()) {
             throw new SearchLocationException("too few places in placelist");
         }
     }
 
     private static double getCoordinatesDistance(GeoLocation locationFrom, GeoLocation locationTo) {
         double theta = locationFrom.getLongitude() - locationTo.getLongitude();
-        double dist = Math.sin(Math.toRadians(locationFrom.getLatitude()))
+        double distance = Math.sin(Math.toRadians(locationFrom.getLatitude()))
                 * Math.sin(Math.toRadians(locationTo.getLatitude()))
                 + Math.cos(Math.toRadians(locationFrom.getLatitude()))
                 * Math.cos(Math.toRadians(locationTo.getLatitude()))
                     * Math.cos(Math.toRadians(theta));
-        dist = Math.acos(dist);
-        return Math.toDegrees(dist) * DEGREES_TO_KM;
+        distance = Math.acos(distance);
+        return Math.toDegrees(distance) * DEGREES_TO_KM;
     }
 
     public final GeoLocation getCenter() {

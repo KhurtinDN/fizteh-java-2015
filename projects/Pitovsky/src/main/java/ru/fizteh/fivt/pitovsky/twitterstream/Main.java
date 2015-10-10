@@ -62,16 +62,15 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        //String[] argstmp = {"-q", "#Moscow", "-s"};
         JCommanderList jcParams = new JCommanderList();
-        JCommander jcommander;
+        JCommander jcommander = new JCommander(jcParams);
+        jcommander.setProgramName(args[0]);
         try {
-            jcommander = new JCommander(jcParams, args);
+            jcommander.parse(args);
         } catch (ParameterException pe) {
             System.out.println(pe.getMessage());
             System.out.println("You can use --help to learn more.");
             System.exit(1);
-            return;
         }
 
         if (jcParams.isHelp()) {
@@ -81,7 +80,7 @@ public class Main {
             return;
         }
 
-        TwitterClient client = new TwitterClient();
+        TwitterClient client = new TwitterClient(jcParams.isRetweetsHidden(), jcParams.isDebugMode());
 
         String searchPlace = resolvePlaceString(jcParams.getPlace());
 
@@ -101,29 +100,24 @@ public class Main {
                     }
                 }
                 if (jcParams.isStream()) {
-                    client.startStreaming(jcParams.getQueryString(), jcParams.isRetweetsHidden(),
-                            searchLocation, jcParams.isDebugMode());
+                    client.startStreaming(jcParams.getQueryString(), searchLocation);
                 } else {
-                    client.printTweets(jcParams.getQueryString(), jcParams.isRetweetsHidden(),
-                            searchLocation, jcParams.getTweetLimit(), jcParams.isDebugMode());
+                    client.printTweets(jcParams.getQueryString(), searchLocation, jcParams.getTweetLimit());
                 }
                 break;
             } catch (TwitterException te) {
                 if (jcParams.isDebugMode()) {
                     te.printStackTrace();
                 }
-                if (jcParams.isStream()) {
-                    Thread.currentThread().interrupt();
-                }
                 System.err.println("Failed to run TwitterClient: " + te.getMessage() + "Try again? [y/n]");
                 char ans = 0;
                 try {
-                    while (ans <= ' ') {
+                    while (ans <= ' ' && ans > 0) {
                         ans = (char) System.in.read();
                     }
                 } catch (IOException e) {
                     if (jcParams.isDebugMode()) {
-                        e.printStackTrace();
+                        System.err.println("reading fail: " + e.getMessage());
                     }
                     ans = 'e';
                 }
