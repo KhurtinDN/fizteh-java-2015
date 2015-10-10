@@ -11,22 +11,9 @@ import java.util.*;
  * Created by avk on 02.10.15.
  */
 public class TwitterStreamer {
-
     private static final double DEG_TO_KM = 60 * 1.1515 * 1.609344;
     private static final double DEG_TO_RAD = Math.PI / 180.0;
     private static final double RAD_TO_DEG = 180 / Math.PI;
-
-    private static final long SEC = 1000;
-    private static final long MIN = SEC * 60;
-    private static final long HOUR = MIN * 60;
-    private static final long DAY = HOUR * 24;
-
-    private static final byte ONE = 1;
-    private static final byte TWO = 2;
-    private static final byte THREE = 3;
-    private static final byte FOUR = 4;
-    private static final byte TEN = 10;
-    private static final byte TWENTY = 20;
 
     private String[] args;
     private final int sleepTime = 1000;
@@ -67,17 +54,17 @@ public class TwitterStreamer {
         }
         return city;
     }
+
     public static double[] getCoordinates() throws Exception {
         URL url = new URL("http://ip2geolocation.com/");
         URLConnection urlConnection = url.openConnection();
         Scanner scanner = new Scanner(urlConnection.getInputStream(), "UTF-8");
-
-        String line = "";
-
-//        while (line.indexOf());
+        //todo
+        //here is planned to return latitude and longitude
         double[] coord = {0, 0};
         return coord;
     }
+
     public static GeoLocation getGeoLocation() throws Exception {
         URL url = new URL("http://ip2geolocation.com/");
         URLConnection urlConnection = url.openConnection();
@@ -105,6 +92,7 @@ public class TwitterStreamer {
 
         longitude = Double.parseDouble(lonStr.substring(first, last));
 
+        //returning geolocation by received latitude and longitude by ip
         return new GeoLocation(latitude, longitude);
     }
 
@@ -112,7 +100,7 @@ public class TwitterStreamer {
         this.args = myargs;
     }
 
-    public final void startStreamer() throws Exception {
+    public final void startTwitting() throws Exception {
         final int
                 queryNum = 0,
                 placeNum = 1,
@@ -121,82 +109,93 @@ public class TwitterStreamer {
                 limitNum = 4,
                 helpNum = 5;
 
-        boolean isStream = false;
+        boolean isQuery = false,
+                isPlace = false,
+                isStream = false,
+                hideRetweets = false,
+                isLimit = false,
+                isHelp = false;
+
         int[] requestedParams = {-1, -1, -1, -1, -1, -1};
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--query") || args[i].equals("-q")) {
                 requestedParams[queryNum] = i + 1;
+                isQuery = true;
             }
             if (args[i].equals("--place") || args[i].equals("-p")) {
-                if (requestedParams[queryNum] == -1) {
-                    throw new Exception("no query for place!");
-                }
                 requestedParams[placeNum] = i + 1;
+                isPlace = true;
             }
             if (args[i].equals("--stream") || args[i].equals("-s")) {
-                requestedParams[streamNum] = i;
                 isStream = true;
             }
             if (args[i].equals("--hideRetweets")) {
-                requestedParams[hideNum] = i;
+                hideRetweets = true;
             }
             if (args[i].equals("--limit") || args[i].equals("-l")) {
                 requestedParams[limitNum] = i + 1;
+                isLimit = true;
             }
             if (args[i].equals("--help") || args[i].equals("-h")) {
-                requestedParams[helpNum] = i;
+                isHelp = true;
             }
         }
 
-
+        if (!isQuery) {
+            System.err.println("Query is essential argument!");
+            System.exit(1);
+        }
 
         Twitter twitter = TwitterFactory.getSingleton();
+
         //Here we'll create new query using string query
+        String queryString = args[requestedParams[queryNum]];
+        Query query = new Query(queryString);
+        int index = requestedParams[limitNum];
+        if ((index) != -1) {
+            int limit = Integer.parseInt(args[index]);
 
-        if (requestedParams[queryNum] != -1) {
-
-            String queryString = args[requestedParams[queryNum]];
-            Query query = new Query(queryString);
-            int index = requestedParams[limitNum];
-            if ((index) != -1) {
-                int limit = Integer.parseInt(args[index]);
-
-                if (limit < 0 || limit > tweetsLimit) {
-                    throw new Exception("wrong limit!");
-                }
-                query.setCount(limit);
+            if (limit < 0 || limit > tweetsLimit) {
+                System.err.println("Can not set limit not in range 0..100");
+                System.exit(1);
             }
-            //Here, if we are requested to do it,
-            // we must ADD LOCATION for the query
-            String location = "anywhere";
-            if (requestedParams[placeNum] != -1) {
-                location = args[requestedParams[placeNum]];
+            query.setCount(limit);
+        }
+        //Here, if we are requested to do it,
+        // we must ADD LOCATION for the query
+        String location = "anywhere";
+        if (isPlace) {
+            location = args[requestedParams[placeNum]];
 
-                if (location.equals("nearby") || location.equals("Nearby")) {
-                    location = getCityString();
-                }
-                query = setSearchPlace(twitter, query, location);
+            if (location.equals("nearby") || location.equals("Nearby")) {
+                location = getCityString();
             }
+            query = setSearchPlace(twitter, query, location);
+        }
 
-            if (requestedParams[streamNum] != -1) {
-                runStreamer(query);
-            } else {
-                //Next, searching tweets by query, get Class QueryResult
-                QueryResult queryResult = twitter.search(query);
-                //Next Getting list of tweets by list <Status>
-                List<Status> statusList = queryResult.getTweets();
-                //Then trying to print it on the screen
-                System.out.println(
-                        "Твиты по запросу "
-                                + queryString
-                                + " для "
-                                + location
-                                + ":"
-                );
-                for (Status tweet : statusList) {
-                    printTweet(tweet, requestedParams[hideNum] != -1, isStream);
-                }
+        if (isStream) {
+            runStreamer(query);
+        } else {
+            //Next, searching tweets by query, get Class QueryResult
+            QueryResult queryResult = twitter.search(query);
+            //Next Getting list of tweets by list <Status>
+            List<Status> statusList = queryResult.getTweets();
+            //Then trying to print it on the screen
+            //Check if no tweets:
+            if (statusList.isEmpty()) {
+                System.out.printf("There is no tweets on your query here");
+                return;
+            }
+            System.out.println(
+                    "Твиты по запросу "
+                            + queryString
+                            + " для "
+                            + location
+                            + ":"
+            );
+            for (Status tweet : statusList) {
+                printTweet(tweet, hideRetweets, isStream);
             }
         }
 
@@ -236,11 +235,11 @@ public class TwitterStreamer {
         }
     }
 
-
     private void printTweetTime(Status tweet) {
         String timeToPrint = getTimeFormattedTimeString(tweet.getCreatedAt());
         System.out.print("[" + timeToPrint + "]");
     }
+
     private void printTweet(Status tweet,
                             boolean hideRetweets,
                             boolean isStream) {
@@ -249,13 +248,15 @@ public class TwitterStreamer {
             printTweetTime(tweet);
         }
         System.out.print("@"
-                + StringUtils.toColor(tweet.getUser().getScreenName(), "cyan")
+                + StringUtils.paint(tweet.getUser().getScreenName(), "cyan")
                 + " : "
                 + tweet.getText());
 
         int retweetCount = tweet.getRetweetCount();
         if (retweetCount != 0) {
-            System.out.println(" (" + tweet.getRetweetCount() + " ретвитов)");
+            System.out.println(" ("
+                    + tweet.getRetweetCount() + " "
+                    + getTweetFormattedString(tweet.getRetweetCount()) + ")");
             if (!hideRetweets) {
                 printRetweets(tweet, isStream);
             }
@@ -274,7 +275,7 @@ public class TwitterStreamer {
         }
         System.out.print(
                 "@"
-                + StringUtils.toColor(retweet.getUser().getScreenName(), "cyan")
+                + StringUtils.paint(retweet.getUser().getScreenName(), "cyan")
                 + " ");
         System.out.print("ретвитнул @" + tweet.getUser().getScreenName()
                 + ": ");
@@ -352,64 +353,97 @@ public class TwitterStreamer {
         return dist;
     }
 
+    private String getTweetFormattedString(int tweetsNumber) {
+        final byte
+                ten = 10,
+                exceptStart = 11,
+                exceptFinish = 19,
+                ovMin = 5,
+                ovMax = 9,
+                ovEx = 0,
+                zeroNum = 1;
+        int remainder = tweetsNumber % ten;
+        if (tweetsNumber >= exceptStart && tweetsNumber <= exceptFinish
+                || remainder >= ovMin && remainder <= ovMax
+                || remainder == ovEx) {
+            return "ретвитов";
+        } else if (remainder == zeroNum) {
+            return "ретвит";
+        } else {
+            return "ретвита";
+        }
+    }
+
     private String getTimeFormattedTimeString(Date createdAt) {
+        //Remainders
+        final byte one = 1;
+        final byte two = 2;
+        final byte three = 3;
+        final byte four = 4;
+        final byte ten = 10;
+        final byte twenty = 20;
+        //Times
+        final long sec = 1000;
+        final long min = sec * 60;
+        final long hour = min * 60;
+        final long day = hour * 24;
         //Getting today's date and current time.
         Date date = Calendar.getInstance().getTime();
         String ending;
         long delta = date.getTime() - createdAt.getTime();
         assert (delta >= 0);
-        if (delta < 2 * MIN) {
+        if (delta < 2 * min) {
             return "Только что";
-        } else if (delta < HOUR) {
-            long minutes = delta / MIN;
-            if (minutes >= TEN && minutes <= TWENTY) {
+        } else if (delta < hour) {
+            long minutes = delta / min;
+            if (minutes >= ten && minutes <= twenty) {
                 ending = "";
             } else {
-                long ostatok = minutes % TEN;
-                if (ostatok == ONE) {
+                long ostatok = minutes % ten;
+                if (ostatok == one) {
                     ending = "у";
-                } else if (ostatok == TWO
-                        || ostatok == THREE || ostatok == FOUR) {
+                } else if (ostatok == two
+                        || ostatok == three || ostatok == four) {
                     ending = "ы";
                 } else {
                     ending = "";
                 }
             }
-            return (delta / MIN) + " минут" + ending + " назад";
-        } else if (delta < DAY) {
-            long hours = delta / HOUR;
-            if (hours > TEN && hours < TWENTY) {
+            return (delta / min) + " минут" + ending + " назад";
+        } else if (delta < day) {
+            long hours = delta / hour;
+            if (hours > ten && hours < twenty) {
                 ending = "ов";
             } else {
-                long ostatok = hours % TEN;
-                if (ostatok == ONE) {
+                long ostatok = hours % ten;
+                if (ostatok == one) {
                     ending = "";
-                } else if (ostatok == TWO
-                        || ostatok == THREE || ostatok == FOUR) {
+                } else if (ostatok == two
+                        || ostatok == three || ostatok == four) {
                     ending = "а";
                 } else {
                     ending = "ов";
                 }
             }
-            return (delta / HOUR) + " час" + ending + " назад";
-        } else if (delta < 2 * DAY) {
+            return (delta / hour) + " час" + ending + " назад";
+        } else if (delta < 2 * day) {
             return "Вчера";
         } else {
-            long days = delta / DAY;
-            if (days >= TEN && days <= TWENTY) {
+            long days = delta / day;
+            if (days >= ten && days <= twenty) {
                 ending = "ней";
             } else {
-                long ostatok = days % TEN;
+                long ostatok = days % ten;
                 if (ostatok == 1) {
                     ending = "ень";
-                } else if (ostatok == TWO
-                        || ostatok == THREE || ostatok == FOUR) {
+                } else if (ostatok == two
+                        || ostatok == three || ostatok == four) {
                     ending = "ня";
                 } else {
                     ending = "ней";
                 }
             }
-            return (delta / DAY) + " д" + ending + " назад";
+            return (delta / day) + " д" + ending + " назад";
         }
     }
 }

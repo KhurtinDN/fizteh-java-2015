@@ -7,7 +7,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         TwitterStreamer streamer = new TwitterStreamer(args);
-        streamer.startStreamer();
+        streamer.startTwitting();
         return;
     }
 }

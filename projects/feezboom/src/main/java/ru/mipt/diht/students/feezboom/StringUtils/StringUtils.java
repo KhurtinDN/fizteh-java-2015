@@ -15,7 +15,7 @@ public class StringUtils {
     public static final String ANSI_WHITE = "\u001B[37m";
 
 
-    public static String toColor(String string, String color)   {
+    public static String paint(String string, String color)   {
         String answer;
         switch (color) {
             case "black" :case "Black" :case "BLACK" :
@@ -370,5 +370,4 @@ public class StringUtils {
         }
         return answer;
     }
-
 }
