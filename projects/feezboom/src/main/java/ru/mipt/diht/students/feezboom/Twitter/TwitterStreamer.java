@@ -1,7 +1,7 @@
 package ru.mipt.diht.students.feezboom.Twitter;
 
+import ru.mipt.diht.students.feezboom.StringUtils.StringUtils;
 import twitter4j.*;
-
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -15,28 +15,18 @@ public class TwitterStreamer {
     private static final double DEG_TO_KM = 60 * 1.1515 * 1.609344;
     private static final double DEG_TO_RAD = Math.PI / 180.0;
     private static final double RAD_TO_DEG = 180 / Math.PI;
-    private static final long MILLISEC = 1;
+
     private static final long SEC = 1000;
     private static final long MIN = SEC * 60;
     private static final long HOUR = MIN * 60;
     private static final long DAY = HOUR * 24;
-    private static final long WEEK = DAY * 7;
-    private static final long YEAR = DAY * 365;
 
-    private static final byte ZERO = 0;
     private static final byte ONE = 1;
     private static final byte TWO = 2;
     private static final byte THREE = 3;
     private static final byte FOUR = 4;
-    private static final byte FIVE = 5;
-    private static final byte SIX = 6;
-    private static final byte SEVEN = 7;
-    private static final byte EIGHT = 8;
-    private static final byte NINE = 9;
     private static final byte TEN = 10;
     private static final byte TWENTY = 20;
-    private static final byte THIRTY = 30;
-    private static final byte FORTY = 40;
 
     private String[] args;
     private final int sleepTime = 1000;
@@ -281,13 +271,8 @@ public class TwitterStreamer {
 
     private Query setSearchPlace(Twitter twitter, Query query,
                                  String placeString) throws Exception {
-        if (placeString.equals("nearby") || placeString.equals("Nearby")) {
-            placeString = getCityString();
-        }
         //Search by places
-
-        Vector<GeoLocation> locations = new Vector<GeoLocation>();
-
+        Vector<GeoLocation> locations = new Vector<>();
         GeoQuery geoQuery = new GeoQuery("0.0.0.0");
         geoQuery.setQuery(placeString);
         //Then getting list of places:
@@ -316,6 +301,7 @@ public class TwitterStreamer {
         //Center is OK
 
         //Then getting Radius
+        final double minRadius = 10;
         double radius = 0;
         for (GeoLocation geoLocation : locations) {
             radius += getDistanceBetweenCoordinates(x, y,
@@ -323,7 +309,10 @@ public class TwitterStreamer {
                     geoLocation.getLongitude());
         }
         radius /= locations.size();
-        System.out.println("Place = " + placeString + " Radius = " + radius);
+        if (radius < minRadius) {
+            radius = minRadius;
+        }
+//        System.out.println("Place = " + placeString + " Radius = " + radius);
         //Radius is OK
 
         //Then making geolocation for query

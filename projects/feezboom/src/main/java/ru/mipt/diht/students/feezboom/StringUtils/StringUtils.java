@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.feezboom.Twitter;
+package ru.mipt.diht.students.feezboom.StringUtils;
 
 /**
  * Created by avk on 10.10.15.

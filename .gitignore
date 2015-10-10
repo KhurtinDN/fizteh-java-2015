@@ -18,4 +18,5 @@ workbench.xmi
 *.swp
 .settings
 .checkstyle
-twitter4j.propetries
+twitter4j.properties
+twitter4j.properties~
