@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.semyonkozloff.TwitterStream;
+package ru.mipt.diht.students.semyonkozloff.twitterstream;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.semyonkozloff.TwitterStream;
+package ru.mipt.diht.students.semyonkozloff.twitterstream;
 
 import com.beust.jcommander.JCommander;
 
@@ -6,10 +6,10 @@ import twitter4j.*;
 
 import java.util.List;
 
-import static ru.mipt.diht.students.semyonkozloff.TwitterStream.TweetPrinter.*;
-import static ru.mipt.diht.students.semyonkozloff.TwitterStream.QueryMaker.*;
+import static ru.mipt.diht.students.semyonkozloff.twitterstream.TweetPrinter.*;
+import static ru.mipt.diht.students.semyonkozloff.twitterstream.QueryMaker.*;
 import static
-        ru.mipt.diht.students.semyonkozloff.TwitterStream.ConnectionChecker.*;
+        ru.mipt.diht.students.semyonkozloff.twitterstream.ConnectionChecker.*;
 
 public final class TwitterStream {
 
@@ -113,7 +113,7 @@ public final class TwitterStream {
 
     public void printHelp() {
         JCommander jCommander = new JCommander(new Configuration());
-        jCommander.setProgramName("TwitterStream");
+        jCommander.setProgramName("twitterstream");
         jCommander.usage();
     }
 

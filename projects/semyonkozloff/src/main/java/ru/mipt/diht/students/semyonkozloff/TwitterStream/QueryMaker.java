@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.semyonkozloff.TwitterStream;
+package ru.mipt.diht.students.semyonkozloff.twitterstream;
 
 import com.google.maps.model.Geometry;
 import com.google.maps.model.LatLng;
@@ -7,7 +7,7 @@ import twitter4j.GeoLocation;
 import twitter4j.Query;
 
 import static
-        ru.mipt.diht.students.semyonkozloff.TwitterStream.LocationSearch.*;
+        ru.mipt.diht.students.semyonkozloff.twitterstream.LocationSearch.*;
 
 public class QueryMaker {
 
