@@ -1,6 +1,7 @@
 package ru.mipt.diht.students.semyonkozloff.twitterstream;
 
 import com.google.common.base.Strings;
+
 import twitter4j.Status;
 
 import java.util.Calendar;

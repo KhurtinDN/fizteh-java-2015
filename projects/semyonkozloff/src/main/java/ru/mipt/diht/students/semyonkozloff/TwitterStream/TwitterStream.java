@@ -27,7 +27,8 @@ public final class TwitterStream {
         twitter4j.TwitterStream twitterStream =
                 new TwitterStreamFactory().getInstance();
 
-        StatusListener tweetListener = new StatusListener() {
+        StatusListener tweetListener = new StatusAdapter() {
+
             public void onStatus(Status tweet) {
                 if (configuration.shouldHideRetweets() && tweet.isRetweet()) {
                     return;
@@ -45,21 +46,12 @@ public final class TwitterStream {
                 }
             }
 
-            public void
-            onDeletionNotice(StatusDeletionNotice statusDeletionNotice) { }
-
-            public void onScrubGeo(long userId, long upToStatusId) { }
-
-            public void onStallWarning(StallWarning warning) { }
-
-            public void
-            onTrackLimitationNotice(int numberOfLimitedStatuses) { }
-
             public void onException(Exception exception) {
                 System.err.print("Stream error: ");
                 exception.printStackTrace(System.err);
                 System.exit(1);
             }
+
         };
 
         twitterStream.addListener(tweetListener);
