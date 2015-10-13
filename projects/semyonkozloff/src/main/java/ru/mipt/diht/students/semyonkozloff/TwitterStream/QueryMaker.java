@@ -2,6 +2,7 @@ package ru.mipt.diht.students.semyonkozloff.twitterstream;
 
 import com.google.maps.model.Geometry;
 import com.google.maps.model.LatLng;
+
 import twitter4j.FilterQuery;
 import twitter4j.GeoLocation;
 import twitter4j.Query;
@@ -15,8 +16,6 @@ public class QueryMaker {
         FilterQuery filterQuery = new FilterQuery();
 
         filterQuery.track(configuration.getQuery());
-
-        // TODO
 
         if (configuration.getLocation() != null) {
             Geometry locationBox = findLocation(configuration.getLocation());
@@ -64,5 +63,4 @@ public class QueryMaker {
 
         return query;
     }
-
 }

@@ -4,7 +4,9 @@ import com.google.common.base.Strings;
 
 import twitter4j.Status;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class TweetPrinter {
@@ -31,29 +33,26 @@ public class TweetPrinter {
     }
 
     public static void printTime(Date date) {
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime tweetTime = date.toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDateTime();
+
         System.out.print("[" + ANSI_CYAN);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        Calendar currentCalendar = Calendar.getInstance();
-        long timeDifference = currentCalendar.getTimeInMillis()
-                - calendar.getTimeInMillis();
-
-        if (timeDifference <= 2 * MS_IN_MINUTE) {
+        if (ChronoUnit.MINUTES.between(tweetTime, currentTime) < 2) {
             System.out.print("just now");
-        } else if (timeDifference <= MS_IN_HOUR) {
-            System.out.print((int) (timeDifference / MS_IN_MINUTE)
+        } else if (ChronoUnit.HOURS.between(tweetTime, currentTime) < 1) {
+            System.out.print(ChronoUnit.MINUTES.between(tweetTime, currentTime)
                     + " minutes ago");
-        } else if (currentCalendar.get(Calendar.YEAR)
-                == calendar.get(Calendar.YEAR) && // if today
-                currentCalendar.get(Calendar.DAY_OF_YEAR)
-                        == calendar.get(Calendar.DAY_OF_YEAR)) {
-            System.out.print((int) (timeDifference / MS_IN_HOUR)
+        } else if (ChronoUnit.DAYS.between(tweetTime, currentTime) < 1) {
+            System.out.print(ChronoUnit.HOURS.between(tweetTime, currentTime)
                     + " hours ago");
-        } else if (timeDifference < N_HOURS_IN_DAY * MS_IN_HOUR) {
+        } else if (ChronoUnit.DAYS.between(tweetTime, currentTime) == 1) {
             System.out.print("yesterday");
         } else {
-            System.out.print((int) (timeDifference / MS_IN_DAY) + " days ago");
+            System.out.print(ChronoUnit.DAYS.between(tweetTime, currentTime)
+                    + " days ago");
         }
 
         System.out.print(ANSI_RESET + "] ");
@@ -67,11 +66,4 @@ public class TweetPrinter {
     private static final String ANSI_CYAN = "\u001B[36m";
     private static final String ANSI_GREEN = "\u001B[32m";
     private static final String ANSI_RESET = "\u001B[0m";
-
-    private static final long MS_IN_DAY = 86400000;
-    private static final long MS_IN_HOUR = 3600000;
-    private static final long MS_IN_MINUTE = 60000;
-
-    private static final int N_HOURS_IN_DAY = 24;
-
 }

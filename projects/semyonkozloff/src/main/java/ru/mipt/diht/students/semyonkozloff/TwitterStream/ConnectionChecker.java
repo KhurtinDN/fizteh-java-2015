@@ -48,5 +48,4 @@ public class ConnectionChecker {
     private static final int RETRY_DELAY = 1000;
     private static final int SERVER_PORT = 80;
     private static final int TIMEOUT = 3000;
-
 }

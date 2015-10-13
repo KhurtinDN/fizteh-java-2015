@@ -51,7 +51,6 @@ public final class TwitterStream {
                 exception.printStackTrace(System.err);
                 System.exit(1);
             }
-
         };
 
         twitterStream.addListener(tweetListener);
@@ -105,7 +104,7 @@ public final class TwitterStream {
 
     public void printHelp() {
         JCommander jCommander = new JCommander(new Configuration());
-        jCommander.setProgramName("twitterstream");
+        jCommander.setProgramName("TwitterStream");
         jCommander.usage();
     }
 
