@@ -29,6 +29,7 @@ public final class TwitterStream {
 
         StatusListener tweetListener = new StatusAdapter() {
 
+            @Override
             public void onStatus(Status tweet) {
                 if (configuration.shouldHideRetweets() && tweet.isRetweet()) {
                     return;
@@ -46,6 +47,7 @@ public final class TwitterStream {
                 }
             }
 
+            @Override
             public void onException(Exception exception) {
                 System.err.print("Stream error: ");
                 exception.printStackTrace(System.err);

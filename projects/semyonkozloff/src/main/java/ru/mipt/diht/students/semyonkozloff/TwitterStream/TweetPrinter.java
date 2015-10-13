@@ -59,6 +59,7 @@ public class TweetPrinter {
     }
 
     private static final int DELIMITER_LENGTH = 160;
+
     private static final String DELIMITER =
             Strings.repeat("-", DELIMITER_LENGTH);
 
