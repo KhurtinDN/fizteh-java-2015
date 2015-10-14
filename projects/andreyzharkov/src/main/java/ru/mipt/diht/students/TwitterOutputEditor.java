@@ -22,6 +22,7 @@ public class TwitterOutputEditor {
     private static final int SLEEP_TIME = 1000;
     private static final int QUEUE_MAX_SIZE = 1000;
     private static final char EXIT_KEY = (char) 27;
+    private static final String SEARCH_BY_LOCATION_FAILED = "too few places in placelist";
 
     private Twitter twitter;
     private ArgumentsList programArguments;
@@ -94,10 +95,14 @@ public class TwitterOutputEditor {
         LocationSearcher location;
         try {
             location = new LocationSearcher(searchPlaces);
+            return location;
         } catch (Exception ex) {
-            location = null;
+            if (ex.getMessage() == SEARCH_BY_LOCATION_FAILED) {
+                System.err.println(SEARCH_BY_LOCATION_FAILED);
+                return null;
+            }
         }
-        return location;
+        return null;
     }
 
     final void simpleMode() {

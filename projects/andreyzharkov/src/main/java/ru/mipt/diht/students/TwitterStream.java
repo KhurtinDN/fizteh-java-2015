@@ -1,6 +1,5 @@
 package ru.mipt.diht.students;
 
-import twitter4j.*;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 

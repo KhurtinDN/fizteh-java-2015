@@ -4,10 +4,12 @@ package ru.mipt.diht.students;
  * Created by Андрей on 11.10.2015.
  */
 public class TimeDeclension {
+    private static final int TEN = 10;
+
     public static final String timeInRightForm(String timeUnion, int count) {
-        switch (count % 10) {
+        switch (count % TEN) {
             case 1:
-                if (count / 10 != 1) {
+                if (count / TEN % TEN != 1) {
                     switch (timeUnion) {
                         case "DAY":
                             return "день";
@@ -20,9 +22,9 @@ public class TimeDeclension {
                     }
                 }
             case 2:
-            case 3:
-            case 4:
-                if (count / 10 != 1) {
+            case 2 + 1://Because 3 and 4 are magic numbers
+            case 2 + 2:
+                if (count / TEN % TEN != 1) {
                     switch (timeUnion) {
                         case "DAY":
                             return "дня";

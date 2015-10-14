@@ -10,14 +10,13 @@ import com.beust.jcommander.Parameter;
  */
 public class ArgumentsList {
     private static final int DEFAULT_TWEETS_LIMIT = 10;
-    private static final String DEFAULT_QUERY = "";
 
     @Parameter
     private final List<String> parameters = new ArrayList<String>();
 
     @Parameter(names = {"-q", "--query"}, description =
-            "Keywords for looking for, separating by whitespaces")
-    private String query = DEFAULT_QUERY;
+            "Keywords for looking for, separating by whitespaces", required = true)
+    private String query;
 
     public final String getQueryString() {
         return query;

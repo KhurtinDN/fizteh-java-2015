@@ -10,6 +10,11 @@
   <name>andreyzharkov</name>
   <url>http://maven.apache.org</url>
 
+  <ciManagement>
+        <system>Travis CI</system>
+        <url>https://travis-ci.org/KhurtinDN/fizteh-java-2015</url>
+    </ciManagement>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
