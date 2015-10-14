@@ -24,7 +24,7 @@ public class LocationSearcher {
             }
         }
         if (searchLocations.isEmpty()) {
-            throw new Exception("too few places in placelist");
+            throw new Exception("Too few places in placelist.");
         }
     }
 

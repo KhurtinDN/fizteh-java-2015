@@ -22,7 +22,7 @@ public class TwitterOutputEditor {
     private static final int SLEEP_TIME = 1000;
     private static final int QUEUE_MAX_SIZE = 1000;
     private static final char EXIT_KEY = (char) 27;
-    private static final String SEARCH_BY_LOCATION_FAILED = "too few places in placelist";
+    private static final String SEARCH_BY_LOCATION_FAILED = "Search by location failed! Show results from anywhere.";
 
     private Twitter twitter;
     private ArgumentsList programArguments;
@@ -90,19 +90,24 @@ public class TwitterOutputEditor {
             return null;
         }
         GeoQuery geoQuery = new GeoQuery("1.1.1.1"); //ip need for init
-        geoQuery.setQuery(region);
-        ResponseList<Place> searchPlaces = twitter.searchPlaces(geoQuery);
+        ResponseList<Place> searchPlaces;
         LocationSearcher location;
         try {
+            geoQuery.setQuery(region);
+            searchPlaces = twitter.searchPlaces(geoQuery);
             location = new LocationSearcher(searchPlaces);
             return location;
         } catch (Exception ex) {
-            if (ex.getMessage() == SEARCH_BY_LOCATION_FAILED) {
-                System.err.println(SEARCH_BY_LOCATION_FAILED);
+            try {
+                geoQuery.setQuery(Translator.translate("ru-en", region));
+                searchPlaces = twitter.searchPlaces(geoQuery);
+                location = new LocationSearcher(searchPlaces);
+                return location;
+            } catch (Exception e) {
+                System.out.println(SEARCH_BY_LOCATION_FAILED);
                 return null;
             }
         }
-        return null;
     }
 
     final void simpleMode() {
@@ -113,9 +118,6 @@ public class TwitterOutputEditor {
                 if (location != null) {
                     //System.out.println("Search by location success!");
                     query.setGeoCode(location.getCenter(), location.getRadius(), Query.Unit.km);
-                }
-                if (location == null) {
-                    System.out.println("Search by location failed!");
                 }
 
                 QueryResult result = twitter.search(query);

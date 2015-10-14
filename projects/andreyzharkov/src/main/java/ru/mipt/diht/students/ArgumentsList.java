@@ -9,7 +9,7 @@ import com.beust.jcommander.Parameter;
  * Created by Андрей on 09.10.2015.
  */
 public class ArgumentsList {
-    private static final int DEFAULT_TWEETS_LIMIT = 10;
+    private static final int DEFAULT_TWEETS_LIMIT = 100;
 
     @Parameter
     private final List<String> parameters = new ArrayList<String>();
@@ -24,7 +24,7 @@ public class ArgumentsList {
 
     @Parameter(names = {"-p", "--place"}, description =
             "Location of looking for")
-    private String place = "anywhere";
+    private String place = "nearby";
 
     public final String getPlace() {
         return place;
@@ -32,7 +32,6 @@ public class ArgumentsList {
 
     public final void checkLocation() {
         place = TwitterStream.checkLocation(place);
-        System.out.println(place);
     }
 
     @Parameter(names = {"-s", "--stream"}, description =
