@@ -2,11 +2,10 @@ package ru.mipt.diht.students.feezboom.Twitter;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
 
 public class JCommanderList {
 
-    private static int tweetsLimit = 100;
+    private static final int TWEETS_LIMIT = 100;
     private JCommander cmd;
 
     @Parameter(names = { "-q", "--query" },
@@ -24,7 +23,7 @@ public class JCommanderList {
 
     @Parameter(names = { "-l", "--limit"},
             description = "Tweets to show(only for non streaming mode)")
-    private Integer limit = tweetsLimit;
+    private Integer limit = TWEETS_LIMIT;
 
     @Parameter(names = "--hideRetweets",
             description = "Hiding Retweets")
@@ -34,27 +33,27 @@ public class JCommanderList {
             description = "Help mode", help = true)
     private boolean help = false;
 
-    public String getQuery() {
+    public final String getQuery() {
         return query;
     }
 
-    public String getPlace() {
+    public final String getPlace() {
         return place;
     }
 
-    public Integer getLimit() {
+    public final Integer getLimit() {
         return limit;
     }
 
-    public boolean noRetweets() {
+    public final boolean noRetweets() {
         return noRetweets;
     }
 
-    public boolean isStream() {
+    public final boolean isStream() {
         return isStream;
     }
 
-    public boolean isHelp() {
+    public final boolean isHelp() {
         return help;
     }
 
@@ -64,7 +63,7 @@ public class JCommanderList {
         cmd.setAcceptUnknownOptions(true);
     }
 
-    public void getHelp() {
+    public final void getHelp() {
         cmd.usage();
     }
 }

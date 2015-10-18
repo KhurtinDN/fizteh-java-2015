@@ -13,7 +13,7 @@ public class TwitterStreamer {
         this.params = new JCommanderList(args);
     }
 
-    public void startTwitting() throws Exception {
+    public final void startTwitting() throws Exception {
         if (params.isHelp()) {
             params.getHelp();
             System.exit(0);
@@ -30,16 +30,16 @@ public class TwitterStreamer {
             System.err.println("Limit " + limit + " was not set.");
         }
 
-        String location = params.getPlace();
-        switch (location) {
+        String city = params.getPlace();
+        switch (city) {
             case "nearby" : case "Nearby" :
-                String city = FindGeolocation.getCityStringAlternative();
+                city = FindGeolocation.getCityStringAlternative();
                 query = FindGeolocation.setSearchPlace(twitter, query, city);
                 break;
             case "anywhere" : case "Anywhere" :
                 break;
             default :
-                query = FindGeolocation.setSearchPlace(twitter, query, location);
+                query = FindGeolocation.setSearchPlace(twitter, query, city);
         }
 
         if (params.isStream()) {
@@ -50,7 +50,7 @@ public class TwitterStreamer {
         System.exit(0);
     }
 
-    public void runSearch(Query query) throws Exception {
+    private void runSearch(Query query) throws Exception {
         QueryResult queryResult = twitter.search(query);
         List<Status> statusList = queryResult.getTweets();
         //Check if no tweets:

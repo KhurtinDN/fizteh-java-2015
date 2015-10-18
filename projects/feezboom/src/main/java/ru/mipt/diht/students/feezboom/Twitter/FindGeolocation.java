@@ -13,19 +13,19 @@ public class FindGeolocation {
     private static final double DEG_TO_RAD = Math.PI / 180.0;
     private static final double RAD_TO_DEG = 180 / Math.PI;
 
-    private static String getExternalIP() throws Exception{
+    private static String getExternalIP() throws Exception {
         URL url = new URL("http://myexternalip.com/raw");
         URLConnection urlConnection = url.openConnection();
         Scanner in = new Scanner(urlConnection.getInputStream());
-        String IP = in.nextLine();
+        String ip = in.nextLine();
         in.close();
-        return IP;
+        return ip;
     }
 
     public static String getCityStringAlternative() throws Exception {
         String  apiKey = "f2f30e5e30cc31c97784982aadc8a193bb5a9d33",
-                IP = getExternalIP();
-        URL url = new URL("http://api.db-ip.com/addrinfo?addr=" + IP
+                ip = getExternalIP();
+        URL url = new URL("http://api.db-ip.com/addrinfo?addr=" + ip
                 + "&api_key=" + apiKey);
         URLConnection urlCon = url.openConnection();
         Scanner in = new Scanner(urlCon.getInputStream());
