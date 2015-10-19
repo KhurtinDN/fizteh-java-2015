@@ -117,7 +117,8 @@ public class TwitterStreamer {
             printTweetTime(tweet);
         }
         System.out.print("@"
-                + StringUtils.paint(tweet.getUser().getScreenName(), "cyan")
+                + StringUtils.getPainted(tweet.getUser().getScreenName(),
+                "cyan")
                 + " : "
                 + tweet.getText());
 
@@ -144,7 +145,8 @@ public class TwitterStreamer {
         }
         System.out.print(
                 "@"
-                + StringUtils.paint(retweet.getUser().getScreenName(), "cyan")
+                + StringUtils.getPainted(retweet.getUser().getScreenName(),
+                        "cyan")
                 + " ");
         System.out.print("ретвитнул @" + tweet.getUser().getScreenName()
                 + ": ");

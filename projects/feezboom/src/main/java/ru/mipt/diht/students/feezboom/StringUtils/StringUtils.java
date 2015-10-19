@@ -1,8 +1,8 @@
 package ru.mipt.diht.students.feezboom.StringUtils;
 
 /**
- * Created by avk on 10.10.15.
- */
+ ** Created by avk on 10.10.15.
+ **/
 public class StringUtils {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
@@ -15,7 +15,7 @@ public class StringUtils {
     public static final String ANSI_WHITE = "\u001B[37m";
 
 
-    public static String paint(String string, String color)   {
+    public static String getPainted(String string, String color)   {
         String answer;
         switch (color) {
             case "black" :case "Black" :case "BLACK" :
