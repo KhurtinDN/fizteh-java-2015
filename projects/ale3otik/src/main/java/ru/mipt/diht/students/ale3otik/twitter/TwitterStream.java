@@ -61,16 +61,14 @@ public class TwitterStream {
         informationMessage += " в потоковом режиме:";
         StatusListener listener = getStatusAdapter(arguments);
 
-        twitter4j.TwitterStream twStream = null;
+        twitter4j.TwitterStream twStream;
         try {
-            twStream = twitter4j
-                    .TwitterStreamFactory.getSingleton();
+            twStream = twitter4j.TwitterStreamFactory.getSingleton();
 
             twitter4j.TwitterFactory.getSingleton();
 
             FilterQuery query = new FilterQuery(arguments.getQuery());
             twStream.addListener(listener);
-//            twStream.onException(hand()); ??????????????????????????????????????????????
 
             System.out.println(informationMessage);
             TwitterUtil.printSplitLine();

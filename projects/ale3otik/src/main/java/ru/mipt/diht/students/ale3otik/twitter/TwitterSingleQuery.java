@@ -14,7 +14,6 @@ import java.util.List;
 public class TwitterSingleQuery {
     public static void printSingleTwitterQuery(ArgumentsStorage arguments, String informationMessage)
             throws ExitException {
-
         informationMessage += ":";
 
         int tries = 0;
@@ -35,7 +34,6 @@ public class TwitterSingleQuery {
 
             try {
                 while (allTweets.size() < arguments.getLimit()) {
-
                     result = twitter.search(query);
 
                     List<Status> newTweets = result.getTweets();
@@ -54,6 +52,9 @@ public class TwitterSingleQuery {
                     }
 
                     query = result.nextQuery();
+                    if (query == null) {
+                        break;
+                    }
                 }
 
                 break;

@@ -4,11 +4,6 @@ package ru.mipt.diht.students.ale3otik.twitter;
  * Created by alex on 29.09.15.
  */
 public final class FormDeclenser {
-    private static final int RETWEET_INDEX = 0;
-    private static final int MINUTES_INDEX = 1;
-    private static final int HOURS_INDEX = 2;
-    private static final int DAYS_INDEX = 3;
-
     private static final int MOD100 = 100;
     private static final int MOD10 = 10;
     private static final int SMALL_LEFT_BOUND = 2;
@@ -16,12 +11,11 @@ public final class FormDeclenser {
     private static final int HUGE_RIGHT_BOUND = 19;
 
 
-    private static final String[][] FORM_ARRAY = {
-            {"ретвит", "ретвита", "ретвитов"},
-            {"минута", "минуты", "минут"},
-            {"час", "часа", "часов"},
-            {"день", "дня", "дней"}
-    };
+    private static final String[] RETWEET_ARRAY = {"ретвит", "ретвита", "ретвитов"};
+    private static final String[] MINUTES_ARRAY = {"минута", "минуты", "минут"};
+    private static final String[] HOURS_ARRAY = {"час", "часа", "часов"};
+    private static final String[] DAYS_ARRAY = {"день", "дня", "дней"};
+
 
     private static int getRightForm(int count) {
         return getRightForm((long) count);
@@ -45,26 +39,25 @@ public final class FormDeclenser {
         }
 
         return 2;
-
     }
 
     public static String getTweetsDeclension(int count) {
         int formIndex = getRightForm(count);
-        return FORM_ARRAY[RETWEET_INDEX][formIndex];
+        return RETWEET_ARRAY[formIndex];
     }
 
     public static String getMinutsDeclension(long count) {
         int formIndex = getRightForm(count);
-        return FORM_ARRAY[MINUTES_INDEX][formIndex];
+        return MINUTES_ARRAY[formIndex];
     }
 
     public static String getHoursDeclension(long count) {
         int formIndex = getRightForm(count);
-        return FORM_ARRAY[HOURS_INDEX][formIndex];
+        return HOURS_ARRAY[formIndex];
     }
 
     public static String getDaysDeclension(long count) {
         int formIndex = getRightForm(count);
-        return FORM_ARRAY[DAYS_INDEX][formIndex];
+        return DAYS_ARRAY[formIndex];
     }
 }

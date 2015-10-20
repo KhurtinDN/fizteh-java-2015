@@ -10,57 +10,48 @@ import ru.mipt.diht.students.ale3otik.twitter.exceptions.ExitException;
 public class TwitterRunner {
     public static void main(String[] args) {
         try {
+            ConsoleColor.printFigureText("\nTwitter 0.1 ::: welcome \n\n",
+                    new ConsoleColor.Param[]{ConsoleColor.Param.bold, ConsoleColor.Param.purple});
+
+            ArgumentsStorage arguments = new ArgumentsStorage();
+            JCommander jcm = new JCommander(arguments);
+            jcm.setProgramName("TwitterQueryClient");
+
             try {
-                ConsoleColor.printFigureText("\nTwitter 0.1 ::: welcome \n\n",
-                        new ConsoleColor.Param[]{ConsoleColor.Param.bold, ConsoleColor.Param.purple});
-
-                ArgumentsStorage arguments = new ArgumentsStorage();
-                JCommander jcm = new JCommander(arguments);
-                jcm.setProgramName("TwitterQueryClient");
-
-                try {
-                    jcm.parse(args);
-                } catch (Exception e) {
-                    jcm.usage();
-                    throw new ExitException();
-                }
-
-                if (arguments.isHelp()) {
-                    jcm.usage();
-                    throw new ExitException();
-                }
-
-                TwitterArgumentsValidator.processArguments(arguments);
-
-                String informationMessage = "Твиты по";
-                if (arguments.getQuery().isEmpty()) {
-                    informationMessage += " пустому запросу";
-                } else {
-                    informationMessage += " запросу " + "\"" + arguments.getQuery() + "\"";
-                }
-
-                if (!arguments.getCurLocationName().isEmpty()) {
-                    informationMessage += " для \"" + arguments.getCurLocationName() + "\"";
-                }
-
-                if (arguments.isStream()) {
-                    TwitterStream.streamStart(arguments, informationMessage);
-                } else {
-                    TwitterSingleQuery.printSingleTwitterQuery(arguments, informationMessage);
-                }
-
-            } catch (ExitException e) {
-                //debug;
-                System.err.print("normal exit");
+                jcm.parse(args);
+            } catch (Exception e) {
+                jcm.usage();
+                throw new ExitException();
             }
-        } catch (Exception e) {
 
-            if (e.getMessage() != null) {
-                System.err.print(e.getMessage());
+            if (arguments.isHelp()) {
+                jcm.usage();
+                throw new ExitException();
+            }
+
+            TwitterArgumentsValidator.processArguments(arguments);
+
+            String informationMessage = "Твиты по";
+            if (arguments.getQuery().isEmpty()) {
+                informationMessage += " пустому запросу";
             } else {
-                System.err.print("Undetected error");
+                informationMessage += " запросу " + "\"" + arguments.getQuery() + "\"";
             }
 
+            if (!arguments.getCurLocationName().isEmpty()) {
+                informationMessage += " для \"" + arguments.getCurLocationName() + "\"";
+            }
+
+            if (arguments.isStream()) {
+                TwitterStream.streamStart(arguments, informationMessage);
+            } else {
+                TwitterSingleQuery.printSingleTwitterQuery(arguments, informationMessage);
+            }
+
+        } catch (ExitException e) {
+            //debug;
+            System.err.print("normal exit");
         }
+
     }
 }

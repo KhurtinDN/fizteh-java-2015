@@ -9,6 +9,7 @@ import com.beust.jcommander.internal.Maps;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import com.google.common.io.CharStreams;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ru.mipt.diht.students.ale3otik.twitter.exceptions.LocationException;
@@ -26,6 +27,7 @@ final class GeoLocationResolver {
     static final int MAX_QUANTITY_OF_TRIES = 2;
     static final double EARTH_RADIUS = 6371;
     static final String RADIUS_UNIT = "km";
+    static final String URL_IPINFO = "http://ipinfo.io/json";
 
     public static double getSphereDist(double latitude1, double longitude1,
                                        double latitude2, double longitude2) {
@@ -51,13 +53,13 @@ final class GeoLocationResolver {
         final String url = baseUrl + '?' + encodeParams(params);
         final JSONObject response = GeoLocationResolver.read(url);
 
-        JSONObject location = response.getJSONArray("results").getJSONObject(0);
-        location = location.getJSONObject("geometry");
-        JSONObject northEastBound = location.getJSONObject("bounds");
-        JSONObject southWestBound = location.getJSONObject("bounds");
-        location = location.getJSONObject("location");
-        northEastBound = northEastBound.getJSONObject("northeast");
-        southWestBound = southWestBound.getJSONObject("southwest");
+        JSONObject result = response.getJSONArray("results").getJSONObject(0);
+        JSONObject geometry = result.getJSONObject("geometry");
+
+        JSONObject northEastBound = geometry.getJSONObject("bounds").getJSONObject("northeast");
+        JSONObject southWestBound = geometry.getJSONObject("bounds").getJSONObject("southwest");
+        JSONObject location = geometry.getJSONObject("location");
+
         double latitude = location.getDouble("lat");
         double longitude = location.getDouble("lng");
         double northEastBoundLatitude = northEastBound.getDouble("lat");
@@ -66,7 +68,7 @@ final class GeoLocationResolver {
         double southWestBoundLongitude = southWestBound.getDouble("lng");
 
         /*
-        * Radius must be different in different regions
+        * Radius can be different in different regions
         */
         double approximatedRadius = getSphereDist(
                 northEastBoundLatitude, northEastBoundLongitude,
@@ -77,28 +79,13 @@ final class GeoLocationResolver {
         return new GeoLocationInfo((new GeoLocation(latitude, longitude)), approximatedRadius);
     }
 
-    public static String readAll(final Reader rd) throws IOException {
-        final StringBuilder sb = new StringBuilder();
-        int cp;
-        while ((cp = rd.read()) != -1) {
-            sb.append((char) cp);
-        }
-        return sb.toString();
-    }
-
     public static JSONObject read(final String url) throws IOException, JSONException {
-        final InputStream is = new URL(url).openStream();
-        try {
-            final BufferedReader rd = new BufferedReader(
-                    new InputStreamReader(is, Charset.forName("UTF-8")));
-            final String jsonText = readAll(rd);
-            final JSONObject json = new JSONObject(jsonText);
-            return json;
-        } finally {
-            is.close();
+        try (final InputStream inputStream = new URL(url).openStream();
+             final InputStreamReader streamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"))) {
+            final String content = CharStreams.toString(streamReader);
+            return new JSONObject(content);
         }
     }
-
 
     private static String encodeParams(final Map<String, String> params) {
         final String paramsUrl = Joiner.on('&').join(
@@ -108,11 +95,7 @@ final class GeoLocationResolver {
                     @Override
                     public String apply(final Map.Entry<String, String> input) {
                         try {
-                            final StringBuffer buffer = new StringBuffer();
-                            buffer.append(input.getKey());
-                            buffer.append('=');
-                            buffer.append(URLEncoder.encode(input.getValue(), "utf-8"));
-                            return buffer.toString();
+                            return input.getKey() + "=" + URLEncoder.encode(input.getValue(), "utf-8");
                         } catch (final UnsupportedEncodingException e) {
                             throw new RuntimeException(e);
                         }
@@ -124,28 +107,21 @@ final class GeoLocationResolver {
     public static String getNameOfCurrentLocation()
             throws MalformedURLException, LocationException {
         int numberOfTries = 0;
+        URL currentIP = new URL(URL_IPINFO);
+        while (numberOfTries < MAX_QUANTITY_OF_TRIES) {
 
-        do {
-            URL currentIP = new URL("http://ipinfo.io/json");
-
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(
                     currentIP.openStream()))) {
 
-                String currentInfo;
-                StringBuilder responseBuilder = new StringBuilder();
-                while ((currentInfo = in.readLine()) != null) {
-                    responseBuilder.append(currentInfo);
-                }
+                final String content = CharStreams.toString(reader);
 
-                JSONObject locationInfo =
-                        new JSONObject(responseBuilder.toString());
+                JSONObject locationInfo = new JSONObject(content);
 
                 return locationInfo.getString("city");
             } catch (IOException | JSONException e) {
                 ++numberOfTries;
             }
         }
-        while (numberOfTries < MAX_QUANTITY_OF_TRIES);
-        throw new LocationException();
+        throw new LocationException("Exception in detecting current location");
     }
 }
