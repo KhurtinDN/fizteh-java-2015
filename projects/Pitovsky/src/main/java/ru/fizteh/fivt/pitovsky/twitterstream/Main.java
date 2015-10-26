@@ -112,7 +112,7 @@ public class Main {
                 System.err.println("Failed to run TwitterClient: " + te.getMessage() + "Try again? [y/n]");
                 char ans = 0;
                 try {
-                    while (ans <= ' ' && ans > 0) {
+                    while (ans <= ' ' && ans >= 0) {
                         ans = (char) System.in.read();
                     }
                 } catch (IOException e) {

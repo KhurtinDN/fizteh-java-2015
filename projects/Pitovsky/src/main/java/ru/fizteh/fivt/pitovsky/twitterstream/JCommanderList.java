@@ -52,12 +52,6 @@ public class JCommanderList {
         return query;
     }
 
-    public final String[] getQuery() {
-        if (query == null) {
-            return new String[0];
-        }
-        return query.split("[\\s,.]+");
-    }
 
     public final boolean isStream() {
         return stream;

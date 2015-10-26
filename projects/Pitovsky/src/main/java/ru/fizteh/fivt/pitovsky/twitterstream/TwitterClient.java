@@ -130,6 +130,10 @@ class TwitterClient {
         twitterStream.addListener(tweetListener);
         FilterQuery filterQuery = new FilterQuery();
         filterQuery.track(new String[] {queryString});
+        /** woh, some problems:
+         * "Start consuming public statuses that match one or more filter predicates." - can we read in documentation,
+         * but we need statuses which match ALL of the filter predicates. I'm working on it.
+         */
         if (searchLocation != null) {
             filterQuery.locations(searchLocation.getBoundingBox());
         }
@@ -183,12 +187,12 @@ class TwitterClient {
                     System.out.println(tweetOneString(tweet, true, isDebugMode));
                     ++count;
                 }
-                query = result.nextQuery();
                 if (count >= limit) {
                     query = null;
                     break;
                 }
             }
+            query = result.nextQuery();
         }
     }
 }
