@@ -54,3 +54,10 @@
     * [FluentInterface](http://martinfowler.com/bliki/FluentInterface.html)
     * [The Java Fluent API Designer Crash Course](http://blog.jooq.org/2012/01/05/the-java-fluent-api-designer-crash-course/)
 * Задание на дом: [то же](/tasks/02-ModuleTests.md)
+
+## Семинар 6: Коллекции
+* Core Java (для самостоятельного изучения)
+    * [Trail: Collections](https://docs.oracle.com/javase/tutorial/collections/)
+    * [Java 8 Stream Tutorial](http://winterbe.com/posts/2014/07/31/java8-stream-tutorial-examples/)
+    * [Lesson: Generics](https://docs.oracle.com/javase/tutorial/java/generics/index.html)
+* Задание на дом: [CQL](/tasks/03-CollectionsQL.md)
