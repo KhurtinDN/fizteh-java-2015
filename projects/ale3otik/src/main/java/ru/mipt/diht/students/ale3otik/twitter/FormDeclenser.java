@@ -46,7 +46,7 @@ public final class FormDeclenser {
         return RETWEET_ARRAY[formIndex];
     }
 
-    public static String getMinutsDeclension(long count) {
+    public static String getMinutesDeclension(long count) {
         int formIndex = getRightForm(count);
         return MINUTES_ARRAY[formIndex];
     }

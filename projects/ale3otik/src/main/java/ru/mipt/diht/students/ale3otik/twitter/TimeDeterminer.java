@@ -24,7 +24,7 @@ public class TimeDeterminer {
         if (ChronoUnit.HOURS.between(tweetTime, currentTime) < 1) {
             long minutDifference = ChronoUnit.MINUTES.between(tweetTime, currentTime);
             return minutDifference + " "
-                    + FormDeclenser.getMinutsDeclension(minutDifference)
+                    + FormDeclenser.getMinutesDeclension(minutDifference)
                     + " назад";
         }
 
