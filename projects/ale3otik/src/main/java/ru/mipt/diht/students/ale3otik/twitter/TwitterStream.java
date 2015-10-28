@@ -1,4 +1,3 @@
-
 /**
  * Created by alex on 21.09.15.
  */
@@ -41,12 +40,12 @@ public class TwitterStream {
                     }
                 }
 
-                TwitterUtil.printFormattedTweet(status, arguments);
+                ConsoleUtil.printIntoStdout(TwitterUtil.getFormattedTweetToPrint(status, arguments));
 
                 try {
                     Thread.sleep(SLEEP_TIME);
                 } catch (InterruptedException e) {
-                    System.err.println(e.getMessage());
+                    ConsoleUtil.printErrorMessage(e.getMessage());
                     Thread.currentThread().interrupt();
                 }
 
@@ -70,8 +69,8 @@ public class TwitterStream {
             FilterQuery query = new FilterQuery(arguments.getQuery());
             twStream.addListener(listener);
 
-            System.out.println(informationMessage);
-            TwitterUtil.printSplitLine();
+            ConsoleUtil.printIntoStdout(informationMessage);
+            TwitterUtil.getSplitLine();
 
             if (arguments.getQuery().isEmpty()) {
                 twStream.sample();
@@ -80,7 +79,7 @@ public class TwitterStream {
             }
 
         } catch (Exception e) {
-            System.err.print(e.getMessage());
+            ConsoleUtil.printErrorMessage(e.getMessage());
             throw new ExitException();
         }
     }

@@ -3,7 +3,7 @@ package ru.mipt.diht.students.ale3otik.twitter;
 /**
  * Created by alex on 10.10.15.
  */
-public final class ConsoleColor {
+public final class ConsoleUtil {
 
     public enum Param { blue, purple, bold }
 
@@ -38,4 +38,13 @@ public final class ConsoleColor {
         String specialEscapes = getParamsEscape(params);
         System.out.print(specialEscapes + text + getResetEscape());
     }
+
+    public static void printIntoStdout(final String strToPrint) {
+        System.out.println(strToPrint);
+    }
+
+    public static void printErrorMessage(final String strToPrint) {
+        System.err.println(strToPrint);
+    }
+
 }

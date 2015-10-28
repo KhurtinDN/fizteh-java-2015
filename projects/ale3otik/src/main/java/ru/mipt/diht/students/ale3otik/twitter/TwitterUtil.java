@@ -11,11 +11,11 @@ public class TwitterUtil {
     public static final int TRIES_LIMIT = 3;
     private static final int SEPARATOR_LENGTH = 80;
 
-    public static void printSplitLine() {
-        System.out.println(Strings.repeat("-", SEPARATOR_LENGTH));
+    public static String getSplitLine() {
+        return Strings.repeat("-", SEPARATOR_LENGTH);
     }
 
-    public static void printFormattedTweet(Status status, ArgumentsStorage arguments) {
+    public static String getFormattedTweetToPrint(Status status, ArgumentsStorage arguments) {
 
         String tweetText = status.getText();
         String time = "";
@@ -25,12 +25,12 @@ public class TwitterUtil {
                     + TimeDeterminer.getTimeDifference(status.getCreatedAt())
                     + "]" + " ";
         }
-        String outputString = time + ConsoleColor.getParamsEscape(
-                new ConsoleColor.Param[]{ConsoleColor.Param.blue, ConsoleColor.Param.bold})
+        String outputString = time + ConsoleUtil.getParamsEscape(
+                new ConsoleUtil.Param[]{ConsoleUtil.Param.blue, ConsoleUtil.Param.bold})
                 + "@"
                 + status.getUser()
                 .getScreenName()
-                + ConsoleColor.getResetEscape()
+                + ConsoleUtil.getResetEscape()
                 + ": ";
 
         if (status.isRetweet()) {
@@ -40,20 +40,17 @@ public class TwitterUtil {
             tweetText = tweetText.substring(lastNameIndex + 1);
 
             outputString += "ретвитнул "
-                    + ConsoleColor.getParamsEscape(
-                    new ConsoleColor.Param[]{ConsoleColor.Param.blue, ConsoleColor.Param.bold})
+                    + ConsoleUtil.getParamsEscape(
+                    new ConsoleUtil.Param[]{ConsoleUtil.Param.blue, ConsoleUtil.Param.bold})
                     + "@"
                     + tweetAuthor
-                    + ConsoleColor.getResetEscape() + ":";
+                    + ConsoleUtil.getResetEscape() + ":";
         }
 
         outputString += tweetText;
         outputString += getRetweetInfo(status);
 
-        System.out.println(outputString);
-
-        printSplitLine();
-
+        return outputString + '\n' + getSplitLine();
     }
 
     private static String getRetweetInfo(Status status) {
@@ -65,10 +62,10 @@ public class TwitterUtil {
             String retweetDeclension =
                     FormDeclenser.getTweetsDeclension(countTweets);
             answerStr += "("
-                    + ConsoleColor.getParamsEscape(
-                    new ConsoleColor.Param[]{ConsoleColor.Param.bold})
+                    + ConsoleUtil.getParamsEscape(
+                    new ConsoleUtil.Param[]{ConsoleUtil.Param.bold})
                     + countTweets
-                    + ConsoleColor.getResetEscape()
+                    + ConsoleUtil.getResetEscape()
                     + " " + retweetDeclension
                     + ")";
         }

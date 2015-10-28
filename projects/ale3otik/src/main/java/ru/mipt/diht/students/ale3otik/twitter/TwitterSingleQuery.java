@@ -61,32 +61,32 @@ public class TwitterSingleQuery {
             } catch (TwitterException e) {
                 if (e.isCausedByNetworkIssue()) {
                     ++tries;
-                    System.err.println(e.getMessage() + " Попыток: " + tries);
+                    ConsoleUtil.printErrorMessage(e.getMessage() + " Попыток: " + tries);
                 } else {
-                    System.err.print(e.getMessage());
+                    ConsoleUtil.printErrorMessage(e.getMessage());
                     throw new ExitException();
                 }
             }
         }
 
         if (tries == TwitterUtil.TRIES_LIMIT) {
-            System.err.println("ОШИБКА: Не удалось установить соединение");
+            ConsoleUtil.printErrorMessage("ОШИБКА: Не удалось установить соединение");
             throw new ExitException();
         }
 
-        System.out.println(informationMessage);
-        TwitterUtil.printSplitLine();
+        ConsoleUtil.printIntoStdout(informationMessage);
+        TwitterUtil.getSplitLine();
 
 
         Collections.reverse(allTweets);
 
 
         if (allTweets.isEmpty()) {
-            System.out.println("Ничего не найдено :(");
+            ConsoleUtil.printIntoStdout("Ничего не найдено :(");
         }
 
         for (Status status : allTweets) {
-            TwitterUtil.printFormattedTweet(status, arguments);
+            ConsoleUtil.printIntoStdout(TwitterUtil.getFormattedTweetToPrint(status, arguments));
         }
 
     }

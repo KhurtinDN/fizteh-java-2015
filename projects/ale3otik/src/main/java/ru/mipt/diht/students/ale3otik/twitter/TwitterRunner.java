@@ -10,8 +10,8 @@ import ru.mipt.diht.students.ale3otik.twitter.exceptions.ExitException;
 public class TwitterRunner {
     public static void main(String[] args) {
         try {
-            ConsoleColor.printFigureText("\nTwitter 0.1 ::: welcome \n\n",
-                    new ConsoleColor.Param[]{ConsoleColor.Param.bold, ConsoleColor.Param.purple});
+            ConsoleUtil.printFigureText("\nTwitter 0.1 ::: welcome \n\n",
+                    new ConsoleUtil.Param[]{ConsoleUtil.Param.bold, ConsoleUtil.Param.purple});
 
             ArgumentsStorage arguments = new ArgumentsStorage();
             JCommander jcm = new JCommander(arguments);
@@ -50,7 +50,7 @@ public class TwitterRunner {
 
         } catch (ExitException e) {
             //debug;
-            System.err.print("normal exit");
+            ConsoleUtil.printErrorMessage("normal by caught exception exit");
         }
 
     }
