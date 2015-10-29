@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.pitovsky.twitterstream;
+package ru.mipt.diht.students.pitovsky.twitterstream;
 
 public class ConsoleUtils {
     private static final char ESCAPE = (char) 27;

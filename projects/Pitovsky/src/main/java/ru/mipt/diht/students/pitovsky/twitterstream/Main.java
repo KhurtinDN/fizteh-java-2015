@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.pitovsky.twitterstream;
+package ru.mipt.diht.students.pitovsky.twitterstream;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.pitovsky.twitterstream;
+package ru.mipt.diht.students.pitovsky.twitterstream;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import ru.fizteh.fivt.pitovsky.twitterstream.ConsoleUtils.TextColor;
+import ru.mipt.diht.students.pitovsky.twitterstream.ConsoleUtils.TextColor;
 import twitter4j.FilterQuery;
 import twitter4j.GeoQuery;
 import twitter4j.Place;

@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.pitovsky.twitterstream;
+package ru.mipt.diht.students.pitovsky.twitterstream;
 
 import java.util.Collections;
 import java.util.HashMap;
