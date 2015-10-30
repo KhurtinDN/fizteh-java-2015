@@ -29,7 +29,7 @@
     <modules>
         <module>dkhurtin</module>
         <module>ale3otik</module>
-        <!--Add you module here-->
+        <module>Pitovsky</module>
     </modules>
 
     <dependencyManagement>
