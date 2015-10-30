@@ -167,4 +167,8 @@
 
     </module>
 
+    <module name="SuppressionFilter">
+        <property name="file" value="dkhurtin/suppressions.xml"/>
+    </module>
+
 </module>
