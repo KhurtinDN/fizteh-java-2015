@@ -27,6 +27,7 @@ public class StringRuUtils {
     }
 
     private static final int NUM_DEC = 10;
+    private static final int NUM_HUNDRED = 100;
     private static final int NUM_SECOND_ENDING = 5; //start for new numeral endings in ru lang
 
     private static final Map<String, String[]> NOUN_ENDINGS_MAP
@@ -46,11 +47,13 @@ public class StringRuUtils {
     }
 
     public static String getNumeralWord(String word, int value) {
-        if (value / NUM_DEC != 1 && value % NUM_DEC == 1) {
+        int decimals = (value % NUM_HUNDRED) / NUM_DEC;
+        int units = value % NUM_DEC;
+        if (decimals != 1 && units == 1) {
             return getChangedNoun(word, NounEnding.NOMINATIVE); //like 1, 21, 31...
         }
-        if (value / NUM_DEC != 1 && value % NUM_DEC > 1
-                && value % NUM_DEC < NUM_SECOND_ENDING) {
+        if (decimals != 1 && units > 1
+                && units < NUM_SECOND_ENDING) {
             return getChangedNoun(word, NounEnding.ACCUSATIVE);
         }
         return getChangedNoun(word, NounEnding.ACCUSATIVE_MANY);
