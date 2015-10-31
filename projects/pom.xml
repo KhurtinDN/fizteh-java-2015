@@ -29,9 +29,14 @@
     <modules>
         <module>dkhurtin</module>
         <module>ale3otik</module>
+<<<<<<< HEAD
         <!--Add you module here-->
     <module>feezboom</module>
   </modules>
+=======
+        <module>Pitovsky</module>
+    </modules>
+>>>>>>> 4c84d8deb574cdafca7f9e51984716e1bc7aa266
 
     <dependencyManagement>
         <dependencies>
@@ -113,6 +118,7 @@
                         <phase>validate</phase>
                         <configuration>
                             <configLocation>checkstyle.xml</configLocation>
+                            <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
                             <encoding>UTF-8</encoding>
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>true</failsOnError>
