@@ -21,8 +21,8 @@ import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 class Arguments {
     private static final int STANDART_LIMIT = 30;
 
-    private GeoLocationInfo geoLocationInfo;
-    private String curLocationName;
+    private GeoLocationInfo geoLocationInfo = null;
+    private String curLocationName = "";
 
     @Parameter(names = {"--query", "-q"},
             description = "set query parameters")

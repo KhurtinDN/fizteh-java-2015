@@ -28,19 +28,21 @@ public class TimeDeterminer {
                     + " назад";
         }
 
+        LocalDateTime currentDayDate = currentTime.toLocalDate().atStartOfDay();
+        LocalDateTime tweetDayDate = tweetTime.toLocalDate().atStartOfDay();
 
-        if (ChronoUnit.DAYS.between(tweetTime, currentTime) < 1) {
+        if (ChronoUnit.DAYS.between(tweetDayDate, currentDayDate) < 1) {
             long hoursDifference = ChronoUnit.HOURS.between(tweetTime, currentTime);
             return hoursDifference + " "
                     + FormDeclenser.getHoursDeclension(hoursDifference)
                     + " назад";
         }
 
-        if (ChronoUnit.DAYS.between(tweetTime, currentTime) == 1) {
+        if (ChronoUnit.DAYS.between(tweetDayDate, currentDayDate) == 1) {
             return "вчера";
         }
 
-        long daysDifference = ChronoUnit.DAYS.between(tweetTime, currentTime);
+        long daysDifference = ChronoUnit.DAYS.between(tweetDayDate, currentDayDate);
         return (daysDifference) + " "
                 + FormDeclenser.getDaysDeclension(daysDifference)
                 + " назад";

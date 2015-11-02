@@ -4,15 +4,15 @@
 
 package ru.mipt.diht.students.ale3otik.twitter;
 
-import ru.mipt.diht.students.ale3otik.twitter.exceptions.ExitException;
+import ru.mipt.diht.students.ale3otik.twitter.exceptions.StreamStartFailedException;
 import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 import twitter4j.*;
 
-public class TwitterStream {
+public class TwitterStreamLauncher {
 
     private static final long SLEEP_TIME = 1000;
 
-    private static StatusAdapter getStatusAdapter(Arguments arguments) {
+    private static StatusAdapter createStatusAdapter(Arguments arguments) {
         return new StatusAdapter() {
             @Override
             public void onStatus(Status status) {
@@ -22,20 +22,13 @@ public class TwitterStream {
                 GeoLocationInfo geoParams = arguments.getGeoLocationInfo();
                 if (geoParams != null) {
                     GeoLocation tweetLocation;
-                    if (status.getGeoLocation() != null) {
-                        tweetLocation = status.getGeoLocation();
-                    } else {
+                    if (status.getGeoLocation() == null) {
                         return;
                     }
-
-                    double myLatitude = geoParams.getLocation().getLatitude();
-                    double myLongitude = geoParams.getLocation().getLongitude();
-                    double tweetLatitude = tweetLocation.getLatitude();
-                    double tweetLongitude = tweetLocation.getLongitude();
+                    tweetLocation = status.getGeoLocation();
 
                     if (GeoLocationResolver.getSphereDist(
-                            myLatitude, myLongitude,
-                            tweetLatitude, tweetLongitude) > geoParams.getRadius()) {
+                            geoParams.getLocation(), tweetLocation) > geoParams.getRadius()) {
                         return;
                     }
                 }
@@ -55,16 +48,14 @@ public class TwitterStream {
     }
 
     public static void streamStart(Arguments arguments, String informationMessage)
-            throws ExitException {
+            throws StreamStartFailedException {
 
         informationMessage += " в потоковом режиме:";
-        StatusListener listener = getStatusAdapter(arguments);
+        StatusListener listener = createStatusAdapter(arguments);
 
-        twitter4j.TwitterStream twStream;
+        TwitterStream twStream;
         try {
-            twStream = twitter4j.TwitterStreamFactory.getSingleton();
-
-            twitter4j.TwitterFactory.getSingleton();
+            twStream = TwitterStreamFactory.getSingleton();
 
             FilterQuery query = new FilterQuery(arguments.getQuery());
             twStream.addListener(listener);
@@ -79,8 +70,7 @@ public class TwitterStream {
             }
 
         } catch (Exception e) {
-            ConsoleUtil.printErrorMessage(e.getMessage());
-            throw new ExitException();
+            throw new StreamStartFailedException(e.getMessage());
         }
     }
 }

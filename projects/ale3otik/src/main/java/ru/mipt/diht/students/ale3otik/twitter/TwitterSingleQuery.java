@@ -1,6 +1,6 @@
 package ru.mipt.diht.students.ale3otik.twitter;
 
-import ru.mipt.diht.students.ale3otik.twitter.exceptions.ExitException;
+import ru.mipt.diht.students.ale3otik.twitter.exceptions.ConnectionFailedException;
 import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 import twitter4j.*;
 
@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class TwitterSingleQuery {
     public static void printSingleTwitterQuery(Arguments arguments, String informationMessage)
-            throws ExitException {
+            throws ConnectionFailedException, TwitterException {
         informationMessage += ":";
 
         int tries = 0;
@@ -63,15 +63,13 @@ public class TwitterSingleQuery {
                     ++tries;
                     ConsoleUtil.printErrorMessage(e.getMessage() + " Попыток: " + tries);
                 } else {
-                    ConsoleUtil.printErrorMessage(e.getMessage());
-                    throw new ExitException();
+                    throw e;
                 }
             }
         }
 
         if (tries == TwitterUtil.TRIES_LIMIT) {
-            ConsoleUtil.printErrorMessage("ОШИБКА: Не удалось установить соединение");
-            throw new ExitException();
+            throw new ConnectionFailedException("Не удалось восстановить соединение");
         }
 
         ConsoleUtil.printIntoStdout(informationMessage);

@@ -5,7 +5,10 @@ package ru.mipt.diht.students.ale3otik.twitter;
  */
 
 import com.beust.jcommander.JCommander;
-import ru.mipt.diht.students.ale3otik.twitter.exceptions.ExitException;
+import ru.mipt.diht.students.ale3otik.twitter.exceptions.ConnectionFailedException;
+import ru.mipt.diht.students.ale3otik.twitter.exceptions.NormalExitException;
+import ru.mipt.diht.students.ale3otik.twitter.exceptions.StreamStartFailedException;
+import twitter4j.TwitterException;
 
 public class TwitterRunner {
     public static void main(String[] args) {
@@ -22,37 +25,48 @@ public class TwitterRunner {
                 jcm.parse(args);
             } catch (Exception e) {
                 jcm.usage();
-                throw new ExitException();
+                throw new NormalExitException("Invalid arguments presentation exit");
             }
 
             if (arguments.isHelp()) {
                 jcm.usage();
-                throw new ExitException();
+                throw new NormalExitException("Normal exit");
             }
 
             TwitterArgumentsValidator.processArguments(arguments);
 
-            String informationMessage = "Твиты по";
+            StringBuilder informationMessage = new StringBuilder();
+            informationMessage.append("Твиты по");
             if (arguments.getQuery().isEmpty()) {
-                informationMessage += " пустому запросу";
+                informationMessage.append(" пустому запросу");
             } else {
-                informationMessage += " запросу " + "\"" + arguments.getQuery() + "\"";
+                informationMessage.append(" запросу " + "\"" + arguments.getQuery() + "\"");
             }
 
             if (!arguments.getCurLocationName().isEmpty()) {
-                informationMessage += " для \"" + arguments.getCurLocationName() + "\"";
+                informationMessage.append(" для \"" + arguments.getCurLocationName() + "\"");
             }
 
             if (arguments.isStream()) {
-                TwitterStream.streamStart(arguments, informationMessage);
+                TwitterStreamLauncher.streamStart(arguments, informationMessage.toString());
             } else {
-                TwitterSingleQuery.printSingleTwitterQuery(arguments, informationMessage);
+                TwitterSingleQuery.printSingleTwitterQuery(arguments, informationMessage.toString());
             }
 
-        } catch (ExitException e) {
-            //debug;
-            ConsoleUtil.printErrorMessage("normal by caught exception exit");
+        } catch (IllegalArgumentException e) {
+            ConsoleUtil.printErrorMessage("IllegalArgumentException");
+            ConsoleUtil.printErrorMessage(e.getMessage());
+        } catch (ConnectionFailedException e) {
+            ConsoleUtil.printErrorMessage("ConnectionFailedException");
+            ConsoleUtil.printErrorMessage(e.getMessage());
+        } catch (TwitterException e) {
+            ConsoleUtil.printErrorMessage("Unhandled TwitterException");
+            ConsoleUtil.printErrorMessage(e.getMessage());
+        } catch (StreamStartFailedException e) {
+            ConsoleUtil.printErrorMessage("StreamStartFailedException");
+            ConsoleUtil.printErrorMessage(e.getMessage());
+        } catch (NormalExitException e) {
+            ConsoleUtil.printErrorMessage(e.getMessage());
         }
-
     }
 }

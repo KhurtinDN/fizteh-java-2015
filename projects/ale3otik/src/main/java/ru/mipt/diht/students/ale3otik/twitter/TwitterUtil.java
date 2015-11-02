@@ -15,13 +15,12 @@ public class TwitterUtil {
         return Strings.repeat("-", SEPARATOR_LENGTH);
     }
 
-    public static String getUserNameFromat(final String name) {
+    public static String getUserNameStyle(final String name) {
         return ConsoleUtil.Style.BLUE.line(ConsoleUtil.Style.BOLD.line("@" + name));
     }
 
     public static String getFormattedTweetToPrint(Status status, Arguments arguments) {
 
-        String tweetText = status.getText();
         String time = "";
 
         if (!arguments.isStream()) {
@@ -29,36 +28,53 @@ public class TwitterUtil {
                     + TimeDeterminer.getTimeDifference(status.getCreatedAt())
                     + "]" + " ";
         }
-        String outputString = time + getUserNameFromat(status.getUser().getScreenName()) + ": ";
+        StringBuilder outputString = new StringBuilder();
+        outputString.append(time + getUserNameStyle(status.getUser().getScreenName()) + ": ");
 
+        String tweetText = status.getText();
         if (status.isRetweet()) {
-            int firstNameIndex = tweetText.indexOf('@', 0) + 1;
-            int lastNameIndex = tweetText.indexOf(':', firstNameIndex);
-            String tweetAuthor = tweetText.substring(firstNameIndex, lastNameIndex - 1);
-            tweetText = tweetText.substring(lastNameIndex + 1);
-
-            outputString += "ретвитнул " + getUserNameFromat(tweetAuthor) + ":";
+            AuthorNameParser parser = new AuthorNameParser(tweetText);
+            outputString
+                    .append("ретвитнул ")
+                    .append(getUserNameStyle(parser.getTweetAuthor()))
+                    .append(":");
+            tweetText = tweetText.substring(parser.getEndIndex());
         }
 
-        outputString += tweetText;
-        outputString += getRetweetInfo(status);
+        outputString.append(tweetText).append(getRetweetInfo(status));
+        outputString.append('\n').append(getSplitLine());
+        return outputString.toString();
+    }
 
-        return outputString + '\n' + getSplitLine();
+    private static class AuthorNameParser {
+        private String tweetAuthor;
+        private int endParsingIndex;
+
+        AuthorNameParser(String tweetText) {
+            this.endParsingIndex = 0;
+            int firstNameIndex = tweetText.indexOf('@', 0) + 1;
+            int lastNameIndex = tweetText.indexOf(':', firstNameIndex);
+            this.tweetAuthor = tweetText.substring(firstNameIndex, lastNameIndex - 1);
+            endParsingIndex = lastNameIndex + 1;
+        }
+
+        public String getTweetAuthor() {
+            return this.tweetAuthor;
+        }
+
+        public int getEndIndex() {
+            return endParsingIndex;
+        }
     }
 
     private static String getRetweetInfo(Status status) {
-        String answerStr = "";
-
-        int countTweets = status.getRetweetCount();
-        if (countTweets > 0) {
-
+        if (status.getRetweetCount() > 0) {
             String retweetDeclension =
-                    FormDeclenser.getTweetsDeclension(countTweets);
-            answerStr += "("
-                    + ConsoleUtil.Style.BOLD.line(new Integer(countTweets).toString())
-                    + " " + retweetDeclension
-                    + ")";
+                    FormDeclenser.getTweetsDeclension(status.getRetweetCount());
+            return new StringBuilder().append("(")
+                    .append(ConsoleUtil.Style.BOLD.line(new Integer(status.getRetweetCount()).toString()))
+                    .append(" ").append(retweetDeclension).append(")").toString();
         }
-        return answerStr;
+        return "";
     }
 }
