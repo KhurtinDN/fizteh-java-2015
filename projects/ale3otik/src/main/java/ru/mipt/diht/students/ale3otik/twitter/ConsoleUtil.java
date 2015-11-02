@@ -5,38 +5,25 @@ package ru.mipt.diht.students.ale3otik.twitter;
  */
 public final class ConsoleUtil {
 
-    public enum Param { blue, purple, bold }
-
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BLUE = "\u001B[34m";
     private static final String ANSI_PURPLE = "\u001B[35m";
     private static final String ANSI_BOLD = "\033[1m";
 
-    public static String getParamsEscape(Param[] params) {
-        String fullEscapesStirng = "";
-        for (Param p : params) {
-            switch (p) {
-                case blue:
-                    fullEscapesStirng += ANSI_BLUE;
-                    break;
-                case purple:
-                    fullEscapesStirng += ANSI_PURPLE;
-                    break;
-                case bold:
-                    fullEscapesStirng += ANSI_BOLD;
-                default:
-            }
+    public enum Style {
+        BLUE(ANSI_BLUE),
+        PURPLE(ANSI_PURPLE),
+        BOLD(ANSI_BOLD);
+
+        private String escape;
+
+        Style(String escapeCode) {
+            this.escape = escapeCode;
         }
-        return fullEscapesStirng;
-    }
 
-    public static String getResetEscape() {
-        return ANSI_RESET;
-    }
-
-    public static void printFigureText(String text, Param[] params) {
-        String specialEscapes = getParamsEscape(params);
-        System.out.print(specialEscapes + text + getResetEscape());
+        String line(String inputLine) {
+            return this.escape + inputLine + ANSI_RESET;
+        }
     }
 
     public static void printIntoStdout(final String strToPrint) {

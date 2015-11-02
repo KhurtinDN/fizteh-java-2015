@@ -10,10 +10,11 @@ import ru.mipt.diht.students.ale3otik.twitter.exceptions.ExitException;
 public class TwitterRunner {
     public static void main(String[] args) {
         try {
-            ConsoleUtil.printFigureText("\nTwitter 0.1 ::: welcome \n\n",
-                    new ConsoleUtil.Param[]{ConsoleUtil.Param.bold, ConsoleUtil.Param.purple});
+            System.out.print(
+                    ConsoleUtil.Style.BOLD.line(
+                            ConsoleUtil.Style.PURPLE.line("\nTwitter 0.1 ::: welcome \n\n")));
 
-            ArgumentsStorage arguments = new ArgumentsStorage();
+            Arguments arguments = new Arguments();
             JCommander jcm = new JCommander(arguments);
             jcm.setProgramName("TwitterQueryClient");
 

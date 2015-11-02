@@ -12,7 +12,7 @@ import java.util.List;
  * Created by alex on 10.10.15.
  */
 public class TwitterSingleQuery {
-    public static void printSingleTwitterQuery(ArgumentsStorage arguments, String informationMessage)
+    public static void printSingleTwitterQuery(Arguments arguments, String informationMessage)
             throws ExitException {
         informationMessage += ":";
 
@@ -75,7 +75,7 @@ public class TwitterSingleQuery {
         }
 
         ConsoleUtil.printIntoStdout(informationMessage);
-        TwitterUtil.getSplitLine();
+        ConsoleUtil.printErrorMessage(TwitterUtil.getSplitLine());
 
 
         Collections.reverse(allTweets);

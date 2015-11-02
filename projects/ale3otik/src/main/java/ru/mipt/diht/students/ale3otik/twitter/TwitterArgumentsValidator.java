@@ -13,7 +13,7 @@ import java.io.IOException;
 
 
 public class TwitterArgumentsValidator {
-    public static void processArguments(ArgumentsStorage arguments) throws ExitException {
+    public static void processArguments(Arguments arguments) throws ExitException {
 
         if (!isQueryValid(arguments)) {
             System.out.print("Задан пустой поисковой запрос");
@@ -45,7 +45,7 @@ public class TwitterArgumentsValidator {
 
     }
 
-    private static boolean isQueryValid(ArgumentsStorage arguments) {
+    private static boolean isQueryValid(Arguments arguments) {
         return (!arguments.getQuery().isEmpty() || arguments.isStream());
     }
 }

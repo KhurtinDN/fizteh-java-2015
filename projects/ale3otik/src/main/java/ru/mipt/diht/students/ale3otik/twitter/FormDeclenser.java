@@ -4,12 +4,6 @@ package ru.mipt.diht.students.ale3otik.twitter;
  * Created by alex on 29.09.15.
  */
 public final class FormDeclenser {
-    private static final int MOD100 = 100;
-    private static final int MOD10 = 10;
-    private static final int SMALL_LEFT_BOUND = 2;
-    private static final int SMALL_RIGHT_BOUND = 4;
-    private static final int HUGE_RIGHT_BOUND = 19;
-
 
     private static final String[] RETWEET_ARRAY = {"ретвит", "ретвита", "ретвитов"};
     private static final String[] MINUTES_ARRAY = {"минута", "минуты", "минут"};
@@ -21,16 +15,15 @@ public final class FormDeclenser {
         return getRightForm((long) count);
     }
 
+    @SuppressWarnings("checkstyle:magicnumber")
     private static int getRightForm(long count) {
-        long hundredMod = count % MOD100;
-        if (hundredMod > SMALL_RIGHT_BOUND
-                && hundredMod <= HUGE_RIGHT_BOUND) {
+        long hundredMod = count % 100;
+        if (hundredMod > 4 && hundredMod <= 19) {
             return 2;
         }
 
-        long tenMod = count % MOD10;
-        if (tenMod >= SMALL_LEFT_BOUND
-                && tenMod <= SMALL_RIGHT_BOUND) {
+        long tenMod = count % 10;
+        if (tenMod >= 2 && tenMod <= 4) {
             return 1;
         }
 

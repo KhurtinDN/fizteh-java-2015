@@ -5,9 +5,20 @@ package ru.mipt.diht.students.ale3otik.twitter;
  */
 
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.validators.PositiveInteger;
 import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 
-class ArgumentsStorage {
+/**
+ * Input parameters format.
+ *
+ * [--query|-q <query or keywords for stream>]
+ * [--place|-p <location|'nearby'>]
+ * [--stream|-s]
+ * [--hideRetweets]
+ * [--limit|-l <tweets>]
+ * [--help|-h]
+ */
+class Arguments {
     private static final int STANDART_LIMIT = 30;
 
     private GeoLocationInfo geoLocationInfo;
@@ -30,6 +41,7 @@ class ArgumentsStorage {
     private boolean hideRetweets = false;
 
     @Parameter(names = {"--limit", "-l"},
+            validateWith = PositiveInteger.class,
             description = "set limit on quantity of tweets")
     private int limit = STANDART_LIMIT;
 
@@ -54,9 +66,6 @@ class ArgumentsStorage {
     }
 
     public int getLimit() {
-        if (limit <= 0) {
-            return STANDART_LIMIT;
-        }
         return limit;
     }
 
@@ -80,12 +89,4 @@ class ArgumentsStorage {
         this.curLocationName = locationName;
     }
 }
-/**
- * [--query|-q <query or keywords for stream>] \
- * [--place|-p <location|'nearby'>] \
- * [--stream|-s] \
- * [--hideRetweets] \
- * [--limit|-l <tweets>] \
- * [--help|-h]
- */
 

@@ -12,7 +12,7 @@ public class TwitterStream {
 
     private static final long SLEEP_TIME = 1000;
 
-    private static StatusAdapter getStatusAdapter(ArgumentsStorage arguments) {
+    private static StatusAdapter getStatusAdapter(Arguments arguments) {
         return new StatusAdapter() {
             @Override
             public void onStatus(Status status) {
@@ -54,7 +54,7 @@ public class TwitterStream {
 
     }
 
-    public static void streamStart(ArgumentsStorage arguments, String informationMessage)
+    public static void streamStart(Arguments arguments, String informationMessage)
             throws ExitException {
 
         informationMessage += " в потоковом режиме:";

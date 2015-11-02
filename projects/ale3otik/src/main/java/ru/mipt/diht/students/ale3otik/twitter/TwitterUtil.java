@@ -15,7 +15,11 @@ public class TwitterUtil {
         return Strings.repeat("-", SEPARATOR_LENGTH);
     }
 
-    public static String getFormattedTweetToPrint(Status status, ArgumentsStorage arguments) {
+    public static String getUserNameFromat(final String name) {
+        return ConsoleUtil.Style.BLUE.line(ConsoleUtil.Style.BOLD.line("@" + name));
+    }
+
+    public static String getFormattedTweetToPrint(Status status, Arguments arguments) {
 
         String tweetText = status.getText();
         String time = "";
@@ -25,13 +29,7 @@ public class TwitterUtil {
                     + TimeDeterminer.getTimeDifference(status.getCreatedAt())
                     + "]" + " ";
         }
-        String outputString = time + ConsoleUtil.getParamsEscape(
-                new ConsoleUtil.Param[]{ConsoleUtil.Param.blue, ConsoleUtil.Param.bold})
-                + "@"
-                + status.getUser()
-                .getScreenName()
-                + ConsoleUtil.getResetEscape()
-                + ": ";
+        String outputString = time + getUserNameFromat(status.getUser().getScreenName()) + ": ";
 
         if (status.isRetweet()) {
             int firstNameIndex = tweetText.indexOf('@', 0) + 1;
@@ -39,12 +37,7 @@ public class TwitterUtil {
             String tweetAuthor = tweetText.substring(firstNameIndex, lastNameIndex - 1);
             tweetText = tweetText.substring(lastNameIndex + 1);
 
-            outputString += "ретвитнул "
-                    + ConsoleUtil.getParamsEscape(
-                    new ConsoleUtil.Param[]{ConsoleUtil.Param.blue, ConsoleUtil.Param.bold})
-                    + "@"
-                    + tweetAuthor
-                    + ConsoleUtil.getResetEscape() + ":";
+            outputString += "ретвитнул " + getUserNameFromat(tweetAuthor) + ":";
         }
 
         outputString += tweetText;
@@ -62,15 +55,10 @@ public class TwitterUtil {
             String retweetDeclension =
                     FormDeclenser.getTweetsDeclension(countTweets);
             answerStr += "("
-                    + ConsoleUtil.getParamsEscape(
-                    new ConsoleUtil.Param[]{ConsoleUtil.Param.bold})
-                    + countTweets
-                    + ConsoleUtil.getResetEscape()
+                    + ConsoleUtil.Style.BOLD.line(new Integer(countTweets).toString())
                     + " " + retweetDeclension
                     + ")";
         }
         return answerStr;
     }
-
-
 }
