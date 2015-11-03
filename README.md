@@ -6,6 +6,8 @@
 ## Семинары
 * [Темы семинаров и список литературы для самостоятельной подготовки](seminars.md)
 * [Общие правила по ведению задач на github](github-workflow.md) 
+* [Журнал успеваемости](https://docs.google.com/spreadsheets/d/1okSG7WMZF8uSJZEfC2UdrC8IumNPtXNdXQwwK6vYK5M/edit?usp=sharing)
+* [Зачёт](exam.md)
 
 ## Лекции
 1. [Java, JVM, примитивные типы](https://yadi.sk/d/_ZgbGf9NbXraZ)
@@ -21,9 +23,15 @@
 11. [Работа с сетью](https://yadi.sk/i/D71n2oLGcyvb9)
 
 ## Список литературы
+Базовая литература:
+* [Спецификации по JVM и JLS](http://docs.oracle.com/javase/specs/index.html)
 * Брюс Эккель &mdash; Философия Java  (Thinking in Java)
+
+Многопоточность:
 * Brian Goetz &mdash; Java Concurrency in Practive (продвинутая книжка
 по многопоточности в Java)
-* [Спецификации по JVM и JLS](http://docs.oracle.com/javase/specs/index.html)
-* [Code Conventions](http://www.oracle.com/technetwork/java/codeconv-138413.html)
+
+Code style:
+* [Code Conventions for the Java](http://www.oracle.com/technetwork/java/codeconvtoc-136057.html) (1999 года, немного устарела)
+* [Java Coding Style Guide (by Google)](https://google.github.io/styleguide/javaguide.html)
 
