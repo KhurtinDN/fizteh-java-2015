@@ -1,4 +1,4 @@
-package ru.mipt.diht.students;
+package ru.mipt.diht.students.dkhurtin;
 
 /**
  * Hello world!
