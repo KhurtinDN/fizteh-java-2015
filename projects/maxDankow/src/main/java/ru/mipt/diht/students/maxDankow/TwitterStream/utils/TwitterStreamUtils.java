@@ -36,8 +36,8 @@ public class TwitterStreamUtils {
 
     public static boolean checkTweet(Status tweet, Geometry locationGeometry,
                                      boolean shouldHideRetweets) {
-        return (GeolocationUtils.checkLocation(tweet.getPlace(), locationGeometry) &&
-                (!shouldHideRetweets || !tweet.isRetweet()));
+        return (GeolocationUtils.checkLocation(tweet.getPlace(), locationGeometry)
+                && (!shouldHideRetweets || !tweet.isRetweet()));
     }
 
     private static void printDelim() {

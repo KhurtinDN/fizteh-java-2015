@@ -15,7 +15,7 @@ public class TwitterStreamer {
     private boolean shouldHideRetweets = false;
     private int tweetsNumberLimit;
     private Geometry locationGeometry = null;
-    private String queryText[] = null;
+    private String[] queryText = null;
 
     public TwitterStreamer(String query, String location,
                            boolean hideRetweets, int tweetsLimit)
@@ -31,7 +31,7 @@ public class TwitterStreamer {
         queryText = new String[]{query};
     }
 
-    public void startStream() {
+    public final void startStream() {
         TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
         twitterStream.addListener(statusAdapter);
         FilterQuery filterQuery = new FilterQuery();
@@ -58,8 +58,8 @@ public class TwitterStreamer {
 
     private StatusAdapter statusAdapter = new StatusAdapter() {
         public void onStatus(Status tweet) {
-            if (TwitterStreamUtils.checkTweet(tweet, locationGeometry, shouldHideRetweets) &&
-                    streamQueue.size() < STREAM_TWEETS_LIMIT) {
+            if (TwitterStreamUtils.checkTweet(tweet, locationGeometry, shouldHideRetweets)
+                    && streamQueue.size() < STREAM_TWEETS_LIMIT) {
                 streamQueue.add(tweet);
             }
         }

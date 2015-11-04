@@ -40,9 +40,9 @@ public class GeolocationUtils {
         }
         double centerLat = latitudeSum / geoLocations[0].length;
         double centerLng = longitudeSum / geoLocations[0].length;
-        return (centerLat > searchLocationGeometry.bounds.southwest.lat &&
-                centerLat < searchLocationGeometry.bounds.northeast.lat &&
-                centerLng > searchLocationGeometry.bounds.southwest.lng &&
-                centerLng < searchLocationGeometry.bounds.northeast.lng);
+        return (centerLat > searchLocationGeometry.bounds.southwest.lat
+                && centerLat < searchLocationGeometry.bounds.northeast.lat
+                && centerLng > searchLocationGeometry.bounds.southwest.lng
+                && centerLng < searchLocationGeometry.bounds.northeast.lng);
     }
 }

@@ -31,7 +31,7 @@ public class TwitterSearcher {
         }
     }
 
-    public void searchTweets() {
+    public final void searchTweets() {
         Twitter twitter = new TwitterFactory().getInstance();
         Query query = new Query();
         assert queryText != null;
