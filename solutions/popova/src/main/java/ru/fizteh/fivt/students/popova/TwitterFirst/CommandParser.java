@@ -9,7 +9,7 @@ import com.beust.jcommander.Parameter;
 
 public class CommandParser {
 
-    @Parameter(names = "--query", description = "слова для поиска" )
+    @Parameter(names = {"-q", "--query"}, description = "слова для поиска" )
         private String queryWord = null;
     @Parameter(names = {"--stream", "-s"}, description = "вывод твитов с задержкой")
         private boolean Stream = false;
@@ -18,7 +18,7 @@ public class CommandParser {
             description = " вывод заданного количества твитов")
     private int number = -1;
 
-    @Parameter(names = {"--help", "-h"}, description = "")
+    @Parameter(names = {"--help", "-h"}, description = "выдать справку")
     private boolean help = false;
 
     public boolean giveHelp() {

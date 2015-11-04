@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 
 public class StreamReaderService {
-    public static void readTwitterFeed(String[] keyword){
+    public static void readTwitterFeed(String keyword){
 
         TwitterStream stream = TwitterStreamJavaUtil.getStream();
 
@@ -70,13 +70,13 @@ public class StreamReaderService {
             printHelp();
         }
         if(parser.IsStream()){
-            readTwitterFeed(args);
+            readTwitterFeed(parser.QueryWord());
         }
         if(parser.IsStream()&&parser.IsLimited()){
              System.out.println("incompatible modes");
         }
         else{
-            readLimitedTwitterFeed(parser.Limit(), args[1]);
+            readLimitedTwitterFeed(parser.Limit(), parser.QueryWord());
         }
     }
 
