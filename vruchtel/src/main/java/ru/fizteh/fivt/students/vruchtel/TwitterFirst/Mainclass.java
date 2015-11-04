@@ -66,10 +66,11 @@ public class Mainclass {
                 Status status = streamQueue.poll();
                 //System.out.println("@" + status.getUser().getScreenName() + ":" + status.getText());
                 System.out.println(textFormatter.getTextToPrint(status, false));
+                Thread.sleep(SLEEP_TIME);
             }
 
             //проверим, надо ли завершиться, и, если надо, завершимся
-            while (System.in.available() > 0) {
+            /*while (System.in.available() > 0) {
                 readedSymbol = System.in.read();
                 if(readedSymbol == 'q' || readedSymbol == EXIT_KEY || readedSymbol == -1) {
                     twitterStream.shutdown();
@@ -78,7 +79,7 @@ public class Mainclass {
                 }
             }
             if(haveToFinish) break;
-            Thread.sleep(SLEEP_TIME);
+            Thread.sleep(SLEEP_TIME);*/
         }
     }
 

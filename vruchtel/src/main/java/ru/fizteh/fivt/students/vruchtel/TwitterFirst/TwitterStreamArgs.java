@@ -98,7 +98,7 @@ public class TwitterStreamArgs {
                 + "отсутствует или равен nearby, регион определяется по ip");
         System.out.println("\t stream - если параметр задан, то равномерно и непрерывно с задержкой в 1 секунду "
                 + "печатается поток твитов");
-        System.out.println("\t hideRetweets - крывать ретвиты");
+        System.out.println("\t hideRetweets - скрывать ретвиты");
         System.out.println("\t limit - число, ограничивающее количество твитов, неприменимо для --stream режима");
         System.out.println("\t help - печатает справку");
     }

@@ -41,7 +41,7 @@ public class TextFormatter {
         } else if(passedTime < HOUR) {
             Long minutes = passedTime / MINUTE;
             printingTime += minutes.toString() + " минут назад";
-        } else if(isToday(tweetTime)) { //не работает, кажись
+        } else if(isToday(tweetTime)) {
             Long hours = passedTime / HOUR;
             printingTime += hours.toString() + " часов назад";
         } else if(isYesterday(tweetTime)) {
