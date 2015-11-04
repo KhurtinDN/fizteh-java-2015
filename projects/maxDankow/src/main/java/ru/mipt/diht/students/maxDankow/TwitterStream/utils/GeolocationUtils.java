@@ -9,10 +9,12 @@ import twitter4j.GeoLocation;
 import twitter4j.Place;
 
 public class GeolocationUtils {
+    private static final String GOOGLE_API_KEY = "AIzaSyCltC9cSKnrnqOApw5TQ155nwEBW-ZUt1E";
+
     public static Geometry findLocation(String placeName) {
-        GeoApiContext context = new GeoApiContext().setApiKey("AIzaSyCltC9cSKnrnqOApw5TQ155nwEBW-ZUt1E");
+        GeoApiContext context = new GeoApiContext().setApiKey(GOOGLE_API_KEY);
         GeocodingApiRequest geoRequest = GeocodingApi.geocode(context, placeName);
-        Geometry place = null;
+        Geometry place;
         try {
             GeocodingResult[] locations = geoRequest.await();
             place = locations[0].geometry;

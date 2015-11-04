@@ -13,6 +13,32 @@ public class TwitterStreamUtils {
     // Длинна строки разграничителя твиттов.
     private static final int DELIM_LENGTH = 200;
 
+    public static enum TextColor {
+        CLEAR (0),
+        BLACK (30),
+        RED (31),
+        GREEN (32),
+        YELLOW (33),
+        BLUE (34),
+        MAGENTA (35),
+        CYAN (36),
+        WHITE (37);
+
+        private int colorCode;
+
+        TextColor(int newColorCode) {
+            colorCode = newColorCode;
+        }
+
+        public String getEscapeCodePrefix() {
+            return "\033[" + colorCode + "m";
+        }
+    }
+
+    public static String colorizeText(String text, TextColor color) {
+        return color.getEscapeCodePrefix() + text + TextColor.CLEAR.getEscapeCodePrefix();
+    }
+
     public static String convertTimeToRussianWords(Date anotherDate) {
         Calendar currentTime = Calendar.getInstance();
         Calendar anotherTime = Calendar.getInstance();
@@ -40,11 +66,17 @@ public class TwitterStreamUtils {
                 && (!shouldHideRetweets || !tweet.isRetweet()));
     }
 
-    private static void printDelim() {
+    private static String buildDelim() {
+        String delim = "-";
         for (int i = 0; i < DELIM_LENGTH; ++i) {
-            System.out.print("-");
+            delim = delim.concat("-");
         }
-        System.out.println();
+
+        return delim;
+    }
+
+    private static String buildUserName(String originalUserName) {
+        return "@" + originalUserName;
     }
 
     public static void printTweet(Status tweet, boolean shouldShowTime) {
@@ -56,9 +88,8 @@ public class TwitterStreamUtils {
         if (!tweet.isRetweet()) {
             int retweetCount = tweet.getRetweetCount();
 
-            System.out.print("\033[34m@"
-                    + tweet.getUser().getScreenName()
-                    + "\033[0m: "
+            System.out.print(colorizeText(buildUserName(tweet.getUser().getScreenName()), TextColor.BLUE)
+                    + ": "
                     + tweet.getText());
             if (retweetCount > 0) {
                 System.out.print(" ("
@@ -68,13 +99,12 @@ public class TwitterStreamUtils {
             System.out.println();
         } else {
             Status originalTweet = tweet.getRetweetedStatus();
-            System.out.println("\033[34m@"
-                    + tweet.getUser().getScreenName()
-                    + "\033[0m: ретвитнул \033[34m@"
-                    + originalTweet.getUser().getScreenName()
-                    + "\033[0m: "
+            System.out.println(colorizeText(buildUserName(tweet.getUser().getScreenName()), TextColor.BLUE)
+                    + ": ретвитнул "
+                    + colorizeText(buildUserName(originalTweet.getUser().getScreenName()), TextColor.BLUE)
+                    + ": "
                     + originalTweet.getText());
         }
-        printDelim();
+        System.out.println(buildDelim());
     }
 }
