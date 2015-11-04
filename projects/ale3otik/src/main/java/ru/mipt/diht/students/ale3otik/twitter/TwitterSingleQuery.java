@@ -12,14 +12,16 @@ import java.util.List;
  * Created by alex on 10.10.15.
  */
 public class TwitterSingleQuery {
-    public static void printSingleTwitterQuery(Arguments arguments, String informationMessage)
+    public static String getSingleQueryTweets(Arguments arguments, String informationMessage)
             throws ConnectionFailedException, TwitterException {
-        informationMessage += ":";
+
+        StringBuilder answerString = new StringBuilder();
+        answerString.append(informationMessage).append(":");
 
         int tries = 0;
 
         List<Status> allTweets = new ArrayList<Status>();
-        QueryResult result = null;
+        QueryResult result;
 
         Twitter twitter = TwitterFactory.getSingleton();
         Query query = new Query(arguments.getQuery());
@@ -56,7 +58,6 @@ public class TwitterSingleQuery {
                         break;
                     }
                 }
-
                 break;
             } catch (TwitterException e) {
                 if (e.isCausedByNetworkIssue()) {
@@ -72,20 +73,17 @@ public class TwitterSingleQuery {
             throw new ConnectionFailedException("Не удалось восстановить соединение");
         }
 
-        ConsoleUtil.printIntoStdout(informationMessage);
-        ConsoleUtil.printErrorMessage(TwitterUtil.getSplitLine());
-
+        answerString.append("\n").append(TwitterUtil.getSplitLine());
 
         Collections.reverse(allTweets);
 
-
         if (allTweets.isEmpty()) {
-            ConsoleUtil.printIntoStdout("Ничего не найдено :(");
+            answerString.append("\n").append("Ничего не найдено :(");
         }
 
         for (Status status : allTweets) {
-            ConsoleUtil.printIntoStdout(TwitterUtil.getFormattedTweetToPrint(status, arguments));
+            answerString.append("\n").append(TwitterUtil.getFormattedTweetToPrint(status, arguments));
         }
-
+        return answerString.toString();
     }
 }

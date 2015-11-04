@@ -50,7 +50,8 @@ public class TwitterRunner {
             if (arguments.isStream()) {
                 TwitterStreamLauncher.streamStart(arguments, informationMessage.toString());
             } else {
-                TwitterSingleQuery.printSingleTwitterQuery(arguments, informationMessage.toString());
+                ConsoleUtil.printIntoStdout(TwitterSingleQuery
+                        .getSingleQueryTweets(arguments, informationMessage.toString()));
             }
 
         } catch (IllegalArgumentException e) {
