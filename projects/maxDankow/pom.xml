@@ -7,7 +7,6 @@
     <artifactId>parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>ru.mipt.diht.students</groupId>
   <artifactId>maxDankow</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>maxDankow</name>
