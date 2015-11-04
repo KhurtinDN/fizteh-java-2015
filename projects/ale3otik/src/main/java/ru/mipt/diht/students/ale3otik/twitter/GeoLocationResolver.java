@@ -24,12 +24,12 @@ import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-final class GeoLocationResolver {
+public final class GeoLocationResolver {
     static final int MAX_QUANTITY_OF_TRIES = 2;
     static final double EARTH_RADIUS = 6371;
     static final String RADIUS_UNIT = "km";
-    static final String URL_IPINFO = "http://ipinfo.io/json";
-    static final String BASE_URL = "http://maps.googleapis.com/maps/api/geocode/json";
+    static final String IP_INFO_URL = "http://ipinfo.io/json";
+    static final String GOOGLE_API_URL = "http://maps.googleapis.com/maps/api/geocode/json";
 
     public static double getSphereDist(final GeoLocation location1,
                                        final GeoLocation location2) {
@@ -59,7 +59,7 @@ final class GeoLocationResolver {
                 .put("address", geoRequest)
                 .build();
 
-        String url = BASE_URL + '?' + encodeParams(params);
+        String url = GOOGLE_API_URL + '?' + encodeParams(params);
         JSONObject response = new JSONObject(GeoLocationResolver.read(url));
 
         JSONObject result = response.getJSONArray("results").getJSONObject(0);
@@ -79,7 +79,7 @@ final class GeoLocationResolver {
         GeoLocation northEastBoundLocation = new GeoLocation(northEastBoundLatitude, northEastBoundLongitude);
         GeoLocation southEastBoundLocation = new GeoLocation(southWestBoundLatitude, southWestBoundLongitude);
 
-        // Radius can be different in different regions
+        // Radius must be different in different regions
         double approximatedRadius = getSphereDist(northEastBoundLocation, southEastBoundLocation);
         approximatedRadius /= 2;
 
@@ -89,8 +89,7 @@ final class GeoLocationResolver {
     public static String read(final String url) throws IOException, JSONException {
         try (InputStream inputStream = new URL(url).openStream();
              InputStreamReader streamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"))) {
-            String content = CharStreams.toString(streamReader);
-            return content;
+            return CharStreams.toString(streamReader);
         }
     }
 
@@ -109,7 +108,7 @@ final class GeoLocationResolver {
 
         for (int numTries = 0; numTries < MAX_QUANTITY_OF_TRIES; ++numTries) {
             try {
-                final String content = read(URL_IPINFO);
+                final String content = GeoLocationResolver.read(IP_INFO_URL);
                 JSONObject locationInfo = new JSONObject(content);
                 return locationInfo.getString("city");
             } catch (IOException | JSONException e) {
