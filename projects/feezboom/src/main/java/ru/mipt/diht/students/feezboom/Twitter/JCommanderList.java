@@ -45,7 +45,7 @@ public class JCommanderList {
         return limit;
     }
 
-    public final boolean noRetweets() {
+    public final boolean isNoRetweets() {
         return noRetweets;
     }
 
@@ -63,7 +63,7 @@ public class JCommanderList {
         cmd.setAcceptUnknownOptions(true);
     }
 
-    public final void getHelp() {
+    public final void printHelp() {
         cmd.usage();
     }
 }

@@ -15,7 +15,7 @@ public class TwitterStreamer {
 
     public final void startTwitting() throws Exception {
         if (params.isHelp()) {
-            params.getHelp();
+            params.printHelp();
             System.exit(0);
         }
 
@@ -66,7 +66,7 @@ public class TwitterStreamer {
                         + ":"
         );
         for (Status tweet : statusList) {
-            printTweet(tweet, params.noRetweets(), params.isStream());
+            printTweet(tweet, params.isNoRetweets(), params.isStream());
         }
     }
 
