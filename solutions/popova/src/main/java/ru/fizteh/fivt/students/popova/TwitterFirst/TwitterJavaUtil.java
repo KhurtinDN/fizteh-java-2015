@@ -10,11 +10,10 @@ import twitter4j.conf.ConfigurationBuilder;
 public class TwitterJavaUtil {
     public static Twitter getTweets(){
         ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setDebugEnabled(true);
-        cb.setOAuthConsumerKey("*****");
-        cb.setOAuthConsumerSecret("*****");
-        cb.setOAuthAccessToken("*****");
-        cb.setOAuthAccessTokenSecret("*****");
+        cb.setOAuthConsumerKey("lu5Ffghv61aS5ChuIz4np9bGb");
+        cb.setOAuthConsumerSecret("8zxe6YeyjNWz3spLTmP20tw8sYBoOhjPmyR2QFSrDZTKyrrMpM");
+        cb.setOAuthAccessToken("3707816955-iJ42EK8Bs3BKAGooVUO5IbwHBsGQE61GeS9bkxh");
+        cb.setOAuthAccessTokenSecret("iF7iCnc4I5CqncyFJ1zaShgfBDScJ3oqzwomzIeE0qAKr");
 
         return new TwitterFactory(cb.build()).getInstance();
     }
