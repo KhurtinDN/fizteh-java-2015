@@ -4,20 +4,17 @@
 
 import com.beust.jcommander.JCommander;
 import twitter4j.*;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.time.temporal.ChronoUnit;
+import java.time.ZoneId;
 
 public class TwitterStreamApp {
     //color for nicks
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLUE = "\u001B[34m";
-    public static final long MIN = 1000 * 60;
-    public static final long HOUR = 1000 * 60 * 60;
-    public static final long TEN = 10;
-    public static final long FIVE = 5;
-    public static final long TWELVE = 12;
-    public static final long ELEVEN = 11;
-    public static final long DAY = 1000 * 60 * 60 * 24;
     public static final long PAUSE = 1000;
 
 
@@ -38,7 +35,6 @@ public class TwitterStreamApp {
                 streamPrint(param);
             } catch (TwitterException e) {
                 System.out.println(e.getMessage());
-                streamPrint(param);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
                 System.exit(-1);
@@ -93,7 +89,7 @@ public class TwitterStreamApp {
                 List<Status> tweets = result.getTweets();
                 Thread.sleep(PAUSE);
                 for (Status tweet : tweets) {
-                    printTime(tweet);
+                   // printTime(tweet);
                     printStatus(tweet, param.hideRetweets());
                     limit--;
                     statusCounter++;
@@ -105,7 +101,8 @@ public class TwitterStreamApp {
             } while (query != null && limit > 0);
         } catch (TwitterException te) {
             te.printStackTrace();
-            System.out.println("Failed to search tweets: " + te.getMessage());
+            System.out.println(new StringBuilder().
+                    append("Failed to search tweets: ").append(te.getMessage()).toString());
             System.exit(-1);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -154,74 +151,73 @@ public class TwitterStreamApp {
     }
 
     //print tweets
-    public static void printStatus(Status status, boolean hideRetweets) {
+   public static void printStatus(Status status, boolean hideRetweets) {
+        Formatter retweetsFormatter = new Formatter();
         if (status.isRetweet()) {
             if (!hideRetweets) {
-                System.out.println(ANSI_BLUE
-                        + "@" + status.getUser().getScreenName()
-                        + ANSI_RESET + ": ретвитнул " + ANSI_BLUE
-                        + "@"
-                        + status.getRetweetedStatus().getUser().getScreenName()
-                        + ANSI_RESET + ": "
-                        + status.getRetweetedStatus().getText());
+                printTime(status);
+                System.out.println(new StringBuilder().append(ANSI_BLUE).append("@").
+                        append(status.getUser().getScreenName()).append(ANSI_RESET).
+                        append(": ретвитнул ").append(ANSI_BLUE).append("@").
+                        append(status.getRetweetedStatus().getUser().getScreenName()).
+                        append(ANSI_RESET).append(": ").
+                        append(status.getRetweetedStatus().getText()).toString());
             }
         } else {
-            System.out.print(ANSI_BLUE
-                    + "@" + status.getUser().getScreenName()
-                    + ANSI_RESET + ": " + status.getText());
+            printTime(status);
+            System.out.print(new StringBuilder().
+                    append(ANSI_BLUE).append("@").
+                    append(status.getUser().getScreenName()).
+                    append(ANSI_RESET).append(": ").
+                    append(status.getText()).toString());
             if (status.getRetweetCount() != 0) {
-                System.out.print("(" + status.getRetweetCount() + " "
-                        + retweets(status.getRetweetCount()) + ")");
+                System.out.print(new StringBuilder().append("(").
+                        append(status.getRetweetCount()).append(" ").
+                        append(retweetsFormatter.retweet(status.getRetweetCount())).
+                        append(")").toString());
             }
             System.out.println();
         }
     }
 
-    public static String retweets(long count) {
-        if (count % TEN == 1 && count != ELEVEN) {
-            return "ретвит";
-        } else {
-            if (count % TEN > 1 && count % TEN < FIVE
-                    && count != TWELVE) {
-                return "ретвита";
-            } else {
-                return "ретвитов";
-            }
-        }
-    }
     public static void printTime(Status status) {
-        TimeFormatter timeFormatter = new TimeFormatter();
-        Date date = new Date();
-        long currentTime = date.getTime();
-        long tweettime = status.getCreatedAt().getTime();
-        long minBetween = (currentTime - tweettime) / MIN;
-        long hoursBetween = (currentTime - tweettime) / HOUR;
-        long daysBetween = (currentTime - tweettime) / DAY;
+        Formatter timeFormatter = new Formatter();
+        long currentTimeToFormat = System.currentTimeMillis();
+        long tweetTimeToFormat = status.getCreatedAt().getTime();
+
+        LocalDateTime currentTime = new Date(currentTimeToFormat).toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime tweetTime = new Date(tweetTimeToFormat).toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDateTime();
+
         System.out.print("[");
-        if (minBetween <= 2) {
+        if (ChronoUnit.MINUTES.between(tweetTime, currentTime) <= 2) {
             System.out.print("только что");
         } else {
-            if (hoursBetween < 1) {
-                System.out.print(minBetween + " "
-                        + timeFormatter.minutes(minBetween)
-                        + " назад ");
+            if (ChronoUnit.HOURS.between(tweetTime, currentTime) < 1) {
+                System.out.print(new StringBuilder().
+                        append(ChronoUnit.MINUTES.between(tweetTime, currentTime)).
+                        append(" ").append(timeFormatter.minutes(ChronoUnit.MINUTES.between(tweetTime, currentTime))).
+                        append(" назад").toString());
             } else {
-                if (timeFormatter.today(tweettime, currentTime)) {
-                    System.out.print(hoursBetween + " "
-                            + timeFormatter.hours(hoursBetween)
-                            + " назад ");
-                } else {
-                    if (timeFormatter.yesterday(tweettime, currentTime)) {
+                if (ChronoUnit.DAYS.between(tweetTime, currentTime) < 1) {
+                    System.out.print(new StringBuilder().
+                            append(ChronoUnit.HOURS.between(tweetTime, currentTime)).
+                            append(" ").append(timeFormatter.hours(ChronoUnit.HOURS.between(tweetTime, currentTime))).
+                            append(" назад").toString());
+                    } else {
+                    if (ChronoUnit.DAYS.between(tweetTime, currentTime) == 1) {
                         System.out.print("вчера");
                     } else {
-                        System.out.print(daysBetween + " "
-                                + timeFormatter.days(daysBetween)
-                                + " назад");
+                        System.out.print(new StringBuilder().
+                                append(ChronoUnit.DAYS.between(tweetTime, currentTime)).
+                                append(" ").append(timeFormatter.days(ChronoUnit.DAYS.between(tweetTime, currentTime))).
+                                append(" назад").toString());
                     }
                 }
             }
         }
-        System.out.print("]");
+        System.out.print("] ");
     }
 }
 
