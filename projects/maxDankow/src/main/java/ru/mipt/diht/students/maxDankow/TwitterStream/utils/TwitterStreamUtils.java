@@ -13,7 +13,7 @@ public class TwitterStreamUtils {
     // Длинна строки разграничителя твиттов.
     private static final int DELIM_LENGTH = 200;
 
-    public static enum TextColor {
+    public enum TextColor {
         CLEAR (0),
         BLACK (30),
         RED (31),
@@ -39,9 +39,10 @@ public class TwitterStreamUtils {
         return color.getEscapeCodePrefix() + text + TextColor.CLEAR.getEscapeCodePrefix();
     }
 
-    public static String convertTimeToRussianWords(Date anotherDate) {
+    public static String convertTimeToRussianWords(Date anotherDate, Date currentDate) {
         Calendar currentTime = Calendar.getInstance();
         Calendar anotherTime = Calendar.getInstance();
+        currentTime.setTime(currentDate);
         anotherTime.setTime(anotherDate);
         long timeDeltaMs = currentTime.getTime().getTime() - anotherTime.getTime().getTime();
         if (timeDeltaMs < 2 * MINUTE_MS) {
@@ -71,40 +72,44 @@ public class TwitterStreamUtils {
         for (int i = 0; i < DELIM_LENGTH; ++i) {
             delim = delim.concat("-");
         }
-
         return delim;
     }
 
-    private static String buildUserName(String originalUserName) {
+    public static String buildUserName(String originalUserName) {
         return "@" + originalUserName;
     }
 
-    public static void printTweet(Status tweet, boolean shouldShowTime) {
+    public static String buildFormattedTweet(Status tweet, boolean shouldShowTime) {
+        StringBuilder message = new StringBuilder("");
         if (shouldShowTime) {
-            System.out.print("["
-                    + TwitterStreamUtils.convertTimeToRussianWords(tweet.getCreatedAt())
-                    + "] ");
+            message.append("[");
+            message.append(TwitterStreamUtils.convertTimeToRussianWords(tweet.getCreatedAt(), new Date()));
+            message.append("]");
         }
         if (!tweet.isRetweet()) {
             int retweetCount = tweet.getRetweetCount();
 
-            System.out.print(colorizeText(buildUserName(tweet.getUser().getScreenName()), TextColor.BLUE)
-                    + ": "
-                    + tweet.getText());
+            message.append(colorizeText(buildUserName(tweet.getUser().getScreenName()), TextColor.BLUE));
+            message.append(": ");
+            message.append(tweet.getText());
             if (retweetCount > 0) {
-                System.out.print(" ("
-                        + tweet.getRetweetCount()
-                        + " ретвитов)");
+                message.append(" (");
+                message.append(tweet.getRetweetCount());
+                message.append(" ретвитов)");
             }
-            System.out.println();
         } else {
             Status originalTweet = tweet.getRetweetedStatus();
-            System.out.println(colorizeText(buildUserName(tweet.getUser().getScreenName()), TextColor.BLUE)
-                    + ": ретвитнул "
-                    + colorizeText(buildUserName(originalTweet.getUser().getScreenName()), TextColor.BLUE)
-                    + ": "
-                    + originalTweet.getText());
+            message.append(colorizeText(buildUserName(tweet.getUser().getScreenName()), TextColor.BLUE));
+            message.append(": ретвитнул ");
+            message.append(colorizeText(buildUserName(originalTweet.getUser().getScreenName()), TextColor.BLUE));
+            message.append(": ");
+            message.append(originalTweet.getText());
         }
+        return message.toString();
+    }
+
+    public static void printTweet(Status tweet, boolean shouldShowTime) {
+        System.out.println(buildFormattedTweet(tweet, shouldShowTime));
         System.out.println(buildDelim());
     }
 }
