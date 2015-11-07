@@ -10,7 +10,7 @@ import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 
 /**
  * Input parameters format.
- *
+ * <p>
  * [--query|-q <query or keywords for stream>]
  * [--place|-p <location|'nearby'>]
  * [--stream|-s]
@@ -18,12 +18,12 @@ import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
  * [--limit|-l <tweets>]
  * [--help|-h]
  */
-class Arguments {
+public class Arguments {
     private static final int STANDART_LIMIT = 30;
 
     private GeoLocationInfo geoLocationInfo = null;
     private String curLocationName = "";
-
+    private String locationFailedResultInformation = "";
     @Parameter(names = {"--query", "-q"},
             description = "set query parameters")
     private String query = "";
@@ -87,6 +87,14 @@ class Arguments {
 
     public void setCurLocationName(String locationName) {
         this.curLocationName = locationName;
+    }
+
+    public void setFailedDetectionLocationMessage(String message) {
+        locationFailedResultInformation = message;
+    }
+
+    public String getDetectionLocationMessage() {
+        return locationFailedResultInformation;
     }
 }
 

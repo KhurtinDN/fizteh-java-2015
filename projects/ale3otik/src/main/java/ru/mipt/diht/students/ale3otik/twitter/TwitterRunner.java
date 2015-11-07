@@ -36,6 +36,7 @@ public class TwitterRunner {
             TwitterArgumentsValidator.processArguments(arguments);
 
             StringBuilder informationMessage = new StringBuilder();
+            informationMessage.append(arguments.getDetectionLocationMessage()); // empty if all OK
             informationMessage.append("Твиты по");
             if (arguments.getQuery().isEmpty()) {
                 informationMessage.append(" пустому запросу");

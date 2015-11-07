@@ -16,33 +16,38 @@ public class TimeDeterminer {
         LocalDateTime tweetTime = createdAt
                 .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-        if (ChronoUnit.MINUTES.between(tweetTime, currentTime) < 2) {
+        return getDifferenceOfDates(tweetTime,currentTime);
+    }
+
+    public static String getDifferenceOfDates(LocalDateTime firstDate,LocalDateTime secondDate)
+    {
+        if (ChronoUnit.MINUTES.between(firstDate, secondDate) < 2) {
             return "Только что";
         }
 
 
-        if (ChronoUnit.HOURS.between(tweetTime, currentTime) < 1) {
-            long minutDifference = ChronoUnit.MINUTES.between(tweetTime, currentTime);
+        if (ChronoUnit.HOURS.between(firstDate, secondDate) < 1) {
+            long minutDifference = ChronoUnit.MINUTES.between(firstDate, secondDate);
             return minutDifference + " "
                     + FormDeclenser.getMinutesDeclension(minutDifference)
                     + " назад";
         }
 
-        LocalDateTime currentDayDate = currentTime.toLocalDate().atStartOfDay();
-        LocalDateTime tweetDayDate = tweetTime.toLocalDate().atStartOfDay();
+        LocalDateTime secondDayDate = secondDate.toLocalDate().atStartOfDay();
+        LocalDateTime firstDayDate = firstDate.toLocalDate().atStartOfDay();
 
-        if (ChronoUnit.DAYS.between(tweetDayDate, currentDayDate) < 1) {
-            long hoursDifference = ChronoUnit.HOURS.between(tweetTime, currentTime);
+        if (ChronoUnit.DAYS.between(firstDayDate, secondDayDate) < 1) {
+            long hoursDifference = ChronoUnit.HOURS.between(firstDate, secondDate);
             return hoursDifference + " "
                     + FormDeclenser.getHoursDeclension(hoursDifference)
                     + " назад";
         }
 
-        if (ChronoUnit.DAYS.between(tweetDayDate, currentDayDate) == 1) {
+        if (ChronoUnit.DAYS.between(firstDayDate, secondDayDate) == 1) {
             return "вчера";
         }
 
-        long daysDifference = ChronoUnit.DAYS.between(tweetDayDate, currentDayDate);
+        long daysDifference = ChronoUnit.DAYS.between(firstDayDate, secondDayDate);
         return (daysDifference) + " "
                 + FormDeclenser.getDaysDeclension(daysDifference)
                 + " назад";

@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -52,38 +51,41 @@ public final class GeoLocationResolver {
     }
 
     public static GeoLocationInfo getGeoLocation(final String geoRequest)
-            throws IOException, JSONException {
+            throws LocationException {
+        try {
+            Map<String, String> params = new ImmutableMap.Builder<String, String>()
+                    .put("sensor", "false")
+                    .put("address", geoRequest)
+                    .build();
 
-        Map<String, String> params = new ImmutableMap.Builder<String, String>()
-                .put("sensor", "false")
-                .put("address", geoRequest)
-                .build();
+            String url = GOOGLE_API_URL + '?' + encodeParams(params);
+            JSONObject response = new JSONObject(GeoLocationResolver.read(url));
 
-        String url = GOOGLE_API_URL + '?' + encodeParams(params);
-        JSONObject response = new JSONObject(GeoLocationResolver.read(url));
+            JSONObject result = response.getJSONArray("results").getJSONObject(0);
+            JSONObject geometry = result.getJSONObject("geometry");
 
-        JSONObject result = response.getJSONArray("results").getJSONObject(0);
-        JSONObject geometry = result.getJSONObject("geometry");
+            JSONObject northEastBound = geometry.getJSONObject("bounds").getJSONObject("northeast");
+            JSONObject southWestBound = geometry.getJSONObject("bounds").getJSONObject("southwest");
+            JSONObject location = geometry.getJSONObject("location");
 
-        JSONObject northEastBound = geometry.getJSONObject("bounds").getJSONObject("northeast");
-        JSONObject southWestBound = geometry.getJSONObject("bounds").getJSONObject("southwest");
-        JSONObject location = geometry.getJSONObject("location");
+            double latitude = location.getDouble("lat");
+            double longitude = location.getDouble("lng");
+            double northEastBoundLatitude = northEastBound.getDouble("lat");
+            double northEastBoundLongitude = northEastBound.getDouble("lng");
+            double southWestBoundLatitude = southWestBound.getDouble("lat");
+            double southWestBoundLongitude = southWestBound.getDouble("lng");
 
-        double latitude = location.getDouble("lat");
-        double longitude = location.getDouble("lng");
-        double northEastBoundLatitude = northEastBound.getDouble("lat");
-        double northEastBoundLongitude = northEastBound.getDouble("lng");
-        double southWestBoundLatitude = southWestBound.getDouble("lat");
-        double southWestBoundLongitude = southWestBound.getDouble("lng");
+            GeoLocation northEastBoundLocation = new GeoLocation(northEastBoundLatitude, northEastBoundLongitude);
+            GeoLocation southEastBoundLocation = new GeoLocation(southWestBoundLatitude, southWestBoundLongitude);
 
-        GeoLocation northEastBoundLocation = new GeoLocation(northEastBoundLatitude, northEastBoundLongitude);
-        GeoLocation southEastBoundLocation = new GeoLocation(southWestBoundLatitude, southWestBoundLongitude);
+            // Radius must be different in different regions
+            double approximatedRadius = getSphereDist(northEastBoundLocation, southEastBoundLocation);
+            approximatedRadius /= 2;
 
-        // Radius must be different in different regions
-        double approximatedRadius = getSphereDist(northEastBoundLocation, southEastBoundLocation);
-        approximatedRadius /= 2;
-
-        return new GeoLocationInfo((new GeoLocation(latitude, longitude)), approximatedRadius);
+            return new GeoLocationInfo((new GeoLocation(latitude, longitude)), approximatedRadius);
+        } catch (Exception e) {
+            throw new LocationException("Unable to detect required location");
+        }
     }
 
     public static String read(final String url) throws IOException, JSONException {
@@ -104,14 +106,14 @@ public final class GeoLocationResolver {
     }
 
     public static String getNameOfCurrentLocation()
-            throws MalformedURLException, LocationException {
+            throws LocationException {
 
         for (int numTries = 0; numTries < MAX_QUANTITY_OF_TRIES; ++numTries) {
             try {
                 final String content = GeoLocationResolver.read(IP_INFO_URL);
                 JSONObject locationInfo = new JSONObject(content);
                 return locationInfo.getString("city");
-            } catch (IOException | JSONException e) {
+            } catch (Exception e) {
             }
         }
         throw new LocationException("Unable to detect current location");
