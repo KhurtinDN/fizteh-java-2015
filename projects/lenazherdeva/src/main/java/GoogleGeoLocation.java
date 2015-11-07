@@ -31,7 +31,8 @@ class GoogleGeoLocation {
 
     private String getKeyFromProperties() throws IOException {
         Properties prop = new Properties();
-        try (InputStream input = new FileInputStream("twitter4j.properties")) {
+        try {
+            InputStream input = new FileInputStream("twitter4j.properties");
             prop.load(input);
         } catch (FileNotFoundException e) {
             System.err.println("Can't find the file : " + e.getMessage());

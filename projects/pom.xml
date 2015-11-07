@@ -28,13 +28,11 @@
 
     <modules>
         <module>dkhurtin</module>
-<<<<<<< HEAD
+
         <module>lenazherdeva</module>
         <!--Add you module here-->
-=======
         <module>ale3otik</module>
         <module>Pitovsky</module>
->>>>>>> 4c84d8deb574cdafca7f9e51984716e1bc7aa266
     </modules>
 
     <dependencyManagement>
