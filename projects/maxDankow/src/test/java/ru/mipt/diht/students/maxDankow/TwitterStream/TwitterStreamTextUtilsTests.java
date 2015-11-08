@@ -13,6 +13,9 @@ import twitter4j.Place;
 import twitter4j.Status;
 import twitter4j.User;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,7 +39,17 @@ public class TwitterStreamTextUtilsTests {
     @Ignore
     @Test
     public void testDateToRussianWords() {
-//        TwitterStreamUtils.convertTimeToRussianWords(new Date())
+        Calendar now = new GregorianCalendar(2015, 0, 1, 0, 2);
+        Calendar fiveMinutesAgo = new GregorianCalendar(2014, 11, 31, 23, 57);
+        Calendar Days30Ago = new GregorianCalendar(2014, 11, 1, 0, 10);
+        Calendar Days2Ago = new GregorianCalendar(2014, 11, 30, 0, 0);
+        Calendar yesterday = new GregorianCalendar(2014, 11, 31, 0, 0);
+        assertEquals("5 минут назад",
+                TwitterStreamUtils.convertTimeToRussianWords(
+                        fiveMinutesAgo.getTime(),now.getTime()));
+        assertEquals("30 дней назад", TwitterStreamUtils.convertTimeToRussianWords(Days30Ago.getTime(),now.getTime()));
+        assertEquals("2 дней назад", TwitterStreamUtils.convertTimeToRussianWords(Days2Ago.getTime(),now.getTime()));
+        assertEquals("Вчера", TwitterStreamUtils.convertTimeToRussianWords(yesterday.getTime(),now.getTime()));
     }
 
     @Test

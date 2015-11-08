@@ -3,7 +3,9 @@ package ru.mipt.diht.students.maxDankow.TwitterStream.utils;
 import com.google.maps.model.Geometry;
 import twitter4j.Status;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class TwitterStreamUtils {
@@ -40,25 +42,23 @@ public class TwitterStreamUtils {
     }
 
     public static String convertTimeToRussianWords(Date anotherDate, Date currentDate) {
-        Calendar currentTime = Calendar.getInstance();
-        Calendar anotherTime = Calendar.getInstance();
-        currentTime.setTime(currentDate);
-        anotherTime.setTime(anotherDate);
-        long timeDeltaMs = currentTime.getTime().getTime() - anotherTime.getTime().getTime();
-        if (timeDeltaMs < 2 * MINUTE_MS) {
+        LocalDateTime currentTime = currentDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime anotherTime = anotherDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (ChronoUnit.MINUTES.between(anotherTime, currentTime) < 2) {
             return "Только что";
         }
-        if (timeDeltaMs < HOUR_MS) {
-            return "" + timeDeltaMs / MINUTE_MS + " минут назад";
+        if (ChronoUnit.HOURS.between(anotherTime, currentTime) < 1)
+        {
+            return "" + ChronoUnit.MINUTES.between(anotherTime, currentTime) + " минут назад";
         }
-        if (currentTime.get(Calendar.DAY_OF_MONTH) == anotherTime.get(Calendar.DAY_OF_MONTH)) {
-            return "" + timeDeltaMs / HOUR_MS + " часов назад";
+        if (ChronoUnit.DAYS.between(anotherTime, currentTime) < 1)
+        {
+            return "" + ChronoUnit.HOURS.between(anotherTime, currentTime) + " часов назад";
         }
-        currentTime.add(Calendar.DAY_OF_MONTH, -1);
-        if (currentTime.before(anotherTime)) {
+        if (ChronoUnit.DAYS.between(anotherTime, currentTime) == 1) {
             return "Вчера";
         }
-        return "" + timeDeltaMs / DAY_MS + " дней назад";
+        return "" + ChronoUnit.DAYS.between(anotherTime, currentTime) +  " дней назад";
     }
 
     public static boolean checkTweet(Status tweet, Geometry locationGeometry,
