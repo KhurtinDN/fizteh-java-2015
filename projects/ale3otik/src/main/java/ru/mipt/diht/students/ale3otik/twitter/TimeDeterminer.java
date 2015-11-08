@@ -11,18 +11,16 @@ import java.util.Date;
 public class TimeDeterminer {
 
     public static String getTimeDifference(Date createdAt) {
-
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime tweetTime = createdAt
                 .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-        return getDifferenceOfDates(tweetTime,currentTime);
+        return getDifferenceOfDates(tweetTime, currentTime);
     }
 
-    public static String getDifferenceOfDates(LocalDateTime firstDate,LocalDateTime secondDate)
-    {
+    public static String getDifferenceOfDates(LocalDateTime firstDate, LocalDateTime secondDate) {
         if (ChronoUnit.MINUTES.between(firstDate, secondDate) < 2) {
-            return "Только что";
+            return "только что";
         }
 
 

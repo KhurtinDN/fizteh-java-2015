@@ -18,7 +18,7 @@ import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
  * [--limit|-l <tweets>]
  * [--help|-h]
  */
-public class Arguments {
+public final class Arguments {
     private static final int STANDART_LIMIT = 30;
 
     private GeoLocationInfo geoLocationInfo = null;

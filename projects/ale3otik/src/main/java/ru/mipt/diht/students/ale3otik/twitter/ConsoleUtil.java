@@ -21,7 +21,7 @@ public final class ConsoleUtil {
             this.escape = escapeCode;
         }
 
-        String line(String inputLine) {
+        public String line(String inputLine) {
             return this.escape + inputLine + ANSI_RESET;
         }
     }
