@@ -4,12 +4,7 @@
 
 import com.beust.jcommander.JCommander;
 import twitter4j.*;
-
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
-import java.time.temporal.ChronoUnit;
-import java.time.ZoneId;
 import twitter4j.Status;
 
 public class TwitterStreamApp {
@@ -158,7 +153,8 @@ public class TwitterStreamApp {
        long tweetTimeToFormat = status.getCreatedAt().getTime();
         if (status.isRetweet()) {
             if (!hideRetweets) {
-                System.out.print(new StringBuilder().append("[").append(timeParser.printTime(currentTimeToFormat, tweetTimeToFormat)).append("] ").toString());
+                System.out.print(new StringBuilder().append("[").
+                        append(timeParser.printTime(currentTimeToFormat, tweetTimeToFormat)).append("] ").toString());
                 System.out.println(new StringBuilder().append(ANSI_BLUE).append("@").
                         append(status.getUser().getScreenName()).append(ANSI_RESET).
                         append(": ретвитнул ").append(ANSI_BLUE).append("@").
@@ -167,7 +163,8 @@ public class TwitterStreamApp {
                         append(status.getRetweetedStatus().getText()).toString());
             }
         } else {
-            System.out.print(new StringBuilder().append("[").append(timeParser.printTime(currentTimeToFormat, tweetTimeToFormat)).append("] ").toString());
+            System.out.print(new StringBuilder().append("[").
+                    append(timeParser.printTime(currentTimeToFormat, tweetTimeToFormat)).append("] ").toString());
             System.out.print(new StringBuilder().
                     append(ANSI_BLUE).append("@").
                     append(status.getUser().getScreenName()).

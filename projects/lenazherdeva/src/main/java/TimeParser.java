@@ -1,4 +1,4 @@
-import twitter4j.Status;
+
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -9,14 +9,14 @@ import java.util.Date;
  * Created by admin on 08.11.2015.
  */
 public class TimeParser {
-    static String printTime(long currentTimeToFormat,long tweetTimeToFormat) {
+    static String printTime(long currentTimeToFormat, long tweetTimeToFormat) {
         Formatter timeFormatter = new Formatter();
         LocalDateTime currentTime = new Date(currentTimeToFormat).toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime tweetTime = new Date(tweetTimeToFormat).toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-        if (ChronoUnit.MINUTES.between(tweetTime, currentTime) <= 2) {
+        if (ChronoUnit.MINUTES.between(tweetTime, currentTime) < 2) {
             return "только что";
         } else {
             if (ChronoUnit.HOURS.between(tweetTime, currentTime) < 1) {
@@ -44,3 +44,4 @@ public class TimeParser {
         }
     }
 }
+
