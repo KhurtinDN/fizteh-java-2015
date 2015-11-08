@@ -18,24 +18,6 @@ public class FormatterTest extends TestCase {
     static final int STEPS = 100;
     static final int FORMATTER_STEP = 100;
     @Test
-    public void testFormatterMinutes() throws Exception {
-        Map <Integer, String> answers = new HashMap<>();
-        answers.put(1, "минуту");
-        answers.put(2, "минуты");
-        answers.put(5, "минут");
-        answers.put(11, "минут");
-        answers.put(21, "минуту");
-        answers.put(22, "минуты");
-        answers.put(26, "минут");
-        answers.put(111, "минут");
-        answers.put(123, "минуты");
-        for (Integer value: answers.keySet()) {
-            for(int i=0; i < STEPS; ++i) {
-                assertThat(Formatter.minutes(value + i * FORMATTER_STEP ), is(answers.get(value)));
-            }
-        }
-    }
-
     public void testFormatterHours() throws Exception {
         Map <Integer, String> answers = new HashMap<>();
         answers.put(1, "час");
@@ -50,6 +32,24 @@ public class FormatterTest extends TestCase {
         for (Integer value: answers.keySet()) {
             for(int i=0; i < STEPS; ++i) {
                 assertThat(Formatter.hours(value + i * FORMATTER_STEP ), is(answers.get(value)));
+            }
+        }
+    }
+
+    public void testFormatterMinutes() throws Exception {
+        Map <Integer, String> answers = new HashMap<>();
+        answers.put(1, "минуту");
+        answers.put(2, "минуты");
+        answers.put(5, "минут");
+        answers.put(11, "минут");
+        answers.put(21, "минуту");
+        answers.put(22, "минуты");
+        answers.put(26, "минут");
+        answers.put(111, "минут");
+        answers.put(123, "минуты");
+        for (Integer value: answers.keySet()) {
+            for(int i=0; i < STEPS; ++i) {
+                assertThat(Formatter.minutes(value + i * FORMATTER_STEP), is(answers.get(value)));
             }
         }
     }

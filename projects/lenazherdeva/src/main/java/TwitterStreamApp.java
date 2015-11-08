@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.time.temporal.ChronoUnit;
 import java.time.ZoneId;
+import twitter4j.Status;
 
 public class TwitterStreamApp {
     //color for nicks
@@ -44,7 +45,6 @@ public class TwitterStreamApp {
                 print(param);
             } catch (TwitterException e) {
                 System.out.println(e.getMessage());
-                print(param);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
                 System.exit(-1);
@@ -152,10 +152,13 @@ public class TwitterStreamApp {
 
     //print tweets
    public static void printStatus(Status status, boolean hideRetweets) {
+       TimeParser timeParser = new TimeParser();
         Formatter retweetsFormatter = new Formatter();
+       long currentTimeToFormat = System.currentTimeMillis();
+       long tweetTimeToFormat = status.getCreatedAt().getTime();
         if (status.isRetweet()) {
             if (!hideRetweets) {
-                printTime(status);
+                System.out.print(new StringBuilder().append("[").append(timeParser.printTime(currentTimeToFormat, tweetTimeToFormat)).append("] ").toString());
                 System.out.println(new StringBuilder().append(ANSI_BLUE).append("@").
                         append(status.getUser().getScreenName()).append(ANSI_RESET).
                         append(": ретвитнул ").append(ANSI_BLUE).append("@").
@@ -164,7 +167,7 @@ public class TwitterStreamApp {
                         append(status.getRetweetedStatus().getText()).toString());
             }
         } else {
-            printTime(status);
+            System.out.print(new StringBuilder().append("[").append(timeParser.printTime(currentTimeToFormat, tweetTimeToFormat)).append("] ").toString());
             System.out.print(new StringBuilder().
                     append(ANSI_BLUE).append("@").
                     append(status.getUser().getScreenName()).
@@ -180,44 +183,6 @@ public class TwitterStreamApp {
         }
     }
 
-    public static void printTime(Status status) {
-        Formatter timeFormatter = new Formatter();
-        long currentTimeToFormat = System.currentTimeMillis();
-        long tweetTimeToFormat = status.getCreatedAt().getTime();
 
-        LocalDateTime currentTime = new Date(currentTimeToFormat).toInstant()
-                .atZone(ZoneId.systemDefault()).toLocalDateTime();
-        LocalDateTime tweetTime = new Date(tweetTimeToFormat).toInstant()
-                .atZone(ZoneId.systemDefault()).toLocalDateTime();
-
-        System.out.print("[");
-        if (ChronoUnit.MINUTES.between(tweetTime, currentTime) <= 2) {
-            System.out.print("только что");
-        } else {
-            if (ChronoUnit.HOURS.between(tweetTime, currentTime) < 1) {
-                System.out.print(new StringBuilder().
-                        append(ChronoUnit.MINUTES.between(tweetTime, currentTime)).
-                        append(" ").append(timeFormatter.minutes(ChronoUnit.MINUTES.between(tweetTime, currentTime))).
-                        append(" назад").toString());
-            } else {
-                if (ChronoUnit.DAYS.between(tweetTime, currentTime) < 1) {
-                    System.out.print(new StringBuilder().
-                            append(ChronoUnit.HOURS.between(tweetTime, currentTime)).
-                            append(" ").append(timeFormatter.hours(ChronoUnit.HOURS.between(tweetTime, currentTime))).
-                            append(" назад").toString());
-                    } else {
-                    if (ChronoUnit.DAYS.between(tweetTime, currentTime) == 1) {
-                        System.out.print("вчера");
-                    } else {
-                        System.out.print(new StringBuilder().
-                                append(ChronoUnit.DAYS.between(tweetTime, currentTime)).
-                                append(" ").append(timeFormatter.days(ChronoUnit.DAYS.between(tweetTime, currentTime))).
-                                append(" назад").toString());
-                    }
-                }
-            }
-        }
-        System.out.print("] ");
-    }
 }
 
