@@ -9,7 +9,7 @@ import twitter4j.GeoLocation;
 import twitter4j.Place;
 
 public class GeolocationUtils {
-    private static final String GOOGLE_API_KEY = "AIzaSyCltC9cSKnrnqOApw5TQ155nwEBW-ZUt1E";
+    protected static final String GOOGLE_API_KEY = "AIzaSyCltC9cSKnrnqOApw5TQ155nwEBW-ZUt1E";
 
     public static Geometry findLocation(String placeName) {
         GeoApiContext context = new GeoApiContext().setApiKey(GOOGLE_API_KEY);
