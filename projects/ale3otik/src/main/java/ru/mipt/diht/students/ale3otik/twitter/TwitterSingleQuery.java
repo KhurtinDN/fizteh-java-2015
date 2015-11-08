@@ -44,6 +44,7 @@ public class TwitterSingleQuery {
         out.close();
     }
 
+    @SuppressWarnings("checkstyle:magicnumber")
     public static ArrayList<Status> getSingleQueryStatuses(Arguments arguments)
             throws ConnectionFailedException, TwitterException {
 
@@ -51,8 +52,8 @@ public class TwitterSingleQuery {
 
         ArrayList<Status> allTweets = new ArrayList<Status>();
         QueryResult result;
-
         Twitter twitter = TwitterFactory.getSingleton();
+
         Query query = new Query(arguments.getQuery());
 
         GeoLocationInfo locationInfo = arguments.getGeoLocationInfo();
@@ -67,13 +68,13 @@ public class TwitterSingleQuery {
                 while (allTweets.size() < arguments.getLimit()) {
                     result = twitter.search(query);
 
-                    /** Need to make tests. It's temporarily*/
-                    try {
-                        printJsonResultIntoFile("TweetsMoscowInBrasil.json", result);
-                    } catch (Exception e) {
-                        System.err.println(e.getMessage());
-                    }
-                    /*******************/
+//                    /** Need to make tests. It's temporarily*/
+//                    try {
+//                        printJsonResultIntoFile("TweetsMoscowInBrasil.json", result);
+//                    } catch (Exception e) {
+//                        System.err.println(e.getMessage());
+//                    }
+//                    /*******************/
 
                     List<Status> newTweets = result.getTweets();
                     if (newTweets.isEmpty()) {
