@@ -11,6 +11,7 @@ public class Formatter {
     static final int TWO = 2;
     static final int FOUR = 4;
 
+    @SuppressWarnings("checkstyle:magicnumber")
     private static String declensionScheme(long n, String[] cases) {
         n = n % MOD100;
         if (ELEVEN <= n
