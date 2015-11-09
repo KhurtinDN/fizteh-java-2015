@@ -1,13 +1,14 @@
-/**
+package ru.mipt.diht.students.lenazherdeva.TwitterStream; /**
  * Created by admin on 27.09.2015.
  */
 //parsing using by jcommander
 import com.beust.jcommander.Parameter;
+
 public class Parameters {
     @Parameter(names = {"-l", "--limit"},
             description =
                     "Number of tweets to show(only for no streaming mode)")
-    private Integer limit = Integer.MAX_VALUE;
+    private int limit = Integer.MAX_VALUE;
 
     @Parameter(names = {"-s", "--stream"},
             description = "Stream")
@@ -29,7 +30,7 @@ public class Parameters {
             description = "Query or keywords for stream", required = true)
     private String query = "";
 
-    public final Boolean isStream() {
+    public final boolean isStream() {
         return isStream;
     }
 
@@ -37,7 +38,7 @@ public class Parameters {
         return hideRetweets;
     }
 
-    public final Integer getLimit() {
+    public final int getLimit() {
         return limit;
     }
 

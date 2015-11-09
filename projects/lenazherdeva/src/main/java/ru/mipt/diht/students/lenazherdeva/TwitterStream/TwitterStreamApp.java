@@ -1,18 +1,16 @@
-/**
+package ru.mipt.diht.students.lenazherdeva.TwitterStream; /**
  * Created by admin on 27.09.2015.
  */
 
 import com.beust.jcommander.JCommander;
 import twitter4j.*;
 import java.util.List;
-import twitter4j.Status;
 
 public class TwitterStreamApp {
     //color for nicks
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLUE = "\u001B[34m";
     public static final long PAUSE = 1000;
-
 
     public static void main(String[] args) throws Exception {
         Parameters param = new Parameters();
@@ -49,7 +47,7 @@ public class TwitterStreamApp {
 
     public static void streamPrint(Parameters param)  //stream-режим
             throws Exception {
-        twitter4j.TwitterStream twitterStream;
+        TwitterStream twitterStream;
         twitterStream = new TwitterStreamFactory().getInstance();
         StatusAdapter listener = new StatusAdapter() {
             @Override
@@ -63,8 +61,7 @@ public class TwitterStreamApp {
             }
         };
         twitterStream.addListener(listener);
-
-        if (param.getQuery() == "" && param.getLocation() == "") {
+        if (param.getQuery().equals("") && param.getLocation().equals("")) {
             twitterStream.sample();
         } else {
             FilterQuery filter = setFilter(param);
@@ -84,7 +81,6 @@ public class TwitterStreamApp {
                 List<Status> tweets = result.getTweets();
                 Thread.sleep(PAUSE);
                 for (Status tweet : tweets) {
-                   // printTime(tweet);
                     printStatus(tweet, param.hideRetweets());
                     limit--;
                     statusCounter++;
@@ -105,7 +101,7 @@ public class TwitterStreamApp {
             System.exit(-1);
         }
         if (statusCounter == 0) {
-            System.out.println("По данному запросу результатов не найдено");
+            System.out.println("No results for this query");
             System.exit(-1);
         }
     }
@@ -144,17 +140,14 @@ public class TwitterStreamApp {
         }
         return query;
     }
-
     //print tweets
    public static void printStatus(Status status, boolean hideRetweets) {
-       TimeParser timeParser = new TimeParser();
-        Formatter retweetsFormatter = new Formatter();
        long currentTimeToFormat = System.currentTimeMillis();
        long tweetTimeToFormat = status.getCreatedAt().getTime();
         if (status.isRetweet()) {
             if (!hideRetweets) {
                 System.out.print(new StringBuilder().append("[").
-                        append(timeParser.printTime(currentTimeToFormat, tweetTimeToFormat)).append("] ").toString());
+                        append(TimeParser.printTime(currentTimeToFormat, tweetTimeToFormat)).append("] ").toString());
                 System.out.println(new StringBuilder().append(ANSI_BLUE).append("@").
                         append(status.getUser().getScreenName()).append(ANSI_RESET).
                         append(": ретвитнул ").append(ANSI_BLUE).append("@").
@@ -164,7 +157,7 @@ public class TwitterStreamApp {
             }
         } else {
             System.out.print(new StringBuilder().append("[").
-                    append(timeParser.printTime(currentTimeToFormat, tweetTimeToFormat)).append("] ").toString());
+                    append(TimeParser.printTime(currentTimeToFormat, tweetTimeToFormat)).append("] ").toString());
             System.out.print(new StringBuilder().
                     append(ANSI_BLUE).append("@").
                     append(status.getUser().getScreenName()).
@@ -173,13 +166,10 @@ public class TwitterStreamApp {
             if (status.getRetweetCount() != 0) {
                 System.out.print(new StringBuilder().append("(").
                         append(status.getRetweetCount()).append(" ").
-                        append(retweetsFormatter.retweet(status.getRetweetCount())).
+                        append(Formatter.retweet(status.getRetweetCount())).
                         append(")").toString());
             }
             System.out.println();
         }
     }
-
-
 }
-

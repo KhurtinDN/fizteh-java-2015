@@ -1,13 +1,14 @@
+package ru.mipt.diht.students.lenazherdeva.ModuleTests;
+
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-
+import ru.mipt.diht.students.lenazherdeva.TwitterStream.Formatter;
 import java.util.HashMap;
 import java.util.Map;
-
+import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by admin on 05.11.2015.
@@ -31,7 +32,7 @@ public class FormatterTest extends TestCase {
         answers.put(123, "часа");
         for (Integer value: answers.keySet()) {
             for(int i=0; i < STEPS; ++i) {
-                assertThat(Formatter.hours(value + i * FORMATTER_STEP ), is(answers.get(value)));
+                assertThat(Formatter.hours(value + i * FORMATTER_STEP), is(answers.get(value)));
             }
         }
     }
@@ -67,7 +68,7 @@ public class FormatterTest extends TestCase {
         answers.put(123, "ретвита");
         for (Integer value: answers.keySet()) {
             for(int i=0; i < STEPS; ++i) {
-                assertThat(Formatter.retweet(value + i * FORMATTER_STEP ), is(answers.get(value)));
+                assertThat(Formatter.retweet(value + i * FORMATTER_STEP), is(answers.get(value)));
             }
         }
     }

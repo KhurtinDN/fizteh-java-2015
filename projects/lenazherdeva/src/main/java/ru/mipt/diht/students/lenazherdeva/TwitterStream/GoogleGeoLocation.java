@@ -1,18 +1,16 @@
-/**
+package ru.mipt.diht.students.lenazherdeva.TwitterStream; /**
  * Created by admin on 02.10.2015.
 */
-
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.Bounds;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
-import java.util.Properties;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-
+import java.util.Properties;
 
 class GoogleGeoLocation {
     private static final double EARTH_RADIUS = 6371;

@@ -1,4 +1,4 @@
-
+package ru.mipt.diht.students.lenazherdeva.TwitterStream;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -9,7 +9,7 @@ import java.util.Date;
  * Created by admin on 08.11.2015.
  */
 public class TimeParser {
-    static String printTime(long currentTimeToFormat, long tweetTimeToFormat) {
+    public static String printTime(long currentTimeToFormat, long tweetTimeToFormat) {
         Formatter timeFormatter = new Formatter();
         LocalDateTime currentTime = new Date(currentTimeToFormat).toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDateTime();
