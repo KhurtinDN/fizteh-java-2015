@@ -4,15 +4,28 @@
 
 package ru.mipt.diht.students.ale3otik.twitter;
 
-import ru.mipt.diht.students.ale3otik.twitter.exceptions.StreamStartFailedException;
 import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 import twitter4j.*;
+
+import java.util.function.Consumer;
+
 
 public class TwitterStreamLauncher {
 
     private static final long SLEEP_TIME = 1000;
+    private TwitterStream twStream;
+    private Consumer<String> consumer;
 
-    private static StatusAdapter createStatusAdapter(Arguments arguments) {
+    public TwitterStreamLauncher(TwitterStream twitterStreamClient, Consumer<String> newConsumer) {
+        this.twStream = twitterStreamClient;
+        this.consumer = newConsumer;
+    }
+
+    private void print(String str) {
+        consumer.accept(str);
+    }
+
+    public final StatusAdapter createStatusAdapter(Arguments arguments) {
         return new StatusAdapter() {
             @Override
             public void onStatus(Status status) {
@@ -33,7 +46,7 @@ public class TwitterStreamLauncher {
                     }
                 }
 
-                ConsoleUtil.printIntoStdout(TwitterUtil.getFormattedTweetToPrint(status, arguments));
+                print(TwitterUtils.getFormattedTweetToPrint(status, arguments));
 
                 try {
                     Thread.sleep(SLEEP_TIME);
@@ -47,21 +60,14 @@ public class TwitterStreamLauncher {
 
     }
 
-    public static void streamStart(Arguments arguments, String informationMessage)
-            throws StreamStartFailedException {
-
+    public final void streamStart(Arguments arguments, String informationMessage) {
         informationMessage += " в потоковом режиме:";
         StatusListener listener = createStatusAdapter(arguments);
-
-        TwitterStream twStream;
-        try {
-            twStream = TwitterStreamFactory.getSingleton();
 
             FilterQuery query = new FilterQuery(arguments.getQuery());
             twStream.addListener(listener);
 
-            ConsoleUtil.printIntoStdout(informationMessage);
-            TwitterUtil.getSplitLine();
+            print(informationMessage + TwitterUtils.getSplitLine());
 
             if (arguments.getQuery().isEmpty()) {
                 twStream.sample();
@@ -69,8 +75,5 @@ public class TwitterStreamLauncher {
                 twStream.filter(query);
             }
 
-        } catch (Exception e) {
-            throw new StreamStartFailedException(e.getMessage());
-        }
     }
 }

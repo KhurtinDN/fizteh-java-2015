@@ -58,16 +58,11 @@ public class GeoLocationResolverTest extends TestCase {
         assertEquals(DOLGOPRUDNYY, location);
     }
 
-    @Test
+    @Test(expected = LocationException.class)
     public void testFailedGetNameOfCurrentLocation() throws Exception {
         InputStream inputStream = GeoLocationResolverTest.class.getResourceAsStream(INVALID_JSON);
         PowerMockito.when(dummyNearbyLocationURL.openStream()).thenReturn(inputStream);
-        try {
-            GeoLocationResolver.getNameOfCurrentLocation();
-        } catch(LocationException e){
-            return;
-        }
-        assertEquals(1,0);
+        GeoLocationResolver.getNameOfCurrentLocation();
     }
 
     @Test
@@ -81,15 +76,10 @@ public class GeoLocationResolverTest extends TestCase {
         assertEquals(LondonRadius, location.getRadius());
     }
 
-    @Test
+    @Test(expected = LocationException.class)
     public void testFailedGetGeoLocation() throws Exception {
         InputStream inputStream = GeoLocationResolverTest.class.getResourceAsStream(INVALID_JSON);
         PowerMockito.when(dummyGeoDataURL.openStream()).thenReturn(inputStream);
-        try{
-            GeoLocationResolver.getGeoLocation(LONDON);
-        } catch(LocationException e) {
-            return;
-        }
-        assertEquals(1,0);
+        GeoLocationResolver.getGeoLocation(LONDON);
     }
 }

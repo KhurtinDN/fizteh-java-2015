@@ -4,9 +4,6 @@ import ru.mipt.diht.students.ale3otik.twitter.exceptions.ConnectionFailedExcepti
 import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 import twitter4j.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,66 +12,51 @@ import java.util.List;
  * Created by alex on 10.10.15.
  */
 public class TwitterSingleQuery {
-    public static String getSingleQueryResult(Arguments arguments, String informationMessage)
+    private Twitter twitter;
+
+    public TwitterSingleQuery(Twitter twitterClient) {
+        this.twitter = twitterClient;
+    }
+
+    public final String getSingleQueryResult(Arguments arguments, String informationMessage)
             throws ConnectionFailedException, TwitterException {
 
         ArrayList<Status> allTweets = getSingleQueryStatuses(arguments);
 
         StringBuilder answerString = new StringBuilder();
         answerString.append(informationMessage).append(":");
-        answerString.append("\n").append(TwitterUtil.getSplitLine());
+        answerString.append("\n").append(TwitterUtils.getSplitLine());
 
         if (allTweets.isEmpty()) {
             answerString.append("\n").append("Ничего не найдено :(");
         }
 
         for (Status status : allTweets) {
-            answerString.append("\n").append(TwitterUtil.getFormattedTweetToPrint(status, arguments));
+            answerString.append("\n").append(TwitterUtils.getFormattedTweetToPrint(status, arguments));
         }
         return answerString.toString();
     }
 
-    private static void printJsonResultIntoFile(String fileName, QueryResult result)
-            throws IOException {
-        File file = new File(fileName);
-        file.createNewFile();
-        PrintWriter out = new PrintWriter(file.getAbsoluteFile());
-        JSONObject json = new JSONObject(result);
-        out.print(json.toString());
-        out.close();
-    }
-
     @SuppressWarnings("checkstyle:magicnumber")
-    public static ArrayList<Status> getSingleQueryStatuses(Arguments arguments)
+    public final ArrayList<Status> getSingleQueryStatuses(Arguments arguments)
             throws ConnectionFailedException, TwitterException {
 
         int tries = 0;
 
         ArrayList<Status> allTweets = new ArrayList<Status>();
-        QueryResult result;
-        Twitter twitter = TwitterFactory.getSingleton();
 
         Query query = new Query(arguments.getQuery());
-
         GeoLocationInfo locationInfo = arguments.getGeoLocationInfo();
         if (locationInfo != null) {
             query.geoCode(locationInfo.getLocation(),
                     locationInfo.getRadius(), GeoLocationResolver.RADIUS_UNIT);
         }
 
-        while (tries < TwitterUtil.TRIES_LIMIT) {
-
+        QueryResult result;
+        while (tries < TwitterUtils.TRIES_LIMIT) {
             try {
                 while (allTweets.size() < arguments.getLimit()) {
                     result = twitter.search(query);
-
-//                    /** Need to make tests. It's temporarily*/
-//                    try {
-//                        printJsonResultIntoFile("TweetsMoscowInBrasil.json", result);
-//                    } catch (Exception e) {
-//                        System.err.println(e.getMessage());
-//                    }
-//                    /*******************/
 
                     List<Status> newTweets = result.getTweets();
                     if (newTweets.isEmpty()) {
@@ -107,7 +89,7 @@ public class TwitterSingleQuery {
             }
         }
 
-        if (tries == TwitterUtil.TRIES_LIMIT) {
+        if (tries == TwitterUtils.TRIES_LIMIT) {
             throw new ConnectionFailedException("Не удалось восстановить соединение");
         }
 

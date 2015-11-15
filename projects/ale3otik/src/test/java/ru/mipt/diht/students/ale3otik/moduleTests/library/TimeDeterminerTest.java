@@ -1,7 +1,7 @@
 package ru.mipt.diht.students.ale3otik.moduleTests.library;
 
 import junit.framework.TestCase;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.mipt.diht.students.ale3otik.twitter.TimeDeterminer;
 
@@ -16,7 +16,7 @@ public class TimeDeterminerTest extends TestCase {
     private Date[] dates;
     private LocalDateTime[] localDateTime;
 
-    @Before
+    @BeforeClass
     public void setUp() throws Exception {
         dates = new Date[6];
         localDateTime = new LocalDateTime[6];

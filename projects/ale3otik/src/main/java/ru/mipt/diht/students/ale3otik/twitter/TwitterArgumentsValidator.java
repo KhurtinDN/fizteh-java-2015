@@ -9,7 +9,8 @@ import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 
 
 public class TwitterArgumentsValidator {
-    public static void processArguments(Arguments arguments) {
+    public static void processArguments(Arguments arguments)
+            throws IllegalArgumentException {
 
         if (!isQueryValid(arguments)) {
             throw new IllegalArgumentException("Задан пустой поисковой запрос");

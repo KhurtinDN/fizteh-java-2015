@@ -7,8 +7,9 @@ package ru.mipt.diht.students.ale3otik.twitter;
 import com.beust.jcommander.JCommander;
 import ru.mipt.diht.students.ale3otik.twitter.exceptions.ConnectionFailedException;
 import ru.mipt.diht.students.ale3otik.twitter.exceptions.NormalExitException;
-import ru.mipt.diht.students.ale3otik.twitter.exceptions.StreamStartFailedException;
-import twitter4j.TwitterException;
+import twitter4j.*;
+
+import java.util.function.Consumer;
 
 public class TwitterRunner {
     public static void main(String[] args) {
@@ -49,9 +50,19 @@ public class TwitterRunner {
             }
 
             if (arguments.isStream()) {
-                TwitterStreamLauncher.streamStart(arguments, informationMessage.toString());
+                // run stream handler
+                TwitterStream twStream = TwitterStreamFactory.getSingleton();
+
+                Consumer<String> streamConsumer = (x) -> ConsoleUtil.printIntoStdout(x);
+                TwitterStreamLauncher twStreamLauncher
+                        = new TwitterStreamLauncher(twStream, streamConsumer);
+
+                twStreamLauncher.streamStart(arguments, informationMessage.toString());
             } else {
-                ConsoleUtil.printIntoStdout(TwitterSingleQuery
+                // run singleQuery handler
+                Twitter twitter = TwitterFactory.getSingleton();
+                TwitterSingleQuery twSingleQuery = new TwitterSingleQuery(twitter);
+                ConsoleUtil.printIntoStdout(twSingleQuery
                         .getSingleQueryResult(arguments, informationMessage.toString()));
             }
 
@@ -63,9 +74,6 @@ public class TwitterRunner {
             ConsoleUtil.printErrorMessage(e.getMessage());
         } catch (TwitterException e) {
             ConsoleUtil.printErrorMessage("Unhandled TwitterException");
-            ConsoleUtil.printErrorMessage(e.getMessage());
-        } catch (StreamStartFailedException e) {
-            ConsoleUtil.printErrorMessage("StreamStartFailedException");
             ConsoleUtil.printErrorMessage(e.getMessage());
         } catch (NormalExitException e) {
             ConsoleUtil.printErrorMessage(e.getMessage());

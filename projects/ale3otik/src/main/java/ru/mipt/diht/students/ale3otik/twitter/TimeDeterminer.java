@@ -13,7 +13,9 @@ public class TimeDeterminer {
     public static String getTimeDifference(Date createdAt) {
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime tweetTime = createdAt
-                .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
 
         return getDifferenceOfDates(tweetTime, currentTime);
     }
