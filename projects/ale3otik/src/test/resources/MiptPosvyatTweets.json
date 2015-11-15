@@ -1,0 +1,410 @@
+
+{
+  "rateLimitStatus": {
+    "limit": 180,
+    "secondsUntilReset": 426,
+    "remaining": 163,
+    "resetTimeInSeconds": 1447107674
+  },
+  "maxId": 663118427008196609,
+  "sinceId": 0,
+  "accessLevel": 2,
+  "refreshURL": "?since_id=663118427008196609&q=MIPT%20%D0%BF%D0%BE%D1%81%D0%B2%D1%8F%D1%82&include_entities=1",
+  "query": "MIPT посвят",
+  "count": 15,
+  "tweets": [
+    {
+      "inReplyToUserId": -1,
+      "userMentionEntities": [],
+      "source": "<a href=\"http://vk.com\" rel=\"nofollow\">vk.com<\/a>",
+      "retweeted": false,
+      "currentUserRetweetId": -1,
+      "createdAt": "Sun Nov 08 01:18:47 MSK 2015",
+      "hashtagEntities": [
+        {
+          "start": 13,
+          "end": 18,
+          "text": "mipt"
+        },
+        {
+          "start": 19,
+          "end": 24,
+          "text": "МФТИ"
+        },
+        {
+          "start": 25,
+          "end": 32,
+          "text": "физтех"
+        }
+      ],
+      "mediaEntities": [],
+      "inReplyToStatusId": -1,
+      "extendedMediaEntities": [],
+      "id": 663118427008196609,
+      "text": "Посвят ФРТК. #mipt #МФТИ #физтех https://t.co/0ZxkaHwv3N",
+      "lang": "ru",
+      "favorited": false,
+      "retweet": false,
+      "accessLevel": 0,
+      "URLEntities": [
+        {
+          "displayURL": "vk.cc/4odsX8",
+          "start": 33,
+          "end": 56,
+          "text": "https://t.co/0ZxkaHwv3N",
+          "expandedURL": "http://vk.cc/4odsX8",
+          "URL": "https://t.co/0ZxkaHwv3N"
+        }
+      ],
+      "truncated": false,
+      "quotedStatusId": -1,
+      "possiblySensitive": false,
+      "contributors": [],
+      "retweetedByMe": false,
+      "symbolEntities": [],
+      "user": {
+        "miniProfileImageURL": "http://pbs.twimg.com/profile_images/530820163168661504/49mSf1e9_mini.jpeg",
+        "contributorsEnabled": false,
+        "screenName": "___Karina_1____",
+        "profileUseBackgroundImage": true,
+        "profileBackgroundTiled": false,
+        "createdAt": "Thu Oct 27 16:44:35 MSK 2011",
+        "profileBackgroundImageURL": "http://pbs.twimg.com/profile_background_images/484805606528651264/CRsE4uZq.jpeg",
+        "biggerProfileImageURL": "http://pbs.twimg.com/profile_images/530820163168661504/49mSf1e9_bigger.jpeg",
+        "protected": false,
+        "miniProfileImageURLHttps": "https://pbs.twimg.com/profile_images/530820163168661504/49mSf1e9_mini.jpeg",
+        "profileImageURLHttps": "https://pbs.twimg.com/profile_images/530820163168661504/49mSf1e9_normal.jpeg",
+        "id": 399393597,
+        "profileImageURL": "http://pbs.twimg.com/profile_images/530820163168661504/49mSf1e9_normal.jpeg",
+        "profileSidebarBorderColor": "FFFFFF",
+        "utcOffset": 14400,
+        "URLEntity": {
+          "displayURL": "instagram.com/karina__autumn",
+          "start": 0,
+          "end": 22,
+          "text": "http://t.co/NRGNSK3QBt",
+          "expandedURL": "http://instagram.com/karina__autumn",
+          "URL": "http://t.co/NRGNSK3QBt"
+        },
+        "timeZone": "Abu Dhabi",
+        "defaultProfile": false,
+        "profileLinkColor": "ABB8C2",
+        "originalProfileImageURLHttps": "https://pbs.twimg.com/profile_images/530820163168661504/49mSf1e9.jpeg",
+        "profileSidebarFillColor": "DDEEF6",
+        "profileBannerMobileURL": "https://pbs.twimg.com/profile_banners/399393597/1415392340/mobile",
+        "name": "Karina Monastureva",
+        "followersCount": 13,
+        "followRequestSent": false,
+        "showAllInlineMedia": false,
+        "geoEnabled": false,
+        "profileBannerMobileRetinaURL": "https://pbs.twimg.com/profile_banners/399393597/1415392340/mobile_retina",
+        "translator": false,
+        "description": "Russia,Moscow",
+        "profileTextColor": "333333",
+        "descriptionURLEntities": [],
+        "URL": "http://t.co/NRGNSK3QBt",
+        "biggerProfileImageURLHttps": "https://pbs.twimg.com/profile_images/530820163168661504/49mSf1e9_bigger.jpeg",
+        "profileBannerIPadURL": "https://pbs.twimg.com/profile_banners/399393597/1415392340/ipad",
+        "lang": "ru",
+        "defaultProfileImage": false,
+        "statusesCount": 110,
+        "accessLevel": 0,
+        "profileBackgroundImageUrlHttps": "https://pbs.twimg.com/profile_background_images/484805606528651264/CRsE4uZq.jpeg",
+        "profileBackgroundColor": "0099B9",
+        "verified": false,
+        "favouritesCount": 10,
+        "friendsCount": 9,
+        "listedCount": 0,
+        "profileBannerURL": "https://pbs.twimg.com/profile_banners/399393597/1415392340/web",
+        "location": "",
+        "profileBannerRetinaURL": "https://pbs.twimg.com/profile_banners/399393597/1415392340/web_retina",
+        "originalProfileImageURL": "http://pbs.twimg.com/profile_images/530820163168661504/49mSf1e9.jpeg",
+        "profileBannerIPadRetinaURL": "https://pbs.twimg.com/profile_banners/399393597/1415392340/ipad_retina"
+      },
+      "retweetCount": 0,
+      "favoriteCount": 0
+    },
+    {
+      "inReplyToUserId": -1,
+      "userMentionEntities": [],
+      "source": "<a href=\"http://twitter.com\" rel=\"nofollow\">Twitter Web Client<\/a>",
+      "retweeted": false,
+      "currentUserRetweetId": -1,
+      "createdAt": "Thu Nov 05 19:21:51 MSK 2015",
+      "hashtagEntities": [],
+      "mediaEntities": [
+        {
+          "displayURL": "pic.twitter.com/qKXdz931lK",
+          "mediaURLHttps": "https://pbs.twimg.com/media/CTD50W6UwAA8g1t.jpg",
+          "mediaURL": "http://pbs.twimg.com/media/CTD50W6UwAA8g1t.jpg",
+          "sizes": {
+            "0": {
+              "width": 150,
+              "resize": 101,
+              "height": 150
+            },
+            "1": {
+              "width": 340,
+              "resize": 100,
+              "height": 510
+            },
+            "2": {
+              "width": 402,
+              "resize": 100,
+              "height": 604
+            },
+            "3": {
+              "width": 402,
+              "resize": 100,
+              "height": 604
+            }
+          },
+          "start": 107,
+          "end": 130,
+          "id": 662303823122186240,
+          "text": "https://t.co/qKXdz931lK",
+          "type": "photo",
+          "expandedURL": "http://twitter.com/drec_mipt/status/662303824321912832/photo/1",
+          "URL": "https://t.co/qKXdz931lK"
+        }
+      ],
+      "inReplyToStatusId": -1,
+      "extendedMediaEntities": [],
+      "id": 662303824321912832,
+      "text": "Посвят уже в эту субботу! В 20:00 состоится вечернка от MS, обязательно приходите! https://t.co/CgRkyTAmeI https://t.co/qKXdz931lK",
+      "lang": "ru",
+      "favorited": false,
+      "retweet": false,
+      "accessLevel": 0,
+      "URLEntities": [
+        {
+          "displayURL": "vk.com/ms_cybert15",
+          "start": 83,
+          "end": 106,
+          "text": "https://t.co/CgRkyTAmeI",
+          "expandedURL": "https://vk.com/ms_cybert15",
+          "URL": "https://t.co/CgRkyTAmeI"
+        }
+      ],
+      "truncated": false,
+      "quotedStatusId": -1,
+      "possiblySensitive": false,
+      "contributors": [],
+      "retweetedByMe": false,
+      "symbolEntities": [],
+      "user": {
+        "miniProfileImageURL": "http://pbs.twimg.com/profile_images/1249046666/frtk_mini.png",
+        "showAllInlineMedia": false,
+        "geoEnabled": true,
+        "translator": false,
+        "description": "Факультет Радиотехники и Кибернетики МФТИ",
+        "profileTextColor": "333333",
+        "descriptionURLEntities": [],
+        "contributorsEnabled": false,
+        "screenName": "drec_mipt",
+        "profileUseBackgroundImage": true,
+        "URL": "http://t.co/q7uv3aWqxg",
+        "profileBackgroundTiled": false,
+        "biggerProfileImageURLHttps": "https://pbs.twimg.com/profile_images/1249046666/frtk_bigger.png",
+        "createdAt": "Sat Feb 19 19:38:44 MSK 2011",
+        "profileBackgroundImageURL": "http://abs.twimg.com/images/themes/theme1/bg.png",
+        "biggerProfileImageURL": "http://pbs.twimg.com/profile_images/1249046666/frtk_bigger.png",
+        "protected": false,
+        "miniProfileImageURLHttps": "https://pbs.twimg.com/profile_images/1249046666/frtk_mini.png",
+        "profileImageURLHttps": "https://pbs.twimg.com/profile_images/1249046666/frtk_normal.png",
+        "id": 254607845,
+        "lang": "ru",
+        "profileImageURL": "http://pbs.twimg.com/profile_images/1249046666/frtk_normal.png",
+        "defaultProfileImage": false,
+        "profileSidebarBorderColor": "C0DEED",
+        "statusesCount": 911,
+        "utcOffset": 10800,
+        "accessLevel": 0,
+        "profileBackgroundImageUrlHttps": "https://abs.twimg.com/images/themes/theme1/bg.png",
+        "URLEntity": {
+          "displayURL": "drec.mipt.ru",
+          "start": 0,
+          "end": 22,
+          "text": "http://t.co/q7uv3aWqxg",
+          "expandedURL": "http://drec.mipt.ru",
+          "URL": "http://t.co/q7uv3aWqxg"
+        },
+        "profileBackgroundColor": "C0DEED",
+        "verified": false,
+        "favouritesCount": 229,
+        "timeZone": "Moscow",
+        "defaultProfile": false,
+        "friendsCount": 344,
+        "profileLinkColor": "C41616",
+        "listedCount": 7,
+        "originalProfileImageURLHttps": "https://pbs.twimg.com/profile_images/1249046666/frtk.png",
+        "profileSidebarFillColor": "DDEEF6",
+        "name": "ФРТК МФТИ",
+        "location": "Долгопрудный, Россия",
+        "followersCount": 450,
+        "originalProfileImageURL": "http://pbs.twimg.com/profile_images/1249046666/frtk.png",
+        "followRequestSent": false
+      },
+      "retweetCount": 1,
+      "favoriteCount": 0
+    },
+    {
+      "inReplyToUserId": -1,
+      "userMentionEntities": [],
+      "source": "<a href=\"http://instagram.com\" rel=\"nofollow\">Instagram<\/a>",
+      "retweeted": false,
+      "currentUserRetweetId": -1,
+      "createdAt": "Mon Nov 02 02:49:09 MSK 2015",
+      "hashtagEntities": [
+        {
+          "start": 21,
+          "end": 37,
+          "text": "посвятвосьмёрки"
+        },
+        {
+          "start": 38,
+          "end": 43,
+          "text": "ФМХФ"
+        },
+        {
+          "start": 44,
+          "end": 49,
+          "text": "ФБМФ"
+        },
+        {
+          "start": 50,
+          "end": 55,
+          "text": "мфти"
+        },
+        {
+          "start": 56,
+          "end": 61,
+          "text": "mipt"
+        }
+      ],
+      "mediaEntities": [],
+      "inReplyToStatusId": -1,
+      "extendedMediaEntities": [],
+      "id": 660966839967735808,
+      "text": "Самый мощный посвят! #посвятвосьмёрки #ФМХФ #ФБМФ #мфти #mipt @ МФТИ https://t.co/3XSafMyh6o",
+      "place": {
+        "country": "Rossiya",
+        "placeType": "city",
+        "accessLevel": 0,
+        "countryCode": "RU",
+        "containedWithIn": [],
+        "name": "Dolgoprudny",
+        "fullName": "Dolgoprudny, Oblast Moskau",
+        "boundingBoxCoordinates": [
+          [
+            {
+              "latitude": 55.9076906,
+              "longitude": 37.4454117
+            },
+            {
+              "latitude": 55.9076906,
+              "longitude": 37.5428033
+            },
+            {
+              "latitude": 55.9968414,
+              "longitude": 37.5428033
+            },
+            {
+              "latitude": 55.9968414,
+              "longitude": 37.4454117
+            }
+          ]
+        ],
+        "id": "7b4cb1f4ed391979",
+        "URL": "https://api.twitter.com/1.1/geo/id/7b4cb1f4ed391979.json",
+        "boundingBoxType": "Polygon"
+      },
+      "lang": "ru",
+      "favorited": false,
+      "retweet": false,
+      "accessLevel": 0,
+      "URLEntities": [
+        {
+          "displayURL": "instagram.com/p/9j6x43o4Ud/",
+          "start": 69,
+          "end": 92,
+          "text": "https://t.co/3XSafMyh6o",
+          "expandedURL": "https://instagram.com/p/9j6x43o4Ud/",
+          "URL": "https://t.co/3XSafMyh6o"
+        }
+      ],
+      "truncated": false,
+      "quotedStatusId": -1,
+      "possiblySensitive": false,
+      "geoLocation": {
+        "latitude": 55.92993351,
+        "longitude": 37.51674355
+      },
+      "contributors": [],
+      "retweetedByMe": false,
+      "symbolEntities": [],
+      "user": {
+        "miniProfileImageURL": "http://pbs.twimg.com/profile_images/3068334782/3a69de5fe393a98b369719c9bd9296be_mini.jpeg",
+        "contributorsEnabled": false,
+        "screenName": "Bulat_Valeev",
+        "profileUseBackgroundImage": true,
+        "profileBackgroundTiled": false,
+        "createdAt": "Mon May 28 00:45:10 MSK 2012",
+        "profileBackgroundImageURL": "http://abs.twimg.com/images/themes/theme1/bg.png",
+        "biggerProfileImageURL": "http://pbs.twimg.com/profile_images/3068334782/3a69de5fe393a98b369719c9bd9296be_bigger.jpeg",
+        "protected": false,
+        "miniProfileImageURLHttps": "https://pbs.twimg.com/profile_images/3068334782/3a69de5fe393a98b369719c9bd9296be_mini.jpeg",
+        "profileImageURLHttps": "https://pbs.twimg.com/profile_images/3068334782/3a69de5fe393a98b369719c9bd9296be_normal.jpeg",
+        "id": 592208829,
+        "profileImageURL": "http://pbs.twimg.com/profile_images/3068334782/3a69de5fe393a98b369719c9bd9296be_normal.jpeg",
+        "profileSidebarBorderColor": "C0DEED",
+        "utcOffset": 14400,
+        "URLEntity": {
+          "displayURL": "vk.com/id19414835",
+          "start": 0,
+          "end": 22,
+          "text": "http://t.co/MZiY99Oz8D",
+          "expandedURL": "http://vk.com/id19414835",
+          "URL": "http://t.co/MZiY99Oz8D"
+        },
+        "timeZone": "Abu Dhabi",
+        "defaultProfile": true,
+        "profileLinkColor": "0084B4",
+        "originalProfileImageURLHttps": "https://pbs.twimg.com/profile_images/3068334782/3a69de5fe393a98b369719c9bd9296be.jpeg",
+        "profileSidebarFillColor": "DDEEF6",
+        "profileBannerMobileURL": "https://pbs.twimg.com/profile_banners/592208829/1359489761/mobile",
+        "name": "Valeev Bulat",
+        "followersCount": 79,
+        "followRequestSent": false,
+        "showAllInlineMedia": false,
+        "geoEnabled": true,
+        "profileBannerMobileRetinaURL": "https://pbs.twimg.com/profile_banners/592208829/1359489761/mobile_retina",
+        "translator": false,
+        "description": "",
+        "profileTextColor": "333333",
+        "descriptionURLEntities": [],
+        "URL": "http://t.co/MZiY99Oz8D",
+        "biggerProfileImageURLHttps": "https://pbs.twimg.com/profile_images/3068334782/3a69de5fe393a98b369719c9bd9296be_bigger.jpeg",
+        "profileBannerIPadURL": "https://pbs.twimg.com/profile_banners/592208829/1359489761/ipad",
+        "lang": "ru",
+        "defaultProfileImage": false,
+        "statusesCount": 413,
+        "accessLevel": 0,
+        "profileBackgroundImageUrlHttps": "https://abs.twimg.com/images/themes/theme1/bg.png",
+        "profileBackgroundColor": "C0DEED",
+        "verified": false,
+        "favouritesCount": 27,
+        "friendsCount": 83,
+        "listedCount": 0,
+        "profileBannerURL": "https://pbs.twimg.com/profile_banners/592208829/1359489761/web",
+        "location": "",
+        "profileBannerRetinaURL": "https://pbs.twimg.com/profile_banners/592208829/1359489761/web_retina",
+        "originalProfileImageURL": "http://pbs.twimg.com/profile_images/3068334782/3a69de5fe393a98b369719c9bd9296be.jpeg",
+        "profileBannerIPadRetinaURL": "https://pbs.twimg.com/profile_banners/592208829/1359489761/ipad_retina"
+      },
+      "retweetCount": 0,
+      "favoriteCount": 0
+    }
+  ],
+  "completedIn": 0.03
+}
