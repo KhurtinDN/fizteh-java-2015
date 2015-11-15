@@ -82,7 +82,8 @@ public final class GeoLocationResolver {
             double approximatedRadius = getSphereDist(northEastBoundLocation, southEastBoundLocation);
             approximatedRadius /= 2;
 
-            return new GeoLocationInfo((new GeoLocation(latitude, longitude)), approximatedRadius);
+            return new GeoLocationInfo(new GeoLocation(latitude, longitude), approximatedRadius);
+
         } catch (Exception e) {
             throw new LocationException("Unable to detect required location");
         }

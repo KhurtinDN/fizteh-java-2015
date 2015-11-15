@@ -9,8 +9,6 @@ import ru.mipt.diht.students.ale3otik.twitter.exceptions.ConnectionFailedExcepti
 import ru.mipt.diht.students.ale3otik.twitter.exceptions.NormalExitException;
 import twitter4j.*;
 
-import java.util.function.Consumer;
-
 public class TwitterRunner {
     public static void main(String[] args) {
         try {
@@ -53,11 +51,10 @@ public class TwitterRunner {
                 // run stream handler
                 TwitterStream twStream = TwitterStreamFactory.getSingleton();
 
-                Consumer<String> streamConsumer = (x) -> ConsoleUtil.printIntoStdout(x);
                 TwitterStreamLauncher twStreamLauncher
-                        = new TwitterStreamLauncher(twStream, streamConsumer);
+                        = new TwitterStreamLauncher(twStream, ConsoleUtil.getStdoutConsumer(), arguments);
 
-                twStreamLauncher.streamStart(arguments, informationMessage.toString());
+                twStreamLauncher.streamStart(informationMessage.toString());
             } else {
                 // run singleQuery handler
                 Twitter twitter = TwitterFactory.getSingleton();

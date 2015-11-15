@@ -1,5 +1,7 @@
 package ru.mipt.diht.students.ale3otik.twitter;
 
+import java.util.function.Consumer;
+
 /**
  * Created by alex on 10.10.15.
  */
@@ -34,4 +36,7 @@ public final class ConsoleUtil {
         System.err.println(strToPrint);
     }
 
+    public static Consumer<String> getStdoutConsumer() {
+        return (x) -> ConsoleUtil.printIntoStdout(x);
+    }
 }

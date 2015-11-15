@@ -15,17 +15,21 @@ public class TwitterStreamLauncher {
     private static final long SLEEP_TIME = 1000;
     private TwitterStream twStream;
     private Consumer<String> consumer;
+    private Arguments arguments;
 
-    public TwitterStreamLauncher(TwitterStream twitterStreamClient, Consumer<String> newConsumer) {
+    public TwitterStreamLauncher(TwitterStream twitterStreamClient,
+                                 Consumer<String> newConsumer,
+                                 Arguments receivedArguments) {
         this.twStream = twitterStreamClient;
         this.consumer = newConsumer;
+        this.arguments = receivedArguments;
     }
 
     private void print(String str) {
         consumer.accept(str);
     }
 
-    public final StatusAdapter createStatusAdapter(Arguments arguments) {
+    public final StatusAdapter createStatusAdapter() {
         return new StatusAdapter() {
             @Override
             public void onStatus(Status status) {
@@ -54,26 +58,25 @@ public class TwitterStreamLauncher {
                     ConsoleUtil.printErrorMessage(e.getMessage());
                     Thread.currentThread().interrupt();
                 }
-
             }
         };
-
     }
 
-    public final void streamStart(Arguments arguments, String informationMessage) {
+    public final void streamStart(String informationMessage) {
         informationMessage += " в потоковом режиме:";
-        StatusListener listener = createStatusAdapter(arguments);
+        StatusListener listener = createStatusAdapter();
 
-            FilterQuery query = new FilterQuery(arguments.getQuery());
-            twStream.addListener(listener);
+        FilterQuery query = new FilterQuery(arguments.getQuery());
+        if (arguments.getGeoLocationInfo() != null) {
+        }
+        twStream.addListener(listener);
 
-            print(informationMessage + TwitterUtils.getSplitLine());
+        print(informationMessage + TwitterUtils.getSplitLine());
 
-            if (arguments.getQuery().isEmpty()) {
-                twStream.sample();
-            } else {
-                twStream.filter(query);
-            }
-
+        if (arguments.getQuery().isEmpty()) {
+            twStream.sample();
+        } else {
+            twStream.filter(query);
+        }
     }
 }

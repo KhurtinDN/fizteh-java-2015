@@ -9,24 +9,17 @@ public final class GeoLocationInfo {
     private GeoLocation location;
     private double radius;
 
-    public GeoLocationInfo(final GeoLocation newLocation, final double newRadius) {
-        setRadius(newRadius);
-        setLocation(newLocation);
+    public GeoLocationInfo(final GeoLocation newLocation,
+                           final double newRadius) {
+        radius = newRadius;
+        location = newLocation;
     }
 
     public double getRadius() {
         return radius;
     }
 
-    public void setRadius(final double newRadius) {
-        this.radius = newRadius;
-    }
-
     public GeoLocation getLocation() {
         return location;
-    }
-
-    public void setLocation(final GeoLocation newLocation) {
-        this.location = newLocation;
     }
 }

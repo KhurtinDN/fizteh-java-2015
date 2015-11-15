@@ -1,19 +1,15 @@
 package ru.mipt.diht.students.ale3otik.moduleTests.library;
 
-//import com.beust.jcommander.JCommander;
 import com.beust.jcommander.JCommander;
 import com.google.common.base.Strings;
 import junit.framework.TestCase;
-import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-//import ru.mipt.diht.students.ale3otik.twitter.Arguments;
 import ru.mipt.diht.students.ale3otik.twitter.Arguments;
-//import ru.mipt.diht.students.ale3otik.twitter.ConsoleUtil;
 import ru.mipt.diht.students.ale3otik.twitter.TimeDeterminer;
 import ru.mipt.diht.students.ale3otik.twitter.TwitterUtils;
 import twitter4j.Status;
@@ -30,10 +26,8 @@ import java.util.List;
 @PrepareForTest({TimeDeterminer.class})
 public class TwitterUtilTest extends TestCase {
     final private static int SEPARATOR_LENGTH = 80;
-    final private static String userName = "alex";
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BLUE = "\u001B[34m";
-    private static final String ANSI_PURPLE = "\u001B[35m";
     private static final String ANSI_BOLD = "\033[1m";
 
     private static List<Status> statuses;

@@ -80,23 +80,24 @@ public class ArgumentsProcessTest extends TestCase {
         assertEquals(arguments.isHelp(), true);
     }
 
-    public void testIllegalQueryValidation() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalEmptyQueryValidation() {
         arguments = new Arguments();
         jcm = new JCommander(arguments);
         jcm.parse();
-        try {
-            TwitterArgumentsValidator.processArguments(arguments);
-            throw new Exception();
-        } catch (IllegalArgumentException e) {
-            // ok
-        }
+        TwitterArgumentsValidator.processArguments(arguments);
+    }
 
+
+    @Test
+    public void testLegalEmptyQueryValidation() {
         arguments = new Arguments();
         jcm = new JCommander(arguments);
         jcm.parse("-s");
         TwitterArgumentsValidator.processArguments(arguments);
     }
 
+    @Test
     public void testArgumentsNormalNearbyValidation() {
         arguments = new Arguments();
         jcm = new JCommander(arguments);
@@ -107,6 +108,7 @@ public class ArgumentsProcessTest extends TestCase {
         assertEquals(arguments.getDetectionLocationMessage(), "");
     }
 
+    @Test
     public void testArgumentsNormalGeoLocationValidation() {
         arguments = new Arguments();
         jcm = new JCommander(arguments);
@@ -114,9 +116,10 @@ public class ArgumentsProcessTest extends TestCase {
         TwitterArgumentsValidator.processArguments(arguments);
         assertEquals(arguments.getCurLocationName(), "London");
         assertEquals(arguments.getGeoLocationInfo(), londonInfo);
-        assertEquals(arguments.getDetectionLocationMessage(),"");
+        assertEquals(arguments.getDetectionLocationMessage(), "");
     }
 
+    @Test
     public void testArgumentsFailedGeoLocationValidation() {
         arguments = new Arguments();
         jcm = new JCommander(arguments);

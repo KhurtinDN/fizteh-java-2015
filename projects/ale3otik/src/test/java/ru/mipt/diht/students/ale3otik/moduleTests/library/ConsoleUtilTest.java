@@ -20,4 +20,9 @@ public class ConsoleUtilTest extends TestCase {
         assertEquals(ConsoleUtil.Style.PURPLE.line(testLine), ANSI_PURPLE + testLine + ANSI_RESET);
         assertEquals(ConsoleUtil.Style.BOLD.line(testLine), ANSI_BOLD + testLine + ANSI_RESET);
     }
+
+    @Test
+    public void testGetStdoutConsumer() {
+        assert (ConsoleUtil.getStdoutConsumer() != null);
+    }
 }

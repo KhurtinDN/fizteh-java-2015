@@ -20,6 +20,7 @@ public class GeoLocationInfoTest extends TestCase {
 
         assertEquals(moscowInfo.getRadius(),MoscowRadius);
         assertEquals(moscowInfo.getLocation(),new GeoLocation(MoscowLatitude, MoscowLongitude));
+
     }
 
 }
