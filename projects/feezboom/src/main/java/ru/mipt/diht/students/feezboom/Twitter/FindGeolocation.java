@@ -2,16 +2,16 @@ package ru.mipt.diht.students.feezboom.Twitter;
 
 import ru.mipt.diht.students.feezboom.StringUtils.StringUtils;
 import twitter4j.*;
+
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Scanner;
 import java.util.Vector;
 
-public class FindGeolocation {
-    private static final double DEG_TO_KM = 60 * 1.1515 * 1.609344;
-    private static final double DEG_TO_RAD = Math.PI / 180.0;
-    private static final double RAD_TO_DEG = 180 / Math.PI;
+class FindGeolocation {
 
     private static String getExternalIP() throws Exception {
         URL url = new URL("http://myexternalip.com/raw");
@@ -22,13 +22,20 @@ public class FindGeolocation {
         return ip;
     }
 
-    public static String getCityStringAlternative() throws Exception {
-        String  apiKey = "f2f30e5e30cc31c97784982aadc8a193bb5a9d33",
+    public static String getPlaceStringAlternative() throws Exception {
+        File file = new File("api.db-ip.com.txt");
+        FileReader reader = new FileReader(file);
+        Scanner in = new Scanner(reader);
+
+        String  apiKey = in.nextLine(),
                 ip = getExternalIP();
+        in.close();
+
         URL url = new URL("http://api.db-ip.com/addrinfo?addr=" + ip
                 + "&api_key=" + apiKey);
         URLConnection urlCon = url.openConnection();
-        Scanner in = new Scanner(urlCon.getInputStream());
+
+        in = new Scanner(urlCon.getInputStream());
         //We will get string like
         //{"address":"93.175.2.215",
         // "country":"RU",
@@ -41,7 +48,7 @@ public class FindGeolocation {
         return StringUtils.translitToRussian(info.substring(first, last));
     }
 
-    public static String getCityString() throws IOException {
+    public static String getPlaceString() throws IOException {
         URL url = new URL("http://ip2geolocation.com/");
         URLConnection urlConnection = url.openConnection();
         Scanner scanner =
@@ -65,9 +72,6 @@ public class FindGeolocation {
         last = substring.indexOf("\">");
         String city = substring.substring(first, last);
 
-
-        scanner.close();
-
         //If country == Russia -> city's name has russian equivalent
         if (country.equals("Russian Federation")) {
             city = StringUtils.translitToRussian(city);
@@ -89,6 +93,8 @@ public class FindGeolocation {
 
         String latStr = scanner.nextLine();
         String lonStr = scanner.nextLine();
+
+        scanner.close();
 
         double latitude, longitude;
 
@@ -128,28 +134,14 @@ public class FindGeolocation {
         }
 
         //Then getting center
-        double x = 0, y = 0;
-        for (GeoLocation geoLocation : locations) {
-            x += geoLocation.getLatitude();
-            y += geoLocation.getLongitude();
-        }
-        x /= locations.size();
-        y /= locations.size();
+        double[] center = GeoUtils.calculateCenter(locations);
+        double x = center[0];
+        double y = center[1];
         //Center is OK
 
         //Then getting Radius
-        final double minRadius = 10;
-        double radius = 0;
-        for (GeoLocation geoLocation : locations) {
-            radius += getDistanceBetweenCoordinates(x, y,
-                    geoLocation.getLatitude(),
-                    geoLocation.getLongitude());
-        }
-        radius /= locations.size();
-        if (radius < minRadius) {
-            radius = minRadius;
-        }
-        System.out.println("Place = " + placeString + " Radius = " + radius);
+        double radius = GeoUtils.calculateRadius(locations, x, y);
+        System.out.println("Место = " + placeString + " Радиус поиска = " + radius);
         //Radius is OK
 
         //Then making geolocation for query
@@ -160,10 +152,48 @@ public class FindGeolocation {
         return query;
     }
 
+}
+
+class GeoUtils {
+    private static final double DEG_TO_KM = 60 * 1.1515 * 1.609344;
+    private static final double DEG_TO_RAD = Math.PI / 180.0;
+    private static final double RAD_TO_DEG = 180 / Math.PI;
+
+    public static double calculateRadius(Vector<GeoLocation> locations, double x, double y) {
+        double radius = 0;
+        final double minRadius = 10;
+        for (GeoLocation geoLocation : locations) {
+            radius += getDistanceBetweenCoordinates(x, y,
+                    geoLocation.getLatitude(),
+                    geoLocation.getLongitude());
+        }
+        radius /= locations.size();
+        if (radius < minRadius) {
+            radius = minRadius;
+        }
+        return radius;
+    }
+
+    public static double[] calculateCenter(Vector<GeoLocation> locations) {
+        double[] center = new double[2];
+        double x = 0, y = 0;
+        for (GeoLocation geoLocation : locations) {
+            x += geoLocation.getLatitude();
+            y += geoLocation.getLongitude();
+        }
+        x /= locations.size();
+        y /= locations.size();
+
+        center[0] = x;
+        center[1] = y;
+
+        return center;
+    }
+
     public static double getDistanceBetweenCoordinates(double latitude1,
-                                                 double longitude1,
-                                                 double latitude2,
-                                                 double longitude2) {
+                                                       double longitude1,
+                                                       double latitude2,
+                                                       double longitude2) {
 
         double theta = longitude1 - longitude2;
         double dist = Math.sin(latitude1 * DEG_TO_RAD)
@@ -176,5 +206,4 @@ public class FindGeolocation {
         dist = dist * DEG_TO_KM;
         return dist;
     }
-
 }

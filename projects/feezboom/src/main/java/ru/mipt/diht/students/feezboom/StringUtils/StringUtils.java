@@ -4,43 +4,78 @@ package ru.mipt.diht.students.feezboom.StringUtils;
  ** Created by avk on 10.10.15.
  **/
 public class StringUtils {
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
 
+    public enum Color {
+        BLACK {
+            public String paint(String input) {
+                return "\u001B[30m" + input + ANSI_RESET;
+            }
+        },
+        RED {
+            public String paint(String input) {
+                return "\u001B[31m" + input + ANSI_RESET;
+            }
+        },
+        GREEN {
+            public String paint(String input) {
+                return "\u001B[32m" + input + ANSI_RESET;
+            }
+        },
+        YELLOW {
+            public String paint(String input) {
+                return "\u001B[33m" + input + ANSI_RESET;
+            }
+        },
+        BLUE {
+            public String paint(String input) {
+                return "\u001B[34m" + input + ANSI_RESET;
+            }
+        },
+        PURPLE {
+            public String paint(String input) {
+                return "\u001B[35m" + input + ANSI_RESET;
+            }
+        },
+        CYAN {
+            public String paint(String input) {
+                return "\u001B[36m" + input + ANSI_RESET;
+            }
+        },
+        WHITE {
+            public String paint(String input) {
+                return "\u001B[37m" + input + ANSI_RESET;
+            }
+        };
+        public abstract String paint(String input);
+        public static final String ANSI_RESET = "\u001B[0m";
+    }
 
     public static String getPainted(String string, String color)   {
         String answer;
-        switch (color) {
-            case "black" :case "Black" :case "BLACK" :
-                answer = ANSI_BLACK + string + ANSI_RESET;
+        switch (color.toLowerCase()) {
+            case "black" :
+                answer = Color.BLACK.paint(string);
                 break;
-            case "red" :case "Red" :case "RED" :
-                answer = ANSI_RED + string + ANSI_RESET;
+            case "red" :
+                answer = Color.RED.paint(string);
                 break;
-            case "green" :case "Green" :case "GREEN" :
-                answer = ANSI_GREEN + string + ANSI_RESET;
+            case "green" :
+                answer = Color.GREEN.paint(string);
                 break;
-            case "yellow" :case "Yellow" :case "YELLOW" :
-                answer = ANSI_YELLOW + string + ANSI_RESET;
+            case "yellow" :
+                answer = Color.YELLOW.paint(string);
                 break;
-            case "blue" :case "Blue" :case "BLUE" :
-                answer = ANSI_BLUE + string + ANSI_RESET;
+            case "blue" :
+                answer = Color.BLUE.paint(string);
                 break;
-            case "purple" :case "Purple" :case "PURPLE" :
-                answer = ANSI_PURPLE + string + ANSI_RESET;
+            case "purple" :
+                answer = Color.PURPLE.paint(string);
                 break;
-            case "cyan" :case "Cyan" :case "CYAN" :
-                answer = ANSI_CYAN + string + ANSI_RESET;
+            case "cyan" :
+                answer = Color.CYAN.paint(string);
                 break;
-            case "white" :case "White" :case "WHITE" :
-                answer = ANSI_WHITE + string + ANSI_RESET;
+            case "white" :
+                answer = Color.WHITE.paint(string);
                 break;
             default :
                 answer = string;
@@ -48,85 +83,58 @@ public class StringUtils {
         return answer;
     }
     private static char getRussianChar(char in) {
-        char answer;
         switch (in) {
             case 'a' :case 'A' :
-                answer = 'а';
-                break;
+                return 'а';
             case 'b' :case 'B' :
-                answer = 'б';
-                break;
+                return 'б';
             case 'c' :case 'C' :
-                answer = 'с';
-                break;
+                return 'с';
             case 'D' : case 'd' :
-                answer = 'д';
-                break;
+                return 'д';
             case 'e' :case 'E' :
-                answer = 'е';
-                break;
+                return 'е';
             case 'f' :case 'F' :
-                answer = 'ф';
-                break;
+                return 'ф';
             case 'g' :case 'G' :
-                answer = 'г';
-                break;
+                return 'г';
             case 'h' :case 'H' :
-                answer = 'х';
-                break;
+                return 'х';
             case 'i' :case 'I' :
-                answer = 'и';
-                break;
+                return 'и';
             case 'j' :case 'J' :
-                answer = 'й';
-                break;
+                return 'й';
             case 'k':case 'K' :
-                answer = 'к';
-                break;
+                return 'к';
             case 'l' :case 'L' :
-                answer = 'л';
-                break;
+                return 'л';
             case 'm' :case 'M' :
-                answer = 'м';
-                break;
+                return 'м';
             case 'n' :case 'N' :
-                answer = 'н';
-                break;
+                return 'н';
             case 'o' :case 'O' :
-                answer = 'о';
-                break;
+                return 'о';
             case 'p' :case 'P' :
-                answer = 'п';
-                break;
+                return 'п';
             case 'r' :case 'R' :
-                answer = 'р';
-                break;
+                return 'р';
             case 's' : case 'S' :
-                answer = 'с';
-                break;
+                return 'с';
             case 't':case 'T' :
-                answer = 'т';
-                break;
+                return 'т';
             case 'u' :case 'U' :
-                answer = 'у';
-                break;
+                return 'у';
             case 'v' :case 'V' :
-                answer = 'в';
-                break;
+                return 'в';
             case 'y' :case 'Y' :
-                answer = 'ы';
-                break;
+                return 'ы';
             case 'z' :case 'Z' :
-                answer = 'з';
-                break;
+                return 'з';
             case '\'' :
-                answer = 'ь';
-                break;
+                return 'ь';
             default :
-                answer = in;
-                break;
+                return in;
         }
-        return answer;
     }
     private static String getEnglishChar(char in) {
         String answer = "";

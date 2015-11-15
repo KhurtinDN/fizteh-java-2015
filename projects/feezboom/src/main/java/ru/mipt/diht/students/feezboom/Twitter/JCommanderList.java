@@ -3,34 +3,35 @@ package ru.mipt.diht.students.feezboom.Twitter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
-public class JCommanderList {
+@SuppressWarnings("FieldCanBeLocal")
+class JCommanderList {
 
-    private static final int TWEETS_LIMIT = 100;
-    private JCommander cmd;
+    private static final int DEFAULT_LIMIT = 100;
+    private final JCommander cmd;
 
     @Parameter(names = { "-q", "--query" },
-            description = "Your query words",
+            description = "Ваши ключевые слова",
             required = true)
     private String query = "";
 
     @Parameter(names = { "-p", "--place" },
-            description = "Where to search ('nearby' is able to use)")
+            description = "Поиск по региону ('nearby' - поблизости, пригодно к использованию).")
     private String place = "anywhere";
 
     @Parameter(names = { "-s", "--stream"},
-            description = "Streaming mode")
-    private Boolean isStream = false;
+            description = "Режим стрима.")
+    private Boolean stream = false;
 
     @Parameter(names = { "-l", "--limit"},
-            description = "Tweets to show(only for non streaming mode)")
-    private Integer limit = TWEETS_LIMIT;
+            description = "Ограничение на вывод(не пригодно для стрима).")
+    private Integer limit = DEFAULT_LIMIT;
 
     @Parameter(names = "--hideRetweets",
-            description = "Hiding Retweets")
+            description = "Не показывать ретвиты.")
     private boolean noRetweets = false;
 
     @Parameter(names = { "-h", "--help"},
-            description = "Help mode", help = true)
+            description = "Режим справки.", help = true)
     private boolean help = false;
 
     public final String getQuery() {
@@ -50,7 +51,7 @@ public class JCommanderList {
     }
 
     public final boolean isStream() {
-        return isStream;
+        return stream;
     }
 
     public final boolean isHelp() {

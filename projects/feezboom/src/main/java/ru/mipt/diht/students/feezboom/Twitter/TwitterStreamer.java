@@ -4,42 +4,38 @@ import ru.mipt.diht.students.feezboom.StringUtils.StringUtils;
 import twitter4j.*;
 import java.util.*;
 
-public class TwitterStreamer {
+class TwitterStreamer {
     private Twitter twitter;
-    private JCommanderList params;
+    private int limit;
+    private final JCommanderList params;
     private final int sleepTime = 1000;
 
-    public TwitterStreamer(String[] args) {
+    TwitterStreamer(String[] args) {
         this.params = new JCommanderList(args);
     }
 
     public final void startTwitting() throws Exception {
         if (params.isHelp()) {
             params.printHelp();
-            System.exit(0);
+            return;
         }
 
         twitter = TwitterFactory.getSingleton();
         Query query = new Query(params.getQuery());
 
-        final int tweetsLimit = 100;
-        int limit = params.getLimit();
-        if (limit >= 0 && limit <= tweetsLimit) {
-            query.setCount(limit);
-        } else {
-            System.err.println("Limit " + limit + " was not set.");
-        }
+        //Setting queries limit
+        limit = params.getLimit();
 
-        String city = params.getPlace();
-        switch (city) {
-            case "nearby" : case "Nearby" :
-                city = FindGeolocation.getCityStringAlternative();
-                query = FindGeolocation.setSearchPlace(twitter, query, city);
+        String place = params.getPlace();
+        switch (place.toLowerCase()) {
+            case "nearby" :
+                place = FindGeolocation.getPlaceStringAlternative();
+                query = FindGeolocation.setSearchPlace(twitter, query, place);
                 break;
-            case "anywhere" : case "Anywhere" :
+            case "anywhere" :
                 break;
             default :
-                query = FindGeolocation.setSearchPlace(twitter, query, city);
+                query = FindGeolocation.setSearchPlace(twitter, query, place);
         }
 
         if (params.isStream()) {
@@ -47,32 +43,46 @@ public class TwitterStreamer {
         } else {
             runSearch(query);
         }
-        System.exit(0);
     }
 
     private void runSearch(Query query) throws Exception {
-        QueryResult queryResult = twitter.search(query);
-        List<Status> statusList = queryResult.getTweets();
-        //Check if no tweets:
-        if (statusList.isEmpty()) {
-            System.err.printf("There is no tweets on your query here.");
-            return;
-        }
-        System.out.println(
-                "Твиты по запросу "
-                        + params.getQuery()
-                        + " для "
-                        + params.getPlace()
-                        + ":"
-        );
-        for (Status tweet : statusList) {
-            printTweet(tweet, params.isNoRetweets(), params.isStream());
+        QueryResult queryResult;
+        boolean again = true;
+        int toPrint = limit;
+        final int defaultLimitPerPage = 100;
+
+        //Этот while позволяет выводить сколь угодно запрошенное в limit число твитов
+        while (again) {
+            query.setCount(Math.min(defaultLimitPerPage, toPrint));
+            queryResult = twitter.search(query);
+
+            List<Status> statusList = queryResult.getTweets();
+            //Check if no tweets:
+            if (statusList.isEmpty()) {
+                System.out.println("Нет твитов по вашему запросу.");
+                return;
+            }
+
+            System.out.println(
+                    "Твиты по запросу "
+                            + params.getQuery()
+                            + " для "
+                            + params.getPlace()
+                            + ":"
+            );
+            for (Status tweet : statusList) {
+                printTweet(tweet, params.isNoRetweets(), params.isStream());
+            }
+
+            toPrint -= statusList.size();
+            again = queryResult.hasNext() && toPrint > 0;
+            query = queryResult.nextQuery();
         }
     }
 
     private void runStreamer(Query query) throws Exception {
 
-        System.out.println("Streamer successfully run...");
+        System.out.println("Стример был успешно запущен...");
 
         TwitterStream streamer = new TwitterStreamFactory().getInstance();
         StatusAdapter listener = new StatusAdapter() {
@@ -87,7 +97,7 @@ public class TwitterStreamer {
                     }
                     @Override
                     public void onException(Exception ex) {
-                        System.out.println("Problems listening : "
+                        System.out.println("Возникли проблемы мониторинга : "
                                 + ex.getMessage());
                     }
                 };
@@ -174,14 +184,8 @@ public class TwitterStreamer {
         }
     }
 
+    @SuppressWarnings("checkstyle:magicnumber")
     private String getTimeFormattedTimeString(Date createdAt) {
-        //Remainders
-        final byte one = 1;
-        final byte two = 2;
-        final byte three = 3;
-        final byte four = 4;
-        final byte ten = 10;
-        final byte twenty = 20;
         //Times
         final long sec = 1000;
         final long min = sec * 60;
@@ -196,14 +200,14 @@ public class TwitterStreamer {
             return "Только что";
         } else if (delta < hour) {
             long minutes = delta / min;
-            if (minutes >= ten && minutes <= twenty) {
+            if (minutes >= 10 && minutes <= 20) {
                 ending = "";
             } else {
-                long ostatok = minutes % ten;
-                if (ostatok == one) {
+                long remainder = minutes % 10;
+                if (remainder == 1) {
                     ending = "у";
-                } else if (ostatok == two
-                        || ostatok == three || ostatok == four) {
+                } else if (remainder == 2
+                        || remainder == 3 || remainder == 4) {
                     ending = "ы";
                 } else {
                     ending = "";
@@ -212,14 +216,14 @@ public class TwitterStreamer {
             return (delta / min) + " минут" + ending + " назад";
         } else if (delta < day) {
             long hours = delta / hour;
-            if (hours > ten && hours < twenty) {
+            if (hours > 10 && hours < 20) {
                 ending = "ов";
             } else {
-                long ostatok = hours % ten;
-                if (ostatok == one) {
+                long ostatok = hours % 10;
+                if (ostatok == 1) {
                     ending = "";
-                } else if (ostatok == two
-                        || ostatok == three || ostatok == four) {
+                } else if (ostatok == 2
+                        || ostatok == 3 || ostatok == 4) {
                     ending = "а";
                 } else {
                     ending = "ов";
@@ -230,14 +234,14 @@ public class TwitterStreamer {
             return "Вчера";
         } else {
             long days = delta / day;
-            if (days >= ten && days <= twenty) {
+            if (days >= 10 && days <= 20) {
                 ending = "ней";
             } else {
-                long ostatok = days % ten;
+                long ostatok = days % 10;
                 if (ostatok == 1) {
                     ending = "ень";
-                } else if (ostatok == two
-                        || ostatok == three || ostatok == four) {
+                } else if (ostatok == 2
+                        || ostatok == 3 || ostatok == 4) {
                     ending = "ня";
                 } else {
                     ending = "ней";
