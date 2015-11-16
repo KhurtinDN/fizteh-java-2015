@@ -52,7 +52,7 @@ public class TwitterRunner {
                 TwitterStream twStream = TwitterStreamFactory.getSingleton();
 
                 TwitterStreamLauncher twStreamLauncher
-                        = new TwitterStreamLauncher(twStream, ConsoleUtil.getStdoutConsumer(), arguments);
+                        = new TwitterStreamLauncher(twStream, ConsoleUtil.getStdoutConsumer(), arguments, 0);
 
                 twStreamLauncher.streamStart(informationMessage.toString());
             } else {

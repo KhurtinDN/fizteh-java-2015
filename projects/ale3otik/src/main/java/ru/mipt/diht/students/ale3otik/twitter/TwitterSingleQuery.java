@@ -7,15 +7,26 @@ import twitter4j.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created by alex on 10.10.15.
  */
 public class TwitterSingleQuery {
     private Twitter twitter;
+    private Consumer<String> errorConsumer;
+    private void errPrint(String str) {
+        errorConsumer.accept(str);
+    }
 
     public TwitterSingleQuery(Twitter twitterClient) {
         this.twitter = twitterClient;
+        this.errorConsumer = (x) -> ConsoleUtil.printErrorMessage(x);
+    }
+
+    public TwitterSingleQuery(Twitter twitterClient, Consumer<String> errConsumer) {
+        this.twitter = twitterClient;
+        this.errorConsumer = errConsumer;
     }
 
     public final String getSingleQueryResult(Arguments arguments, String informationMessage)
@@ -82,7 +93,7 @@ public class TwitterSingleQuery {
             } catch (TwitterException e) {
                 if (e.isCausedByNetworkIssue()) {
                     ++tries;
-                    ConsoleUtil.printErrorMessage(e.getMessage() + " Попыток: " + tries);
+                    errPrint(e.getMessage() + " Попыток: " + tries);
                 } else {
                     throw e;
                 }

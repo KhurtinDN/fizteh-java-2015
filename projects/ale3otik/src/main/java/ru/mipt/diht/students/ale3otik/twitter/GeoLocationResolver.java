@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public final class GeoLocationResolver {
     static final int MAX_QUANTITY_OF_TRIES = 2;
     static final double EARTH_RADIUS = 6371;
-    static final String RADIUS_UNIT = "km";
+    public static final String RADIUS_UNIT = "km";
     static final String IP_INFO_URL = "http://ipinfo.io/json";
     static final String GOOGLE_API_URL = "http://maps.googleapis.com/maps/api/geocode/json";
 

@@ -12,17 +12,24 @@ import java.util.function.Consumer;
 
 public class TwitterStreamLauncher {
 
-    private static final long SLEEP_TIME = 1000;
+    private static final long BASE_SLEEP_TIME = 1000;
     private TwitterStream twStream;
     private Consumer<String> consumer;
     private Arguments arguments;
+    private long sleepTime;
 
     public TwitterStreamLauncher(TwitterStream twitterStreamClient,
                                  Consumer<String> newConsumer,
-                                 Arguments receivedArguments) {
+                                 Arguments receivedArguments,
+                                 long timeSleepMillis) {
         this.twStream = twitterStreamClient;
         this.consumer = newConsumer;
         this.arguments = receivedArguments;
+        if (timeSleepMillis == 0) {
+            this.sleepTime = BASE_SLEEP_TIME;
+        } else {
+            this.sleepTime = timeSleepMillis;
+        }
     }
 
     private void print(String str) {
@@ -53,7 +60,7 @@ public class TwitterStreamLauncher {
                 print(TwitterUtils.getFormattedTweetToPrint(status, arguments));
 
                 try {
-                    Thread.sleep(SLEEP_TIME);
+                    Thread.sleep(sleepTime);
                 } catch (InterruptedException e) {
                     ConsoleUtil.printErrorMessage(e.getMessage());
                     Thread.currentThread().interrupt();
@@ -67,11 +74,10 @@ public class TwitterStreamLauncher {
         StatusListener listener = createStatusAdapter();
 
         FilterQuery query = new FilterQuery(arguments.getQuery());
-        if (arguments.getGeoLocationInfo() != null) {
-        }
+
         twStream.addListener(listener);
 
-        print(informationMessage + TwitterUtils.getSplitLine());
+        print(informationMessage + "\n" + TwitterUtils.getSplitLine());
 
         if (arguments.getQuery().isEmpty()) {
             twStream.sample();
