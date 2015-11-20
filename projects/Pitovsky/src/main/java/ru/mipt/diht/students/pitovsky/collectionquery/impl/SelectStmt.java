@@ -3,7 +3,9 @@ package ru.mipt.diht.students.pitovsky.collectionquery.impl;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -16,12 +18,14 @@ public class SelectStmt<T, R> {
     private Iterable<T> base;
     private Class<R> outputClass;
     private Function<T, ?>[] convertFunctions;
+    private boolean isDistinct;
 
     @SafeVarargs
-    public SelectStmt(Iterable<T> baseCollection, Class<R> clazz, Function<T, ?>... s) {
+    public SelectStmt(Iterable<T> baseCollection, Class<R> clazz, boolean distinct, Function<T, ?>... s) {
         base = baseCollection;
         outputClass = clazz;
         convertFunctions = s;
+        isDistinct = distinct;
     }
 
     public WhereStmt<T, R> where(Predicate<T> predicate) {
@@ -30,10 +34,18 @@ public class SelectStmt<T, R> {
 
     public Iterable<R> execute() throws NoSuchMethodException, SecurityException, InstantiationException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        ArrayList<R> output = new ArrayList<>();
+        Collection<R> output = null;
+        if (isDistinct) {
+            output = new HashSet<>();
+        } else {
+            output = new ArrayList<>();
+        }
+
         Class<?>[] outputParametrsTypes = new Class<?>[convertFunctions.length];
         for (int i = 0; i < convertFunctions.length; ++i) {
-            outputParametrsTypes[i] = convertFunctions[i].apply(null).getClass(); //FIXME: find return class of function
+            //FIXME: find return class of function in NORMAL way
+            outputParametrsTypes[i] = convertFunctions[i].apply(base.iterator().next()).getClass();
+            System.err.println(outputParametrsTypes[i]);
         }
         Constructor<R> constructor = outputClass.getConstructor(outputParametrsTypes);
         for (T element : base) {

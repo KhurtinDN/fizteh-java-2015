@@ -29,6 +29,7 @@ public class CollectionQuery {
         try {
             statistics = from(list(
                     student("ivanov", LocalDate.parse("1986-08-06"), "494"),
+                    student("petroff", LocalDate.parse("1986-05-08"), "497"),
                     student("ivanov", LocalDate.parse("1986-08-06"), "494")))
                     .select(Statistics.class, Student::getGroup/*, count(Student::getGroup), avg(Student::age)*/)
                     .execute();
@@ -109,6 +110,12 @@ public class CollectionQuery {
             this.group = group;
             this.count = count;
             this.age = age;
+        }
+
+        public Statistics(String group) {
+            this.group = group;
+            this.count = 0L;
+            this.age = 18L;
         }
 
         @Override

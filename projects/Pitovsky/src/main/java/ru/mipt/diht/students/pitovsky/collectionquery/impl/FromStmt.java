@@ -21,9 +21,15 @@ public class FromStmt<T> {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Get rows, which applies for conditions.
+     * @param clazz class, which able to store. Must have constructor from functions returns types (see below)
+     * @param s parameters and aggregates for output
+     * @return select statement for execution
+     */
     @SafeVarargs
     public final <R> SelectStmt<T, R> select(Class<R> clazz, Function<T, ?>... s) {
-        return new SelectStmt<T, R>(base, clazz, s);
+        return new SelectStmt<T, R>(base, clazz, false, s);
     }
 
     public final <R> SelectStmt<T, R> selectAll(Class<R> clazz) {
@@ -32,6 +38,6 @@ public class FromStmt<T> {
 
     @SafeVarargs
     public final <R> SelectStmt<T, R> selectDistinct(Class<R> clazz, Function<T, ?>... s) {
-        throw new UnsupportedOperationException();
+        return new SelectStmt<T, R>(base, clazz, true, s);
     }
 }
