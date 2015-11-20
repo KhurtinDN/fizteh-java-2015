@@ -30,7 +30,8 @@ public class CollectionQuery {
             statistics = from(list(
                     student("ivanov", LocalDate.parse("1986-08-06"), "494"),
                     student("petroff", LocalDate.parse("1999-05-08"), "497"),
-                    student("sidorov", LocalDate.parse("1986-08-06"), "494")))
+                    student("sidorov", LocalDate.parse("1996-08-06"), "494"),
+                    student("ivanov", LocalDate.parse("1988-08-06"), "496")))
                         .select(Statistics.class, Student::getGroup)
                         .where(s -> s.age() > 20)
                     .execute();
