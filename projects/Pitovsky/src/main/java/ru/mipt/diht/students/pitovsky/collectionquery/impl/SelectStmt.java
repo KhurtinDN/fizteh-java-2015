@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -22,14 +23,14 @@ public class SelectStmt<T, R> {
 
     @SafeVarargs
     public SelectStmt(Iterable<T> baseCollection, Class<R> clazz, boolean distinct, Function<T, ?>... s) {
-        base = baseCollection;
+        base = baseCollection; //TODO: copy
         outputClass = clazz;
         convertFunctions = s;
         isDistinct = distinct;
     }
 
     public WhereStmt<T, R> where(Predicate<T> predicate) {
-        throw new UnsupportedOperationException();
+        return new WhereStmt<>(this, predicate);
     }
 
     public Iterable<R> execute() throws NoSuchMethodException, SecurityException, InstantiationException,
@@ -45,7 +46,7 @@ public class SelectStmt<T, R> {
         for (int i = 0; i < convertFunctions.length; ++i) {
             //FIXME: find return class of function in NORMAL way
             outputParametrsTypes[i] = convertFunctions[i].apply(base.iterator().next()).getClass();
-            System.err.println(outputParametrsTypes[i]);
+            //System.err.println(outputParametrsTypes[i]);
         }
         Constructor<R> constructor = outputClass.getConstructor(outputParametrsTypes);
         for (T element : base) {
@@ -63,6 +64,14 @@ public class SelectStmt<T, R> {
     }
 
     public class WhereStmt<T, R> {
+        private Predicate<T> currentPredicate;
+        private SelectStmt<T, R> baseStmt;
+
+        private WhereStmt(SelectStmt<T, R> base, Predicate<T> predicate) {
+            currentPredicate = predicate;
+            baseStmt = base;
+        }
+
         @SafeVarargs
         public final WhereStmt<T, R> groupBy(Function<T, ?>... expressions) {
             throw new UnsupportedOperationException();
@@ -79,6 +88,21 @@ public class SelectStmt<T, R> {
 
         public WhereStmt<T, R> limit(int amount) {
             throw new UnsupportedOperationException();
+        }
+
+        public Iterable<R> execute() throws NoSuchMethodException, SecurityException, InstantiationException,
+                IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+            Iterator<T> i = baseStmt.base.iterator();
+            Collection<T> correctElements = new ArrayList<>();
+            T element = null;
+            while (i.hasNext()) {
+                element = i.next();
+                if (currentPredicate.test(element)) {
+                    correctElements.add(element);
+                }
+            }
+            baseStmt.base = correctElements;
+            return baseStmt.execute();
         }
 
         public UnionStmt union() {

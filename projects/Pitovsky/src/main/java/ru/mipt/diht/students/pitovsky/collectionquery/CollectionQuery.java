@@ -29,11 +29,15 @@ public class CollectionQuery {
         try {
             statistics = from(list(
                     student("ivanov", LocalDate.parse("1986-08-06"), "494"),
-                    student("petroff", LocalDate.parse("1986-05-08"), "497"),
-                    student("ivanov", LocalDate.parse("1986-08-06"), "494")))
-                    .select(Statistics.class, Student::getGroup/*, count(Student::getGroup), avg(Student::age)*/)
+                    student("petroff", LocalDate.parse("1999-05-08"), "497"),
+                    student("sidorov", LocalDate.parse("1986-08-06"), "494")))
+                        .select(Statistics.class, Student::getGroup)
+                        .where(s -> s.age() > 20)
                     .execute();
             /*
+                    student("ivanov", LocalDate.parse("1986-08-06"), "494"),
+                    student("ivanov", LocalDate.parse("1986-08-06"), "494")))
+                    .select(Statistics.class, Student::getGroup, count(Student::getGroup), avg(Student::age))
                         .where(rlike(Student::getName, ".*ov").and(s -> s.age() > 20))
                         .groupBy(Student::getGroup)
                         .having(s -> s.getCount() > 0)
