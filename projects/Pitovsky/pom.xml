@@ -47,7 +47,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>ru.fizteh.fivt.pitovsky.twitterstream.Main</mainClass>
+                            <mainClass>ru.mipt.diht.students.pitovsky.collectionquery.CollectionQuery</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
