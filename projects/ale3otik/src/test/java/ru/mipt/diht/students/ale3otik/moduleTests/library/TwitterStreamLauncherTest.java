@@ -2,7 +2,6 @@ package ru.mipt.diht.students.ale3otik.moduleTests.library;
 
 import com.beust.jcommander.JCommander;
 import junit.framework.TestCase;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

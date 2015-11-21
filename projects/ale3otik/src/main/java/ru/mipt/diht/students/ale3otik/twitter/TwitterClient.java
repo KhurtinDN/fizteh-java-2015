@@ -2,7 +2,7 @@ package ru.mipt.diht.students.ale3otik.twitter;
 
 import com.beust.jcommander.JCommander;
 import ru.mipt.diht.students.ale3otik.twitter.exceptions.ConnectionFailedException;
-import ru.mipt.diht.students.ale3otik.twitter.exceptions.NormalExitException;
+import ru.mipt.diht.students.ale3otik.twitter.exceptions.HelpCausedException;
 import twitter4j.*;
 
 /**
@@ -17,18 +17,14 @@ public class TwitterClient {
 
             Arguments arguments = new Arguments();
             JCommander jcm = new JCommander(arguments);
-            jcm.setProgramName("TwitterQueryClient");
-
             try {
                 jcm.parse(args);
             } catch (Exception e) {
-                jcm.usage();
-                throw new NormalExitException("Invalid arguments presentation exit");
+                throw new HelpCausedException("Invalid arguments presentation exit");
             }
 
             if (arguments.isHelp()) {
-                jcm.usage();
-                throw new NormalExitException("Normal exit");
+                throw new HelpCausedException("Normal exit");
             }
 
             TwitterArgumentsValidator.processArguments(arguments);
@@ -62,17 +58,19 @@ public class TwitterClient {
                         .getSingleQueryResult(arguments, informationMessage.toString()));
             }
 
-        } catch (IllegalArgumentException e) {
-            ConsoleUtil.printErrorMessage("IllegalArgumentException");
-            ConsoleUtil.printErrorMessage(e.getMessage());
         } catch (ConnectionFailedException e) {
             ConsoleUtil.printErrorMessage("ConnectionFailedException");
             ConsoleUtil.printErrorMessage(e.getMessage());
-        } catch (
-                TwitterException e) {
+        } catch (TwitterException e) {
             ConsoleUtil.printErrorMessage("Unhandled TwitterException");
             ConsoleUtil.printErrorMessage(e.getMessage());
-        } catch (NormalExitException e) {
+        } catch (HelpCausedException e) {
+            StringBuilder helpBuilder = new StringBuilder();
+            JCommander jcm = new JCommander(new Arguments());
+            jcm.setProgramName("TwitterQueryClient");
+            jcm.usage(helpBuilder);
+
+            ConsoleUtil.printIntoStdout(helpBuilder.toString());
             ConsoleUtil.printErrorMessage(e.getMessage());
         }
     }

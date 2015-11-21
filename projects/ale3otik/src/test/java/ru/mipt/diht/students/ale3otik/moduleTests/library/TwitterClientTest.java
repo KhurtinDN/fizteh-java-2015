@@ -1,23 +1,21 @@
 package ru.mipt.diht.students.ale3otik.moduleTests.library;
 
 import com.beust.jcommander.JCommander;
-import com.google.common.base.Strings;
-import com.sun.org.apache.xpath.internal.Arg;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import ru.mipt.diht.students.ale3otik.twitter.*;
+import ru.mipt.diht.students.ale3otik.twitter.exceptions.ConnectionFailedException;
 import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 import twitter4j.GeoLocation;
 import twitter4j.Twitter;
-import twitter4j.TwitterFactory;
+import twitter4j.TwitterException;
 
 import static org.mockito.Mockito.*;
 
@@ -30,49 +28,47 @@ import static org.mockito.Mockito.*;
         TwitterArgumentsValidator.class,
         TwitterStreamLauncher.class,
         TwitterSingleQuery.class,
-        TwitterClient.class
+        TwitterClient.class,
+        Arguments.class
 })
 public class TwitterClientTest extends TestCase {
 
-    private static final double LondonLatitude = 51.5073509;
-    private static final double LondonLongitude = -0.1277583;
-    private static final double LondonRadius = 23.539304731202712;
-    private static GeoLocationInfo londonGeoLocationInfo;
     private static String helloString = "[1m[35m\nTwitter 0.1 ::: welcome \n\n[0m[0m";
     Arguments arguments;
 
     TwitterSingleQuery mockedTwitterSingle;
     TwitterStreamLauncher mockedStreamLauncher;
 
+    StringBuilder helpExpected;
 
     @Before
     public void setUp() throws Exception {
+        JCommander jcm = new JCommander(new Arguments());
+        jcm.setProgramName("TwitterQueryClient");
+        helpExpected = new StringBuilder();
+        jcm.usage(helpExpected);
+
         mockedStreamLauncher = PowerMockito.mock(TwitterStreamLauncher.class);
         mockedTwitterSingle = PowerMockito.mock(TwitterSingleQuery.class);
 
-        londonGeoLocationInfo = new GeoLocationInfo(new GeoLocation(LondonLatitude,LondonLongitude),LondonRadius);
         PowerMockito.mockStatic(ConsoleUtil.class);
         PowerMockito.mockStatic(TwitterArgumentsValidator.class);
-
         PowerMockito.whenNew(TwitterStreamLauncher.class).withAnyArguments().thenReturn(mockedStreamLauncher);
     }
 
-    private void createArguments(boolean isGeolocationNeeded,String... args) {
+    private void createArguments(String... args) {
         arguments = new Arguments();
         JCommander jcm = new JCommander(arguments);
         jcm.parse(args);
-        if (isGeolocationNeeded) {
-            arguments.setGeoLocationInfo(londonGeoLocationInfo);
-        }
-
+        arguments.setCurLocationName("London");
     }
 
     @Test
     public void testSingleQueryRun() throws Exception {
-        String infoMessage = "Твиты по запросу \"test\":";
-        createArguments(false, "-q", "test");
-
-        PowerMockito.when(mockedTwitterSingle.getSingleQueryResult(any(Arguments.class), any(String.class)))
+        createArguments("-q", "test");
+        PowerMockito.mockStatic(Arguments.class);
+        PowerMockito.whenNew(Arguments.class).withAnyArguments().thenReturn(arguments);
+        PowerMockito.when(mockedTwitterSingle.getSingleQueryResult(eq(arguments), anyString()))
                 .thenReturn("single query result");
 
         PowerMockito.whenNew(TwitterSingleQuery.class).withArguments(any(Twitter.class)).thenReturn(mockedTwitterSingle);
@@ -82,6 +78,68 @@ public class TwitterClientTest extends TestCase {
         ConsoleUtil.printIntoStdout(helloString);
         PowerMockito.verifyStatic();
         ConsoleUtil.printIntoStdout("single query result");
+    }
+
+    @Test
+    public void testHelp() throws Exception {
+
+        TwitterClient.run("-h");
+        PowerMockito.verifyStatic();
+        ConsoleUtil.printIntoStdout(helloString);
+        PowerMockito.verifyStatic();
+        ConsoleUtil.printIntoStdout(helpExpected.toString());
+        PowerMockito.verifyStatic();
+        ConsoleUtil.printErrorMessage("Normal exit");
+    }
+
+    @Test
+    public void testIllegalArguments() throws Exception {
+
+        TwitterClient.run("-q");
+        PowerMockito.verifyStatic();
+        ConsoleUtil.printIntoStdout(helloString);
+        PowerMockito.verifyStatic();
+        ConsoleUtil.printIntoStdout(helpExpected.toString());
+        PowerMockito.verifyStatic();
+        ConsoleUtil.printErrorMessage("Invalid arguments presentation exit");
+    }
+
+    @Test
+    public void testStreamLaunch() throws Exception {
+        createArguments("-s");
+        PowerMockito.mockStatic(Arguments.class);
+        PowerMockito.whenNew(Arguments.class).withAnyArguments().thenReturn(arguments);
+        TwitterClient.run("-s");
+        verify(mockedStreamLauncher).streamStart("Твиты по пустому запросу для \"London\"");
+    }
+
+    @Test
+    public void testTwitterExceptionHandler() throws Exception {
+
+        PowerMockito.whenNew(TwitterSingleQuery.class)
+                .withAnyArguments().
+                thenThrow(new TwitterException("test"));
+
+        TwitterClient.run("-q", "test");
+
+        PowerMockito.verifyStatic();
+        ConsoleUtil.printErrorMessage("Unhandled TwitterException");
+        PowerMockito.verifyStatic();
+        ConsoleUtil.printErrorMessage("test");
+    }
+
+    @Test
+    public void testConnectionCausedExceptionHandler() throws Exception {
+        PowerMockito.whenNew(TwitterSingleQuery.class)
+                .withAnyArguments().
+                thenThrow(new ConnectionFailedException("test"));
+
+        TwitterClient.run("-q", "test");
+
+        PowerMockito.verifyStatic();
+        ConsoleUtil.printErrorMessage("ConnectionFailedException");
+        PowerMockito.verifyStatic();
+        ConsoleUtil.printErrorMessage("test");
     }
 
 }
