@@ -9,6 +9,10 @@ public class MyJCommander {
             + "печать твиты на экран")
     private boolean isStream = false;
 
+    public final boolean getIsHelp() {
+        return help;
+    }
+
     @Parameter(names = {"--help", "-h"}, help = true)
     private boolean help = false;
 
@@ -21,12 +25,12 @@ public class MyJCommander {
 
     @Parameter(names = {"--query", "-q"}, description
             = "параметр поиска твитов")
-    private String query;
+    private String query = null;
 
     @Parameter(names = {"--place", "-p"}, description
             = "искать по заданному региону (например, "
             + "\"долгопрудный\", \"москва\", \"татарстан\")")
-    private String location;
+    private String location = null;
 
     public final boolean getIsStream() {
         return isStream;

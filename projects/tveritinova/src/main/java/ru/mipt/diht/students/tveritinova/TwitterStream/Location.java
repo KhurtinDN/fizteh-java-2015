@@ -33,6 +33,10 @@ public class Location {
         }
     }
 
+    public final GeoLocation getGeoLocation() {
+        return geoLocation;
+    }
+
     public final void setQueryLocation(Query q) {
         q.setGeoCode(geoLocation, RADIUS, Query.Unit.km);
     }

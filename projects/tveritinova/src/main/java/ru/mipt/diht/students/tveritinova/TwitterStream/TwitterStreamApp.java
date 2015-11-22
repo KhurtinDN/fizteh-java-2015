@@ -7,12 +7,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-class TwitterStreamApp {
+public class TwitterStreamApp {
     private static final long ONE_SECOND = 1000;
     private MyJCommander jc = new MyJCommander();
     private Location location;
 
-    TwitterStreamApp(String[] args) {
+    public TwitterStreamApp(String[] args) {
         new JCommander(jc, args);
 
         if (jc.getLocation() != null) {
@@ -20,7 +20,7 @@ class TwitterStreamApp {
         }
     }
 
-    public void run() {
+    public final void run() {
         if (jc.getIsStream()) {
             startStreamMode();
         } else {
@@ -28,69 +28,76 @@ class TwitterStreamApp {
         }
     }
 
-    private void printStatusNotStream(Status status) {
+    public final String printStatusStream(Status status) {
 
         if (status.isRetweet() && jc.getIsHideRetweets()) {
-            return;
+            return "";
         }
 
-        System.out.print("\033[34m@"
+        String printString = "-----------------------------\n"
+                + "\033[34m@"
                 + status.getUser().getName()
-                + "\033[0m : ");
+                + "\033[0m: ";
 
         if (status.isRetweet()) {
             String retweetUserName = status.getText()
                     .split("RT ")[1]
                     .split(":\\s+")[0];
-            System.out.println("ретвитнул "
+            printString += "ретвитнул "
                     + "\033[34m"
                     + retweetUserName
                     + "\033[0m"
-                    + status.getText().split(retweetUserName)[1]);
+                    + status.getText().split(retweetUserName)[1] + "\n";
         } else {
-            System.out.println(status.getText()
-                    + " (" + status.getRetweetCount() + " ретвитов)");
+            printString += status.getText()
+                    + " (" + status.getRetweetCount() + " ретвитов)\n";
         }
 
-        System.out.println("\n-----------------------------\n");
+        return printString;
     }
 
-    private void printStatusStream(Status status, Calendar cal, Date now) {
+    public final String printStatusNotStream(Status status, Calendar cal
+            , Date now) {
 
-        String timeFormat = TimeFormat.getTimeFormat(status,
+        if (status.isRetweet() && jc.getIsHideRetweets()) {
+            return "";
+        }
+
+        String timeFormat = TimeFormat.getTimeFormat(status.getCreatedAt(),
                 cal, now);
 
-        System.out.print(timeFormat
+        String printString = "-----------------------------\n"
+                + timeFormat
                 + " \033[34m@"
                 + status.getUser().getName()
-                + "\033[0m : ");
+                + "\033[0m: ";
         if (status.isRetweet()) {
             String retweetUserName = status.getText()
                     .split("RT ")[1].split(":\\s+")[0];
-            System.out.println("ретвитнул "
+            printString += "ретвитнул "
                     + "\033[34m"
                     + retweetUserName
                     + "\033[0m"
                     + status.getText()
-                    .split(retweetUserName)[1]);
+                    .split(retweetUserName)[1] + "\n";
         } else {
-            System.out.println(status.getText()
+             printString += status.getText()
                     + " ("
                     + status.getRetweetCount()
-                    + " ретвитов)");
+                    + " ретвитов)\n";
         }
 
-        System.out.println("\n-----------------------------\n");
+        return printString;
     }
 
-    private void startStreamMode() {
+    public final void startStreamMode() {
         TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
 
         StatusListener listener = new StatusAdapter() {
             @Override
             public void onStatus(Status status) {
 
-                printStatusNotStream(status);
+                System.out.print(printStatusStream(status));
 
                 try {
                     Thread.sleep(ONE_SECOND);
@@ -113,7 +120,7 @@ class TwitterStreamApp {
         twitterStream.filter(fq);
     }
 
-    private void startNotStreamMode() {
+    public final void startNotStreamMode() {
         Twitter twitter = new TwitterFactory().getInstance();
         Query q = new Query(jc.getQuery());
         q.count(jc.getLimit());
@@ -132,7 +139,8 @@ class TwitterStreamApp {
             Date now = cal.getTime();
 
             for (Status currentStatus: resultArray) {
-                printStatusStream(currentStatus, cal, now);
+                System.out.print(
+                        printStatusNotStream(currentStatus, cal, now));
             }
         } catch (TwitterException ex) {
             System.out.println(ex.getMessage());
