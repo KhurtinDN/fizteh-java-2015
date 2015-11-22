@@ -11,14 +11,14 @@ import static java.lang.Math.abs;
 public class DateFormatTools {
 
     public static String getTweetDate(Date srcDate) {
-        LocalDateTime currDateTime = LocalDateTime.now();
+        LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDateTime tweetDateTime = srcDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-        Duration timeDiff = Duration.between(tweetDateTime, currDateTime);
+        Duration timeDiff = Duration.between(tweetDateTime, currentDateTime);
         if (timeDiff.toDays() >= 2) {
             return getFormatted((int)timeDiff.toDays(),"день") + " назад";
         }
-        if (abs(currDateTime.getDayOfMonth() - tweetDateTime.getDayOfMonth()) != 0) {
+        if (abs(currentDateTime.getDayOfMonth() - tweetDateTime.getDayOfMonth()) != 0) {
             return "вчера";
         }
         if (timeDiff.toMinutes() > 60) {
@@ -30,8 +30,8 @@ public class DateFormatTools {
     }
     
     public static String getRetweetsCnt(Status tweet) {
-        int rtNumber = tweet.getRetweetCount();
-        return getFormatted(rtNumber, "ретвит");
+        int retweetsNumber = tweet.getRetweetCount();
+        return getFormatted(retweetsNumber, "ретвит");
     }
 
     private static String getFormatted(int timeAmount, String timeMeasure) {
@@ -40,7 +40,9 @@ public class DateFormatTools {
 
     private static String getForm(int formNumber) {
         formNumber %= 100;
-        if (formNumber / 10 == 1) return "PL";
+        if (formNumber / 10 == 1) {
+            return "PL";
+        }
         formNumber %= 10;
         String form = "I";
         switch (formNumber) {
@@ -71,27 +73,51 @@ public class DateFormatTools {
         String nounForm = "единиц";
         switch (noun) {
             case "минута":
-                if (form.equals("I")) nounForm = " минуту";
-                if (form.equals("C")) nounForm = " минуты";
-                if (form.equals("PL")) nounForm = " минут";
+                if (form.equals("I")) {
+                    nounForm = " минуту";
+                }
+                if (form.equals("C")) {
+                    nounForm = " минуты";
+                }
+                if (form.equals("PL")) {
+                    nounForm = " минут";
+                }
                 break;
 
             case "час":
-                if (form.equals("I")) nounForm = " час";
-                if (form.equals("C")) nounForm = " часа";
-                if (form.equals("PL")) nounForm = " часов";
+                if (form.equals("I")) {
+                    nounForm = " час";
+                }
+                if (form.equals("C")) {
+                    nounForm = " часа";
+                }
+                if (form.equals("PL")) {
+                    nounForm = " часов";
+                }
                 break;
 
             case "день":
-                if (form.equals("I")) nounForm = " день";
-                if (form.equals("C")) nounForm = " дня";
-                if (form.equals("PL")) nounForm = " дней";
+                if (form.equals("I")) {
+                    nounForm = " день";
+                }
+                if (form.equals("C")) {
+                    nounForm = " дня";
+                }
+                if (form.equals("PL")) {
+                    nounForm = " дней";
+                }
                 break;
 
             case "ретвмт" :
-                if (form.equals("I")) nounForm = " ретвит";
-                if (form.equals("C")) nounForm = " ретвита";
-                if (form.equals("PL")) nounForm = " ретвитов";
+                if (form.equals("I")) {
+                    nounForm = " ретвит";
+                }
+                if (form.equals("C")) {
+                    nounForm = " ретвита";
+                }
+                if (form.equals("PL")) {
+                    nounForm = " ретвитов";
+                }
                 break;
         }
         return nounForm;

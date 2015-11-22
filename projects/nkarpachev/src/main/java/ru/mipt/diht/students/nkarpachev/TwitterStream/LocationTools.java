@@ -39,14 +39,14 @@ public class LocationTools {
     }
 
     private static double getRadius(LatLngBounds bnds) {
-        double lat1 = Math.toRadians(bnds.getNortheast().getLat().doubleValue());
-        double lng1 = Math.toRadians(bnds.getNortheast().getLng().doubleValue());
-        double lat2 = Math.toRadians(bnds.getSouthwest().getLat().doubleValue());
-        double lng2 = Math.toRadians(bnds.getNortheast().getLng().doubleValue());
-        double dLng = lng2 - lng1;
-        double angleDistance = Math.atan(Math.sqrt(Math.pow(Math.cos(lat2) * Math.sin(dLng), 2.0)
-                + Math.pow(Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng), 2.0))
-                / (Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(dLng)));
+        double latitude1 = Math.toRadians(bnds.getNortheast().getLat().doubleValue());
+        double longtitude1 = Math.toRadians(bnds.getNortheast().getLng().doubleValue());
+        double latitude2 = Math.toRadians(bnds.getSouthwest().getLat().doubleValue());
+        double longtitude2 = Math.toRadians(bnds.getNortheast().getLng().doubleValue());
+        double longtitudeDiff = longtitude2 - longtitude1;
+        double angleDistance = Math.atan(Math.sqrt(Math.pow(Math.cos(latitude2) * Math.sin(longtitudeDiff), 2.0)
+                + Math.pow(Math.cos(latitude1) * Math.sin(latitude2) - Math.sin(latitude1) * Math.cos(latitude2) * Math.cos(longtitudeDiff), 2.0))
+                / (Math.sin(latitude1) * Math.sin(latitude2) + Math.cos(latitude1) * Math.cos(latitude2) * Math.cos(longtitudeDiff)));
         return EARTH_RADIUS * angleDistance;
     }
 
@@ -60,16 +60,16 @@ public class LocationTools {
 
     public static double getDistance(GeoLocation location1, GeoLocation location2) {
 
-        double lat1 = location1.getLatitude();
-        double lng1 = location1.getLongitude();
-        double lat2 = location2.getLatitude();
-        double lng2 = location2.getLongitude();
+        double latitude1 = location1.getLatitude();
+        double longitude1 = location1.getLongitude();
+        double latitude2 = location2.getLatitude();
+        double longitude2 = location2.getLongitude();
 
-        lat1 = Math.toRadians(lat1);
-        lat2 = Math.toRadians(lat2);
-        lng1 = Math.toRadians(lng1);
-        lng2 = Math.toRadians(lng2);
-        return EARTH_RADIUS * Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lng1 - lng2));
+        latitude1 = Math.toRadians(latitude1);
+        latitude2 = Math.toRadians(latitude2);
+        longitude1 = Math.toRadians(longitude1);
+        longitude2 = Math.toRadians(longitude2);
+        return EARTH_RADIUS * Math.acos(Math.sin(latitude1) * Math.sin(latitude2) + Math.cos(latitude1) * Math.cos(latitude2) * Math.cos(longitude1 - longitude2));
     }
 
 }
