@@ -1,12 +1,8 @@
-package ru.mipt.diht.students.nkarpachev.TwitterStream;
-
-import java.util.List;
+package ru.mipt.diht.students.nkarpachev.twitterstream;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-
-import twitter4j.*;
+import twitter4j.Query;
 
 public class TwitterStream {
 
@@ -23,7 +19,7 @@ public class TwitterStream {
         }
 
         if (jargs.printHelp()) {
-            System.out.println("TwitterStream is a small application for retrieving and accumulating twitter tweets.");
+            System.out.println("twitterstream is a small application for retrieving and accumulating twitter tweets.");
             jcommander.usage();
             System.exit(0);
         }

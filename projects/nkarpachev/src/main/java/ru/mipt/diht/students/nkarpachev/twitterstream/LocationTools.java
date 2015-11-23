@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.nkarpachev.TwitterStream;
+package ru.mipt.diht.students.nkarpachev.twitterstream;
 
 import com.google.code.geocoder.Geocoder;
 import com.google.code.geocoder.GeocoderRequestBuilder;
@@ -6,7 +6,8 @@ import com.google.code.geocoder.model.GeocodeResponse;
 import com.google.code.geocoder.model.GeocoderRequest;
 import com.google.code.geocoder.model.GeocoderResult;
 import com.google.code.geocoder.model.LatLngBounds;
-import twitter4j.*;
+import twitter4j.GeoLocation;
+import twitter4j.Query;
 
 import java.util.List;
 
@@ -20,7 +21,8 @@ public class LocationTools {
     public static void setProperties(String locationName) {
         try {
             final Geocoder geocoder = new Geocoder();
-            GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setAddress(locationName).getGeocoderRequest();
+            GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().
+                    setAddress(locationName).getGeocoderRequest();
             GeocodeResponse geocodeResponse = geocoder.geocode(geocoderRequest);
             List<GeocoderResult> results = geocodeResponse.getResults();
 
@@ -45,8 +47,10 @@ public class LocationTools {
         double longtitude2 = Math.toRadians(bnds.getNortheast().getLng().doubleValue());
         double longtitudeDiff = longtitude2 - longtitude1;
         double angleDistance = Math.atan(Math.sqrt(Math.pow(Math.cos(latitude2) * Math.sin(longtitudeDiff), 2.0)
-                + Math.pow(Math.cos(latitude1) * Math.sin(latitude2) - Math.sin(latitude1) * Math.cos(latitude2) * Math.cos(longtitudeDiff), 2.0))
-                / (Math.sin(latitude1) * Math.sin(latitude2) + Math.cos(latitude1) * Math.cos(latitude2) * Math.cos(longtitudeDiff)));
+                + Math.pow(Math.cos(latitude1) * Math.sin(latitude2)
+                - Math.sin(latitude1) * Math.cos(latitude2) * Math.cos(longtitudeDiff), 2.0))
+                / (Math.sin(latitude1) * Math.sin(latitude2)
+                + Math.cos(latitude1) * Math.cos(latitude2) * Math.cos(longtitudeDiff)));
         return EARTH_RADIUS * angleDistance;
     }
 
@@ -69,7 +73,8 @@ public class LocationTools {
         latitude2 = Math.toRadians(latitude2);
         longitude1 = Math.toRadians(longitude1);
         longitude2 = Math.toRadians(longitude2);
-        return EARTH_RADIUS * Math.acos(Math.sin(latitude1) * Math.sin(latitude2) + Math.cos(latitude1) * Math.cos(latitude2) * Math.cos(longitude1 - longitude2));
+        return EARTH_RADIUS * Math.acos(Math.sin(latitude1) * Math.sin(latitude2)
+                + Math.cos(latitude1) * Math.cos(latitude2) * Math.cos(longitude1 - longitude2));
     }
 
 }

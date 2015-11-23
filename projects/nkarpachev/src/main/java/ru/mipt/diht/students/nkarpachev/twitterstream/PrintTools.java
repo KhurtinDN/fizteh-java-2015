@@ -1,8 +1,6 @@
-package ru.mipt.diht.students.nkarpachev.TwitterStream;
+package ru.mipt.diht.students.nkarpachev.twitterstream;
 
 import twitter4j.Status;
-
-import java.util.Date;
 
 public class PrintTools {
 

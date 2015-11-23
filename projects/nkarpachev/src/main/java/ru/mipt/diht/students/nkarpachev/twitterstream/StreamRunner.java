@@ -1,6 +1,11 @@
-package ru.mipt.diht.students.nkarpachev.TwitterStream;
+package ru.mipt.diht.students.nkarpachev.twitterstream;
 
-import twitter4j.*;
+import twitter4j.FilterQuery;
+import twitter4j.GeoLocation;
+import twitter4j.Status;
+import twitter4j.StatusAdapter;
+import twitter4j.StatusListener;
+import twitter4j.TwitterStreamFactory;
 
 import java.util.LinkedList;
 import java.util.Queue;

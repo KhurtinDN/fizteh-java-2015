@@ -1,10 +1,12 @@
-package ru.mipt.diht.students.nkarpachev.TwitterStream;
+package ru.mipt.diht.students.nkarpachev.twitterstream;
+
 import twitter4j.Status;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
-import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 
 
@@ -16,26 +18,26 @@ public class DateFormatTools {
 
         Duration timeDiff = Duration.between(tweetDateTime, currentDateTime);
         if (timeDiff.toDays() >= 2) {
-            return getFormatted((int)timeDiff.toDays(),"день") + " назад";
+            return getFormattedString((int) timeDiff.toDays(), "день") + " назад";
         }
         if (abs(currentDateTime.getDayOfMonth() - tweetDateTime.getDayOfMonth()) != 0) {
             return "вчера";
         }
         if (timeDiff.toMinutes() > 60) {
-            return getFormatted((int)timeDiff.toHours(), "час") + " назад";
+            return getFormattedString((int) timeDiff.toHours(), "час") + " назад";
         }
         if (timeDiff.toMinutes() >= 2) {
-            return getFormatted((int)timeDiff.toMinutes(), "минута") + " назад";
+            return getFormattedString((int) timeDiff.toMinutes(), "минута") + " назад";
         } else return "только что";
     }
     
     public static String getRetweetsCnt(Status tweet) {
         int retweetsNumber = tweet.getRetweetCount();
-        return getFormatted(retweetsNumber, "ретвит");
+        return getFormattedString(retweetsNumber, "ретвит");
     }
 
-    private static String getFormatted(int timeAmount, String timeMeasure) {
-        return timeAmount + makeForm(getForm(timeAmount), timeMeasure);
+    private static String getFormattedString(int amount, String measure) {
+        return amount + makeForm(getForm(amount), measure);
     }
 
     private static String getForm(int formNumber) {

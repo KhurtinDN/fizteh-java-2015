@@ -1,6 +1,5 @@
-package ru.mipt.diht.students.nkarpachev.TwitterStream;
+package ru.mipt.diht.students.nkarpachev.twitterstream;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ public class JCommanderArgs {
     @Parameter (names = { "-q" , "--query" }, description = "Query or keywords or stream", required = true)
     private String query;
 
-    @Parameter (names = { "-p" , "--place" }, description = "Location to search for tweets; enter name or nearby keyword")
+    @Parameter (names = { "-p" , "--place" }, description = "Location to search tweets; enter name or nearby keyword")
     private String location;
 
     @Parameter (names = { "-s" , "--stream" }, description = "Enter stream mode")
