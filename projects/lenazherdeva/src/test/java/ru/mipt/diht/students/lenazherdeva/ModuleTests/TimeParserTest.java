@@ -1,6 +1,6 @@
-package ru.mipt.diht.students.lenazherdeva.ModuleTests;
+package ru.mipt.diht.students.lenazherdeva.moduleTests;
 import org.junit.Test;
-import ru.mipt.diht.students.lenazherdeva.TwitterStream.TimeParser;
+import ru.mipt.diht.students.lenazherdeva.twitterStream.TimeParser;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneId;
@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.is;
 
 // Created by admin on 09.11.15.
-public class TimeTest {
+public class TimeParserTest {
    @Test
    public void testFormatTime() throws Exception {
        assertThat(TimeParser.printTime(

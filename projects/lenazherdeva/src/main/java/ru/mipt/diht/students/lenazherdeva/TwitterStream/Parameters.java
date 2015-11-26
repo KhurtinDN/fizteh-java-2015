@@ -1,14 +1,17 @@
-package ru.mipt.diht.students.lenazherdeva.TwitterStream; /**
+package ru.mipt.diht.students.lenazherdeva.twitterStream; /**
  * Created by admin on 27.09.2015.
  */
 //parsing using by jcommander
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.validators.PositiveInteger;
 
 public class Parameters {
+    private static final int STANDART_LIMIT = 100;
     @Parameter(names = {"-l", "--limit"},
+            validateWith = PositiveInteger.class,
             description =
                     "Number of tweets to show(only for no streaming mode)")
-    private int limit = Integer.MAX_VALUE;
+    private int limit = STANDART_LIMIT;
 
     @Parameter(names = {"-s", "--stream"},
             description = "Stream")

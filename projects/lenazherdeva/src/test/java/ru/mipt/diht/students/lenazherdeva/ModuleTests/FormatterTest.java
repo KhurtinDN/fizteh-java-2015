@@ -1,10 +1,10 @@
-package ru.mipt.diht.students.lenazherdeva.ModuleTests;
+package ru.mipt.diht.students.lenazherdeva.moduleTests;
 
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import ru.mipt.diht.students.lenazherdeva.TwitterStream.Formatter;
+import ru.mipt.diht.students.lenazherdeva.twitterStream.Formatter;
 import java.util.HashMap;
 import java.util.Map;
 import static org.junit.Assert.*;

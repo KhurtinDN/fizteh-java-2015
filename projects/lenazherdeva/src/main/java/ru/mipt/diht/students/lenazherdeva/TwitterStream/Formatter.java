@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.lenazherdeva.TwitterStream;
+package ru.mipt.diht.students.lenazherdeva.twitterStream;
 
 /**
  * Created by admin on 23.10.2015.

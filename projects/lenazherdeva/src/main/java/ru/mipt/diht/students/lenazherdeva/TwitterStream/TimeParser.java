@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.lenazherdeva.TwitterStream;
+package ru.mipt.diht.students.lenazherdeva.twitterStream;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -31,12 +31,15 @@ public class TimeParser {
                             append(" ").append(timeFormatter.hours(ChronoUnit.HOURS.between(tweetTime, currentTime))).
                             append(" назад").toString());
                 } else {
-                    if (ChronoUnit.DAYS.between(tweetTime, currentTime) == 1) {
+                    LocalDateTime currentDayTime = currentTime.toLocalDate().atStartOfDay();
+                    LocalDateTime tweetDayTime = tweetTime.toLocalDate().atStartOfDay();
+                    if (ChronoUnit.DAYS.between(tweetDayTime, currentDayTime) == 1) {
                         return ("вчера");
                     } else {
                         return (new StringBuilder().
-                                append(ChronoUnit.DAYS.between(tweetTime, currentTime)).
-                                append(" ").append(timeFormatter.days(ChronoUnit.DAYS.between(tweetTime, currentTime))).
+                                append(ChronoUnit.DAYS.between(tweetDayTime, currentDayTime)).
+                                append(" ").append(timeFormatter.
+                                days(ChronoUnit.DAYS.between(tweetDayTime, currentDayTime))).
                                 append(" назад").toString());
                     }
                 }

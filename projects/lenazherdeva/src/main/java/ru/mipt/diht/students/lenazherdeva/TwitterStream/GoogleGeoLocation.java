@@ -1,25 +1,20 @@
-package ru.mipt.diht.students.lenazherdeva.TwitterStream; /**
- * Created by admin on 02.10.2015.
-*/
+package ru.mipt.diht.students.lenazherdeva.twitterStream;
+ /* Created by admin on 02.10.2015.*/
+
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.Bounds;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
-class GoogleGeoLocation {
+public class GoogleGeoLocation {
     private static final double EARTH_RADIUS = 6371;
-    private GeocodingResult[] result;
+    private static GeocodingResult[] result;
     private double radius;
 
-    GoogleGeoLocation(String place) throws Exception {
+    public GoogleGeoLocation(String place) throws Exception {
         if (!place.equals("nearby")) {
-            String apiKey = getKeyFromProperties();
+            String apiKey = "AIzaSyCosxTMyTkHW5qujPwS-nFD8DdGtxnkgnk";
             GeoApiContext context = new GeoApiContext()
                     .setApiKey(apiKey);
             result = GeocodingApi.geocode(context, place).await();
@@ -27,7 +22,7 @@ class GoogleGeoLocation {
         }
     }
 
-    private String getKeyFromProperties() throws IOException {
+    /*private String getKeyFromProperties() throws IOException {
         Properties prop = new Properties();
         try {
             InputStream input = new FileInputStream("twitter4j.properties");
@@ -40,12 +35,13 @@ class GoogleGeoLocation {
             throw e;
         }
         return prop.getProperty("googleApiKey");
-    }
-    public LatLng getLocation() {
+    }*/
+
+    public static LatLng getLocation() {
         return result[0].geometry.location;
     }
 
-    public double getRadius() {
+    public final double getRadius() {
         return radius;
     }
 
@@ -64,7 +60,10 @@ class GoogleGeoLocation {
         double distance = EARTH_RADIUS * c;
         return distance / 2;
     }
-    public final Bounds getBounds() {
-        return result[0].geometry.bounds;
+    public final double[][] getBounds() {
+        Bounds bounds = result[0].geometry.bounds;
+        double[][] boundsArr = {{bounds.southwest.lng, bounds.southwest.lat},
+                {bounds.northeast.lng, bounds.northeast.lat}};
+        return boundsArr;
     }
 }

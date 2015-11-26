@@ -1,9 +1,12 @@
-package ru.mipt.diht.students.lenazherdeva.TwitterStream; /**
+package ru.mipt.diht.students.lenazherdeva.twitterStream; /**
  * Created by admin on 27.09.2015.
  */
 
 import com.beust.jcommander.JCommander;
 import twitter4j.*;
+import twitter4j.conf.ConfigurationBuilder;
+import twitter4j.GeoLocation;
+
 import java.util.List;
 
 public class TwitterStreamApp {
@@ -47,8 +50,14 @@ public class TwitterStreamApp {
 
     public static void streamPrint(Parameters param)  //stream-режим
             throws Exception {
+                ConfigurationBuilder cb = new ConfigurationBuilder();
+                cb.setDebugEnabled(false)
+                        .setOAuthConsumerKey("3b3vKQPtk7PoHEOekUedoIQPC")
+                        .setOAuthConsumerSecret("ADrGDZORevHvt3iF9Ot3xwfMeufol2lsG58XmAcqyCSsGkQZkR")
+                        .setOAuthAccessToken("2783476952-M6Pe8LR4gLYeKKDzdwjVKLkcFwMP38qDE1vgvP2")
+                        .setOAuthAccessTokenSecret("mfAU8iq63vU3omwqje8SXRQr0QCfonoK4eSjrpX61gKe8");
         TwitterStream twitterStream;
-        twitterStream = new TwitterStreamFactory().getInstance();
+        twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
         StatusAdapter listener = new StatusAdapter() {
             @Override
             public void onStatus(Status status) {
@@ -61,16 +70,22 @@ public class TwitterStreamApp {
             }
         };
         twitterStream.addListener(listener);
-        if (param.getQuery().equals("") && param.getLocation().equals("")) {
-            twitterStream.sample();
-        } else {
-            FilterQuery filter = setFilter(param);
-            twitterStream.filter(filter);
-        }
-    }
+                if (param.getQuery() == "" && param.getLocation() == "") {
+                              twitterStream.sample();
+                            } else {
+                                FilterQuery filter = setFilter(param);
+                                twitterStream.filter(filter);
+                            }
+                    }
 
     public static void print(Parameters param) throws Exception {
-        Twitter twitter = new TwitterFactory().getInstance();
+        ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb.setDebugEnabled(false)
+                .setOAuthConsumerKey("3b3vKQPtk7PoHEOekUedoIQPC")
+                .setOAuthConsumerSecret("ADrGDZORevHvt3iF9Ot3xwfMeufol2lsG58XmAcqyCSsGkQZkR")
+                .setOAuthAccessToken("2783476952-M6Pe8LR4gLYeKKDzdwjVKLkcFwMP38qDE1vgvP2")
+                .setOAuthAccessTokenSecret("mfAU8iq63vU3omwqje8SXRQr0QCfonoK4eSjrpX61gKe8");
+        Twitter twitter = new TwitterFactory(cb.build()).getInstance();
         int limit = param.getLimit();
         Integer statusCounter = 0;
         try {
@@ -112,13 +127,10 @@ public class TwitterStreamApp {
         long[] followArray = new long[0];
         FilterQuery filter = new FilterQuery(0, followArray, track);
         if (!param.getLocation().equals("")) {
-            GoogleGeoLocation findPlace;
-            findPlace = new GoogleGeoLocation((param.getLocation()));
-            double[][] bounds = {{findPlace.getBounds().southwest.lng,
-                    findPlace.getBounds().southwest.lat},  //широта южная
-                    {findPlace.getBounds().northeast.lng,  //долгота северная
-                            findPlace.getBounds().northeast.lat}};
-            filter.locations(bounds);
+            GoogleGeoLocation geoLocation;
+            geoLocation = new GoogleGeoLocation(param.getLocation());
+            filter.locations(geoLocation.getBounds());
+
         }
         return filter;
     }
@@ -171,5 +183,6 @@ public class TwitterStreamApp {
             }
             System.out.println();
         }
-    }
+   }
 }
+
