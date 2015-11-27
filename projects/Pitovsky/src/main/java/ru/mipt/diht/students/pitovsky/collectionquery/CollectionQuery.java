@@ -28,12 +28,17 @@ public class CollectionQuery {
         Iterable<Statistics> statistics = null;
         try {
             statistics = from(list(
-                    student("ivanov", LocalDate.parse("1986-08-06"), "494"),
+                    student("ivanov", LocalDate.parse("1986-08-06"), "496"),
                     student("petroff", LocalDate.parse("1999-05-08"), "497"),
+                    student("testoff", LocalDate.parse("1987-05-08"), "497"),
                     student("sidorov", LocalDate.parse("1996-08-06"), "494"),
-                    student("ivanov", LocalDate.parse("1988-08-06"), "496")))
+                    student("ivanov", LocalDate.parse("1988-08-06"), "493"),
+                    student("testman", LocalDate.parse("1987-04-06"), "494"),
+                    student("someone", LocalDate.parse("1989-05-06"), "493")))
                         .select(Statistics.class, Student::getGroup)
                         .where(s -> s.age() > 20)
+                        .groupBy(Student::getGroup)
+                        .orderBy((s1, s2) -> s1.getGroup().compareTo(s2.getGroup()))
                     .execute();
             /*
                     student("ivanov", LocalDate.parse("1986-08-06"), "494"),
@@ -61,7 +66,7 @@ public class CollectionQuery {
     public static class Student {
         private final String name;
 
-        private final LocalDate dateOfBith;
+        private final LocalDate dateOfBirth;
 
         private final String group;
 
@@ -69,14 +74,14 @@ public class CollectionQuery {
             return name;
         }
 
-        public Student(String name, LocalDate dateOfBith, String group) {
+        public Student(String name, LocalDate dateOfBirth, String group) {
             this.name = name;
-            this.dateOfBith = dateOfBith;
+            this.dateOfBirth = dateOfBirth;
             this.group = group;
         }
 
         public LocalDate getDateOfBith() {
-            return dateOfBith;
+            return dateOfBirth;
         }
 
         public String getGroup() {
@@ -87,9 +92,15 @@ public class CollectionQuery {
             return ChronoUnit.YEARS.between(getDateOfBith(), LocalDateTime.now());
         }
 
+        @Override
+        public String toString() {
+            return "Student " + name + ", " + group + " (" + dateOfBirth + ")";
+        }
+
         public static Student student(String name, LocalDate dateOfBith, String group) {
             return new Student(name, dateOfBith, group);
         }
+
     }
 
 

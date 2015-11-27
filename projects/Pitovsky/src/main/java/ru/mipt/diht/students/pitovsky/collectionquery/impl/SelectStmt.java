@@ -4,9 +4,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -67,7 +71,7 @@ public class SelectStmt<T, R> {
     public class WhereStmt<T, R> {
         private Predicate<T> currentPredicate;
         private SelectStmt<T, R> baseStmt;
-        private Collection<T> currentElements;
+        private List<T> currentElements;
 
         private WhereStmt(SelectStmt<T, R> selectStmt, Predicate<T> predicate) {
             currentPredicate = predicate;
@@ -81,26 +85,27 @@ public class SelectStmt<T, R> {
         @SafeVarargs
         public final WhereStmt<T, R> groupBy(Function<T, ?>... expressions) {
             applyPredicate();
-            Set<Object[]> groupingValues = new HashSet<>();
+            Set<List<Object>> groupingValues = new HashSet<>();
             for (T element : currentElements) {
-                Object[] result = new Object[expressions.length];
+                List<Object> result = new ArrayList<>();
                 for (int i = 0; i < expressions.length; ++i) {
-                    result[i] = expressions[i].apply(element);
+                    result.add(expressions[i].apply(element));
                 }
                 groupingValues.add(result);
             }
             //TODO: aggregates work, better asymptotic
             ArrayList<T> newElements = new ArrayList<>();
-            for (Object[] values : groupingValues) {
+            for (List<Object> values : groupingValues) {
                 for (T element : currentElements) {
                     boolean found = true;
                     for (int i = 0; i < expressions.length; ++i) {
-                        if (expressions[i].apply(element) != values[i]) {
+                        if (!expressions[i].apply(element).equals(values.get(i))) {
                             found = false;
                             break;
                         }
                     }
                     if (found) {
+                        //System.err.println("added " + element);
                         newElements.add(element);
                         break;
                     }
@@ -112,7 +117,21 @@ public class SelectStmt<T, R> {
 
         @SafeVarargs
         public final WhereStmt<T, R> orderBy(Comparator<T>... comparators) {
-            throw new UnsupportedOperationException();
+            Comparator<T> combinatedComparator = new Comparator<T>() {
+                @Override
+                public int compare(T first, T second) {
+                    for (Comparator<T> comparator : comparators) {
+                        int result = comparator.compare(first, second);
+                        if (result != 0) {
+                            return result;
+                        }
+                    }
+                    return 0;
+                }
+            };
+
+            Collections.sort(currentElements, combinatedComparator);
+            return this;
         }
 
         public WhereStmt<T, R> having(Predicate<R> condition) {
@@ -120,7 +139,12 @@ public class SelectStmt<T, R> {
         }
 
         public WhereStmt<T, R> limit(int amount) {
-            throw new UnsupportedOperationException();
+            List<T> cuttedElements = new ArrayList<T>();
+            for (int i = 0; i < amount && i < currentElements.size(); ++i) {
+                cuttedElements.add(currentElements.get(i));
+            }
+            currentElements = cuttedElements;
+            return this;
         }
 
         private void applyPredicate() {
