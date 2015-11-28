@@ -14,7 +14,7 @@ public class LimitCommand extends Commands {
     @Override
     public void execute(TwitterProvider twitterPr) {
 
-        twitterPr.changeParameterLimit(number);
+
         List<Status> statusList = null;
         try {
             statusList = twitterPr.twitter().getHomeTimeline();
@@ -23,8 +23,10 @@ public class LimitCommand extends Commands {
             HandlerException.handler(e);
         }
         for (Status status: statusList) {
-            if ( (!twitterPr.isHideRetweets()) || !(status.isRetweet()) )
+            if ((!twitterPr.isHideRetweets()) || !(status.isRetweet()))
                 System.out.println(new PrintTweet().print(status, false));
+            number-=1;
+            if (number == 0) break;
         }
 
     }
