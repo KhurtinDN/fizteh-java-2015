@@ -1,8 +1,4 @@
 package ru.mipt.diht.students.lenazherdeva.moduleTests;
-
-/**
- * Created by admin on 26.11.2015.
- */
 import junit.framework.TestCase;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -33,10 +29,10 @@ import org.junit.Test;
         GoogleGeoLocation Location2;
         Location2 = new GoogleGeoLocation("Lille");
         assert (LATITUDELille ==
-                Math.rint(Location1.getLocation().lat * 1000000.0)
+                Math.rint(Location2.getLocation().lat * 1000000.0)
                         / 1000000.0);
         assert (LONGTITUDELille ==
-                Math.rint(Location1.getLocation().lng * 1000000.0)
+                Math.rint(Location2.getLocation().lng * 1000000.0)
                         / 1000000.0);
     }
 }

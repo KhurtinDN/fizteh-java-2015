@@ -55,5 +55,28 @@ public class Parameters {
     public final String getQuery() {
         return query;
     }
+    public final void setQuery(String queryDef) {
+        query = queryDef;
+    }
+
+    public final void setLimit(Integer limitDef) {
+        limit = limitDef;
+    }
+
+    public final void setStream(boolean streamDef) {
+        isStream = streamDef;
+    }
+
+    public final void setHideRetwitts(boolean hideRetwittsDef) {
+        hideRetweets = hideRetwittsDef;
+    }
+
+    public final void setHelp(boolean helpDef) {
+        help = helpDef;
+    }
+
+    public final void setPlace(String placeDef) {
+        place = placeDef;
+    }
 }
 

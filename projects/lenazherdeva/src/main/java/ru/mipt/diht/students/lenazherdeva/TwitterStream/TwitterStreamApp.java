@@ -1,19 +1,10 @@
 package ru.mipt.diht.students.lenazherdeva.twitterStream; /**
  * Created by admin on 27.09.2015.
  */
-
 import com.beust.jcommander.JCommander;
 import twitter4j.*;
-import twitter4j.conf.ConfigurationBuilder;
-import twitter4j.GeoLocation;
-
-import java.util.List;
 
 public class TwitterStreamApp {
-    //color for nicks
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final long PAUSE = 1000;
 
     public static void main(String[] args) throws Exception {
         Parameters param = new Parameters();
@@ -29,7 +20,10 @@ public class TwitterStreamApp {
         }
         if (param.isStream()) {
             try {
-                streamPrint(param);
+                TwitterStream twitterStream;
+                twitterStream = new TwitterStreamFactory().getInstance();
+                StreamMode stream = new StreamMode(twitterStream);
+                stream.streamPrint(param);
             } catch (TwitterException e) {
                 System.out.println(e.getMessage());
             } catch (Exception e) {
@@ -38,151 +32,17 @@ public class TwitterStreamApp {
             }
         } else {
             try {
-                print(param);
-            } catch (TwitterException e) {
-                System.out.println(e.getMessage());
+                Twitter twitter = new TwitterFactory().getInstance();
+                Search search = new Search(twitter);
+                search.searchResult(param).stream().forEach(System.out::println);
+            } catch (NoTweetsException e) {
+                System.err.println(e.getMessage());
             } catch (Exception e) {
                 System.out.println(e.getMessage());
                 System.exit(-1);
             }
         }
     }
-
-    public static void streamPrint(Parameters param)  //stream-режим
-            throws Exception {
-                ConfigurationBuilder cb = new ConfigurationBuilder();
-                cb.setDebugEnabled(false)
-                        .setOAuthConsumerKey("3b3vKQPtk7PoHEOekUedoIQPC")
-                        .setOAuthConsumerSecret("ADrGDZORevHvt3iF9Ot3xwfMeufol2lsG58XmAcqyCSsGkQZkR")
-                        .setOAuthAccessToken("2783476952-M6Pe8LR4gLYeKKDzdwjVKLkcFwMP38qDE1vgvP2")
-                        .setOAuthAccessTokenSecret("mfAU8iq63vU3omwqje8SXRQr0QCfonoK4eSjrpX61gKe8");
-        TwitterStream twitterStream;
-        twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
-        StatusAdapter listener = new StatusAdapter() {
-            @Override
-            public void onStatus(Status status) {
-                try {
-                    Thread.sleep(PAUSE);
-                } catch (InterruptedException e) {
-                    System.out.print(e.getMessage());
-                }
-                printStatus(status, param.hideRetweets());
-            }
-        };
-        twitterStream.addListener(listener);
-                if (param.getQuery() == "" && param.getLocation() == "") {
-                              twitterStream.sample();
-                            } else {
-                                FilterQuery filter = setFilter(param);
-                                twitterStream.filter(filter);
-                            }
-                    }
-
-    public static void print(Parameters param) throws Exception {
-        ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setDebugEnabled(false)
-                .setOAuthConsumerKey("3b3vKQPtk7PoHEOekUedoIQPC")
-                .setOAuthConsumerSecret("ADrGDZORevHvt3iF9Ot3xwfMeufol2lsG58XmAcqyCSsGkQZkR")
-                .setOAuthAccessToken("2783476952-M6Pe8LR4gLYeKKDzdwjVKLkcFwMP38qDE1vgvP2")
-                .setOAuthAccessTokenSecret("mfAU8iq63vU3omwqje8SXRQr0QCfonoK4eSjrpX61gKe8");
-        Twitter twitter = new TwitterFactory(cb.build()).getInstance();
-        int limit = param.getLimit();
-        Integer statusCounter = 0;
-        try {
-            Query query = setQuery(param);
-            QueryResult result;
-            do {
-                result = twitter.search(query);
-                List<Status> tweets = result.getTweets();
-                Thread.sleep(PAUSE);
-                for (Status tweet : tweets) {
-                    printStatus(tweet, param.hideRetweets());
-                    limit--;
-                    statusCounter++;
-                    if (limit == 0) {
-                        break;
-                    }
-                }
-                query = result.nextQuery();
-            } while (query != null && limit > 0);
-        } catch (TwitterException te) {
-            te.printStackTrace();
-            System.out.println(new StringBuilder().
-                    append("Failed to search tweets: ").append(te.getMessage()).toString());
-            System.exit(-1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-            System.exit(-1);
-        }
-        if (statusCounter == 0) {
-            System.out.println("No results for this query");
-            System.exit(-1);
-        }
-    }
-
-    public static FilterQuery setFilter(Parameters param) throws Exception {
-        String[] track = new String[1];
-        track[0] = param.getQuery();
-        long[] followArray = new long[0];
-        FilterQuery filter = new FilterQuery(0, followArray, track);
-        if (!param.getLocation().equals("")) {
-            GoogleGeoLocation geoLocation;
-            geoLocation = new GoogleGeoLocation(param.getLocation());
-            filter.locations(geoLocation.getBounds());
-
-        }
-        return filter;
-    }
-
-    public static Query setQuery(Parameters param) throws Exception {
-        Query query = new Query(param.getQuery());
-        //set place
-        if (!param.getLocation().equals("")) {
-            if (!param.getLocation().equals("nearby")) {
-                GoogleGeoLocation googleFindPlace;
-                googleFindPlace = new GoogleGeoLocation(param.getLocation());
-                GeoLocation geoLocation;
-                //широта:
-                geoLocation = new GeoLocation(googleFindPlace.getLocation().lat,
-                        googleFindPlace.getLocation().lng);  //долгота
-                query.setGeoCode(geoLocation,
-                        googleFindPlace.getRadius(), Query.KILOMETERS);
-            }
-        }
-        return query;
-    }
-    //print tweets
-   public static void printStatus(Status status, boolean hideRetweets) {
-       long currentTimeToFormat = System.currentTimeMillis();
-       long tweetTimeToFormat = status.getCreatedAt().getTime();
-        if (status.isRetweet()) {
-            if (!hideRetweets) {
-                System.out.print(new StringBuilder().append("[").
-                        append(TimeParser.printTime(currentTimeToFormat, tweetTimeToFormat)).append("] ").toString());
-                System.out.println(new StringBuilder().append(ANSI_BLUE).append("@").
-                        append(status.getUser().getScreenName()).append(ANSI_RESET).
-                        append(": ретвитнул ").append(ANSI_BLUE).append("@").
-                        append(status.getRetweetedStatus().getUser().getScreenName()).
-                        append(ANSI_RESET).append(": ").
-                        append(status.getRetweetedStatus().getText()).toString());
-            }
-        } else {
-            System.out.print(new StringBuilder().append("[").
-                    append(TimeParser.printTime(currentTimeToFormat, tweetTimeToFormat)).append("] ").toString());
-            System.out.print(new StringBuilder().
-                    append(ANSI_BLUE).append("@").
-                    append(status.getUser().getScreenName()).
-                    append(ANSI_RESET).append(": ").
-                    append(status.getText()).toString());
-            if (status.getRetweetCount() != 0) {
-                System.out.print(new StringBuilder().append("(").
-                        append(status.getRetweetCount()).append(" ").
-                        append(Formatter.retweet(status.getRetweetCount())).
-                        append(")").toString());
-            }
-            System.out.println();
-        }
-   }
 }
+
 
