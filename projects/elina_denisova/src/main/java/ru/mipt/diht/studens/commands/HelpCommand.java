@@ -11,6 +11,8 @@ public class HelpCommand extends Commands {
 
                 "\033[36m" + "limit " + "\033[0m" +
                 "- n твитов. [--limit|-l <tweets>]\n" +
+                "\033[36m" + "noLimit " + "\033[0m" +
+                "- отменить limit режим. [--limit|-l 0]\n" +
 
                 "\033[36m" + "query " + "\033[0m" +
                 " - поиск по заданному запросу. [--query|-q <query or keywords for stream>)]\n" +
@@ -21,9 +23,9 @@ public class HelpCommand extends Commands {
                 "- отменить place режим. [--place|-p 0]\n" +
 
                 "\033[36m" + "hideRetweets " + "\033[0m" +
-                "- филтр ретвитов. [--hideRetweets|-hRtws +]\n" +
+                "- филтр ретвитов. [--hideRetweets +]\n" +
                 "\033[36m" + "Retweets " + "\033[0m" +
-                "- отменить hideRetweets режим. [--hideRetweets|-hRtws -]\n" +
+                "- отменить hideRetweets режим. [--hideRetweets -]\n" +
 
                 "\033[36m" + "help " + "\033[0m" +
                 "- печатает справку. [--help|-h]\n" +

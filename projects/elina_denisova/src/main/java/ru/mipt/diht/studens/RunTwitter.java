@@ -16,8 +16,6 @@ import java.util.List;
 public class RunTwitter {
     public static void main(String[] args) throws TwitterException {
 
-
-
         try {
             Twitter twitter = new TwitterFactory().getInstance();
             TwitterProvider twitterPr = new TwitterProvider(twitter);

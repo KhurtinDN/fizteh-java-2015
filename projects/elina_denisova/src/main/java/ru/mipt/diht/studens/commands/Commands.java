@@ -25,8 +25,7 @@ public abstract class Commands {
         COMMANDS.put("-p", new PlaseCommand());
         COMMANDS.put("--stream", new StreamCommand());
         COMMANDS.put("-s", new StreamCommand());
-        COMMANDS.put("--hideRetweets", new HideCommand());
-        COMMANDS.put("-hRtws", new HideCommand());
+        COMMANDS.put("-hideRetweets", new HideCommand());
         COMMANDS.put("--limit", new LimitCommand());
         COMMANDS.put("-l", new LimitCommand());
         COMMANDS.put("--help", new HelpCommand());
@@ -52,7 +51,7 @@ public abstract class Commands {
                     throw new NoSuchElementException("Unexpected number of arguments: "
                             + command.numberOfArguments() + " required");
             }
-            if ( (s.equals("--hideRetweets") || s.equals("-hRtws")) && !( (s[1].equals("+")) || (s[1].equals("-"))) ) {
+            if ( (s.equals("-hideRetweets")) && !( (s[1].equals("+")) || (s[1].equals("-"))) ) {
                 throw new NoSuchElementException("Wrong second arguments. Expected + or -. ");
             }
             command.putArguments(s);
