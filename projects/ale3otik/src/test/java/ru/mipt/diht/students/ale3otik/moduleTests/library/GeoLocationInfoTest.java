@@ -14,13 +14,16 @@ public class GeoLocationInfoTest extends TestCase {
     private static final double MoscowRadius = 34.914661819343884;
 
     @Test
-    public void testGeoLocationClassMethods(){
+    public void testGeoLocationClassMethods() {
         GeoLocationInfo moscowInfo = new GeoLocationInfo(
                 new GeoLocation(MoscowLatitude, MoscowLongitude), MoscowRadius);
 
-        assertEquals(moscowInfo.getRadius(),MoscowRadius);
-        assertEquals(moscowInfo.getLocation(),new GeoLocation(MoscowLatitude, MoscowLongitude));
+        assertEquals(moscowInfo.getRadius(), MoscowRadius);
+        assertEquals(moscowInfo.getLocation(), new GeoLocation(MoscowLatitude, MoscowLongitude));
 
+        assertEquals(moscowInfo.hashCode(), 1579231182);
+        assertEquals(moscowInfo.equals(
+                new GeoLocationInfo(
+                        new GeoLocation(MoscowLatitude, MoscowLongitude), MoscowRadius)), true);
     }
-
 }

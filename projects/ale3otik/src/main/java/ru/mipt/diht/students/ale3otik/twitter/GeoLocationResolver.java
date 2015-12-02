@@ -33,15 +33,11 @@ public final class GeoLocationResolver {
     public static double getSphereDist(final GeoLocation location1,
                                        final GeoLocation location2) {
 
-        double latitude1 = location1.getLatitude();
-        double longitude1 = location1.getLongitude();
-        double latitude2 = location2.getLatitude();
-        double longitude2 = location2.getLongitude();
+        double latitude1 = Math.toRadians(location1.getLatitude());
+        double latitude2 = Math.toRadians(location2.getLatitude());
+        double longitude1 = Math.toRadians(location1.getLongitude());
+        double longitude2 = Math.toRadians(location2.getLongitude());
 
-        latitude1 = Math.toRadians(latitude1);
-        latitude2 = Math.toRadians(latitude2);
-        longitude1 = Math.toRadians(longitude1);
-        longitude2 = Math.toRadians(longitude2);
         return EARTH_RADIUS
                 * Math.acos(Math.sin(latitude1)
                 * Math.sin(latitude2)
@@ -79,10 +75,9 @@ public final class GeoLocationResolver {
             GeoLocation southEastBoundLocation = new GeoLocation(southWestBoundLatitude, southWestBoundLongitude);
 
             // Radius must be different in different regions
-            double approximatedRadius = getSphereDist(northEastBoundLocation, southEastBoundLocation);
-            approximatedRadius /= 2;
+            double diameter = getSphereDist(northEastBoundLocation, southEastBoundLocation);
 
-            return new GeoLocationInfo(new GeoLocation(latitude, longitude), approximatedRadius);
+            return new GeoLocationInfo(new GeoLocation(latitude, longitude), diameter / 2);
 
         } catch (Exception e) {
             throw new LocationException("Unable to detect required location");
@@ -114,7 +109,8 @@ public final class GeoLocationResolver {
                 final String content = GeoLocationResolver.read(IP_INFO_URL);
                 JSONObject locationInfo = new JSONObject(content);
                 return locationInfo.getString("city");
-            } catch (Exception e) {
+            } catch (Exception ignored) {
+                // igore exception to increment numTries
             }
         }
         throw new LocationException("Unable to detect current location");
