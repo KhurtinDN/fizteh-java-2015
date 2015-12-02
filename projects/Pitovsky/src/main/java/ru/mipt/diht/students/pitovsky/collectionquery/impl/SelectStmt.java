@@ -4,170 +4,181 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-import ru.mipt.diht.students.pitovsky.collectionquery.impl.UnionStmt;
-//import ru.mipt.diht.students.pitovsky.collectionquery.impl.WhereStmt;
+import ru.mipt.diht.students.pitovsky.collectionquery.Aggregates.Aggregate;
 
 public class SelectStmt<T, R> {
 
-    private Iterable<T> base;
+    private Stream<T> stream;
+    private Iterable<T> baseCollection;
     private Class<R> outputClass;
     private Function<T, ?>[] convertFunctions;
+
+    private Function<T, Comparable<?>>[] groupingFunctions;
+    private Predicate<R> groupingCondition;
+
     private boolean isDistinct;
 
     @SafeVarargs
-    public SelectStmt(Iterable<T> baseCollection, Class<R> clazz, boolean distinct, Function<T, ?>... s) {
-        base = baseCollection; //TODO: copy
+    public SelectStmt(Iterable<T> newBaseCollection, Class<R> clazz, boolean distinct, Function<T, ?>... s) {
+        baseCollection = newBaseCollection;
+        stream = StreamSupport.stream(baseCollection.spliterator(), false);
         outputClass = clazz;
         convertFunctions = s;
         isDistinct = distinct;
+        groupingFunctions = null;
     }
 
     public WhereStmt<T, R> where(Predicate<T> predicate) {
         return new WhereStmt<>(this, predicate);
     }
 
-    public Iterable<R> execute() throws NoSuchMethodException, SecurityException, InstantiationException,
+    void setGroupingFunctions(Function<T, Comparable<?>>[] expressions) {
+        groupingFunctions = expressions;
+    }
+
+    void setGroupingCondition(Predicate<R> condition) {
+        groupingCondition = condition;
+    }
+
+    class Applier implements Consumer<T> {
+        private Collection<FinalRow<T, R>> output;
+        private Constructor<R> constructor;
+
+        Applier(Collection<FinalRow<T, R>> outputCollection, Constructor<R> resultConstructor) {
+            output = outputCollection;
+            constructor = resultConstructor;
+        }
+
+        @Override
+        public void accept(T element) {
+            Object[] parametrs = new Object[convertFunctions.length];
+            for (int i = 0; i < convertFunctions.length; ++i) {
+                parametrs[i] = convertFunctions[i].apply(element);
+            }
+            try {
+                output.add(new FinalRow<T, R>(constructor.newInstance(parametrs), element));
+            } catch (InstantiationException | IllegalAccessException
+                    | IllegalArgumentException | InvocationTargetException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private Constructor<R> getAskedConstructor() throws NoSuchMethodException, SecurityException {
+        Class<?>[] outputParametrsTypes = new Class<?>[convertFunctions.length];
+        for (int i = 0; i < convertFunctions.length; ++i) {
+            //FIXME: find return class of function in NORMAL way
+            outputParametrsTypes[i] = convertFunctions[i].apply(baseCollection.iterator().next()).getClass();
+            //System.err.println(outputParametrsTypes[i]);
+        }
+        return outputClass.getConstructor(outputParametrsTypes);
+    }
+
+    private Collection<FinalRow<T, R>> goodGroups(Collection<FinalRow<T, R>> table) {
+        List<FinalRow<T, R>> output = new ArrayList<>();
+        for (FinalRow<T, R> row : table) {
+            if (groupingCondition.test(row.get())) {
+                output.add(row);
+            }
+        }
+        return output;
+    }
+
+    private void aggregatingGroups(Collection<FinalRow<T, R>> table) throws NoSuchMethodException, SecurityException,
+            InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        Constructor<R> constructor = getAskedConstructor();
+        Object[] parametrs = new Object[convertFunctions.length];
+        for (FinalRow<T, R> row : table) {
+            for (int i = 0; i < convertFunctions.length; ++i) {
+                if (convertFunctions[i] instanceof Aggregate) {
+                    parametrs[i] = ((Aggregate<T, ?>) convertFunctions[i]).forGroup(row.getFrom());
+                } else {
+                    parametrs[i] = convertFunctions[i].apply(row.getAnyFrom());
+                }
+            }
+            row.updateRow(constructor.newInstance(parametrs));
+        }
+    }
+
+    private Collection<R> convertToFinal(Collection<FinalRow<T, R>> table) {
+        List<R> output = new ArrayList<>();
+        for (FinalRow<T, R> row : table) {
+            output.add(row.get());
+        }
+        return output;
+    }
+
+    public Collection<R> execute() throws NoSuchMethodException, SecurityException, InstantiationException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Collection<R> output = null;
+        Collection<FinalRow<T, R>> output = null;
         if (isDistinct) {
             output = new HashSet<>();
         } else {
             output = new ArrayList<>();
         }
 
-        Class<?>[] outputParametrsTypes = new Class<?>[convertFunctions.length];
-        for (int i = 0; i < convertFunctions.length; ++i) {
-            //FIXME: find return class of function in NORMAL way
-            outputParametrsTypes[i] = convertFunctions[i].apply(base.iterator().next()).getClass();
-            //System.err.println(outputParametrsTypes[i]);
-        }
-        Constructor<R> constructor = outputClass.getConstructor(outputParametrsTypes);
-        for (T element : base) {
-            Object[] parametrs = new Object[convertFunctions.length];
-            for (int i = 0; i < convertFunctions.length; ++i) {
-                parametrs[i] = convertFunctions[i].apply(element);
+        stream.forEach(new Applier(output, getAskedConstructor()));
+
+        if (groupingFunctions != null) {
+            List<FinalRow<T, R>> preCalcSortedTable = new ArrayList<>();
+            for (FinalRow<T, R> element : output) {
+                preCalcSortedTable.add(element);
             }
-            output.add(constructor.newInstance(parametrs)); //TODO: exceptions
+            List<Comparator<FinalRow<T, R>>> resultComparators = new ArrayList<>();
+            for (Function<T, Comparable<?>> function : groupingFunctions) {
+                resultComparators.add(new Comparator<FinalRow<T, R>>() {
+                    @Override
+                    public int compare(FinalRow<T, R> row1, FinalRow<T, R> row2) {
+                        Comparable result1 = function.apply(row1.getAnyFrom()); //raw type because of forbidden cast
+                        return result1.compareTo(function.apply(row2.getAnyFrom()));
+                    }
+                });
+            }
+            Comparator<FinalRow<T, R>> groupsComparator = WhereStmt.getCombinedComparator(resultComparators);
+            preCalcSortedTable.sort(groupsComparator);
+            Collection<FinalRow<T, R>> groupedTable = new ArrayList<>();
+
+            FinalRow<T, R> currentGroup = null;
+            for (FinalRow<T, R> row : preCalcSortedTable) {
+                if (currentGroup != null && groupsComparator.compare(row, currentGroup) == 0) {
+                    currentGroup.getFrom().add(row.getAnyFrom());
+                } else {
+                    if (currentGroup != null) {
+                        groupedTable.add(currentGroup);
+                    }
+                    currentGroup = row;
+                }
+            }
+            groupedTable.add(currentGroup);
+
+            aggregatingGroups(output);
+            output = goodGroups(groupedTable);
         }
-        return output;
+        return convertToFinal(output);
     }
 
-    public Stream<R> stream() {
-        throw new UnsupportedOperationException();
+    public Stream<R> stream() throws NoSuchMethodException, SecurityException, InstantiationException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        return execute().stream();
     }
 
-    public class WhereStmt<T, R> {
-        private Predicate<T> currentPredicate;
-        private SelectStmt<T, R> baseStmt;
-        private List<T> currentElements;
+    Stream<T> currentStream() {
+        return stream;
+    }
 
-        private WhereStmt(SelectStmt<T, R> selectStmt, Predicate<T> predicate) {
-            currentPredicate = predicate;
-            baseStmt = selectStmt;
-            currentElements = new ArrayList<>();
-            for (T element : baseStmt.base) {
-                currentElements.add(element);
-            }
-        }
-
-        @SafeVarargs
-        public final WhereStmt<T, R> groupBy(Function<T, ?>... expressions) {
-            applyPredicate();
-            Set<List<Object>> groupingValues = new HashSet<>();
-            for (T element : currentElements) {
-                List<Object> result = new ArrayList<>();
-                for (int i = 0; i < expressions.length; ++i) {
-                    result.add(expressions[i].apply(element));
-                }
-                groupingValues.add(result);
-            }
-            //TODO: aggregates work, better asymptotic
-            ArrayList<T> newElements = new ArrayList<>();
-            for (List<Object> values : groupingValues) {
-                for (T element : currentElements) {
-                    boolean found = true;
-                    for (int i = 0; i < expressions.length; ++i) {
-                        if (!expressions[i].apply(element).equals(values.get(i))) {
-                            found = false;
-                            break;
-                        }
-                    }
-                    if (found) {
-                        //System.err.println("added " + element);
-                        newElements.add(element);
-                        break;
-                    }
-                }
-            }
-            currentElements = newElements;
-            return this;
-        }
-
-        @SafeVarargs
-        public final WhereStmt<T, R> orderBy(Comparator<T>... comparators) {
-            Comparator<T> combinatedComparator = new Comparator<T>() {
-                @Override
-                public int compare(T first, T second) {
-                    for (Comparator<T> comparator : comparators) {
-                        int result = comparator.compare(first, second);
-                        if (result != 0) {
-                            return result;
-                        }
-                    }
-                    return 0;
-                }
-            };
-
-            Collections.sort(currentElements, combinatedComparator);
-            return this;
-        }
-
-        public WhereStmt<T, R> having(Predicate<R> condition) {
-            throw new UnsupportedOperationException();
-        }
-
-        public WhereStmt<T, R> limit(int amount) {
-            List<T> cuttedElements = new ArrayList<T>();
-            for (int i = 0; i < amount && i < currentElements.size(); ++i) {
-                cuttedElements.add(currentElements.get(i));
-            }
-            currentElements = cuttedElements;
-            return this;
-        }
-
-        private void applyPredicate() {
-            Iterator<T> i = currentElements.iterator();
-            T element = null;
-            while (i.hasNext()) {
-                element = i.next();
-                if (!currentPredicate.test(element)) {
-                    i.remove();
-                }
-            }
-        }
-
-        public Iterable<R> execute() throws NoSuchMethodException, SecurityException, InstantiationException,
-                IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-            applyPredicate();
-            baseStmt.base = currentElements;
-            return baseStmt.execute();
-        }
-
-        public UnionStmt union() {
-            throw new UnsupportedOperationException();
-        }
+    void updateStream(Stream<T> newStream) {
+        stream = newStream;
     }
 
 }

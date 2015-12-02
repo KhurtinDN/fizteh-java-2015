@@ -5,11 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-//import ru.mipt.diht.students.pitovsky.collectionquery.Statistics;
-//import ru.mipt.diht.students.pitovsky.collectionquery.Student;
-
-import static ru.mipt.diht.students.pitovsky.collectionquery.Aggregates.avg;
-import static ru.mipt.diht.students.pitovsky.collectionquery.Aggregates.count;
+import static ru.mipt.diht.students.pitovsky.collectionquery.Aggregates.*;
 import static ru.mipt.diht.students.pitovsky.collectionquery.CollectionQuery.Student.student;
 import static ru.mipt.diht.students.pitovsky.collectionquery.Conditions.rlike;
 import static ru.mipt.diht.students.pitovsky.collectionquery.OrderByConditions.asc;
@@ -33,11 +29,13 @@ public class CollectionQuery {
                     student("testoff", LocalDate.parse("1987-05-08"), "497"),
                     student("sidorov", LocalDate.parse("1996-08-06"), "494"),
                     student("ivanov", LocalDate.parse("1988-08-06"), "493"),
+                    student("nobody", LocalDate.parse("1979-05-05"), "497"),
                     student("testman", LocalDate.parse("1987-04-06"), "494"),
                     student("someone", LocalDate.parse("1989-05-06"), "493")))
-                        .select(Statistics.class, Student::getGroup)
+                        .select(Statistics.class, Student::getGroup, count(Student::getGroup), min(Student::age))
                         .where(s -> s.age() > 20)
                         .groupBy(Student::getGroup)
+                        .having(s-> s.getCount() > 1)
                         .orderBy((s1, s2) -> s1.getGroup().compareTo(s2.getGroup()))
                     .execute();
             /*
