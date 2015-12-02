@@ -5,15 +5,13 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import org.mockito.ArgumentMatcher;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import ru.mipt.diht.students.ale3otik.twitter.*;
 import ru.mipt.diht.students.ale3otik.twitter.exceptions.ConnectionFailedException;
-import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
-import twitter4j.GeoLocation;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
@@ -34,15 +32,15 @@ import static org.mockito.Mockito.*;
 public class TwitterClientTest extends TestCase {
 
     private static String helloString = "[1m[35m\nTwitter 0.1 ::: welcome \n\n[0m[0m";
-    Arguments arguments;
+    private static Arguments arguments;
 
-    TwitterSingleQuery mockedTwitterSingle;
-    TwitterStreamLauncher mockedStreamLauncher;
-
-    StringBuilder helpExpected;
+    private static TwitterSingleQuery mockedTwitterSingle;
+    private static TwitterStreamLauncher mockedStreamLauncher;
+    private static StringBuilder helpExpected;
 
     @Before
     public void setUp() throws Exception {
+
         JCommander jcm = new JCommander(new Arguments());
         jcm.setProgramName("TwitterQueryClient");
         helpExpected = new StringBuilder();
@@ -53,6 +51,7 @@ public class TwitterClientTest extends TestCase {
 
         PowerMockito.mockStatic(ConsoleUtil.class);
         PowerMockito.mockStatic(TwitterArgumentsValidator.class);
+
         PowerMockito.whenNew(TwitterStreamLauncher.class).withAnyArguments().thenReturn(mockedStreamLauncher);
     }
 
@@ -68,10 +67,11 @@ public class TwitterClientTest extends TestCase {
         createArguments("-q", "test");
         PowerMockito.mockStatic(Arguments.class);
         PowerMockito.whenNew(Arguments.class).withAnyArguments().thenReturn(arguments);
-        PowerMockito.when(mockedTwitterSingle.getSingleQueryResult(eq(arguments), anyString()))
+        PowerMockito.when(mockedTwitterSingle.getSingleQueryResult(eq(arguments), any(StringBuilder.class)))
                 .thenReturn("single query result");
 
-        PowerMockito.whenNew(TwitterSingleQuery.class).withArguments(any(Twitter.class)).thenReturn(mockedTwitterSingle);
+        PowerMockito.whenNew(TwitterSingleQuery.class)
+                .withArguments(any(Twitter.class)).thenReturn(mockedTwitterSingle);
 
         TwitterClient.run("-q", "test");
         PowerMockito.verifyStatic();
@@ -104,13 +104,29 @@ public class TwitterClientTest extends TestCase {
         ConsoleUtil.printErrorMessage("Invalid arguments presentation exit");
     }
 
+    class IsEqualStringBuilder extends ArgumentMatcher<StringBuilder> {
+        private StringBuilder expectedBuilder;
+
+        public IsEqualStringBuilder(StringBuilder expected) {
+            expectedBuilder = expected;
+        }
+
+        @Override
+        public boolean matches(Object builder) {
+            return builder.toString().equals(expectedBuilder.toString());
+        }
+    }
+
     @Test
     public void testStreamLaunch() throws Exception {
         createArguments("-s");
         PowerMockito.mockStatic(Arguments.class);
         PowerMockito.whenNew(Arguments.class).withAnyArguments().thenReturn(arguments);
         TwitterClient.run("-s");
-        verify(mockedStreamLauncher).streamStart("Твиты по пустому запросу для \"London\"");
+        verify(mockedStreamLauncher)
+                .streamStart(argThat(
+                        new IsEqualStringBuilder(
+                                new StringBuilder("Твиты по пустому запросу для \"London\""))));
     }
 
     @Test

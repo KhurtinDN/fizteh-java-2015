@@ -39,6 +39,7 @@ public class TwitterSingleQueryTest extends TestCase {
 
     private static Status retweetStatus;
     private static Status notRetweetStatus;
+    private static StringBuilder infoMessage;
 
     private TwitterSingleQuery twitterSingleQuery;
     @Mock
@@ -56,6 +57,8 @@ public class TwitterSingleQueryTest extends TestCase {
 
     @Before
     public void setUp() throws Exception {
+        infoMessage = new StringBuilder();
+
         londonGeoLocationInfo = new GeoLocationInfo(new GeoLocation(LondonLatitude, LondonLongitude), LondonRadius);
 
         myQuery = new Query("some query");
@@ -121,7 +124,7 @@ public class TwitterSingleQueryTest extends TestCase {
     public void testQueryHideRetweets() throws Exception {
         createLauncherWithArguments(false, "--hideRetweets", "-q", "some query");
         setMockitoTwitterUtils();
-        String result = twitterSingleQuery.getSingleQueryResult(arguments, "");
+        String result = twitterSingleQuery.getSingleQueryResult(arguments, infoMessage);
 
         assert (!result.contains(RETWEET));
         assert (result.contains(NON_RETWEET));
@@ -131,7 +134,7 @@ public class TwitterSingleQueryTest extends TestCase {
     public void testQueryNotHideRetweets() throws Exception {
         createLauncherWithArguments(false, "-q", "some query");
         setMockitoTwitterUtils();
-        String result = twitterSingleQuery.getSingleQueryResult(arguments, "");
+        String result = twitterSingleQuery.getSingleQueryResult(arguments, infoMessage);
 
         assert (result.contains(RETWEET));
         assert (result.contains(NON_RETWEET));
@@ -141,7 +144,7 @@ public class TwitterSingleQueryTest extends TestCase {
     public void testQueryCountRetweets() throws Exception {
         createLauncherWithArguments(false, "-q", "some query", "-l", "1000");
         setMockitoTwitterUtils();
-        String result = twitterSingleQuery.getSingleQueryResult(arguments, "");
+        String result = twitterSingleQuery.getSingleQueryResult(arguments, infoMessage);
 
         verify(mockedTwitter).search(myQuery);
         verify(mockedResult).nextQuery();
@@ -153,7 +156,7 @@ public class TwitterSingleQueryTest extends TestCase {
     public void testQueryGeoLocation() throws Exception {
         createLauncherWithArguments(true, "-q", "location test", "-l", "1000");
         setMockitoTwitterUtils();
-        String result = twitterSingleQuery.getSingleQueryResult(arguments, "");
+        String result = twitterSingleQuery.getSingleQueryResult(arguments, infoMessage);
 
         verify(mockedTwitter).search(myLocationQuery);
         assert (result.contains(RETWEET));
@@ -165,7 +168,7 @@ public class TwitterSingleQueryTest extends TestCase {
         createLauncherWithArguments(true, "-q", "some query");
         setMockitoTwitterUtils();
         statuses.clear();
-        String result = twitterSingleQuery.getSingleQueryResult(arguments, "");
+        String result = twitterSingleQuery.getSingleQueryResult(arguments, infoMessage);
 
         assert (result.contains("Ничего не найдено :("));
     }
@@ -178,7 +181,7 @@ public class TwitterSingleQueryTest extends TestCase {
         setMockitoTwitterUtils();
         Mockito.when(mockedTwitter.search(any(Query.class))).thenThrow(mockedTwitterNetworkCausedException);
 
-        String result = twitterSingleQuery.getSingleQueryResult(arguments, "");
+        twitterSingleQuery.getSingleQueryResult(arguments, infoMessage);
     }
 
     @Test(expected = TwitterException.class)
@@ -189,7 +192,7 @@ public class TwitterSingleQueryTest extends TestCase {
         setMockitoTwitterUtils();
         Mockito.when(mockedTwitter.search(any(Query.class))).thenThrow(mockedTwitterException);
 
-        String result = twitterSingleQuery.getSingleQueryResult(arguments, "");
+        twitterSingleQuery.getSingleQueryResult(arguments, infoMessage);
     }
 
 }

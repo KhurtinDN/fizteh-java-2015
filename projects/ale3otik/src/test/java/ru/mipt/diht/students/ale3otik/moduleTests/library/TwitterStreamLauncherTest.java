@@ -155,12 +155,12 @@ public class TwitterStreamLauncherTest extends TestCase {
     @Test
     public void testStreamStart() throws Exception {
         createLauncherWithArguments(false,0,"-q", "some query", "-s");
-        twitterStreamLauncher.streamStart("");
+        twitterStreamLauncher.streamStart(new StringBuilder());
         Mockito.verify(mockedTwitterStreamClient).filter(any(FilterQuery.class));
 
         createLauncherWithArguments(false,0,"-s");
 
-        twitterStreamLauncher.streamStart("");
+        twitterStreamLauncher.streamStart(new StringBuilder());
         Mockito.verify(mockedTwitterStreamClient).sample();
     }
 }

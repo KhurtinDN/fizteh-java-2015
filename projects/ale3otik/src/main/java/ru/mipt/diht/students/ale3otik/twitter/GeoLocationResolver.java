@@ -1,10 +1,5 @@
 package ru.mipt.diht.students.ale3otik.twitter;
 
-/**
- * Created by alex on 05.10.15.
- * Used http://habrahabr.ru/post/148986/
- */
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.CharStreams;
 import org.json.JSONException;
@@ -22,6 +17,11 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+/**
+ * Created by alex on 05.10.15.
+ * Used http://habrahabr.ru/post/148986/
+ */
 
 public final class GeoLocationResolver {
     static final int MAX_QUANTITY_OF_TRIES = 2;

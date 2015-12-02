@@ -69,15 +69,16 @@ public class TwitterStreamLauncher {
         };
     }
 
-    public final void streamStart(String informationMessage) {
-        informationMessage += " в потоковом режиме:";
+    public final void streamStart(StringBuilder informationMessage) {
+        informationMessage.append(" в потоковом режиме:");
         StatusListener listener = createStatusAdapter();
 
         FilterQuery query = new FilterQuery(arguments.getQuery());
 
         twStream.addListener(listener);
 
-        print(informationMessage + "\n" + TwitterUtils.getSplitLine());
+        informationMessage.append("\n").append(TwitterUtils.getSplitLine());
+        print(informationMessage.toString());
 
         if (arguments.getQuery().isEmpty()) {
             twStream.sample();

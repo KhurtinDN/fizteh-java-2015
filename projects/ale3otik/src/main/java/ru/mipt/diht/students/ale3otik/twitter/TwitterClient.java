@@ -35,11 +35,14 @@ public class TwitterClient {
             if (arguments.getQuery().isEmpty()) {
                 informationMessage.append(" пустому запросу");
             } else {
-                informationMessage.append(" запросу " + "\"" + arguments.getQuery() + "\"");
+                informationMessage.append(" запросу ")
+                        .append("\"").append(arguments.getQuery()).append("\"");
             }
 
             if (!arguments.getCurLocationName().isEmpty()) {
-                informationMessage.append(" для \"" + arguments.getCurLocationName() + "\"");
+                informationMessage.append(" для \"")
+                        .append(arguments.getCurLocationName())
+                        .append("\"");
             }
 
             if (arguments.isStream()) {
@@ -49,13 +52,13 @@ public class TwitterClient {
                 TwitterStreamLauncher twStreamLauncher
                         = new TwitterStreamLauncher(twStream, ConsoleUtil.getStdoutConsumer(), arguments, 0);
 
-                twStreamLauncher.streamStart(informationMessage.toString());
+                twStreamLauncher.streamStart(informationMessage);
             } else {
                 // run singleQuery handler
                 Twitter twitter = TwitterFactory.getSingleton();
                 TwitterSingleQuery twSingleQuery = new TwitterSingleQuery(twitter);
                 ConsoleUtil.printIntoStdout(twSingleQuery
-                        .getSingleQueryResult(arguments, informationMessage.toString()));
+                        .getSingleQueryResult(arguments, informationMessage));
             }
 
         } catch (ConnectionFailedException e) {

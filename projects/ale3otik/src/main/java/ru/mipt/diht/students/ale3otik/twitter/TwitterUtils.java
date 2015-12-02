@@ -8,20 +8,20 @@ import twitter4j.Status;
  */
 public class TwitterUtils {
 
-    public static final int TRIES_LIMIT = 3;
     private static final int SEPARATOR_LENGTH = 80;
 
     public static String getFormattedTweetToPrint(Status status, Arguments arguments) {
 
-        String time = "";
+        StringBuilder outputString = new StringBuilder();
 
         if (!arguments.isStream()) {
-            time = "["
-                    + TimeDeterminer.getTimeDifference(status.getCreatedAt())
-                    + "]" + " ";
+            outputString
+                    .append("[")
+                    .append(TimeDeterminer.getTimeDifference(status.getCreatedAt()))
+                    .append("] ");
         }
-        StringBuilder outputString = new StringBuilder();
-        outputString.append(time + getUserNameStyle(status.getUser().getScreenName()) + ": ");
+
+        outputString.append(getUserNameStyle(status.getUser().getScreenName())).append(": ");
 
         String tweetText = status.getText();
         if (status.isRetweet()) {
@@ -72,7 +72,8 @@ public class TwitterUtils {
             String retweetDeclension =
                     FormDeclenser.getTweetsDeclension(status.getRetweetCount());
             return new StringBuilder().append("(")
-                    .append(ConsoleUtil.Style.BOLD.line(new Integer(status.getRetweetCount()).toString()))
+                    .append(ConsoleUtil.Style
+                            .BOLD.line(Integer.toString(status.getRetweetCount()).toString()))
                     .append(" ").append(retweetDeclension).append(")").toString();
         }
         return "";

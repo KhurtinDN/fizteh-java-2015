@@ -13,6 +13,8 @@ import java.util.function.Consumer;
  * Created by alex on 10.10.15.
  */
 public class TwitterSingleQuery {
+    public static final int TRIES_LIMIT = 3;
+
     private Twitter twitter;
     private Consumer<String> errorConsumer;
     private void errPrint(String str) {
@@ -29,14 +31,13 @@ public class TwitterSingleQuery {
         this.errorConsumer = errConsumer;
     }
 
-    public final String getSingleQueryResult(Arguments arguments, String informationMessage)
+    public final String getSingleQueryResult(Arguments arguments, StringBuilder informationMessage)
             throws ConnectionFailedException, TwitterException {
 
         ArrayList<Status> allTweets = getSingleQueryStatuses(arguments);
 
-        StringBuilder answerString = new StringBuilder();
-        answerString.append(informationMessage).append(":");
-        answerString.append("\n").append(TwitterUtils.getSplitLine());
+        StringBuilder answerString = informationMessage;
+        answerString.append(":").append("\n").append(TwitterUtils.getSplitLine());
 
         if (allTweets.isEmpty()) {
             answerString.append("\n").append("Ничего не найдено :(");
@@ -64,7 +65,7 @@ public class TwitterSingleQuery {
         }
 
         QueryResult result;
-        while (tries < TwitterUtils.TRIES_LIMIT) {
+        while (tries < TRIES_LIMIT) {
             try {
                 while (allTweets.size() < arguments.getLimit()) {
                     result = twitter.search(query);
@@ -100,7 +101,7 @@ public class TwitterSingleQuery {
             }
         }
 
-        if (tries == TwitterUtils.TRIES_LIMIT) {
+        if (tries == TRIES_LIMIT) {
             throw new ConnectionFailedException("Не удалось восстановить соединение");
         }
 
