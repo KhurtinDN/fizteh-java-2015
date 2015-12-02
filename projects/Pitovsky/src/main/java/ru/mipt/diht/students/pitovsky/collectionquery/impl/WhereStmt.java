@@ -41,22 +41,22 @@ public class WhereStmt<T, R> {
         return this;
     }
 
-    public WhereStmt<T, R> having(Predicate<R> condition) {
+    public final WhereStmt<T, R> having(Predicate<R> condition) {
         baseStmt.setGroupingCondition(condition);
         return this;
     }
 
-    public WhereStmt<T, R> limit(int amount) {
+    public final WhereStmt<T, R> limit(int amount) {
         baseStmt.updateStream(baseStmt.currentStream().limit(amount));
         return this;
     }
 
-    public Iterable<R> execute() throws NoSuchMethodException, SecurityException, InstantiationException,
+    public final Iterable<R> execute() throws NoSuchMethodException, SecurityException, InstantiationException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         return baseStmt.execute();
     }
 
-    public UnionStmt union() {
+    public final UnionStmt union() {
         throw new UnsupportedOperationException();
     }
 }

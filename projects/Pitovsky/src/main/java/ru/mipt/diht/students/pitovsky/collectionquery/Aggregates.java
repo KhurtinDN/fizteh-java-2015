@@ -111,7 +111,7 @@ public class Aggregates {
             @Override
             public T forGroup(Set<C> set) {
                 T average;
-                //TODO: how?!!
+                //todo: how?!!
                 throw new UnsupportedOperationException();
             }
         };

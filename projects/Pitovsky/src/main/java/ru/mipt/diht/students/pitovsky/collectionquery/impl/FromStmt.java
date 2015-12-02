@@ -3,10 +3,7 @@ package ru.mipt.diht.students.pitovsky.collectionquery.impl;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import ru.mipt.diht.students.pitovsky.collectionquery.impl.FromStmt;
-import ru.mipt.diht.students.pitovsky.collectionquery.impl.SelectStmt;
-
-public class FromStmt<T> {
+public final class FromStmt<T> {
     private Iterable<T> base;
 
     private FromStmt() { }
@@ -32,7 +29,7 @@ public class FromStmt<T> {
         return new SelectStmt<T, R>(base, clazz, false, s);
     }
 
-    public final <R> SelectStmt<T, R> selectAll(Class<R> clazz) {
+    public <R> SelectStmt<T, R> selectAll(Class<R> clazz) {
         throw new UnsupportedOperationException();
     }
 

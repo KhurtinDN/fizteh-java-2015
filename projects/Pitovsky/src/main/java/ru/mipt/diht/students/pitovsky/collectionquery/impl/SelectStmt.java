@@ -37,15 +37,15 @@ public class SelectStmt<T, R> {
         groupingFunctions = null;
     }
 
-    public WhereStmt<T, R> where(Predicate<T> predicate) {
+    public final WhereStmt<T, R> where(Predicate<T> predicate) {
         return new WhereStmt<>(this, predicate);
     }
 
-    void setGroupingFunctions(Function<T, Comparable<?>>[] expressions) {
+    final void setGroupingFunctions(Function<T, Comparable<?>>[] expressions) {
         groupingFunctions = expressions;
     }
 
-    void setGroupingCondition(Predicate<R> condition) {
+    final void setGroupingCondition(Predicate<R> condition) {
         groupingCondition = condition;
     }
 
@@ -119,7 +119,7 @@ public class SelectStmt<T, R> {
         return output;
     }
 
-    public Collection<R> execute() throws NoSuchMethodException, SecurityException, InstantiationException,
+    public final Collection<R> execute() throws NoSuchMethodException, SecurityException, InstantiationException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Collection<FinalRow<T, R>> output = null;
         if (isDistinct) {
@@ -168,16 +168,16 @@ public class SelectStmt<T, R> {
         return convertToFinal(output);
     }
 
-    public Stream<R> stream() throws NoSuchMethodException, SecurityException, InstantiationException,
+    public final Stream<R> stream() throws NoSuchMethodException, SecurityException, InstantiationException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         return execute().stream();
     }
 
-    Stream<T> currentStream() {
+    final Stream<T> currentStream() {
         return stream;
     }
 
-    void updateStream(Stream<T> newStream) {
+    final void updateStream(Stream<T> newStream) {
         stream = newStream;
     }
 
