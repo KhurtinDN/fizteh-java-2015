@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.vruchtel.TwitterFirst;
 
 /**
- * Created by Серафима on 08.10.2015.
+ * Created by РЎРµСЂР°С„РёРјР° on 08.10.2015.
  */
 
 import com.beust.jcommander.*;
@@ -14,7 +14,7 @@ public class TwitterStreamArgs {
     private String place = "";
 
     @Parameter (names = {"--stream", "-s"}, description = "use stream to print tweets")
-    private Boolean streamUse = false;//если считается, то будет true
+    private Boolean streamUse = false;//РµСЃР»Рё СЃС‡РёС‚Р°РµС‚СЃСЏ, С‚Рѕ Р±СѓРґРµС‚ true
 
     @Parameter (names = {"--hideRetweets"}, description = "should mask retweets")
     private Boolean hideRetweets = false;
@@ -64,9 +64,9 @@ public class TwitterStreamArgs {
 
     private JCommander jc;
 
-    //конструктор класса
+    //РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР°
     TwitterStreamArgs(String args[]) {
-        //при обработке аргументов сразу надо отловить все ошибки
+        //РїСЂРё РѕР±СЂР°Р±РѕС‚РєРµ Р°СЂРіСѓРјРµРЅС‚РѕРІ СЃСЂР°Р·Сѓ РЅР°РґРѕ РѕС‚Р»РѕРІРёС‚СЊ РІСЃРµ РѕС€РёР±РєРё
         incorrectArguments = false;
         try {
             jc = new JCommander(this, args);
@@ -77,7 +77,7 @@ public class TwitterStreamArgs {
             incorrectArguments = true;
         }
         if(incorrectArguments) {
-            System.out.println("Ошибки в переданных аргументах. Пожалуйста, прочитайте справку.");
+            System.out.println("РћС€РёР±РєРё РІ РїРµСЂРµРґР°РЅРЅС‹С… Р°СЂРіСѓРјРµРЅС‚Р°С…. РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РїСЂРѕС‡РёС‚Р°Р№С‚Рµ СЃРїСЂР°РІРєСѓ.");
         }
         if(incorrectArguments || isHelpUse()) {
             printHelp();
@@ -86,20 +86,20 @@ public class TwitterStreamArgs {
 
     }
 
-    //печать справки
+    //РїРµС‡Р°С‚СЊ СЃРїСЂР°РІРєРё
     static void printHelp(){
         System.out.println("HELP");
-        System.out.println("Консольное приложение, выводящее на экран поток твитов по заданным условиям");
+        System.out.println("РљРѕРЅСЃРѕР»СЊРЅРѕРµ РїСЂРёР»РѕР¶РµРЅРёРµ, РІС‹РІРѕРґСЏС‰РµРµ РЅР° СЌРєСЂР°РЅ РїРѕС‚РѕРє С‚РІРёС‚РѕРІ РїРѕ Р·Р°РґР°РЅРЅС‹Рј СѓСЃР»РѕРІРёСЏРј");
         System.out.println("java TwitterStream [--query|-q] [--place|-p] [--stream|-s] [--hideRetweets] "
                 + "[--limits|-l] [--help|-h]");
-        System.out.println("Параметры");
-        System.out.println("\t query - ключевые слова для поиска твитов");
-        System.out.println("\t place - искать по заданному региону (например, Moscow), если параметр "
-                + "отсутствует или равен nearby, регион определяется по ip");
-        System.out.println("\t stream - если параметр задан, то равномерно и непрерывно с задержкой в 1 секунду "
-                + "печатается поток твитов");
-        System.out.println("\t hideRetweets - скрывать ретвиты");
-        System.out.println("\t limit - число, ограничивающее количество твитов, неприменимо для --stream режима");
-        System.out.println("\t help - печатает справку");
+        System.out.println("РџР°СЂР°РјРµС‚СЂС‹");
+        System.out.println("\t query - РєР»СЋС‡РµРІС‹Рµ СЃР»РѕРІР° РґР»СЏ РїРѕРёСЃРєР° С‚РІРёС‚РѕРІ");
+        System.out.println("\t place - РёСЃРєР°С‚СЊ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ СЂРµРіРёРѕРЅСѓ (РЅР°РїСЂРёРјРµСЂ, Moscow), РµСЃР»Рё РїР°СЂР°РјРµС‚СЂ "
+                + "РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РёР»Рё СЂР°РІРµРЅ nearby, СЂРµРіРёРѕРЅ РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РїРѕ ip");
+        System.out.println("\t stream - РµСЃР»Рё РїР°СЂР°РјРµС‚СЂ Р·Р°РґР°РЅ, С‚Рѕ СЂР°РІРЅРѕРјРµСЂРЅРѕ Рё РЅРµРїСЂРµСЂС‹РІРЅРѕ СЃ Р·Р°РґРµСЂР¶РєРѕР№ РІ 1 СЃРµРєСѓРЅРґСѓ "
+                + "РїРµС‡Р°С‚Р°РµС‚СЃСЏ РїРѕС‚РѕРє С‚РІРёС‚РѕРІ");
+        System.out.println("\t hideRetweets - СЃРєСЂС‹РІР°С‚СЊ СЂРµС‚РІРёС‚С‹");
+        System.out.println("\t limit - С‡РёСЃР»Рѕ, РѕРіСЂР°РЅРёС‡РёРІР°СЋС‰РµРµ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РІРёС‚РѕРІ, РЅРµРїСЂРёРјРµРЅРёРјРѕ РґР»СЏ --stream СЂРµР¶РёРјР°");
+        System.out.println("\t help - РїРµС‡Р°С‚Р°РµС‚ СЃРїСЂР°РІРєСѓ");
     }
 }
