@@ -13,6 +13,7 @@ import java.time.temporal.ChronoUnit;
 
 import org.junit.Test;
 import junit.framework.TestCase;
+import ru.mipt.diht.students.pitovsky.collectionquery.impl.CollectionQueryExecuteException;
 
 public class CollectionQueryTest extends TestCase {
 
@@ -48,9 +49,7 @@ public class CollectionQueryTest extends TestCase {
                         .from(list(student("ivanov", LocalDate.parse("1985-08-06"), "494")))
                         .selectDistinct(Statistics.class, s -> "all", count(s -> 1), avg(Student::age))
                         .execute();*/
-        } catch (NoSuchMethodException | SecurityException
-                | InstantiationException | IllegalAccessException
-                | IllegalArgumentException | InvocationTargetException e) {
+        } catch (CollectionQueryExecuteException e) {
             fail(e.getMessage());
         }
         assertEquals("[Statistics{group='493', count=2, age=26}, Statistics{group='497', count=2, age=28}]",
@@ -75,7 +74,7 @@ public class CollectionQueryTest extends TestCase {
             this.group = group;
         }
 
-        public LocalDate getDateOfBith() {
+        public LocalDate getDateOfBirth() {
             return dateOfBirth;
         }
 
@@ -84,7 +83,7 @@ public class CollectionQueryTest extends TestCase {
         }
 
         public long age() {
-            return ChronoUnit.YEARS.between(getDateOfBith(), LocalDateTime.now());
+            return ChronoUnit.YEARS.between(getDateOfBirth(), LocalDateTime.now());
         }
 
         @Override

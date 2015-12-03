@@ -1,6 +1,5 @@
 package ru.mipt.diht.students.pitovsky.collectionquery.impl;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Function;
@@ -51,13 +50,11 @@ public class WhereStmt<T, R> {
         return this;
     }
 
-    public final Iterable<R> execute() throws NoSuchMethodException, SecurityException, InstantiationException,
-            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public final Iterable<R> execute() throws CollectionQueryExecuteException {
         return baseStmt.execute();
     }
 
-    public final UnionStmt<R> union() throws NoSuchMethodException, SecurityException,
-            InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public final UnionStmt<R> union() throws CollectionQueryExecuteException {
         return new UnionStmt<R>(baseStmt);
     }
 }

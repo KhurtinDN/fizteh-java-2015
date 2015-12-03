@@ -38,7 +38,7 @@ public class Sources {
         }
         return result;
     }
-    
+
     static final int READ_BLOCK_SIZE = 100;
 
     /**
@@ -59,7 +59,7 @@ public class Sources {
         String[] lines = builder.toString().split("[\n]");
         Stream.Builder<T> stream = Stream.builder();
         for (String line : lines) {
-            stream.add((T)line);
+            stream.add((T) line);
         }
         return stream.build();
     }
@@ -68,7 +68,7 @@ public class Sources {
      * @param file
      * @param <T>
      * @return
-     * @throws IOException 
+     * @throws IOException if read file fails
      * @throws ClassCastException if lines from file can not be converted to T
      */
     public static <T> Stream<T> lines(Path file) throws ClassCastException, IOException {

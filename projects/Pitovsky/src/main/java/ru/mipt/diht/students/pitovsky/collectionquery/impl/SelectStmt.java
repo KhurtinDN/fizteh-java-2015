@@ -49,7 +49,7 @@ public class SelectStmt<T, R> {
         groupingCondition = condition;
     }
 
-    class Applier implements Consumer<T> {
+    private class Applier implements Consumer<T> {
         private Collection<FinalRow<T, R>> output;
         private Constructor<R> constructor;
 
@@ -75,14 +75,18 @@ public class SelectStmt<T, R> {
 
     }
 
-    private Constructor<R> getAskedConstructor() throws NoSuchMethodException, SecurityException {
+    private Constructor<R> getAskedConstructor() throws CollectionQueryExecuteException {
         Class<?>[] outputParametrsTypes = new Class<?>[convertFunctions.length];
         for (int i = 0; i < convertFunctions.length; ++i) {
             //FIXME: find return class of function in NORMAL way
             outputParametrsTypes[i] = convertFunctions[i].apply(baseCollection.iterator().next()).getClass();
             //System.err.println(outputParametrsTypes[i]);
         }
-        return outputClass.getConstructor(outputParametrsTypes);
+        try {
+            return outputClass.getConstructor(outputParametrsTypes);
+        } catch (NoSuchMethodException | SecurityException e) {
+            throw new CollectionQueryExecuteException("Can not found constructor in output class", e);
+        }
     }
 
     private Collection<FinalRow<T, R>> goodGroups(Collection<FinalRow<T, R>> table) {
@@ -95,8 +99,7 @@ public class SelectStmt<T, R> {
         return output;
     }
 
-    private void aggregatingGroups(Collection<FinalRow<T, R>> table) throws NoSuchMethodException, SecurityException,
-            InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    private void aggregatingGroups(Collection<FinalRow<T, R>> table) throws CollectionQueryExecuteException {
         Constructor<R> constructor = getAskedConstructor();
         Object[] parametrs = new Object[convertFunctions.length];
         for (FinalRow<T, R> row : table) {
@@ -107,7 +110,12 @@ public class SelectStmt<T, R> {
                     parametrs[i] = convertFunctions[i].apply(row.getAnyFrom());
                 }
             }
-            row.updateRow(constructor.newInstance(parametrs));
+            try {
+                row.updateRow(constructor.newInstance(parametrs));
+            } catch (InstantiationException | IllegalAccessException
+                    | IllegalArgumentException | InvocationTargetException e) {
+                throw new CollectionQueryExecuteException("Can not instantiate output class", e);
+            }
         }
     }
 
@@ -119,8 +127,7 @@ public class SelectStmt<T, R> {
         return output;
     }
 
-    public final Collection<R> execute() throws NoSuchMethodException, SecurityException, InstantiationException,
-            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public final Collection<R> execute() throws CollectionQueryExecuteException {
         Collection<FinalRow<T, R>> output = null;
         if (isDistinct) {
             output = new HashSet<>();
@@ -165,8 +172,7 @@ public class SelectStmt<T, R> {
         return convertToFinal(output);
     }
 
-    public final Stream<R> stream() throws NoSuchMethodException, SecurityException, InstantiationException,
-            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public final Stream<R> stream() throws CollectionQueryExecuteException {
         return execute().stream();
     }
 
