@@ -30,7 +30,7 @@ public final class ConsoleUtil {
 
     public static void printIntoStdout(final String strToPrint, Style... args) {
         String outStr = strToPrint.substring(0);
-        setStyle(outStr,args);
+        setStyle(outStr, args);
         System.out.println(outStr);
     }
 

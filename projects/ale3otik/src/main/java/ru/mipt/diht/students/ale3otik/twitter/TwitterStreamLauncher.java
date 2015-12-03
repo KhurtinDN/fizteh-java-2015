@@ -46,7 +46,7 @@ public class TwitterStreamLauncher {
 
                 GeoLocationInfo geoParams = arguments.getGeoLocationInfo();
                 if (geoParams != null) {
-                    GeoLocation tweetLocation = status.getGeoLocation();;
+                    GeoLocation tweetLocation = status.getGeoLocation();
                     if (tweetLocation == null) {
                         return;
                     }

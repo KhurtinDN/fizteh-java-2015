@@ -92,23 +92,20 @@ public final class TwitterClientArguments {
             throw new IllegalArgumentException("Задан пустой поисковой запрос");
         }
 
-        GeoLocationInfo geoLocationInfo = null;
-        String curLocationName;
+        this.geoLocationInfo = null;
         if (!this.getLocation().isEmpty()) {
             try {
                 if (this.getLocation().equals("nearby")) {
-                    curLocationName = GeoLocationResolver.getNameOfCurrentLocation();
+                    this.curLocationName = GeoLocationResolver.getNameOfCurrentLocation();
                 } else {
-                    curLocationName = this.getLocation();
+                    this.curLocationName = this.getLocation();
                 }
-                geoLocationInfo = GeoLocationResolver.getGeoLocation(curLocationName);
+                this.geoLocationInfo = GeoLocationResolver.getGeoLocation(curLocationName);
             } catch (LocationException e) {
                 curLocationName = "World";
                 this.locationFailedResultInformation =
                         "Невозможно определить запрашиваемое местоположение\n";
             }
-            this.geoLocationInfo = geoLocationInfo;
-            this.curLocationName = curLocationName;
         }
     }
 
