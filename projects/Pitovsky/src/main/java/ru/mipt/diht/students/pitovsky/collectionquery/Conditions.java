@@ -17,7 +17,13 @@ public class Conditions<T> {
      * @return
      */
     public static <T> Predicate<T> rlike(Function<T, String> expression, String regexp) {
-        throw new UnsupportedOperationException();
+        return new Predicate<T>() {
+
+            @Override
+            public boolean test(T element) {
+                return expression.apply(element).matches(regexp);
+            }
+        };
     }
 
     /**

@@ -1,5 +1,7 @@
 package ru.mipt.diht.students.pitovsky.collectionquery.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -15,7 +17,11 @@ public final class FromStmt<T> {
     }
 
     public static <T> FromStmt<T> from(Stream<T> stream) {
-        throw new UnsupportedOperationException();
+        FromStmt<T> stmt = new FromStmt<>();
+        List<T> list = new ArrayList<>();
+        stream.forEach(s -> list.add(s));
+        stmt.base = list;
+        return stmt;
     }
 
     /**
@@ -30,7 +36,7 @@ public final class FromStmt<T> {
     }
 
     public <R> SelectStmt<T, R> selectAll(Class<R> clazz) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(); //todo: fields, methods? How?
     }
 
     @SafeVarargs

@@ -56,7 +56,8 @@ public class WhereStmt<T, R> {
         return baseStmt.execute();
     }
 
-    public final UnionStmt union() {
-        throw new UnsupportedOperationException();
+    public final UnionStmt<R> union() throws NoSuchMethodException, SecurityException,
+            InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        return new UnionStmt<R>(baseStmt);
     }
 }

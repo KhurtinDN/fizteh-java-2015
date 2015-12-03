@@ -137,12 +137,9 @@ public class SelectStmt<T, R> {
             }
             List<Comparator<FinalRow<T, R>>> resultComparators = new ArrayList<>();
             for (Function<T, Comparable<?>> function : groupingFunctions) {
-                resultComparators.add(new Comparator<FinalRow<T, R>>() {
-                    @Override
-                    public int compare(FinalRow<T, R> row1, FinalRow<T, R> row2) {
-                        Comparable result1 = function.apply(row1.getAnyFrom()); //raw type because of forbidden cast
-                        return result1.compareTo(function.apply(row2.getAnyFrom()));
-                    }
+                resultComparators.add((r1, r2) -> {
+                    Comparable result1 = function.apply(r1.getAnyFrom()); //raw type because of forbidden cast
+                    return result1.compareTo(function.apply(r2.getAnyFrom()));
                 });
             }
             Comparator<FinalRow<T, R>> groupsComparator = WhereStmt.getCombinedComparator(resultComparators);
