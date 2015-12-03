@@ -15,11 +15,11 @@ public class FromStmt<T> {
 
     @SafeVarargs
     public final <R> SelectStmt<T, R> select(Class<R> clazz, Function<T, ?>... s) {
-        return new SelectStmt<T, R>(s);
+        return new SelectStmt<T, R>(items, false, clazz, s);
     }
 
     @SafeVarargs
     public final <R> SelectStmt<T, R> selectDistinct(Class<R> clazz, Function<T, ?>... s) {
-        throw new UnsupportedOperationException();
+        return new SelectStmt<T, R>(items, true, clazz, s);
     }
 }

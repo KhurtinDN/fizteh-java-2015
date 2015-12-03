@@ -16,7 +16,13 @@ public class SelectStmt<T, R> {
     private int limit = Integer.MAX_VALUE;
 
     @SafeVarargs
-    public SelectStmt(Function<T, ?>... s) {
+    public SelectStmt(Iterable<T> items,
+                      boolean shouldBeDistinct,
+                      Class<R> resultClass,
+                      Function<T, ?>... s) {
+        this.items = items;
+        this.shouldBeDistinct = shouldBeDistinct;
+        this.resultClass = resultClass;
         constructorExpressions = s;
     }
 
@@ -53,6 +59,7 @@ public class SelectStmt<T, R> {
     @SafeVarargs
     public final SelectStmt<T, R> orderBy(Comparator<R>... comparators) {
         orderByComparators = comparators;
+        shouldBeDistinct = true;
         return this;
     }
 }
