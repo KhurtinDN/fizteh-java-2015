@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import ru.mipt.diht.students.ale3otik.twitter.Arguments;
+import ru.mipt.diht.students.ale3otik.twitter.TwitterClientArguments;
 import ru.mipt.diht.students.ale3otik.twitter.TimeDeterminer;
 import ru.mipt.diht.students.ale3otik.twitter.TwitterUtils;
 import twitter4j.Status;
@@ -31,16 +31,16 @@ public class TwitterUtilTest extends TestCase {
     private static final String ANSI_BOLD = "\033[1m";
 
     private static List<Status> statuses;
-    private static Arguments argsWithoutStream;
-    private static Arguments argsWithStream;
+    private static TwitterClientArguments argsWithoutStream;
+    private static TwitterClientArguments argsWithStream;
     private static Status retweetStatus = null;
     @Before
     public void setUp() {
-        argsWithoutStream = new Arguments();
+        argsWithoutStream = new TwitterClientArguments();
         JCommander jcm1 = new JCommander(argsWithoutStream);
         jcm1.parse();
 
-        argsWithStream = new Arguments();
+        argsWithStream = new TwitterClientArguments();
         JCommander jcm2 = new JCommander(argsWithStream);
         jcm2.parse("-s");
 

@@ -5,6 +5,9 @@ import org.junit.Test;
 import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 import twitter4j.GeoLocation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by alex on 15.11.15.
  */
@@ -17,13 +20,16 @@ public class GeoLocationInfoTest extends TestCase {
     public void testGeoLocationClassMethods() {
         GeoLocationInfo moscowInfo = new GeoLocationInfo(
                 new GeoLocation(MoscowLatitude, MoscowLongitude), MoscowRadius);
+        GeoLocationInfo moscowInfo2 = new GeoLocationInfo(
+                new GeoLocation(MoscowLatitude, MoscowLongitude), MoscowRadius);
 
         assertEquals(moscowInfo.getRadius(), MoscowRadius);
         assertEquals(moscowInfo.getLocation(), new GeoLocation(MoscowLatitude, MoscowLongitude));
 
-        assertEquals(moscowInfo.hashCode(), 1579231182);
-        assertEquals(moscowInfo.equals(
-                new GeoLocationInfo(
-                        new GeoLocation(MoscowLatitude, MoscowLongitude), MoscowRadius)), true);
+        assertEquals(moscowInfo.hashCode(), moscowInfo2.hashCode());
+        assertEquals(moscowInfo.equals(moscowInfo2),true);
+        assertEquals(moscowInfo.equals(null),false);
+        assertEquals(moscowInfo.equals(new ArrayList()),false);
+
     }
 }

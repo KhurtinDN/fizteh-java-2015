@@ -1,6 +1,7 @@
 package ru.mipt.diht.students.ale3otik.twitter;
 
 import com.google.common.base.Strings;
+import ru.mipt.diht.students.ale3otik.twitter.ConsoleUtil.Style;
 import twitter4j.Status;
 
 /**
@@ -10,7 +11,7 @@ public class TwitterUtils {
 
     private static final int SEPARATOR_LENGTH = 80;
 
-    public static String getFormattedTweetToPrint(Status status, Arguments arguments) {
+    public static String getFormattedTweetToPrint(Status status, TwitterClientArguments arguments) {
 
         StringBuilder outputString = new StringBuilder();
 
@@ -43,7 +44,7 @@ public class TwitterUtils {
     }
 
     private static String getUserNameStyle(final String name) {
-        return ConsoleUtil.Style.BLUE.line(ConsoleUtil.Style.BOLD.line("@" + name));
+        return ConsoleUtil.setStyle("@" + name, Style.BOLD, Style.BLUE);
     }
 
     private static class AuthorNameParser {
@@ -72,8 +73,7 @@ public class TwitterUtils {
             String retweetDeclension =
                     FormDeclenser.getTweetsDeclension(status.getRetweetCount());
             return new StringBuilder().append("(")
-                    .append(ConsoleUtil.Style
-                            .BOLD.line(Integer.toString(status.getRetweetCount()).toString()))
+                    .append(Style.BOLD.line(Integer.toString(status.getRetweetCount()).toString()))
                     .append(" ").append(retweetDeclension).append(")").toString();
         }
         return "";

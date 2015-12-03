@@ -15,12 +15,12 @@ public class TwitterStreamLauncher {
     private static final long BASE_SLEEP_TIME = 1000;
     private TwitterStream twStream;
     private Consumer<String> consumer;
-    private Arguments arguments;
+    private TwitterClientArguments arguments;
     private long sleepTime;
 
     public TwitterStreamLauncher(TwitterStream twitterStreamClient,
                                  Consumer<String> newConsumer,
-                                 Arguments receivedArguments,
+                                 TwitterClientArguments receivedArguments,
                                  long timeSleepMillis) {
         this.twStream = twitterStreamClient;
         this.consumer = newConsumer;
@@ -43,13 +43,13 @@ public class TwitterStreamLauncher {
                 if (arguments.isHideRetweets() && status.isRetweet()) {
                     return;
                 }
+
                 GeoLocationInfo geoParams = arguments.getGeoLocationInfo();
                 if (geoParams != null) {
-                    GeoLocation tweetLocation;
-                    if (status.getGeoLocation() == null) {
+                    GeoLocation tweetLocation = status.getGeoLocation();;
+                    if (tweetLocation == null) {
                         return;
                     }
-                    tweetLocation = status.getGeoLocation();
 
                     if (GeoLocationResolver.getSphereDist(
                             geoParams.getLocation(), tweetLocation) > geoParams.getRadius()) {

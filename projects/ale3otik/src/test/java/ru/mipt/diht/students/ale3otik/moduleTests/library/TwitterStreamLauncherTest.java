@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import ru.mipt.diht.students.ale3otik.twitter.Arguments;
+import ru.mipt.diht.students.ale3otik.twitter.TwitterClientArguments;
 import ru.mipt.diht.students.ale3otik.twitter.TwitterStreamLauncher;
 import ru.mipt.diht.students.ale3otik.twitter.TwitterUtils;
 import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
  * Created by alex on 15.11.15.
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({Thread.class, TwitterUtils.class})
+@PrepareForTest({Thread.class, TwitterUtils.class,TwitterClientArguments.class})
 public class TwitterStreamLauncherTest extends TestCase {
     private static final double LondonLatitude = 51.5073509;
     private static final double LondonLongitude = -0.1277583;
@@ -34,7 +34,7 @@ public class TwitterStreamLauncherTest extends TestCase {
     private static GeoLocationInfo londonGeoLocationInfo;
     private static GeoLocationInfo moscowGeoLocationInfo;
     private StatusAdapter statusAdapter;
-    private Arguments arguments;
+    private TwitterClientArguments arguments;
     private JCommander jcm;
     private TwitterStreamLauncher twitterStreamLauncher;
 
@@ -58,12 +58,22 @@ public class TwitterStreamLauncherTest extends TestCase {
     }
 
     private void createLauncherWithArguments(boolean isGeolocationNeeded,long sleepTime,String... args) {
-        arguments = new Arguments();
-        jcm = new JCommander(arguments);
+        arguments = PowerMockito.mock(TwitterClientArguments.class);
+        TwitterClientArguments myArgs = new TwitterClientArguments();
+        jcm = new JCommander(myArgs);
         jcm.parse(args);
-        if(isGeolocationNeeded){
-            arguments.setGeoLocationInfo(londonGeoLocationInfo);
+
+        if (isGeolocationNeeded) {
+            Mockito.when(arguments.getGeoLocationInfo()).thenReturn(londonGeoLocationInfo);
+        } else {
+            Mockito.when(arguments.getGeoLocationInfo()).thenReturn(null);
         }
+        Mockito.when(arguments.isStream()).thenReturn(myArgs.isStream());
+        Mockito.when(arguments.isHideRetweets()).thenReturn(myArgs.isHideRetweets());
+        Mockito.when(arguments.getQuery()).thenReturn(myArgs.getQuery());
+        Mockito.when(arguments.isHelp()).thenReturn(myArgs.isHelp());
+        Mockito.when(arguments.getLimit()).thenReturn(myArgs.getLimit());
+
         twitterStreamLauncher = new TwitterStreamLauncher(mockedTwitterStreamClient, mockedConsumer, arguments,sleepTime);
     }
 

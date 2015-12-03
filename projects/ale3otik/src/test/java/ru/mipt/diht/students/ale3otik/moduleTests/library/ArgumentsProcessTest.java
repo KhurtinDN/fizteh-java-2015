@@ -8,9 +8,8 @@ import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import ru.mipt.diht.students.ale3otik.twitter.Arguments;
+import ru.mipt.diht.students.ale3otik.twitter.TwitterClientArguments;
 import ru.mipt.diht.students.ale3otik.twitter.GeoLocationResolver;
-import ru.mipt.diht.students.ale3otik.twitter.TwitterArgumentsValidator;
 import ru.mipt.diht.students.ale3otik.twitter.exceptions.LocationException;
 import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 import twitter4j.GeoLocation;
@@ -22,7 +21,7 @@ import twitter4j.GeoLocation;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({GeoLocationResolver.class})
 public class ArgumentsProcessTest extends TestCase {
-    private Arguments arguments;
+    private TwitterClientArguments arguments;
     private JCommander jcm;
     private String[] args;
 
@@ -68,7 +67,7 @@ public class ArgumentsProcessTest extends TestCase {
 
     @Test
     public void testParser() throws Exception {
-        arguments = new Arguments();
+        arguments = new TwitterClientArguments();
         jcm = new JCommander(arguments);
         jcm.parse(args);
 
@@ -82,27 +81,27 @@ public class ArgumentsProcessTest extends TestCase {
 
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalEmptyQueryValidation() {
-        arguments = new Arguments();
+        arguments = new TwitterClientArguments();
         jcm = new JCommander(arguments);
         jcm.parse();
-        TwitterArgumentsValidator.processArguments(arguments);
+        arguments.validate();
     }
 
 
     @Test
     public void testLegalEmptyQueryValidation() {
-        arguments = new Arguments();
+        arguments = new TwitterClientArguments();
         jcm = new JCommander(arguments);
         jcm.parse("-s");
-        TwitterArgumentsValidator.processArguments(arguments);
+        arguments.validate();
     }
 
     @Test
     public void testArgumentsNormalNearbyValidation() {
-        arguments = new Arguments();
+        arguments = new TwitterClientArguments();
         jcm = new JCommander(arguments);
         jcm.parse("-s", "-p", "nearby");
-        TwitterArgumentsValidator.processArguments(arguments);
+        arguments.validate();
         assertEquals(arguments.getCurLocationName(), "Moscow");
         assertEquals(arguments.getGeoLocationInfo(), moscowInfo);
         assertEquals(arguments.getDetectionLocationMessage(), "");
@@ -110,10 +109,10 @@ public class ArgumentsProcessTest extends TestCase {
 
     @Test
     public void testArgumentsNormalGeoLocationValidation() {
-        arguments = new Arguments();
+        arguments = new TwitterClientArguments();
         jcm = new JCommander(arguments);
         jcm.parse("-s", "-p", "London");
-        TwitterArgumentsValidator.processArguments(arguments);
+        arguments.validate();
         assertEquals(arguments.getCurLocationName(), "London");
         assertEquals(arguments.getGeoLocationInfo(), londonInfo);
         assertEquals(arguments.getDetectionLocationMessage(), "");
@@ -121,10 +120,10 @@ public class ArgumentsProcessTest extends TestCase {
 
     @Test
     public void testArgumentsFailedGeoLocationValidation() {
-        arguments = new Arguments();
+        arguments = new TwitterClientArguments();
         jcm = new JCommander(arguments);
         jcm.parse("-s", "-p", "InvalidLocation");
-        TwitterArgumentsValidator.processArguments(arguments);
+        arguments.validate();
         assertEquals(arguments.getCurLocationName(), "World");
         assertEquals(arguments.getGeoLocationInfo(), null);
         assertEquals(arguments.getDetectionLocationMessage(),

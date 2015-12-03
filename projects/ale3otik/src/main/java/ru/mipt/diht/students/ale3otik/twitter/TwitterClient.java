@@ -1,6 +1,7 @@
 package ru.mipt.diht.students.ale3otik.twitter;
 
 import com.beust.jcommander.JCommander;
+import ru.mipt.diht.students.ale3otik.twitter.ConsoleUtil.Style;
 import ru.mipt.diht.students.ale3otik.twitter.exceptions.ConnectionFailedException;
 import ru.mipt.diht.students.ale3otik.twitter.exceptions.HelpCausedException;
 import twitter4j.*;
@@ -9,13 +10,11 @@ import twitter4j.*;
  * Created by alex on 16.11.15.
  */
 public class TwitterClient {
-    public static void run(String... args) {
+    public static void main(String... args) {
         try {
-            ConsoleUtil.printIntoStdout(
-                    ConsoleUtil.Style.BOLD.line(
-                            ConsoleUtil.Style.PURPLE.line("\nTwitter 0.1 ::: welcome \n\n")));
+            ConsoleUtil.printIntoStdout("\nTwitter 0.1 ::: welcome \n", Style.BOLD, Style.PURPLE);
 
-            Arguments arguments = new Arguments();
+            TwitterClientArguments arguments = new TwitterClientArguments();
             JCommander jcm = new JCommander(arguments);
             try {
                 jcm.parse(args);
@@ -27,7 +26,7 @@ public class TwitterClient {
                 throw new HelpCausedException("Normal exit");
             }
 
-            TwitterArgumentsValidator.processArguments(arguments);
+            arguments.validate();
 
             StringBuilder informationMessage = new StringBuilder();
             informationMessage.append(arguments.getDetectionLocationMessage()); // empty if all OK
@@ -69,7 +68,7 @@ public class TwitterClient {
             ConsoleUtil.printErrorMessage(e.getMessage());
         } catch (HelpCausedException e) {
             StringBuilder helpBuilder = new StringBuilder();
-            JCommander jcm = new JCommander(new Arguments());
+            JCommander jcm = new JCommander(new TwitterClientArguments());
             jcm.setProgramName("TwitterQueryClient");
             jcm.usage(helpBuilder);
 

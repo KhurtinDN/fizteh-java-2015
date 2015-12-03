@@ -31,10 +31,10 @@ public class TwitterSingleQuery {
         this.errorConsumer = errConsumer;
     }
 
-    public final String getSingleQueryResult(Arguments arguments, StringBuilder informationMessage)
+    public final String getSingleQueryResult(TwitterClientArguments arguments, StringBuilder informationMessage)
             throws ConnectionFailedException, TwitterException {
 
-        ArrayList<Status> allTweets = getSingleQueryStatuses(arguments);
+        List<Status> allTweets = getSingleQueryStatuses(arguments);
 
         StringBuilder answerString = informationMessage;
         answerString.append(":").append("\n").append(TwitterUtils.getSplitLine());
@@ -50,12 +50,12 @@ public class TwitterSingleQuery {
     }
 
     @SuppressWarnings("checkstyle:magicnumber")
-    public final ArrayList<Status> getSingleQueryStatuses(Arguments arguments)
+    public final List<Status> getSingleQueryStatuses(TwitterClientArguments arguments)
             throws ConnectionFailedException, TwitterException {
 
         int tries = 0;
 
-        ArrayList<Status> allTweets = new ArrayList<Status>();
+        List<Status> allTweets = new ArrayList<>();
 
         Query query = new Query(arguments.getQuery());
         GeoLocationInfo locationInfo = arguments.getGeoLocationInfo();

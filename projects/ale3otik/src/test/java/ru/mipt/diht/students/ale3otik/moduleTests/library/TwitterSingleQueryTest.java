@@ -10,7 +10,8 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import ru.mipt.diht.students.ale3otik.twitter.Arguments;
+import ru.mipt.diht.students.ale3otik.twitter.TwitterClient;
+import ru.mipt.diht.students.ale3otik.twitter.TwitterClientArguments;
 import ru.mipt.diht.students.ale3otik.twitter.TwitterSingleQuery;
 import ru.mipt.diht.students.ale3otik.twitter.TwitterUtils;
 import ru.mipt.diht.students.ale3otik.twitter.exceptions.ConnectionFailedException;
@@ -24,9 +25,9 @@ import static org.mockito.Mockito.verify;
  * Created by alex on 16.11.15.
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({TwitterUtils.class})
+@PrepareForTest({TwitterUtils.class, TwitterClientArguments.class})
 public class TwitterSingleQueryTest extends TestCase {
-    private Arguments arguments;
+    private TwitterClientArguments arguments;
     private JCommander jcm;
     private static final double LondonLatitude = 51.5073509;
     private static final double LondonLongitude = -0.1277583;
@@ -78,7 +79,7 @@ public class TwitterSingleQueryTest extends TestCase {
         Mockito.when(mockedTwitter.search(any(Query.class))).thenReturn(mockedResult);
 
         PowerMockito.when(TwitterUtils
-                .getFormattedTweetToPrint(any(Status.class), any(Arguments.class)))
+                .getFormattedTweetToPrint(any(Status.class), any(TwitterClientArguments.class)))
                 .thenReturn("------\nSome tweet");
 
         for (Status s : statuses) {
@@ -112,12 +113,21 @@ public class TwitterSingleQueryTest extends TestCase {
     }
 
     private void createLauncherWithArguments(boolean isGeolocationNeeded, String... args) {
-        arguments = new Arguments();
-        jcm = new JCommander(arguments);
+        arguments = PowerMockito.mock(TwitterClientArguments.class);
+        TwitterClientArguments myArgs = new TwitterClientArguments();
+        jcm = new JCommander(myArgs);
         jcm.parse(args);
+
         if (isGeolocationNeeded) {
-            arguments.setGeoLocationInfo(londonGeoLocationInfo);
+            Mockito.when(arguments.getGeoLocationInfo()).thenReturn(londonGeoLocationInfo);
+        } else {
+            Mockito.when(arguments.getGeoLocationInfo()).thenReturn(null);
         }
+        Mockito.when(arguments.isStream()).thenReturn(myArgs.isStream());
+        Mockito.when(arguments.isHideRetweets()).thenReturn(myArgs.isHideRetweets());
+        Mockito.when(arguments.getQuery()).thenReturn(myArgs.getQuery());
+        Mockito.when(arguments.isHelp()).thenReturn(myArgs.isHelp());
+        Mockito.when(arguments.getLimit()).thenReturn(myArgs.getLimit());
     }
 
     @Test

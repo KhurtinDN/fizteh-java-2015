@@ -6,6 +6,7 @@ package ru.mipt.diht.students.ale3otik.twitter;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.validators.PositiveInteger;
+import ru.mipt.diht.students.ale3otik.twitter.exceptions.LocationException;
 import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 
 /**
@@ -18,7 +19,7 @@ import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
  * [--limit|-l <tweets>]
  * [--help|-h]
  */
-public final class Arguments {
+public final class TwitterClientArguments {
     private static final int STANDART_LIMIT = 30;
 
     private GeoLocationInfo geoLocationInfo = null;
@@ -73,10 +74,6 @@ public final class Arguments {
         return help;
     }
 
-    public void setGeoLocationInfo(GeoLocationInfo newGeoLocationInfo) {
-        this.geoLocationInfo = newGeoLocationInfo;
-    }
-
     public GeoLocationInfo getGeoLocationInfo() {
         return this.geoLocationInfo;
     }
@@ -85,16 +82,38 @@ public final class Arguments {
         return this.curLocationName;
     }
 
-    public void setCurLocationName(String locationName) {
-        this.curLocationName = locationName;
-    }
-
-    public void setFailedDetectionLocationMessage(String message) {
-        locationFailedResultInformation = message;
-    }
-
     public String getDetectionLocationMessage() {
         return locationFailedResultInformation;
+    }
+
+    public void validate() throws IllegalArgumentException {
+
+        if (!isQueryValid()) {
+            throw new IllegalArgumentException("Задан пустой поисковой запрос");
+        }
+
+        GeoLocationInfo geoLocationInfo = null;
+        String curLocationName;
+        if (!this.getLocation().isEmpty()) {
+            try {
+                if (this.getLocation().equals("nearby")) {
+                    curLocationName = GeoLocationResolver.getNameOfCurrentLocation();
+                } else {
+                    curLocationName = this.getLocation();
+                }
+                geoLocationInfo = GeoLocationResolver.getGeoLocation(curLocationName);
+            } catch (LocationException e) {
+                curLocationName = "World";
+                this.locationFailedResultInformation =
+                        "Невозможно определить запрашиваемое местоположение\n";
+            }
+            this.geoLocationInfo = geoLocationInfo;
+            this.curLocationName = curLocationName;
+        }
+    }
+
+    private boolean isQueryValid() {
+        return (!this.getQuery().isEmpty() || this.isStream());
     }
 }
 

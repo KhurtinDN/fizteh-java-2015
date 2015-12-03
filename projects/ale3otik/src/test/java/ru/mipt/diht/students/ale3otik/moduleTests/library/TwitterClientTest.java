@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
+import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -23,16 +24,15 @@ import static org.mockito.Mockito.*;
 @PowerMockIgnore("javax.crypto.*")
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConsoleUtil.class,
-        TwitterArgumentsValidator.class,
         TwitterStreamLauncher.class,
         TwitterSingleQuery.class,
         TwitterClient.class,
-        Arguments.class
+        TwitterClientArguments.class,
 })
 public class TwitterClientTest extends TestCase {
 
-    private static String helloString = "[1m[35m\nTwitter 0.1 ::: welcome \n\n[0m[0m";
-    private static Arguments arguments;
+    private static String helloString = "\nTwitter 0.1 ::: welcome \n";
+    private static TwitterClientArguments arguments;
 
     private static TwitterSingleQuery mockedTwitterSingle;
     private static TwitterStreamLauncher mockedStreamLauncher;
@@ -41,7 +41,7 @@ public class TwitterClientTest extends TestCase {
     @Before
     public void setUp() throws Exception {
 
-        JCommander jcm = new JCommander(new Arguments());
+        JCommander jcm = new JCommander(new TwitterClientArguments());
         jcm.setProgramName("TwitterQueryClient");
         helpExpected = new StringBuilder();
         jcm.usage(helpExpected);
@@ -50,32 +50,38 @@ public class TwitterClientTest extends TestCase {
         mockedTwitterSingle = PowerMockito.mock(TwitterSingleQuery.class);
 
         PowerMockito.mockStatic(ConsoleUtil.class);
-        PowerMockito.mockStatic(TwitterArgumentsValidator.class);
-
         PowerMockito.whenNew(TwitterStreamLauncher.class).withAnyArguments().thenReturn(mockedStreamLauncher);
     }
 
     private void createArguments(String... args) {
-        arguments = new Arguments();
-        JCommander jcm = new JCommander(arguments);
+        arguments = PowerMockito.mock(TwitterClientArguments.class);
+        TwitterClientArguments myArgs = new TwitterClientArguments();
+        JCommander jcm = new JCommander(myArgs);
         jcm.parse(args);
-        arguments.setCurLocationName("London");
+
+        Mockito.when(arguments.getCurLocationName()).thenReturn("London");
+        Mockito.when(arguments.isStream()).thenReturn(myArgs.isStream());
+        Mockito.when(arguments.isHideRetweets()).thenReturn(myArgs.isHideRetweets());
+        Mockito.when(arguments.getQuery()).thenReturn(myArgs.getQuery());
+        Mockito.when(arguments.isHelp()).thenReturn(myArgs.isHelp());
+        Mockito.when(arguments.getLimit()).thenReturn(myArgs.getLimit());
+        Mockito.when(arguments.getDetectionLocationMessage()).thenReturn(myArgs.getDetectionLocationMessage());
     }
 
     @Test
     public void testSingleQueryRun() throws Exception {
         createArguments("-q", "test");
-        PowerMockito.mockStatic(Arguments.class);
-        PowerMockito.whenNew(Arguments.class).withAnyArguments().thenReturn(arguments);
+        PowerMockito.mockStatic(TwitterClientArguments.class);
+        PowerMockito.whenNew(TwitterClientArguments.class).withAnyArguments().thenReturn(arguments);
         PowerMockito.when(mockedTwitterSingle.getSingleQueryResult(eq(arguments), any(StringBuilder.class)))
                 .thenReturn("single query result");
 
         PowerMockito.whenNew(TwitterSingleQuery.class)
                 .withArguments(any(Twitter.class)).thenReturn(mockedTwitterSingle);
 
-        TwitterClient.run("-q", "test");
+        TwitterClient.main("-q", "test");
         PowerMockito.verifyStatic();
-        ConsoleUtil.printIntoStdout(helloString);
+        ConsoleUtil.printIntoStdout(helloString, ConsoleUtil.Style.BOLD, ConsoleUtil.Style.PURPLE);
         PowerMockito.verifyStatic();
         ConsoleUtil.printIntoStdout("single query result");
     }
@@ -83,9 +89,9 @@ public class TwitterClientTest extends TestCase {
     @Test
     public void testHelp() throws Exception {
 
-        TwitterClient.run("-h");
+        TwitterClient.main("-h");
         PowerMockito.verifyStatic();
-        ConsoleUtil.printIntoStdout(helloString);
+        ConsoleUtil.printIntoStdout(helloString, ConsoleUtil.Style.BOLD, ConsoleUtil.Style.PURPLE);
         PowerMockito.verifyStatic();
         ConsoleUtil.printIntoStdout(helpExpected.toString());
         PowerMockito.verifyStatic();
@@ -95,9 +101,9 @@ public class TwitterClientTest extends TestCase {
     @Test
     public void testIllegalArguments() throws Exception {
 
-        TwitterClient.run("-q");
+        TwitterClient.main("-q");
         PowerMockito.verifyStatic();
-        ConsoleUtil.printIntoStdout(helloString);
+        ConsoleUtil.printIntoStdout(helloString,ConsoleUtil.Style.BOLD, ConsoleUtil.Style.PURPLE);
         PowerMockito.verifyStatic();
         ConsoleUtil.printIntoStdout(helpExpected.toString());
         PowerMockito.verifyStatic();
@@ -120,9 +126,9 @@ public class TwitterClientTest extends TestCase {
     @Test
     public void testStreamLaunch() throws Exception {
         createArguments("-s");
-        PowerMockito.mockStatic(Arguments.class);
-        PowerMockito.whenNew(Arguments.class).withAnyArguments().thenReturn(arguments);
-        TwitterClient.run("-s");
+        PowerMockito.mockStatic(TwitterClientArguments.class);
+        PowerMockito.whenNew(TwitterClientArguments.class).withAnyArguments().thenReturn(arguments);
+        TwitterClient.main("-s");
         verify(mockedStreamLauncher)
                 .streamStart(argThat(
                         new IsEqualStringBuilder(
@@ -136,7 +142,7 @@ public class TwitterClientTest extends TestCase {
                 .withAnyArguments().
                 thenThrow(new TwitterException("test"));
 
-        TwitterClient.run("-q", "test");
+        TwitterClient.main("-q", "test");
 
         PowerMockito.verifyStatic();
         ConsoleUtil.printErrorMessage("Unhandled TwitterException");
@@ -150,7 +156,7 @@ public class TwitterClientTest extends TestCase {
                 .withAnyArguments().
                 thenThrow(new ConnectionFailedException("test"));
 
-        TwitterClient.run("-q", "test");
+        TwitterClient.main("-q", "test");
 
         PowerMockito.verifyStatic();
         ConsoleUtil.printErrorMessage("ConnectionFailedException");
