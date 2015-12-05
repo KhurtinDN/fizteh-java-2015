@@ -10,6 +10,6 @@ public class CollectionQueryTests {
     public void generalTests() {
         CollectionQuery query = new CollectionQuery();
         List<String> src = Arrays.asList("a", "b", "bac", "abba");
-        List<String> list = query.from(src).execute();
+//        List<String> list = query.from(src).execute();
     }
 }
