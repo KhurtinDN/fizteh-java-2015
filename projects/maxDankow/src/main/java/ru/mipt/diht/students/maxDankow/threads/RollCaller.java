@@ -1,10 +1,7 @@
 package ru.mipt.diht.students.maxDankow.threads;
 
 import java.util.Random;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 public class RollCaller {
     public static volatile Integer count = 0;
@@ -12,6 +9,15 @@ public class RollCaller {
     public static void iAmReady() {
         synchronized (count) {
             ++count;
+        }
+    }
+
+    public void waitForAll(ExecutorService exec) {
+        exec.shutdown();
+        try {
+            while (!exec.awaitTermination(Integer.MAX_VALUE, TimeUnit.SECONDS)) ;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -33,6 +39,7 @@ public class RollCaller {
         for (int id = 1; id <= unitNumber; ++id) {
             exec.execute(new RollCallUnit(id, barrier));
         }
+        waitForAll(exec);
     }
 
     private class RollCallUnit implements Runnable {

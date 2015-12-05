@@ -1,14 +1,12 @@
 package ru.mipt.diht.students.maxDankow.threads;
 
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 public class Counter {
     public static volatile Integer count = 0;
 
     public void counting(int unitNumber) {
+        count = 0;
         ExecutorService exec = Executors.newCachedThreadPool();
         CyclicBarrier barrier = new CyclicBarrier(unitNumber, () -> {
             synchronized (count) {
@@ -22,7 +20,16 @@ public class Counter {
         for (int id = 1; id <= unitNumber; ++id) {
             exec.execute(new CountingUnit(id, barrier));
         }
-        // todo: ожидать окончания всех потоков.
+        waitForAll(exec);
+    }
+
+    public void waitForAll(ExecutorService exec) {
+        exec.shutdown();
+        try {
+            while (!exec.awaitTermination(Integer.MAX_VALUE, TimeUnit.SECONDS)) ;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private class CountingUnit implements Runnable {
