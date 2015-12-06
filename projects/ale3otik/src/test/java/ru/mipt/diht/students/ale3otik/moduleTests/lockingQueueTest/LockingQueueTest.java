@@ -1,10 +1,13 @@
 package ru.mipt.diht.students.ale3otik.moduleTests.lockingQueueTest;
 
 import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
 import ru.mipt.diht.students.ale3otik.threads.lockingqueue.LockingQueue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -12,28 +15,98 @@ import java.util.Arrays;
  */
 public class LockingQueueTest extends TestCase {
 
-        private static class ThreadTakeTest extends Thread{
-            LockingQueue<Integer> queue;
-            ThreadTakeTest(LockingQueue<Integer> rcvQueue) {
-                queue = rcvQueue;
-            }
-            @Override
-            public void run() {
-                System.out.println(queue.take(7,1500));
-            }
+    private static int MAX_QUEUE_SIZE = 30;
+    private static long TIMEOUT = 300;
+    private List<Integer> baseList;
+    private LockingQueue<Integer> queue;
+
+    @Before
+    public void setUp() {
+        baseList = new ArrayList<>();
+        for (int i = 0; i < MAX_QUEUE_SIZE - 10; ++i) {
+            baseList.add(i);
         }
 
-        @Test
-        public void testQueue() throws Exception{
-            LockingQueue<Integer> queue = new LockingQueue<>(20);
-            ThreadTakeTest takeTest = new ThreadTakeTest(queue);
-            queue.offer(Arrays.asList(1, 2, 3),20);
-            System.out.println("start");
-            takeTest.start();
-            Thread.sleep(2000);
-            System.out.println("finish");
-            queue.offer(Arrays.asList(4, 5, 6, 7, 8, 9, 10, 11, 12));
-            System.out.println(queue.take(2));
+        queue = new LockingQueue<>(MAX_QUEUE_SIZE);
+    }
+
+    private static class ThreadTaker extends Thread {
+        volatile LockingQueue<Integer> queue;
+        volatile List<Integer> answer = Arrays.asList(-1);
+
+        ThreadTaker(LockingQueue<Integer> rcvQueue) {
+            queue = rcvQueue;
         }
+
+        @Override
+        public void run() {
+            answer = queue.take(4, 300);
+        }
+    }
+
+    private static class ThreadOffer extends Thread {
+        volatile LockingQueue<Integer> queue;
+        volatile List<Integer> toAdd;
+
+        ThreadOffer(LockingQueue<Integer> rcvQueue, List<Integer> toAddList) {
+            queue = rcvQueue;
+            toAdd = toAddList;
+        }
+
+        @Override
+        public void run() {
+            queue.offer(toAdd, 300);
+        }
+    }
+
+    @Test
+    public void testSimpleRequestQueue() throws Exception {
+        queue.offer(baseList);
+        assertEquals(queue.take(baseList.size()), baseList);
+    }
+
+    @Test
+    public void testTakeDelay() throws Exception {
+        queue.offer(Arrays.asList(0, 0));
+        ThreadTaker taker = new ThreadTaker(queue);
+        taker.start();
+        queue.offer(baseList);
+        Thread.sleep(100);
+        assertEquals(taker.answer, Arrays.asList(0, 0, 0, 1));
+        assertEquals(queue.take(1), Arrays.asList(2));
+
+    }
+
+    @Test
+    public void testTakeDelaySkip() throws Exception {
+        queue.offer(Arrays.asList(0, 1));
+        ThreadTaker taker = new ThreadTaker(queue);
+        taker.start();
+        Thread.sleep(100);
+        assertEquals(queue.take(2), Arrays.asList(0, 1));
+        assertEquals(taker.answer, null);
+    }
+
+    @Test
+    public void testOfferDelay() throws Exception {
+        queue.offer(baseList);
+        ThreadOffer offer = new ThreadOffer(queue, baseList);
+        offer.start();
+
+        queue.take(20);
+        Thread.sleep(100);
+        assertEquals(queue.take(20), baseList);
+    }
+
+    @Test
+    public void testOfferDelaySkip() throws Exception {
+        queue.offer(baseList);
+        ThreadOffer offer = new ThreadOffer(queue, baseList);
+        offer.start();
+        Thread.sleep(200);
+        queue.offer(Arrays.asList(0, 1));
+        assertEquals(queue.take(20), baseList);
+        assertEquals(queue.take(2), Arrays.asList(0, 1));
+    }
 }
 
