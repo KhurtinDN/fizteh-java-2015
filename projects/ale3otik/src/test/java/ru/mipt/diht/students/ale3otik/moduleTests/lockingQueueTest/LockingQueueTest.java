@@ -7,6 +7,7 @@ import ru.mipt.diht.students.ale3otik.threads.lockingqueue.LockingQueue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -16,13 +17,12 @@ import java.util.List;
 public class LockingQueueTest extends TestCase {
 
     private static int MAX_QUEUE_SIZE = 30;
-    private static long TIMEOUT = 300;
     private List<Integer> baseList;
     private LockingQueue<Integer> queue;
 
     @Before
     public void setUp() {
-        baseList = new ArrayList<>();
+        baseList = new LinkedList<>();
         for (int i = 0; i < MAX_QUEUE_SIZE - 10; ++i) {
             baseList.add(i);
         }
@@ -46,7 +46,7 @@ public class LockingQueueTest extends TestCase {
 
     private static class ThreadOffer extends Thread {
         volatile LockingQueue<Integer> queue;
-        volatile List<Integer> toAdd;
+        List<Integer> toAdd;
 
         ThreadOffer(LockingQueue<Integer> rcvQueue, List<Integer> toAddList) {
             queue = rcvQueue;

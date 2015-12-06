@@ -1,6 +1,6 @@
 package ru.mipt.diht.students.ale3otik.threads.lockingqueue;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -66,7 +66,7 @@ public class LockingQueue<E> {
                 }
 
                 synchronized (queueAccesSynchronizer) {
-                    queue.addAll(new ArrayList(listToAdd));
+                    queue.addAll(new LinkedList(listToAdd));
                 }
 
                 if (interrupter != null) {
@@ -107,8 +107,8 @@ public class LockingQueue<E> {
                 }
 
                 synchronized (queueAccesSynchronizer) {
-                    answer = (List) queue.subList(0, lengthToTake);
-                    queue = queue.subList(lengthToTake, queue.size());
+                    answer = new LinkedList<E>(queue.subList(0, lengthToTake));
+                    queue.subList(0, lengthToTake).clear();
                 }
 
                 if (interrupter != null) {
@@ -126,7 +126,7 @@ public class LockingQueue<E> {
 
     //public methods
     public LockingQueue(int maxSize) {
-        queue = new ArrayList<>();
+        queue = new LinkedList<>();
         this.maxQueueSize = maxSize;
         currentOfferNumber = 0;
         currentTakeNumber = 0;
@@ -144,14 +144,14 @@ public class LockingQueue<E> {
 
     public final List<E> take(int n) {
         if (n == 0) {
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
         return getTheList(n, -1);
     }
 
     public final List<E> take(int n, long timeout) {
         if (n == 0) {
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
         return getTheList(n, timeout);
     }
