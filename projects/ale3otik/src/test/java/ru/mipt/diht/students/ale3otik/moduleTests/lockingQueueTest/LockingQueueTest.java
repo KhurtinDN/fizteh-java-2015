@@ -6,6 +6,7 @@ import ru.mipt.diht.students.ale3otik.threads.lockingqueue.LockingQueue;
 
 import java.util.Arrays;
 
+
 /**
  * Created by alex on 06.12.15.
  */
@@ -18,15 +19,15 @@ public class LockingQueueTest extends TestCase {
             }
             @Override
             public void run() {
-                System.out.println(queue.take(7));
+                System.out.println(queue.take(7,1500));
             }
         }
 
         @Test
-        public static void test(String[] args) throws Exception{
+        public void testQueue() throws Exception{
             LockingQueue<Integer> queue = new LockingQueue<>(20);
             ThreadTakeTest takeTest = new ThreadTakeTest(queue);
-            queue.offer(Arrays.asList(1, 2, 3));
+            queue.offer(Arrays.asList(1, 2, 3),20);
             System.out.println("start");
             takeTest.start();
             Thread.sleep(2000);
