@@ -38,7 +38,6 @@ public class ThreadsCounter {
             } catch (InterruptedException e) {
                 return;
             }
-
         }
     }
 
