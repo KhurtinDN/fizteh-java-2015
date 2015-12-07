@@ -32,20 +32,22 @@ public class LockingQueue<E> {
         public void run() {
             try {
                 Thread.sleep(timeout);
-                this.pthread.interrupt();
+                synchronized (this) {
+                    this.pthread.interrupt();
+                }
             } catch (InterruptedException e) {
             }
         }
     }
 
     private void addTheList(List<E> listToAdd, long timeout) {
-        TimeInterrupter interrupter = null;
-        if (timeout >= 0) {
-            interrupter = new TimeInterrupter(timeout, Thread.currentThread());
-            interrupter.start();
-        }
+        TimeInterrupter interrupter = new TimeInterrupter(timeout, Thread.currentThread());
         synchronized (synchronizer) {
             try {
+                if (timeout >= 0) {
+                    interrupter.start();
+                }
+
                 long myActNum;
                 synchronized (offerCounterSync) {
                     myActNum = nextOfferNumber;
@@ -65,10 +67,11 @@ public class LockingQueue<E> {
                     synchronizer.wait();
                 }
 
-                synchronized (queueAccesSynchronizer) {
-                    queue.addAll(new LinkedList(listToAdd));
+                synchronized (interrupter) {
+                    synchronized (queueAccesSynchronizer) {
+                        queue.addAll(new LinkedList(listToAdd));
+                    }
                 }
-
                 if (interrupter != null) {
                     interrupter.interrupt();
                 }
@@ -81,14 +84,15 @@ public class LockingQueue<E> {
     }
 
     private List<E> getTheList(int lengthToTake, long timeout) {
-        TimeInterrupter interrupter = null;
-        if (timeout >= 0) {
-            interrupter = new TimeInterrupter(timeout, Thread.currentThread());
-            interrupter.start();
-        }
+        TimeInterrupter interrupter = new TimeInterrupter(timeout, Thread.currentThread());
+
         List<E> answer = null;
         synchronized (synchronizer) {
             try {
+                if (timeout >= 0) {
+                    interrupter.start();
+                }
+
                 long myActNum;
                 synchronized (takeCounterSync) {
                     myActNum = nextTakeNumber;
@@ -106,9 +110,11 @@ public class LockingQueue<E> {
                     synchronizer.wait();
                 }
 
-                synchronized (queueAccesSynchronizer) {
-                    answer = new LinkedList<E>(queue.subList(0, lengthToTake));
-                    queue.subList(0, lengthToTake).clear();
+                synchronized (interrupter) {
+                    synchronized (queueAccesSynchronizer) {
+                        answer = new LinkedList<E>(queue.subList(0, lengthToTake));
+                        queue.subList(0, lengthToTake).clear();
+                    }
                 }
 
                 if (interrupter != null) {
