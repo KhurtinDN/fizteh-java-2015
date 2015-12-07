@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.mipt.diht.students.ale3otik.threads.lockingqueue.LockingQueue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,11 +79,9 @@ public class LockingQueueTest extends TestCase {
     @Test
     public void testTakeDelaySkip() throws Exception {
         queue.offer(Arrays.asList(0, 1));
-        ThreadTaker taker = new ThreadTaker(queue);
-        taker.start();
-        Thread.sleep(100);
+        List<Integer> answer = queue.take(4, 200);
         assertEquals(queue.take(2), Arrays.asList(0, 1));
-        assertEquals(taker.answer, null);
+        assertEquals(answer, null);
     }
 
     @Test
@@ -101,9 +98,7 @@ public class LockingQueueTest extends TestCase {
     @Test
     public void testOfferDelaySkip() throws Exception {
         queue.offer(baseList);
-        ThreadOffer offer = new ThreadOffer(queue, baseList);
-        offer.start();
-        Thread.sleep(200);
+        queue.offer(baseList, 200);
         queue.offer(Arrays.asList(0, 1));
         assertEquals(queue.take(20), baseList);
         assertEquals(queue.take(2), Arrays.asList(0, 1));
