@@ -20,6 +20,7 @@ public class SelectStmt<T, R> {
     private Stream<T> stream;
     private Iterable<T> baseCollection;
     private Class<R> outputClass;
+    private Iterable<R> previousPart;
     private Function<T, ?>[] convertFunctions;
 
     private Function<T, Comparable<?>>[] groupingFunctions;
@@ -28,13 +29,19 @@ public class SelectStmt<T, R> {
     private boolean isDistinct;
 
     @SafeVarargs
-    public SelectStmt(Iterable<T> newBaseCollection, Class<R> clazz, boolean distinct, Function<T, ?>... s) {
+    SelectStmt(Iterable<T> newBaseCollection, Iterable<R> previousTable,
+            Class<R> clazz, boolean distinct, Function<T, ?>... s) {
         baseCollection = newBaseCollection;
-        stream = StreamSupport.stream(baseCollection.spliterator(), false);
+        previousPart = previousTable;
+        stream = StreamSupport.stream(newBaseCollection.spliterator(), false);
         outputClass = clazz;
         convertFunctions = s;
         isDistinct = distinct;
         groupingFunctions = null;
+    }
+
+    final Class<R> getOutputClass() {
+        return outputClass;
     }
 
     public final WhereStmt<T, R> where(Predicate<T> predicate) {
@@ -121,6 +128,11 @@ public class SelectStmt<T, R> {
 
     private Collection<R> convertToFinal(Collection<FinalRow<T, R>> table) {
         List<R> output = new ArrayList<>();
+        if (previousPart != null) {
+            for (R row : previousPart) {
+                output.add(row);
+            }
+        }
         for (FinalRow<T, R> row : table) {
             output.add(row.get());
         }

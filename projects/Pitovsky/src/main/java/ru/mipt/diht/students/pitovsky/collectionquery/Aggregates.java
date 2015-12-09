@@ -3,6 +3,7 @@ package ru.mipt.diht.students.pitovsky.collectionquery;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -40,7 +41,7 @@ public class Aggregates {
             }
 
             @Override
-            public T forGroup(Set<C> set) {
+            public T forGroup(Set<C> set) throws ClassCastException, NoSuchElementException {
                 return Collections.max(getValues(set, expression));
             }
         };
@@ -54,7 +55,7 @@ public class Aggregates {
      * @param <T>
      * @return
      */
-    public static <C, T extends Number & Comparable<T>> Aggregate<C, T> min(Function<C, T> expression) {
+    public static <C, T extends Comparable<T>> Aggregate<C, T> min(Function<C, T> expression) {
         return new Aggregate<C, T>() {
 
             @Override
@@ -63,7 +64,7 @@ public class Aggregates {
             }
 
             @Override
-            public T forGroup(Set<C> set) {
+            public T forGroup(Set<C> set) throws ClassCastException, NoSuchElementException {
                 return Collections.min(getValues(set, expression));
             }
         };
@@ -109,10 +110,26 @@ public class Aggregates {
             }
 
             @Override
-            public T forGroup(Set<C> set) {
-                T average;
-                //todo: how?!!
-                throw new UnsupportedOperationException();
+            public T forGroup(Set<C> set) throws ClassCastException, NoSuchElementException {
+                if (set.isEmpty()) {
+                    throw new NoSuchElementException("set is empty");
+                }
+                //todo: how without instanceof?
+                T sample = expression.apply(set.iterator().next());
+                if (sample instanceof Long || sample instanceof Integer || sample instanceof Short) {
+                    long average = 0;
+                    for (C element : set) {
+                        average += (Long) (expression.apply(element));
+                    }
+                    return (T) Long.valueOf(average / set.size());
+                } else if (sample instanceof Float || sample instanceof Double) {
+                    double average = 0;
+                    for (C element : set) {
+                        average += (Double) (expression.apply(element));
+                    }
+                    return (T) Double.valueOf(average / set.size());
+                }
+                throw new ClassCastException("class is not of averaging type");
             }
         };
     }
