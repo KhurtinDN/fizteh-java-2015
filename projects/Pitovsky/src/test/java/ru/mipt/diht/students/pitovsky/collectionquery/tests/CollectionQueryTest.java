@@ -2,9 +2,11 @@ package ru.mipt.diht.students.pitovsky.collectionquery.tests;
 
 import static ru.mipt.diht.students.pitovsky.collectionquery.Aggregates.count;
 import static ru.mipt.diht.students.pitovsky.collectionquery.Aggregates.min;
+import static ru.mipt.diht.students.pitovsky.collectionquery.Aggregates.max;
 import static ru.mipt.diht.students.pitovsky.collectionquery.tests.CollectionQueryTest.Student.student;
 import static ru.mipt.diht.students.pitovsky.collectionquery.Sources.list;
 import static ru.mipt.diht.students.pitovsky.collectionquery.impl.FromStmt.from;
+import static ru.mipt.diht.students.pitovsky.collectionquery.OrderByConditions.asc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
@@ -13,10 +15,51 @@ import java.time.temporal.ChronoUnit;
 
 import org.junit.Test;
 import junit.framework.TestCase;
+import ru.mipt.diht.students.pitovsky.collectionquery.Sources;
 import ru.mipt.diht.students.pitovsky.collectionquery.impl.CollectionQueryExecuteException;
 
 public class CollectionQueryTest extends TestCase {
-
+    
+    /* FIRST:
+     * from(list(
+    student("ivanov", LocalDate.parse("1986-08-06"), "494"),
+    student("ivanov", LocalDate.parse("1986-08-06"), "494")))
+    .select(Statistics.class, Student::getGroup, count(Student::getGroup), avg(Student::age))
+        .where(rlike(Student::getName, ".*ov").and(s -> s.age() > 20))
+        .groupBy(Student::getGroup)
+        .having(s -> s.getCount() > 0)
+        .orderBy(asc(Student::getGroup), desc(count(Student::getGroup)))
+        .limit(100)
+        .union()
+        .from(list(student("ivanov", LocalDate.parse("1985-08-06"), "494")))
+        .selectDistinct(Statistics.class, s -> "all", count(s -> 1), avg(Student::age))
+        .execute();*/
+    @Test
+    public void testSubQuery() {
+        Iterable<Statistics> statistics = null;
+        try {
+            statistics = from(from(list(
+                            student("ivanov", LocalDate.parse("1986-08-06"), "496"),
+                            student("ivanov2", LocalDate.parse("1983-08-06"), "496"),
+                            student("petroff", LocalDate.parse("1999-05-08"), "495"),
+                            student("petrof2", LocalDate.parse("1982-05-08"), "495"),
+                            student("sidorov", LocalDate.parse("1985-06-09"), "497"),
+                            student("testoff", LocalDate.parse("1987-05-08"), "497"),
+                            student("testof2", LocalDate.parse("1985-05-08"), "497")))
+                        .select(Statistics.class, Student::getGroup, count(Student::getGroup), max(Student::age))
+                        .where(s -> s.age() > 20)
+                        .groupBy(Student::getGroup)
+                        .orderBy(asc(Student::getGroup)))
+                    .select(Statistics.class, Statistics::getGroup, Statistics::getCount, Statistics::getAge)
+                    .where(s -> s.getCount() > 1)
+                    .execute();
+        } catch (CollectionQueryExecuteException e) {
+            fail(e.getMessage());
+        }
+        assertEquals("[Statistics{group='496', count=2, age=32}, Statistics{group='497', count=3, age=30}]",
+                statistics.toString());
+    }
+    
     @Test
     public void testWhole() {
         Iterable<Statistics> statistics = null;
@@ -36,24 +79,25 @@ public class CollectionQueryTest extends TestCase {
                         .having(s-> s.getCount() > 1)
                         .orderBy((s1, s2) -> s1.getGroup().compareTo(s2.getGroup()))
                     .execute();
-            /*
-                    student("ivanov", LocalDate.parse("1986-08-06"), "494"),
-                    student("ivanov", LocalDate.parse("1986-08-06"), "494")))
-                    .select(Statistics.class, Student::getGroup, count(Student::getGroup), avg(Student::age))
-                        .where(rlike(Student::getName, ".*ov").and(s -> s.age() > 20))
-                        .groupBy(Student::getGroup)
-                        .having(s -> s.getCount() > 0)
-                        .orderBy(asc(Student::getGroup), desc(count(Student::getGroup)))
-                        .limit(100)
-                        .union()
-                        .from(list(student("ivanov", LocalDate.parse("1985-08-06"), "494")))
-                        .selectDistinct(Statistics.class, s -> "all", count(s -> 1), avg(Student::age))
-                        .execute();*/
         } catch (CollectionQueryExecuteException e) {
             fail(e.getMessage());
         }
         assertEquals("[Statistics{group='493', count=2, age=26}, Statistics{group='497', count=2, age=28}]",
                 statistics.toString());
+    }
+    
+    @Test
+    public void testWrongSyntax() {
+        Iterable<Statistics> statistics = null;
+        /*try {
+            statistics = from(Sources.set(student("ivanov", LocalDate.parse("1986-08-06"), "494"),
+                                student("ivanov", LocalDate.parse("1986-08-06"), "494")))
+                    .select(Statistics.class, Student::getName)
+                    .where(s -> s.age() > 0)
+                    .groupBy(Student::age)
+                    .execute();
+            fail("Exception was not be throwned and get " + statistics.toString());
+        } catch (CollectionQueryExecuteException e) { }*/
     }
 
 

@@ -24,6 +24,11 @@ public final class FromStmt<T> {
         return stmt;
     }
 
+    public static <T> FromStmt<T> from(WhereStmt<?, T> subStmt) throws CollectionQueryExecuteException {
+        Iterable<T> subQueryResult = subStmt.execute();
+        return from(subQueryResult);
+    }
+
     /**
      * Get rows, which applies for conditions.
      * @param clazz class, which able to store. Must have constructor from functions returns types (see below)
@@ -33,10 +38,6 @@ public final class FromStmt<T> {
     @SafeVarargs
     public final <R> SelectStmt<T, R> select(Class<R> clazz, Function<T, ?>... s) {
         return new SelectStmt<T, R>(base, clazz, false, s);
-    }
-
-    public <R> SelectStmt<T, R> selectAll(Class<R> clazz) {
-        throw new UnsupportedOperationException(); //todo: fields, methods? How?
     }
 
     @SafeVarargs

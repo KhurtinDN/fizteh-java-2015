@@ -23,7 +23,7 @@ public class SelectStmt<T, R> {
     private Function<T, ?>[] convertFunctions;
 
     private Function<T, Comparable<?>>[] groupingFunctions;
-    private Predicate<R> groupingCondition;
+    private Predicate<R> groupingCondition = s -> true;
 
     private boolean isDistinct;
 

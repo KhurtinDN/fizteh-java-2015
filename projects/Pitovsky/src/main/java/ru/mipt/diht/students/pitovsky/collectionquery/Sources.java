@@ -56,6 +56,7 @@ public class Sources {
             builder.append(data);
             readed = inputStream.read(data);
         }
+        inputStream.close();
         String[] lines = builder.toString().split("[\n]");
         Stream.Builder<T> stream = Stream.builder();
         for (String line : lines) {
