@@ -55,6 +55,6 @@ public class WhereStmt<T, R> {
     }
 
     public final UnionStmt<R> union() throws CollectionQueryExecuteException {
-        return new UnionStmt<R>(baseStmt);
+        return baseStmt.union();
     }
 }

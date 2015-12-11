@@ -9,17 +9,13 @@ import static ru.mipt.diht.students.pitovsky.collectionquery.Sources.list;
 import static ru.mipt.diht.students.pitovsky.collectionquery.impl.FromStmt.from;
 import static ru.mipt.diht.students.pitovsky.collectionquery.OrderByConditions.asc;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 import org.junit.Test;
 
-import com.sun.org.apache.bcel.internal.generic.CPInstruction;
-
 import junit.framework.TestCase;
-import ru.mipt.diht.students.pitovsky.collectionquery.Sources;
 import ru.mipt.diht.students.pitovsky.collectionquery.impl.CollectionQueryExecuteException;
 import ru.mipt.diht.students.pitovsky.collectionquery.impl.CollectionQuerySyntaxException;
 
@@ -94,7 +90,7 @@ public class CollectionQueryTest extends TestCase {
     }
     
     @Test
-    public void testWhole() {
+    public void testSimple() {
         Iterable<Statistics> statistics = null;
         try {
             statistics = from(list(
@@ -131,6 +127,36 @@ public class CollectionQueryTest extends TestCase {
                     .execute();
             fail("Exception was not be throwned and get " + statistics.toString());
         } catch (CollectionQueryExecuteException e) { }*/
+    }
+
+    @Test
+    public void testJoin() {
+        Iterable<Statistics> statistics = null;
+        try {
+            statistics = from(list(
+                    student("ivanov", LocalDate.parse("1986-08-06"), "496"),
+                    student("petroff", LocalDate.parse("1999-05-08"), "497"),
+                    student("testoff", LocalDate.parse("1987-05-08"), "497"),
+                    student("sidorov", LocalDate.parse("1991-08-06"), "494"),
+                    student("ivanov", LocalDate.parse("1988-08-06"), "493"),
+                    student("nobody", LocalDate.parse("1979-05-05"), "497"),
+                    student("testman", LocalDate.parse("1987-04-06"), "494"),
+                    student("someone", LocalDate.parse("1989-05-06"), "493")))
+                    .join(list(new Group("493", "Master3d"), new Group("497", "Master7th")))
+                    .on((sg) -> sg.first().getGroup().equals(sg.second().getName()))
+                        .select(Statistics.class, sg -> sg.first().getGroup(), count(sg -> sg.first().getGroup()),
+                                min(sg -> sg.first().age()), sg -> sg.second().getMentor())
+                        .where(sg -> sg.first().age() > 20)
+                        .groupBy(sg -> sg.first().getGroup())
+                        .having(s-> s.getCount() > 1)
+                        .orderBy((s1, s2) -> s1.first().getGroup().compareTo(s2.first().getGroup()))
+                    .execute();
+        } catch (CollectionQueryExecuteException | CollectionQuerySyntaxException e) {
+            fail(e.getMessage());
+        }
+        assertEquals("[Statistics{group='493', count=2, age=26, mentor='Master3d'}, "
+                + "Statistics{group='497', count=2, age=28, mentor='Master7th'}]",
+                statistics.toString());
     }
 
 
@@ -174,10 +200,29 @@ public class CollectionQueryTest extends TestCase {
 
     }
 
+    public static class Group {
+        private final String name;
+        private final String mentor;
+
+        public Group(String group, String mentorName) {
+            name = group;
+            mentor = mentorName;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getMentor() {
+            return mentor;
+        }
+    }
+
 
     public static class Statistics {
 
         private final String group;
+        private final String mentor;
         private final Long count;
         private final Long age;
 
@@ -193,16 +238,29 @@ public class CollectionQueryTest extends TestCase {
             return age;
         }
 
+        public String getMentor() {
+            return mentor;
+        }
+
         public Statistics(String group, Long count, Long age) {
             this.group = group;
             this.count = count;
             this.age = age;
+            this.mentor = "none";
+        }
+
+        public Statistics(String group, Long count, Long age, String mentor) {
+            this.group = group;
+            this.count = count;
+            this.age = age;
+            this.mentor = mentor;
         }
 
         public Statistics(String group) {
             this.group = group;
             this.count = 0L;
             this.age = 18L;
+            this.mentor = "none";
         }
 
         @Override
@@ -211,6 +269,7 @@ public class CollectionQueryTest extends TestCase {
                     + "group='" + group + '\''
                     + ", count=" + count
                     + ", age=" + age
+                    + (mentor.equals("none") ? "" : (", mentor='" + mentor + '\''))
                     + '}';
         }
     }

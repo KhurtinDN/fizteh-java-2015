@@ -196,4 +196,8 @@ public class SelectStmt<T, R> {
         stream = newStream;
     }
 
+    public final UnionStmt<R> union() throws CollectionQueryExecuteException {
+        return new UnionStmt<R>(this);
+    }
+
 }
