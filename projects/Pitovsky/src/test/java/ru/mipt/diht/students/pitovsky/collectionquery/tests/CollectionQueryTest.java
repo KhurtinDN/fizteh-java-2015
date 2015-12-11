@@ -143,7 +143,7 @@ public class CollectionQueryTest extends TestCase {
                     student("testman", LocalDate.parse("1987-04-06"), "494"),
                     student("someone", LocalDate.parse("1989-05-06"), "493")))
                     .join(list(new Group("493", "Master3d"), new Group("497", "Master7th")))
-                    .on((sg) -> sg.first().getGroup().equals(sg.second().getName()))
+                    .on(sg -> sg.getGroup(), sg -> sg.getName())
                         .select(Statistics.class, sg -> sg.first().getGroup(), count(sg -> sg.first().getGroup()),
                                 min(sg -> sg.first().age()), sg -> sg.second().getMentor())
                         .where(sg -> sg.first().age() > 20)

@@ -2,7 +2,11 @@ package ru.mipt.diht.students.pitovsky.collectionquery.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -103,6 +107,12 @@ public final class FromStmt<T> {
             secondTable = tableOnJoin;
         }
 
+        /**
+         * Make inner-join operation. Note, that this version is non-linear.
+         * So, if it possible, use <code>...on(keyLeft, keyRight)</code> instead of it.
+         * @param joiningPredicate
+         * @return
+         */
         public FromStmt<Tuple<T, S>> on(Predicate<Tuple<T, S>> joiningPredicate) {
             Collection<Tuple<T, S>> joinedCollection = new ArrayList<>();
             for (T first : base) { //todo: it must be linear (hash mapping by predicate, i don't know how
@@ -117,6 +127,46 @@ public final class FromStmt<T> {
             stmt.base = joinedCollection;
             stmt.previousTable = previousTable;
             return stmt;
+        }
+
+        /**
+         * Make inner-join (hash join) operation, like <code>... INNER JOIN ... ON leftKey = rightKey</code>.
+         * Uses R.equals(R) for key comparing.
+         * @param leftKey
+         * @param rightKey
+         * @return
+         */
+        public <R> FromStmt<Tuple<T, S>> on(Function<T, R> leftKey, Function<S, R> rightKey) {
+            Map<R, Tuple<Set<T>, Set<S>>> possibleValues = new HashMap<>();
+            for (T row : base) {
+                R value = leftKey.apply(row);
+                if (value != null) {
+                    if (!possibleValues.containsKey(value)) {
+                        possibleValues.put(value, new Tuple<>(new HashSet<>(), new HashSet<>()));
+                    }
+                    possibleValues.get(value).firstPart.add(row);
+                }
+            }
+            for (S row : secondTable) {
+                R value = rightKey.apply(row);
+                if (value != null) {
+                    if (!possibleValues.containsKey(value)) {
+                        continue;
+                    }
+                    possibleValues.get(value).secondPart.add(row);
+                }
+            }
+
+            Collection<Tuple<T, S>> joinedCollection = new ArrayList<>();
+
+            possibleValues.forEach((v, tuple) -> {
+                for (T firstRow : tuple.first()) {
+                    for (S secondRow : tuple.second()) {
+                        joinedCollection.add(new Tuple<T, S>(firstRow, secondRow));
+                    }
+                }
+            });
+            return from(joinedCollection);
         }
     }
 
