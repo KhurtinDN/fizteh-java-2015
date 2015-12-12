@@ -8,9 +8,24 @@ import com.google.maps.model.Geometry;
 import twitter4j.GeoLocation;
 import twitter4j.Place;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 public class GeolocationUtils {
-    // todo: считывать ключ из файла .properties
-    protected static final String GOOGLE_API_KEY = "AIzaSyCltC9cSKnrnqOApw5TQ155nwEBW-ZUt1E";
+    protected static final String GOOGLE_API_KEY = readGoogleAPIKey();
+
+    // Читает из .properties файла ключ для google API(в рабочей директории)
+    private static String readGoogleAPIKey() {
+        Properties properties = new Properties();
+        try (FileInputStream propertiesFile = new FileInputStream("googlegeoapi.properties")) {
+            properties.load(propertiesFile);
+            return properties.getProperty("key");
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            return null;
+        }
+    }
 
     // По названию местности получает ее прямоугольные координаты.
     public static Geometry getLocationBoxCoordinates(String placeName) {
@@ -20,7 +35,7 @@ public class GeolocationUtils {
             GeocodingResult[] locations = geoRequest.await();
             return locations[0].geometry;
         } catch (Exception e) {
-            System.err.println("Ошибка при обращении и Google Geocoding API.");
+            System.err.println("Ошибка при обращении к Google Geocoding API.");
             return null;
         }
     }
