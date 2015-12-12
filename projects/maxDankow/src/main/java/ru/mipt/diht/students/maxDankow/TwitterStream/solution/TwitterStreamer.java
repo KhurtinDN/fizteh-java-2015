@@ -9,7 +9,6 @@ import java.util.LinkedList;
 
 public class TwitterStreamer {
     // Очередь для твиттов в режиме stream.
-    // todo: заменить на потокобезопасную очередь.
     private LinkedList<Status> streamQueue;
     // Используется для ограничения сильного разрастания очереди твиттов в режиме stream.
     private static final int STREAM_TWEETS_LIMIT = 10000;
@@ -53,9 +52,11 @@ public class TwitterStreamer {
                 Thread.currentThread().interrupt();
             }
             // Обрабатываем очередной твитт.
-            if (!streamQueue.isEmpty()) {
-                Status tweet = streamQueue.poll();
-                TwitterStreamUtils.printTweet(tweet, false);
+            synchronized (streamQueue) {
+                if (!streamQueue.isEmpty()) {
+                    Status tweet = streamQueue.poll();
+                    TwitterStreamUtils.printTweet(tweet, false);
+                }
             }
         }
     }
@@ -65,7 +66,9 @@ public class TwitterStreamer {
         public void onStatus(Status tweet) {
             if (TwitterStreamUtils.checkTweet(tweet, locationGeometry, shouldHideRetweets)
                     && streamQueue.size() < STREAM_TWEETS_LIMIT) {
-                streamQueue.add(tweet);
+                synchronized (streamQueue) {
+                    streamQueue.add(tweet);
+                }
             }
         }
     };
