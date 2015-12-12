@@ -2,17 +2,11 @@ package ru.mipt.diht.students.maxDankow.TwitterStream;
 
 import com.beust.jcommander.Parameter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class ComandLineArgumentsParser {
+public class CommandLineArguments {
     private static final int DEFAULT_TWEETS_NUMBER_LIMIT = 100;
 
-    @Parameter
-    private List<String> parameters = new ArrayList<>();
-
     @Parameter(names = {"--query", "-q"}, description = "Query or keywords to search")
-    private String queryText;
+    private String queryText = null;
 
     @Parameter(names = {"--place", "-p"}, description = "Location of search")
     private String locationName = null;

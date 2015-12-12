@@ -25,7 +25,7 @@ public class TwitterSearcher {
         queryText = query;
 
         if (location != null) {
-            locationGeometry = GeolocationUtils.findLocation(location);
+            locationGeometry = GeolocationUtils.getLocationBoxCoordinates(location);
         }
 
         if (this.queryText == null) {

@@ -1,4 +1,5 @@
 package ru.mipt.diht.students.maxDankow.TwitterStream;
+// todo: переименовать все пакеты в lowercase.
 
 import com.beust.jcommander.JCommander;
 import ru.mipt.diht.students.maxDankow.TwitterStream.solution.TwitterSearcher;
@@ -8,7 +9,7 @@ public class TwitterRunner {
 
     public static void main(String[] args) {
         // todo: обрабатывать неправильные аргументы (использовать метод JCommander::parse).
-        ComandLineArgumentsParser arguments = new ComandLineArgumentsParser();
+        CommandLineArguments arguments = new CommandLineArguments();
         JCommander jCommander = new JCommander(arguments, args);
 
         if (arguments.isHelp()) {

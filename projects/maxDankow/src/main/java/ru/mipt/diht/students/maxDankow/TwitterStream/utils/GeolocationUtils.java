@@ -9,42 +9,44 @@ import twitter4j.GeoLocation;
 import twitter4j.Place;
 
 public class GeolocationUtils {
+    // todo: считывать ключ из файла .properties
     protected static final String GOOGLE_API_KEY = "AIzaSyCltC9cSKnrnqOApw5TQ155nwEBW-ZUt1E";
 
-    public static Geometry findLocation(String placeName) {
+    // По названию местности получает ее прямоугольные координаты.
+    public static Geometry getLocationBoxCoordinates(String placeName) {
         GeoApiContext context = new GeoApiContext().setApiKey(GOOGLE_API_KEY);
         GeocodingApiRequest geoRequest = GeocodingApi.geocode(context, placeName);
-        Geometry place;
         try {
             GeocodingResult[] locations = geoRequest.await();
-            place = locations[0].geometry;
+            return locations[0].geometry;
         } catch (Exception e) {
-            System.err.println("Google geolocation error.");
+            System.err.println("Ошибка при обращении и Google Geocoding API.");
             return null;
         }
-        return place;
     }
 
-    public static boolean checkLocation(Place tweetPlace, Geometry searchLocationGeometry) {
+    // Проверяет принадлежность точки на Земле указаной местности.
+    public static boolean checkLocation(Place place, Geometry searchLocationGeometry) {
         if (searchLocationGeometry == null) {
             return true;
         }
-        if (tweetPlace == null) {
+        if (place == null) {
             return false;
         }
         // Берем среднее значение координат заданной области.
-        double latitudeSum = 0;
-        double longitudeSum = 0;
-        GeoLocation[][] geoLocations = tweetPlace.getBoundingBoxCoordinates();
+        double latitudeSum = 0, longitudeSum = 0;
+        GeoLocation[][] geoLocations = place.getBoundingBoxCoordinates();
+
         for (int i = 0; i < geoLocations[0].length; ++i) {
             latitudeSum += geoLocations[0][i].getLatitude();
             longitudeSum += geoLocations[0][i].getLongitude();
         }
-        double centerLat = latitudeSum / geoLocations[0].length;
-        double centerLng = longitudeSum / geoLocations[0].length;
-        return (centerLat > searchLocationGeometry.bounds.southwest.lat
-                && centerLat < searchLocationGeometry.bounds.northeast.lat
-                && centerLng > searchLocationGeometry.bounds.southwest.lng
-                && centerLng < searchLocationGeometry.bounds.northeast.lng);
+        double placeLat = latitudeSum / geoLocations[0].length;
+        double placeLng = longitudeSum / geoLocations[0].length;
+
+        return (placeLat > searchLocationGeometry.bounds.southwest.lat
+                && placeLat < searchLocationGeometry.bounds.northeast.lat
+                && placeLng > searchLocationGeometry.bounds.southwest.lng
+                && placeLng < searchLocationGeometry.bounds.northeast.lng);
     }
 }

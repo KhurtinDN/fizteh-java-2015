@@ -1,6 +1,7 @@
 package ru.mipt.diht.students.maxDankow.TwitterStream.utils;
 
 import com.google.maps.model.Geometry;
+import org.apache.commons.lang3.StringUtils;
 import twitter4j.Status;
 
 import java.time.LocalDateTime;
@@ -9,13 +10,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class TwitterStreamUtils {
-    private static final long MINUTE_MS = 1000 * 60;
-    private static final long HOUR_MS = MINUTE_MS * 60;
-    private static final long DAY_MS = HOUR_MS * 24;
-    // Длинна строки разграничителя твиттов.
-    private static final int DELIM_LENGTH = 200;
+    // Разграничитель твиттов.
+    private static final int DELIMITER_LENGTH = 200;
+    public static final String delimiter = StringUtils.repeat("-", DELIMITER_LENGTH);
 
-    public enum TextColor {
+    public static enum TextColor {
         CLEAR(0),
         BLACK(30),
         RED(31),
@@ -28,8 +27,8 @@ public class TwitterStreamUtils {
 
         private int colorCode;
 
-        TextColor(int newColorCode) {
-            colorCode = newColorCode;
+        TextColor(int colorCode) {
+            this.colorCode = colorCode;
         }
 
         public String getEscapeCodePrefix() {
@@ -48,66 +47,58 @@ public class TwitterStreamUtils {
             return "Только что";
         }
         if (ChronoUnit.HOURS.between(anotherTime, currentTime) < 1) {
-            return "" + ChronoUnit.MINUTES.between(anotherTime, currentTime) + " минут назад";
+            return ChronoUnit.MINUTES.between(anotherTime, currentTime) + " минут назад";
         }
         if (ChronoUnit.DAYS.between(anotherTime, currentTime) < 1) {
-            return "" + ChronoUnit.HOURS.between(anotherTime, currentTime) + " часов назад";
+            return ChronoUnit.HOURS.between(anotherTime, currentTime) + " часов назад";
         }
         if (ChronoUnit.DAYS.between(anotherTime, currentTime) == 1) {
             return "Вчера";
         }
-        return "" + ChronoUnit.DAYS.between(anotherTime, currentTime) + " дней назад";
+        return ChronoUnit.DAYS.between(anotherTime, currentTime) + " дней назад";
     }
 
-    public static boolean checkTweet(Status tweet, Geometry locationGeometry,
+    public static boolean checkTweet(Status tweet,
+                                     Geometry locationGeometry,
                                      boolean shouldHideRetweets) {
         return (GeolocationUtils.checkLocation(tweet.getPlace(), locationGeometry)
                 && (!shouldHideRetweets || !tweet.isRetweet()));
     }
 
-    private static String buildDelim() {
-        String delim = "-";
-        for (int i = 0; i < DELIM_LENGTH; ++i) {
-            delim = delim.concat("-");
-        }
-        return delim;
-    }
-
-    public static String buildUserName(String originalUserName) {
-        return "@" + originalUserName;
+    public static String buildColorizedUserName(String originalUserName, TextColor color) {
+        return colorizeText("@" + originalUserName, color);
     }
 
     public static String buildFormattedTweet(Status tweet, boolean shouldShowTime) {
         StringBuilder message = new StringBuilder("");
         if (shouldShowTime) {
-            message.append("[");
-            message.append(TwitterStreamUtils.convertTimeToRussianWords(tweet.getCreatedAt(), new Date()));
-            message.append("]");
+            message.append("[")
+                    .append(convertTimeToRussianWords(tweet.getCreatedAt(), new Date()))
+                    .append("]");
         }
         if (!tweet.isRetweet()) {
-            int retweetCount = tweet.getRetweetCount();
+            message.append(buildColorizedUserName(tweet.getUser().getScreenName(), TextColor.BLUE))
+                    .append(": ")
+                    .append(tweet.getText());
 
-            message.append(colorizeText(buildUserName(tweet.getUser().getScreenName()), TextColor.BLUE));
-            message.append(": ");
-            message.append(tweet.getText());
-            if (retweetCount > 0) {
-                message.append(" (");
-                message.append(tweet.getRetweetCount());
-                message.append(" ретвитов)");
+            if (tweet.getRetweetCount() > 0) {
+                message.append(" (")
+                        .append(tweet.getRetweetCount())
+                        .append(" ретвитов)");
             }
         } else {
             Status originalTweet = tweet.getRetweetedStatus();
-            message.append(colorizeText(buildUserName(tweet.getUser().getScreenName()), TextColor.BLUE));
-            message.append(": ретвитнул ");
-            message.append(colorizeText(buildUserName(originalTweet.getUser().getScreenName()), TextColor.BLUE));
-            message.append(": ");
-            message.append(originalTweet.getText());
+            message.append(buildColorizedUserName(tweet.getUser().getScreenName(), TextColor.BLUE))
+                    .append(": ретвитнул ")
+                    .append(buildColorizedUserName(originalTweet.getUser().getScreenName(), TextColor.BLUE))
+                    .append(": ")
+                    .append(originalTweet.getText());
         }
         return message.toString();
     }
 
     public static void printTweet(Status tweet, boolean shouldShowTime) {
         System.out.println(buildFormattedTweet(tweet, shouldShowTime));
-        System.out.println(buildDelim());
+        System.out.println(delimiter);
     }
 }

@@ -24,7 +24,7 @@ public class TwitterStreamer {
                            String location,
                            boolean hideRetweets) throws IllegalArgumentException {
         if (location != null) {
-            locationGeometry = GeolocationUtils.findLocation(location);
+            locationGeometry = GeolocationUtils.getLocationBoxCoordinates(location);
         }
         if (query == null) {
             throw new IllegalArgumentException("Query is empty.");
