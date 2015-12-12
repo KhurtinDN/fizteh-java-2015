@@ -44,7 +44,7 @@ public class TwitterUtils {
     }
 
     private static String getUserNameStyle(final String name) {
-        return ConsoleUtil.setStyle("@" + name, Style.BOLD, Style.BLUE);
+        return ConsoleUtil.getStylizedString("@" + name, Style.BOLD, Style.BLUE);
     }
 
     private static class AuthorNameParser {

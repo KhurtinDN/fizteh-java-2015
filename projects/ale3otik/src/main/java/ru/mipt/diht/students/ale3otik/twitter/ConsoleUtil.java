@@ -28,20 +28,18 @@ public final class ConsoleUtil {
         }
     }
 
-    public static void printIntoStdout(final String strToPrint, Style... args) {
-        String outStr = strToPrint.substring(0);
-        setStyle(outStr, args);
-        System.out.println(outStr);
+    public static void printIntoStdout(String strToPrint, Style... args) {
+        System.out.println(getStylizedString(strToPrint, args));
     }
 
-    public static String setStyle(String strToStyle, Style... args) {
+    public static String getStylizedString(String strToStylized, Style... args) {
         for (int i = 0; i < args.length; ++i) {
-            strToStyle = args[i].line(strToStyle);
+            strToStylized = args[i].line(strToStylized);
         }
-        return strToStyle;
+        return strToStylized;
     }
 
-    public static void printErrorMessage(final String strToPrint) {
+    public static void printErrorMessage(String strToPrint) {
         System.err.println(strToPrint);
     }
 

@@ -7,7 +7,7 @@ import java.util.Objects;
 /**
  * Created by alex on 10.10.15.
  */
-public final class GeoLocationInfo extends Object {
+public final class GeoLocationInfo {
     private final GeoLocation location;
     private final double radius;
 
@@ -40,11 +40,12 @@ public final class GeoLocationInfo extends Object {
         }
 
         GeoLocationInfo second = (GeoLocationInfo) obj;
-        return this.location.equals(second.getLocation()) && (this.radius == second.getRadius());
+        return this.location.equals(second.location)
+                && (Double.compare(this.radius, second.radius) == 0);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getLocation(), this.radius);
+        return Objects.hash(this.location, this.radius);
     }
 }

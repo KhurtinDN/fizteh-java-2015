@@ -86,31 +86,24 @@ public final class TwitterClientArguments {
         return locationFailedResultInformation;
     }
 
-    public void validate() throws IllegalArgumentException {
-
-        if (!isQueryValid()) {
+    public void validate() {
+        if (query.isEmpty() && !stream) {
             throw new IllegalArgumentException("Задан пустой поисковой запрос");
         }
-
-        this.geoLocationInfo = null;
         if (!this.getLocation().isEmpty()) {
             try {
-                if (this.getLocation().equals("nearby")) {
-                    this.curLocationName = GeoLocationResolver.getNameOfCurrentLocation();
+                if (location.equals("nearby")) {
+                    curLocationName = GeoLocationResolver.getNameOfCurrentLocation();
                 } else {
-                    this.curLocationName = this.getLocation();
+                    curLocationName = location;
                 }
-                this.geoLocationInfo = GeoLocationResolver.getGeoLocation(curLocationName);
+                geoLocationInfo = GeoLocationResolver.getGeoLocation(curLocationName);
             } catch (LocationException e) {
                 curLocationName = "World";
-                this.locationFailedResultInformation =
+                locationFailedResultInformation =
                         "Невозможно определить запрашиваемое местоположение\n";
             }
         }
-    }
-
-    private boolean isQueryValid() {
-        return (!this.getQuery().isEmpty() || this.isStream());
     }
 }
 
