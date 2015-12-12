@@ -20,36 +20,36 @@ public class TwitterAPI extends App {
 
     protected static void addQuery() {
 
-        Query query = new Query(queryString);
+        Query query = new Query(getQueryString());
         GeoQuery geoQuery;
         try {
             String ip = Inet4Address.getLocalHost().getHostAddress();
             geoQuery = new GeoQuery(ip);
 
             query.setCount(MAX_TWEETS); // max number of tweets
-            if (limit != -1) {
-                query.setCount(limit);
+            if (getLimit() != -1) {
+                query.setCount(getLimit());
             }
 
             System.out.print("Твиты");
-            if (queryString != null && !queryString.equals("")) {
-                System.out.print(" по запросу \"" + queryString + "\"");
+            if (getQueryString() != null && !getQueryString().equals("")) {
+                System.out.print(" по запросу \"" + getQueryString() + "\"");
             }
-            if (isStreamEnabled) {
+            if (getIsStreamEnabled()) {
                 System.out.print(" в режиме потока");
             }
-            if (locationString != null && !locationString.equals("")
-                    && !isNearbyEnabled) {
+            if (getLocationString() != null && !getLocationString().equals("")
+                    && !getIsNearbyEnabled()) {
                 System.out.print(" возле местоположения \""
-                        + locationString + "\"");
-                geoQuery.setQuery(locationString);
+                        + getLocationString() + "\"");
+                geoQuery.setQuery(getLocationString());
             }
-            if (locationString != null && (isNearbyEnabled
-                    || locationString.equals(""))) {
+            if (getLocationString() != null && (getIsNearbyEnabled()
+                    || getLocationString().equals(""))) {
                 System.out.print(" возле вашего местоположения");
-                isNearbyEnabled = true;
+                setIsNearbyEnabled(true);
             } else {
-                isNearbyEnabled = false;
+                setIsNearbyEnabled(false);
             }
             System.out.println(":");
 
@@ -70,7 +70,7 @@ public class TwitterAPI extends App {
 
             try {
 
-                if (locationString != null) {
+                if (getLocationString() != null) {
                     ResponseList<Place> places =
                             twitter.searchPlaces(geoQuery);
 
@@ -89,7 +89,7 @@ public class TwitterAPI extends App {
                     }
                 }
 
-                if (!isStreamEnabled) {
+                if (!getIsStreamEnabled()) {
 
                     QueryResult result = twitter.search(query);
                     getResultsStreamNotEnabled(result);
@@ -139,7 +139,7 @@ public class TwitterAPI extends App {
         for (Status status : result.getTweets()) {
             // print tweets
             if ((!status.isRetweet()
-                    || !hideRetweets)) { // hide retweets
+                    || !getHideRetweets())) { // hide retweets
 
                 System.out.print("["
                         + getDate(status.getCreatedAt())
@@ -157,7 +157,7 @@ public class TwitterAPI extends App {
     protected static void getResultsStreamEnabled(QueryResult result, Query query) throws TwitterException {
         while (true) {
             for (Status status : result.getTweets()) {
-                if (!status.isRetweet() || !hideRetweets) {
+                if (!status.isRetweet() || !getHideRetweets()) {
                     // hide retweets
 
                     System.out.println("@" + BLUE

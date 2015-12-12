@@ -1,33 +1,21 @@
 package ru.mipt.diht.students.sopilnyak.TwitterStream;
 
-import twitter4j.*;
 
 import java.io.*;
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 public class App {
 
-    protected static String queryString;
-    protected static boolean isQueryStarted = false;
-    protected static String locationString;
-    protected static boolean isLocationStarted = false;
-    protected static boolean isNearbyEnabled = false;
-    protected static boolean isStreamEnabled = false;
-    protected static boolean isSetLimitStarted = false;
-    protected static int limit = -1;
-    protected static boolean hideRetweets = false;
+    private static String queryString;
+    private static boolean isQueryStarted = false;
+    private static String locationString;
+    private static boolean isLocationStarted = false;
+    private static boolean isSetLimitStarted = false;
+    private static boolean isNearbyEnabled = false;
+    private static boolean isStreamEnabled = false;
+    private static int limit = -1;
+    private static boolean hideRetweets = false;
 
-    public static final String BLUE = "\u001B[34m";
-    public static final String RESET = "\u001B[0m";
     public static final String HELP_FILE = "help.txt";
-    public static final int MAX_TWEETS = 100;
-    public static final int RADIUS = 10;
-    public static final int SLEEP_TIME = 1000;
-    public static final int ATTEMPTS = 20;
 
     public static final int START_QUERY = 1;
     public static final int LOCATION = 2;
@@ -177,6 +165,34 @@ public class App {
         } catch (IOException e) {
             System.err.println("Проблема с чтением файла");
         }
+    }
+
+    public static String getQueryString() {
+        return queryString;
+    }
+
+    public static String getLocationString() {
+        return locationString;
+    }
+
+    public static boolean getIsNearbyEnabled() {
+        return isNearbyEnabled;
+    }
+
+    public static void setIsNearbyEnabled(boolean enabled) {
+        isNearbyEnabled = enabled;
+    }
+
+    public static boolean getIsStreamEnabled() {
+        return isStreamEnabled;
+    }
+
+    public static int getLimit() {
+        return limit;
+    }
+
+    public static boolean getHideRetweets() {
+        return hideRetweets;
     }
 
 }
