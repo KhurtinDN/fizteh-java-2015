@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.maxDankow.TwitterStream;
+package ru.mipt.diht.students.maxdankow.twitterstream;
 
 import com.google.maps.model.Bounds;
 import com.google.maps.model.Geometry;
@@ -6,8 +6,8 @@ import com.google.maps.model.LatLng;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.Before;
 import org.junit.Test;
-import ru.mipt.diht.students.maxDankow.TwitterStream.utils.GeolocationUtils;
-import ru.mipt.diht.students.maxDankow.TwitterStream.utils.TwitterStreamUtils;
+import ru.mipt.diht.students.maxdankow.twitterstream.utils.GeolocationUtils;
+import ru.mipt.diht.students.maxdankow.twitterstream.utils.TwitterStreamUtils;
 import twitter4j.GeoLocation;
 import twitter4j.Place;
 import twitter4j.Status;

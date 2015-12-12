@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.maxDankow.TwitterStream.utils;
+package ru.mipt.diht.students.maxdankow.twitterstream.utils;
 
 import com.google.maps.model.Geometry;
 import org.apache.commons.lang3.StringUtils;

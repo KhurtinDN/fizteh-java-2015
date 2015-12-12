@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.maxDankow.TwitterStream;
+package ru.mipt.diht.students.maxdankow.twitterstream;
 
 import com.beust.jcommander.Parameter;
 
