@@ -5,15 +5,16 @@ import com.beust.jcommander.JCommander;
 
 public class TStream {
 
-    public static void main (String[] args) {
+    public static void main (String[] args){
 
         Parser jcp = new Parser();
         new JCommander(jcp, args);
 
-        if (jcp.stream)
+        if (jcp.stream) {
             StreamRunner.runStream(jcp);
-        else
+        } else {
             QuerySearchRunner.runSearch(jcp);
+        }
 
     }
 

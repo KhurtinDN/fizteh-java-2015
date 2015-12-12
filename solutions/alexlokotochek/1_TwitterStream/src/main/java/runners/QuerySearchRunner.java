@@ -2,6 +2,7 @@ package runners;
 
 import jcmdparser.Parser;
 import twitter4j.*;
+import util.APIException;
 import util.QueryBuilder;
 import util.StringEditor;
 import java.util.Calendar;
@@ -10,9 +11,9 @@ import java.util.GregorianCalendar;
 
 public class QuerySearchRunner {
 
-    public static void runSearch (Parser jcp) {
-        Query query = QueryBuilder.formQuery(jcp);
+    public static void runSearch (Parser jcp){
         try {
+            Query query = QueryBuilder.formQuery(jcp);
             Twitter twitter = TwitterFactory.getSingleton();
             QueryResult result = twitter.search(query);
             for (Status status : result.getTweets()) {
@@ -24,7 +25,7 @@ public class QuerySearchRunner {
                 System.out.println(StringEditor.tweetStringToPrint(status));
             }
         } catch (Exception te) {
-            System.out.print("Error in Twitter4j: " + te.getMessage());
+            System.out.print(te.getMessage());
         }
     }
 }

@@ -15,29 +15,34 @@ public class LocationSearch {
 
 
     public static GeoLocation getGeoCenter (String place) {
-        if ("nearby".equals(place))
+        if ("nearby".equals(place)) {
             place = getGeoIP();
+        }
 
         try {
-
             final Geocoder geocoder = new Geocoder();
             GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setAddress(place).getGeocoderRequest();
             GeocodeResponse geocoderResponse = geocoder.geocode(geocoderRequest);
             List<GeocoderResult> geocoderResult = geocoderResponse.getResults();
+            if (geocoderResult.size() == 0) {
+                String msg = "Google doesn't know where are you so I have to miss the location parameter;(";
+                throw new APIException(msg);
+            }
             double latitude = geocoderResult.get(0).getGeometry().getLocation().getLat().floatValue();
             double longitude = geocoderResult.get(0).getGeometry().getLocation().getLng().floatValue();
 
             return new GeoLocation(latitude, longitude);
 
         } catch (Exception ge) {
-            System.out.println("Error in Geocoder: " + ge.getMessage());
+            System.err.println("Error in Geocoder: " + ge.getMessage());
         }
         return null;
     }
 
     public static double[][] getGeoBox (String place) {
-        if ("nearby".equals(place))
+        if ("nearby".equals(place)) {
             place = getGeoIP();
+        }
 
         try {
             final Geocoder geocoder = new Geocoder();

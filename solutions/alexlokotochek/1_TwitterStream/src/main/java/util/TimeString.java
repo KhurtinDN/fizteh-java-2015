@@ -1,82 +1,88 @@
 package util;
 
 import twitter4j.Status;
+
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalField;
 import java.util.Calendar;
+
+enum WordForm { FIRST, SECOND, THIRD }
 
 public class TimeString {
 
     public static String timeOfTweet(Status status){
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(status.getCreatedAt());
-        Calendar calNow = Calendar.getInstance();
-        calNow.setTime(calNow.getTime());
 
-        int minutes = cal.get(Calendar.MINUTE);
-        int hours = cal.get(Calendar.HOUR_OF_DAY);
-        int days = cal.get(Calendar.DAY_OF_YEAR);
+        LocalDateTime nowDateTime = LocalDateTime.now();
+        LocalDateTime tweetDateTime = LocalDateTime.ofInstant(status.getCreatedAt()
+                .toInstant(), ZoneId.systemDefault());
 
-        int minutesNow = calNow.get(Calendar.MINUTE);
-        int hoursNow = calNow.get(Calendar.HOUR_OF_DAY);
-        int daysNow = calNow.get(Calendar.DAY_OF_YEAR);
+        long minutes = java.time.Duration.between(tweetDateTime, nowDateTime)
+                .toMinutes();
+        long hours = java.time.Duration.between(tweetDateTime, nowDateTime)
+                .toHours();
+        long days = java.time.Duration.between(tweetDateTime, nowDateTime)
+                .toDays();
 
-        String tweetTime;
-
-        if (days != daysNow){
-            if (daysNow - days == 1)
+        if (days > 0) {
+            if (days == 1) {
                 return "Вчера";
-            else
-                tweetTime = formDays(daysNow-days);
-        }else{
-            if (hours < hoursNow - 1) {
-                tweetTime = formHours(hoursNow-hours);
-            }else{
-                if (hours == hoursNow-1) {
-                    if (minutes <= minutesNow)
-                        tweetTime = formHours(1);
-                    else
-                        if (minutes - minutesNow <= 2)
-                            return "Только что";
-                        else
-                            tweetTime = formMinutes(minutes - minutesNow);
-                }else{
-                    if (minutesNow - minutes <= 2)
-                        return "Только что";
-                    else
-                        tweetTime = formMinutes(minutesNow - minutes);
-                }
+            } else {
+                return formDays(days) + " назад";
             }
         }
-        return tweetTime + " назад";
+
+        if (hours >= 1) {
+            return formHours(hours) + " назад";
+        }
+
+        return formMinutes(minutes) + " назад";
     }
 
-    public static String formDays (int days) {
-        if (days % 100 >= 11 && days % 100 <= 19)
-            return days + " дней";
-        if (days % 10 == 1)
-            return days + " день";
-        if (days % 10 >= 2 && days % 10 <= 4)
-            return days + " дня";
-        return days + " дней";
+    public static WordForm findForm (long number) {
+        if (number % 100 >= 11 && number % 100 <= 19) {
+            return WordForm.FIRST;
+        }
+        if (number % 10 == 1) {
+            return WordForm.SECOND;
+        }
+        if (number % 10 >= 2 && number % 10 <= 4) {
+            return WordForm.THIRD;
+        }
+        return WordForm.FIRST;
     }
 
-    public static String formHours (int hours) {
-        if (hours % 100 >= 11 && hours % 100 <= 19)
-            return hours + " часов";
-        if (hours % 10 == 1)
-            return hours + " час";
-        if (hours % 10 >= 2 && hours % 10 <= 4)
-            return hours + " часа";
-        return hours + " часов";
+    public static String formDays (long days) {
+        WordForm form = findForm(days);
+        switch(form) {
+            case FIRST: return days + " дней";
+            case SECOND: return days + " день";
+            case THIRD: return days + " дня";
+            default: return null;
+        }
     }
 
-    public static String formMinutes (int minutes) {
-        if (minutes % 100 >= 11 && minutes % 100 <= 19)
-            return minutes + " минут";
-        if (minutes % 10 == 1)
-            return minutes + " минута";
-        if (minutes % 10 >= 2 && minutes % 10 <= 4)
-            return minutes + " минуты";
-        return minutes + " минут";
+
+    public static String formHours (long hours) {
+        WordForm form = findForm(hours);
+        switch(form) {
+            case FIRST: return hours + " часов";
+            case SECOND: return hours + " час";
+            case THIRD: return hours + " часа";
+            default: return null;
+        }
+    }
+
+    public static String formMinutes (long minutes) {
+        WordForm form = findForm(minutes);
+        switch(form) {
+            case FIRST: return minutes + " минут";
+            case SECOND: return minutes + " минута";
+            case THIRD: return minutes + " минуты";
+            default: return null;
+        }
     }
 
 
