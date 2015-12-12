@@ -26,28 +26,29 @@ public class Translator {
         URL urlObj = new URL(urlStr);
         HttpsURLConnection connection = (HttpsURLConnection) urlObj.openConnection();
 
-        InputStream response = connection.getInputStream();
-        String json = new java.util.Scanner(response).nextLine();
-        int start = json.indexOf("[");
-        int end = json.indexOf("]");
-        String translated;
-        if (lang.equals("en-ru")) {
-            String translatedIncorrect = json.substring(start + 2, end - 1);
-            byte[] b = translatedIncorrect.getBytes();
-            translated = new String(b, "UTF-8");
-            //System.out.println(translated);
-        } else {
-            translated = json.substring(start + 2, end - 1);
-        }
-
-        if (translated.equals(input)) {
-            if (tryingTimes > 2) {
-                tryingTimes = 0;
-                return input;
+        try (InputStream response = connection.getInputStream()) {
+            String json = new java.util.Scanner(response).nextLine();
+            int start = json.indexOf("[");
+            int end = json.indexOf("]");
+            String translated;
+            if (lang.equals("en-ru")) {
+                String translatedIncorrect = json.substring(start + 2, end - 1);
+                byte[] b = translatedIncorrect.getBytes();
+                translated = new String(b, "UTF-8");
+                //System.out.println(translated);
+            } else {
+                translated = json.substring(start + 2, end - 1);
             }
-            return translate("en-ru", input); //метод из программы вызывается с lang="ru-en"
+
+            if (translated.equals(input)) {
+                if (tryingTimes > 2) {
+                    tryingTimes = 0;
+                    return input;
+                }
+                return translate("en-ru", input); //метод из программы вызывается с lang="ru-en"
+            }
+            tryingTimes = 0;
+            return translated;
         }
-        tryingTimes = 0;
-        return translated;
     }
 }

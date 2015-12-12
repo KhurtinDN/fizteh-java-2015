@@ -46,17 +46,18 @@ public class TwitterStream {
     private static String getUrlSource(String url) throws IOException {
         URL realURL = new URL(url);
         URLConnection connection = realURL.openConnection();
-        BufferedReader urlReader = new BufferedReader(
-                new InputStreamReader(connection.getInputStream(), "UTF-8"));
-        String inputLine = urlReader.readLine();
-        StringBuilder sourceString = new StringBuilder();
-        while (inputLine != null) {
-            sourceString.append(inputLine);
-            inputLine = urlReader.readLine();
-        }
-        urlReader.close();
+        try (BufferedReader urlReader = new BufferedReader(
+                new InputStreamReader(connection.getInputStream(), "UTF-8"))) {
+            String inputLine = urlReader.readLine();
+            StringBuilder sourceString = new StringBuilder();
+            while (inputLine != null) {
+                sourceString.append(inputLine);
+                inputLine = urlReader.readLine();
+            }
+            urlReader.close();
 
-        return sourceString.toString();
+            return sourceString.toString();
+        }
     }
 
     private static String getMyLocation() throws IOException {
