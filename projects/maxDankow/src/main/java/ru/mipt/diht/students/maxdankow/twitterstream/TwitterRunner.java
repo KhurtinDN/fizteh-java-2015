@@ -1,5 +1,4 @@
 package ru.mipt.diht.students.maxdankow.twitterstream;
-// todo: переименовать все пакеты в lowercase.
 
 import com.beust.jcommander.JCommander;
 import ru.mipt.diht.students.maxdankow.twitterstream.solution.TwitterSearcher;
