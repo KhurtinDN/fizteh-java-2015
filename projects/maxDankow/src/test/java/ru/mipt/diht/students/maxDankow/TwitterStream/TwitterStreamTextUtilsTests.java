@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 public class TwitterStreamTextUtilsTests {
     @Test
     public void testBuildUserName() {
-        assertEquals("@User-Name123", TwitterStreamUtils.buildColorizedUserName("User-Name123"));
+        assertEquals("\033[34m@User-Name123\033[0m", TwitterStreamUtils.buildColorizedUserName("User-Name123", TwitterStreamUtils.TextColor.BLUE));
     }
 
     @Test
