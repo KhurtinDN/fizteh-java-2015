@@ -1,4 +1,4 @@
-package ru.mipt.diht.students;
+package ru.mipt.diht.students.andreyzharkov.twitterStream;
 
 /**
  * Created by Андрей on 11.10.2015.
@@ -6,16 +6,16 @@ package ru.mipt.diht.students;
 public class TimeDeclension {
     private static final int TEN = 10;
 
-    public static final String timeInRightForm(String timeUnion, int count) {
+    public static String timeInRightForm(TwitterOutputEditor.Time timeUnion, int count) {
         switch (count % TEN) {
             case 1:
                 if (count / TEN % TEN != 1) {
                     switch (timeUnion) {
-                        case "DAY":
+                        case DAY:
                             return "день";
-                        case "HOUR":
+                        case HOUR:
                             return "час";
-                        case "MINUTE":
+                        case MINUTE:
                             return "минуту";
                         default:
                             return "Wrong Arguments";
@@ -26,11 +26,11 @@ public class TimeDeclension {
             case 2 + 2:
                 if (count / TEN % TEN != 1) {
                     switch (timeUnion) {
-                        case "DAY":
+                        case DAY:
                             return "дня";
-                        case "HOUR":
+                        case HOUR:
                             return "часа";
-                        case "MINUTE":
+                        case MINUTE:
                             return "минуты";
                         default:
                             return "Wrong Arguments";
@@ -38,11 +38,11 @@ public class TimeDeclension {
                 }
             default:
                 switch (timeUnion) {
-                    case "DAY":
+                    case DAY:
                         return "дней";
-                    case "HOUR":
+                    case HOUR:
                         return "часов";
-                    case "MINUTE":
+                    case MINUTE:
                         return "минут";
                     default:
                         return "Wrong Arguments";

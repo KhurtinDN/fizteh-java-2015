@@ -1,4 +1,4 @@
-package ru.mipt.diht.students;
+package ru.mipt.diht.students.andreyzharkov.twitterStream;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
@@ -31,7 +31,7 @@ public class Translator {
         int start = json.indexOf("[");
         int end = json.indexOf("]");
         String translated;
-        if (lang == "en-ru") {
+        if (lang.equals("en-ru")) {
             String translatedIncorrect = json.substring(start + 2, end - 1);
             byte[] b = translatedIncorrect.getBytes();
             translated = new String(b, "UTF-8");

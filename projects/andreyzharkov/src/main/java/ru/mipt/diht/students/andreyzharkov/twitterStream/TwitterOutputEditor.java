@@ -1,4 +1,4 @@
-package ru.mipt.diht.students;
+package ru.mipt.diht.students.andreyzharkov.twitterStream;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -15,14 +15,16 @@ import twitter4j.*;
  */
 public class TwitterOutputEditor {
     //colors
-    private static final String SET_BLUE = (char) 27 + "[" + (char) 34 + "m";
-    private static final String SET_STANDART = (char) 27 + "[" + (char) 37 + "m";
-    //private static final String SET_BLUE = "";
-    //private static final String SET_STANDART = "";
+    private static final String SET_BLUE_TEXT_COLOR = (char) 27 + "[" + (char) 34 + "m";
+    private static final String SET_STANDART_TEXT_COLOR = (char) 27 + "[" + (char) 37 + "m";
+    //private static final String SET_BLUE_TEXT_COLOR = "";
+    //private static final String SET_STANDART_TEXT_COLOR = "";
     private static final int SLEEP_TIME = 1000;
     private static final int QUEUE_MAX_SIZE = 1000;
     private static final char EXIT_KEY = (char) 27;
     private static final String SEARCH_BY_LOCATION_FAILED = "Search by location failed! Show results from anywhere.";
+
+    enum Time { MINUTE, HOUR, DAY }
 
     private Twitter twitter;
     private ArgumentsList programArguments;
@@ -43,21 +45,21 @@ public class TwitterOutputEditor {
         }
         if (timeAfterTweet.toHours() < 1) {
             return (int) (timeAfterTweet.toMinutes()) + " "
-                    + TimeDeclension.timeInRightForm("MINUTE", (int) (timeAfterTweet.toMinutes())) + " назад";
+                    + TimeDeclension.timeInRightForm(Time.MINUTE, (int) (timeAfterTweet.toMinutes())) + " назад";
         }
         if (currentDateTime.toLocalDate().equals(tweetDateTime.toLocalDate())) {
             return (int) (timeAfterTweet.toHours()) + " "
-                    + TimeDeclension.timeInRightForm("HOUR", (int) (timeAfterTweet.toHours())) + " назад";
+                    + TimeDeclension.timeInRightForm(Time.HOUR, (int) (timeAfterTweet.toHours())) + " назад";
         }
         if (currentDateTime.toLocalDate().minusDays(1).equals(tweetDateTime.toLocalDate())) {
             return "вчера";
         }
         return (int) (timeAfterTweet.toDays()) + " "
-                + TimeDeclension.timeInRightForm("DAY", (int) (timeAfterTweet.toDays())) + " назад";
+                + TimeDeclension.timeInRightForm(Time.DAY, (int) (timeAfterTweet.toDays())) + " назад";
     }
 
     final String convertNick(User user) {
-        return SET_BLUE + "@" + user.getName() + SET_STANDART;
+        return SET_BLUE_TEXT_COLOR + "@" + user.getName() + SET_STANDART_TEXT_COLOR;
     }
 
     final String convertRetweetsCount(int count) {
@@ -71,22 +73,27 @@ public class TwitterOutputEditor {
     }
 
     final void printOneTweet(Status tweet, boolean withDate) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         if (withDate) {
-            result += "[" + convertTime(tweet.getCreatedAt()) + "] ";
+            result.append("[");
+            result.append(convertTime(tweet.getCreatedAt()));
+            result.append("] ");
         }
-        result += (convertNick(tweet.getUser()) + " ");
+        result.append(convertNick(tweet.getUser()));
+        result.append(" ");
         if (tweet.isRetweet()) {
-            result += ("ретвитнул " + convertNick(tweet.getRetweetedStatus().getUser()));
+            result.append("ретвитнул ");
+            result.append(convertNick(tweet.getRetweetedStatus().getUser()));
         }
 
-        result += (tweet.getText() + " ");
-        result += convertRetweetsCount(tweet.getRetweetCount());
+        result.append(tweet.getText());
+        result.append(" ");
+        result.append(convertRetweetsCount(tweet.getRetweetCount()));
         System.out.println(result);
     }
 
     public final LocationSearcher findLocation(String region) throws TwitterException {
-        if (region == "anywhere") {
+        if (region.equals("anywhere")) {
             return null;
         }
         GeoQuery geoQuery = new GeoQuery("1.1.1.1"); //ip need for init

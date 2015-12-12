@@ -1,4 +1,4 @@
-package ru.mipt.diht.students;
+package ru.mipt.diht.students.andreyzharkov.twitterStream;
 
 import twitter4j.GeoLocation;
 import twitter4j.Place;

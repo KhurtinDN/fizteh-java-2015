@@ -1,4 +1,4 @@
-package ru.mipt.diht.students;
+package ru.mipt.diht.students.andreyzharkov.twitterStream;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
