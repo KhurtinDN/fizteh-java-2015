@@ -9,7 +9,6 @@ import java.util.List;
 
 public class TwitterSearcher {
 
-    // Ограничение количества попыток переподключения.
     private static final int ATTEMPTS_LIMIT = 5;
     private static final int RECONNECT_DELAY_MS = 5000;
     private boolean shouldHideRetweets = false;
@@ -17,44 +16,52 @@ public class TwitterSearcher {
     private Geometry locationGeometry = null;
     private String queryText = null;
 
-    public TwitterSearcher(String query, String location,
-                           boolean hideRetweets, int tweetsLimit)
-            throws NullPointerException {
+    public TwitterSearcher(String query,
+                           String location,
+                           boolean hideRetweets,
+                           int tweetsLimit) throws IllegalArgumentException {
         shouldHideRetweets = hideRetweets;
         tweetsNumberLimit = tweetsLimit;
+        queryText = query;
+
         if (location != null) {
             locationGeometry = GeolocationUtils.findLocation(location);
         }
-        queryText = query;
-        if (queryText == null) {
-            throw new NullPointerException("Query is empty.");
+
+        if (this.queryText == null) {
+            throw new IllegalArgumentException("Query is empty.");
         }
     }
 
-    public final void searchTweets() {
+    public final void searchTweets() throws InterruptedException, IllegalStateException {
         Twitter twitter = new TwitterFactory().getInstance();
-        Query query = new Query();
-        assert queryText != null;
-        query.setQuery(queryText);
-        query.setCount(tweetsNumberLimit);
+
+        // Настраиваем запрос.
+        Query twitterQuery = new Query();
+        assert this.queryText != null;
+        twitterQuery.setQuery(this.queryText);
+        twitterQuery.setCount(tweetsNumberLimit);
+
+        // Будем подключаться пока не получится.
         QueryResult result = null;
-        // Будем подключаться пока не получится
         for (int attempts = 0; attempts < ATTEMPTS_LIMIT; ++attempts) {
             try {
-                result = twitter.search(query);
+                result = twitter.search(twitterQuery);
                 break;
             } catch (TwitterException te) {
                 System.err.println("Невозможно выполнить запрос к Twitter. Повторная попытка...");
-                try {
-                    Thread.sleep(RECONNECT_DELAY_MS);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                Thread.sleep(RECONNECT_DELAY_MS);
             }
         }
-        assert result != null;
+
+        // Сообщаем, если не удалось получить результат или подключиться к Twitter.
+        if (result == null) {
+            throw new IllegalStateException("Не удалось подключиться к Twitter.");
+        }
+
+        // Обрабатываем полученные результаты, получая по очереди все страницы.
         int tweetsCount = 0;
-        while (query != null) {
+        while (twitterQuery != null && tweetsCount < tweetsNumberLimit) {
             List<Status> tweets = result.getTweets();
             for (Status tweet : tweets) {
                 if (TwitterStreamUtils.checkTweet(tweet, locationGeometry, shouldHideRetweets)) {
@@ -62,13 +69,11 @@ public class TwitterSearcher {
                     tweetsCount++;
                 }
             }
-            query = result.nextQuery();
-            if (tweetsCount >= tweetsNumberLimit) {
-                query = null;
-            }
+            twitterQuery = result.nextQuery();
         }
+
         if (tweetsCount == 0) {
-            System.out.println("No tweets found.");
+            System.out.println("По Вашему запросу не найдено ни одного твитта.");
         }
     }
 }

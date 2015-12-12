@@ -7,26 +7,37 @@ import ru.mipt.diht.students.maxDankow.TwitterStream.solution.TwitterStreamer;
 public class TwitterRunner {
 
     public static void main(String[] args) {
-        ComandLineArgumentsParser argumentsParser = new ComandLineArgumentsParser();
-        JCommander jCommander = new JCommander(argumentsParser, args);
-        if (argumentsParser.isHelp()) {
+        // todo: обрабатывать неправильные аргументы (использовать метод JCommander::parse).
+        ComandLineArgumentsParser arguments = new ComandLineArgumentsParser();
+        JCommander jCommander = new JCommander(arguments, args);
+
+        if (arguments.isHelp()) {
             jCommander.usage();
             return;
         }
-        String locationName = argumentsParser.getLocationName();
-        String queryText = argumentsParser.getQueryText();
-        boolean shouldHideRetweets = argumentsParser.shouldHideRetweets();
-        int tweetsNumberLimit = argumentsParser.getTweetsNumberLimit();
 
-        if (argumentsParser.isStreamMode()) {
-            TwitterStreamer twitterStreamer = new TwitterStreamer(queryText, locationName,
-                    shouldHideRetweets, tweetsNumberLimit);
+        if (arguments.isStreamMode()) {
+            TwitterStreamer twitterStreamer = new TwitterStreamer(
+                    arguments.getQueryText(),
+                    arguments.getLocationName(),
+                    arguments.shouldHideRetweets()
+            );
+
             twitterStreamer.startStream();
         } else {
-            TwitterSearcher twitterSearcher = new TwitterSearcher(queryText, locationName,
-                    shouldHideRetweets, tweetsNumberLimit);
-            twitterSearcher.searchTweets();
+            TwitterSearcher twitterSearcher = new TwitterSearcher(
+                    arguments.getQueryText(),
+                    arguments.getLocationName(),
+                    arguments.shouldHideRetweets(),
+                    arguments.getTweetsNumberLimit());
+
+            try {
+                twitterSearcher.searchTweets();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (IllegalStateException e) {
+                System.out.println(e.getMessage());
+            }
         }
-        System.exit(0);
     }
 }
