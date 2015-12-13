@@ -12,6 +12,7 @@ public class RollCaller {
         }
     }
 
+    // Ожидает завершения всех потоков в исполнителе.
     public void waitForAll(ExecutorService exec) {
         exec.shutdown();
         try {
