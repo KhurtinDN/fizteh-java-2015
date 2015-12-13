@@ -18,7 +18,7 @@ public class Translator {
 
     public static String translate(String lang, String input) throws IOException {
         tryingTimes++;
-        if (yandexAPIkey == null){
+        if (yandexAPIkey == null) {
             BufferedReader reader = new BufferedReader(new FileReader("key.txt"));
             yandexAPIkey = reader.readLine();
         }
