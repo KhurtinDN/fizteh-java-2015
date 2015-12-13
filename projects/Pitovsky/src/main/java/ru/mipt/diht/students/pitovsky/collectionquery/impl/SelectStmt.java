@@ -44,6 +44,11 @@ public class SelectStmt<T, R> {
         return outputClass;
     }
 
+    /**
+     * Select only rows, which is good for this predicate.
+     * @param predicate
+     * @return
+     */
     public final WhereStmt<T, R> where(Predicate<T> predicate) {
         return new WhereStmt<>(this, predicate);
     }
@@ -75,8 +80,7 @@ public class SelectStmt<T, R> {
                 output.add(new FinalRow<T, R>(constructor.newInstance(parametrs), element));
             } catch (InstantiationException | IllegalAccessException
                     | IllegalArgumentException | InvocationTargetException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new RuntimeException("constructor", e);
             }
         }
 
@@ -139,6 +143,11 @@ public class SelectStmt<T, R> {
         return output;
     }
 
+    /**
+     * Final operation. Apply all predicates for base collection.
+     * @return Output collection, contains sql query results.
+     * @throws CollectionQueryExecuteException
+     */
     public final Collection<R> execute() throws CollectionQueryExecuteException {
         Collection<FinalRow<T, R>> output = null;
         if (isDistinct) {
@@ -147,7 +156,15 @@ public class SelectStmt<T, R> {
             output = new ArrayList<>();
         }
 
-        stream.forEach(new Applier(output, getAskedConstructor()));
+        try {
+            stream.forEach(new Applier(output, getAskedConstructor()));
+        } catch (RuntimeException e) {
+            if (e.getMessage().equals("constructor")) {
+                throw new CollectionQueryExecuteException("Unavailiable constructor", e.getCause());
+            } else {
+                throw e;
+            }
+        }
 
         if (groupingFunctions != null) {
             List<FinalRow<T, R>> preCalcSortedTable = new ArrayList<>();
@@ -196,6 +213,11 @@ public class SelectStmt<T, R> {
         stream = newStream;
     }
 
+    /**
+     * Union result of this query with results of other query. Asked types must be equals.
+     * @return
+     * @throws CollectionQueryExecuteException
+     */
     public final UnionStmt<R> union() throws CollectionQueryExecuteException {
         return new UnionStmt<R>(this);
     }
