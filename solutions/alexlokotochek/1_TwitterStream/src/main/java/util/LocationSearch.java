@@ -20,12 +20,12 @@ public class LocationSearch {
         }
 
         try {
-            final Geocoder geocoder = new Geocoder();
+            Geocoder geocoder = new Geocoder();
             GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setAddress(place).getGeocoderRequest();
             GeocodeResponse geocoderResponse = geocoder.geocode(geocoderRequest);
             List<GeocoderResult> geocoderResult = geocoderResponse.getResults();
             if (geocoderResult.size() == 0) {
-                String msg = "Google doesn't know where are you so I have to miss the location parameter;(";
+                String msg = "Google doesn't know where are you ;(";
                 throw new APIException(msg);
             }
             double latitude = geocoderResult.get(0).getGeometry().getLocation().getLat().floatValue();

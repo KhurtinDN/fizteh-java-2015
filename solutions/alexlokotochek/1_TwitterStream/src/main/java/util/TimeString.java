@@ -38,6 +38,10 @@ public class TimeString {
             return formHours(hours) + " назад";
         }
 
+        if (minutes <= 1) {
+            return "Только что";
+        }
+
         return formMinutes(minutes) + " назад";
     }
 
@@ -79,7 +83,7 @@ public class TimeString {
         WordForm form = findForm(minutes);
         switch(form) {
             case FIRST: return minutes + " минут";
-            case SECOND: return minutes + " минута";
+            case SECOND: return minutes + " минуту";
             case THIRD: return minutes + " минуты";
             default: return null;
         }
