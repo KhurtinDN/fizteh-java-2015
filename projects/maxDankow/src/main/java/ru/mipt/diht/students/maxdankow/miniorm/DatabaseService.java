@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static ru.mipt.diht.students.maxdankow.miniorm.Utils.camelCaseToLowerCase;
 
@@ -19,13 +20,13 @@ public class DatabaseService<T> {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     public @interface Table {
-        String name();
+        String name() default "";
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     public @interface Column {
-        String name();
+        String name() default "";
 
         String type();
     }
@@ -36,51 +37,70 @@ public class DatabaseService<T> {
     }
 
     private String tableName;
+    private List<ItemColumn> columnList;
 
     private static final String DATABASE_PATH = "jdbc:h2:/tmp/simple_database";
     Class itemsClass;
 
     DatabaseService(Class newItemsClass) {
         itemsClass = newItemsClass;
-        getTableName();
+        tableName = getTableName();
+        columnList = getColumnList();
     }
 
     private String getTableName() {
-        Table tableAnnotation = (Table) itemsClass.getAnnotation(Table.class);
-        return tableAnnotation.name();
+        // Проверяем, проаннотирован ли класс @Table
+        Table tableAnnotation;
+        if (itemsClass.isAnnotationPresent(Table.class)) {
+            tableAnnotation = (Table) itemsClass.getAnnotation(Table.class);
+        } else {
+            throw new IllegalArgumentException("Class has no @Table annotation");
+        }
+
+        // Если имя таблицы не указано, то сгерерируем его.
+        String tableName = tableAnnotation.name();
+        if (Objects.equals(tableName, "")) {
+            tableName = camelCaseToLowerCase(itemsClass.getName());
+        }
+        return tableName;
     }
 
-    private List<Column> getColumnsList() {
-        List<Column> columnList = new ArrayList<>();
+    private List<ItemColumn> getColumnList() {
+        List<ItemColumn> columnList = new ArrayList<>();
 
         // Пройдемся по полям класса и найдем аннотированные @Column
-        Field[] fields = itemsClass.getFields();
+        Field[] fields = itemsClass.getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(Column.class)) {
                 Column column = field.getAnnotation(Column.class);
-                columnList.add(column);
-                if (column.name() == null) {
-//                    column.
+                String name = column.name();
+                String type = column.type();
+                if (name.equals("")) {
+                    name = camelCaseToLowerCase(field.getName());
                 }
+                columnList.add(new ItemColumn(name, type));
             }
         }
         return columnList;
     }
 
-    private String buildCreateQuery() {
+    public String buildCreateQuery() {
         StringBuilder createQuery = new StringBuilder("");
         createQuery.append("CREATE TABLE IF NOT EXISTS ")
                 .append(tableName)
-                .append(" ( ");
+                .append(" (");
 
-        List<Column> columns = getColumnsList();
-        for (Column column : columns) {
-            String name = column.name();
-            if (name == null) {
-                name = camelCaseToLowerCase();
-
+        int count = 0;
+        for (ItemColumn column : columnList) {
+            createQuery.append(column.name)
+                    .append(" ")
+                    .append(column.type);
+            if (count + 1 < columnList.size()) {
+                createQuery.append(", ");
             }
+            ++count;
         }
+        createQuery.append(")");
         return createQuery.toString();
     }
 
@@ -110,4 +130,13 @@ public class DatabaseService<T> {
 //    T queryForAll(){};
 //    void update(T item){}
 //    void delete(T item) {}
+class ItemColumn {
+    public ItemColumn(String name, String type) {
+        this.name = name;
+        this.type = type;
+    }
+
+    public String name;
+    public String type;
+}
 }

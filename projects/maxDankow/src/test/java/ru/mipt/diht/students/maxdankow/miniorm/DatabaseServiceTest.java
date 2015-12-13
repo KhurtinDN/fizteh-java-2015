@@ -8,6 +8,8 @@ import ru.mipt.diht.students.maxdankow.miniorm.DatabaseService.Table;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 
 public class DatabaseServiceTest {
     private List<Student> students = new ArrayList<>();
@@ -27,16 +29,23 @@ public class DatabaseServiceTest {
         DatabaseService<Student> studentsDB = new DatabaseService<>(Student.class);
     }
 
+    @Test
+    public void createQueryBuilderTest() {
+        DatabaseService<Student> studentDatabaseService = new DatabaseService<>(Student.class);
+        assertEquals("CREATE TABLE IF NOT EXISTS students (FIO VARCHAR(255), group INTEGER, has_salary BOOLEAN)",
+                studentDatabaseService.buildCreateQuery());
+    }
+
     @Table(name = "students")
     private class Student {
 
-        @Column(name = "name", type = "VARCHAR(255)")
+        @Column(name = "FIO", type = "VARCHAR(255)")
         private String name;
 
-        @Column(name = "group", type = "INTEGER")
+        @Column(type = "INTEGER")
         private int group;
 
-        @Column(name = "has_salary", type = "BOOLEAN")
+        @Column(type = "BOOLEAN")
         private boolean hasSalary;
 
         public Student(String name, int group, boolean hasSalary) {
