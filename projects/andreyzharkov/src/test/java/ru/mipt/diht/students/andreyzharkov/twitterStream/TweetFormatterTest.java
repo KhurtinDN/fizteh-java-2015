@@ -4,6 +4,9 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import junit.framework.TestCase;
 import org.junit.Test;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.equalTo;
 import org.mockito.Mockito;
 import twitter4j.*;
 
@@ -126,6 +129,8 @@ public class TweetFormatterTest extends TestCase {
         String[] tweetsOut = clientByteOut.toString().split("[\n]");
         for (int i = 0; i < tweetList.size(); ++i) {
             //assertEquals(tweetsOut[i + 2], tweetResultList.get(i));
+            assertThat("first=" + tweetsOut[i + 2] + "\nsecond=" + tweetResultList.get(i),
+                    tweetsOut.equals(tweetResultList.get(i)));
         }
     }
 }
