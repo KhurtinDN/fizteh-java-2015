@@ -2,6 +2,8 @@ package ru.mipt.diht.students.maxdankow.miniorm;
 
 import org.junit.Before;
 import org.junit.Test;
+import ru.mipt.diht.students.maxdankow.miniorm.DatabaseService.Column;
+import ru.mipt.diht.students.maxdankow.miniorm.DatabaseService.Table;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +27,16 @@ public class DatabaseServiceTest {
         DatabaseService<Student> studentsDB = new DatabaseService<>(Student.class);
     }
 
+    @Table(name = "students")
     private class Student {
+
+        @Column(name = "name", type = "VARCHAR(255)")
         private String name;
+
+        @Column(name = "group", type = "INTEGER")
         private int group;
+
+        @Column(name = "has_salary", type = "BOOLEAN")
         private boolean hasSalary;
 
         public Student(String name, int group, boolean hasSalary) {
