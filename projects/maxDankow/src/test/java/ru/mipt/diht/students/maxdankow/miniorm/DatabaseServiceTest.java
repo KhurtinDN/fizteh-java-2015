@@ -27,13 +27,16 @@ public class DatabaseServiceTest {
     @Test
     public void test() {
         DatabaseService<Student> studentsDB = new DatabaseService<>(Student.class);
+        studentsDB.dropTable();
+        studentsDB.createTable();
+//        studentsDB.dropTable();
     }
 
     @Test
     public void createQueryBuilderTest() {
         DatabaseService<Student> studentDatabaseService = new DatabaseService<>(Student.class);
-        assertEquals("CREATE TABLE IF NOT EXISTS students (FIO VARCHAR(255), group INTEGER, has_salary BOOLEAN)",
-                studentDatabaseService.buildCreateQuery());
+        assertEquals("CREATE TABLE IF NOT EXISTS students (FIO VARCHAR(255), group_id INTEGER, has_salary BOOLEAN)",
+                studentDatabaseService.createStatementBuilder());
     }
 
     @Table(name = "students")
@@ -43,14 +46,14 @@ public class DatabaseServiceTest {
         private String name;
 
         @Column(type = "INTEGER")
-        private int group;
+        private int groupId;
 
         @Column(type = "BOOLEAN")
         private boolean hasSalary;
 
-        public Student(String name, int group, boolean hasSalary) {
+        public Student(String name, int groupId, boolean hasSalary) {
             this.name = name;
-            this.group = group;
+            this.groupId = groupId;
             this.hasSalary = hasSalary;
         }
 
@@ -62,12 +65,12 @@ public class DatabaseServiceTest {
             this.name = name;
         }
 
-        public int getGroup() {
-            return group;
+        public int getGroupId() {
+            return groupId;
         }
 
-        public void setGroup(int group) {
-            this.group = group;
+        public void setGroupId(int groupId) {
+            this.groupId = groupId;
         }
 
         public boolean isHasSalary() {
@@ -82,7 +85,7 @@ public class DatabaseServiceTest {
         public String toString() {
             return "Student{" +
                     "name='" + name + '\'' +
-                    ", group=" + group +
+                    ", groupId=" + groupId +
                     ", hasSalary=" + hasSalary +
                     '}';
         }

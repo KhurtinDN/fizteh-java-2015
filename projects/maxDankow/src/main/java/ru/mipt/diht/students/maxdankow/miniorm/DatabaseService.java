@@ -7,8 +7,8 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -27,7 +27,6 @@ public class DatabaseService<T> {
     @Target(ElementType.FIELD)
     public @interface Column {
         String name() default "";
-
         String type();
     }
 
@@ -39,7 +38,7 @@ public class DatabaseService<T> {
     private String tableName;
     private List<ItemColumn> columnList;
 
-    private static final String DATABASE_PATH = "jdbc:h2:/tmp/simple_database";
+    private static final String DATABASE_PATH = "jdbc:h2:./simple_database";
     Class itemsClass;
 
     DatabaseService(Class newItemsClass) {
@@ -48,6 +47,49 @@ public class DatabaseService<T> {
         columnList = getColumnList();
     }
 
+    public String createStatementBuilder() {
+        StringBuilder createQuery = new StringBuilder("");
+        createQuery.append("CREATE TABLE IF NOT EXISTS ")
+                .append(tableName)
+                .append(" (");
+
+        int count = 0;
+        for (ItemColumn column : columnList) {
+            createQuery.append(column.name)
+                    .append(" ")
+                    .append(column.type);
+            if (count + 1 < columnList.size()) {
+                createQuery.append(", ");
+            }
+            ++count;
+        }
+        createQuery.append(")");
+        return createQuery.toString();
+    }
+
+    public void createTable() {
+        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
+            Statement createStatement = connection.createStatement();
+            createStatement.execute(createStatementBuilder());
+        } catch (SQLException e) {
+            System.err.println("An SQL error occurred: " + e.getMessage());
+        }
+    }
+
+    void dropTable() {
+        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
+            Statement dropStatement = connection.createStatement();
+            dropStatement.execute("DROP TABLE IF EXISTS " + tableName);
+        } catch (SQLException e) {
+            System.err.println("An SQL error occurred: " + e.getMessage());
+        }
+    }
+
+    //    void insert(T item) {}
+    //    T queryById(K){}
+//    T queryForAll(){};
+//    void update(T item){}
+//    void delete(T item) {}
     private String getTableName() {
         // Проверяем, проаннотирован ли класс @Table
         Table tableAnnotation;
@@ -75,6 +117,8 @@ public class DatabaseService<T> {
                 Column column = field.getAnnotation(Column.class);
                 String name = column.name();
                 String type = column.type();
+
+                // Если имя не задано, то сгернерируем.
                 if (name.equals("")) {
                     name = camelCaseToLowerCase(field.getName());
                 }
@@ -84,59 +128,13 @@ public class DatabaseService<T> {
         return columnList;
     }
 
-    public String buildCreateQuery() {
-        StringBuilder createQuery = new StringBuilder("");
-        createQuery.append("CREATE TABLE IF NOT EXISTS ")
-                .append(tableName)
-                .append(" (");
-
-        int count = 0;
-        for (ItemColumn column : columnList) {
-            createQuery.append(column.name)
-                    .append(" ")
-                    .append(column.type);
-            if (count + 1 < columnList.size()) {
-                createQuery.append(", ");
-            }
-            ++count;
+    class ItemColumn {
+        public ItemColumn(String name, String type) {
+            this.name = name;
+            this.type = type;
         }
-        createQuery.append(")");
-        return createQuery.toString();
-    }
 
-    public void createTable() {
-        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
-            PreparedStatement crateStatement =
-                    connection.prepareStatement("CREATE TABLE IF NOT EXISTS USERS ");
-//            insertStatement.setString(1, tableName);
-        } catch (SQLException e) {
-            System.err.println("An SQL error occurred: " + e.getMessage());
-        }
+        public String name;
+        public String type;
     }
-
-    void dropTable() {
-    }
-
-    void insert(T item) {
-        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
-            PreparedStatement insertStatement =
-                    connection.prepareStatement("INSERT INTO ? VALUES ('Peter', 99, true)");
-            insertStatement.setString(1, tableName);
-        } catch (SQLException e) {
-            System.err.println("An SQL error occurred: " + e.getMessage());
-        }
-    }
-//    T queryById(K){}
-//    T queryForAll(){};
-//    void update(T item){}
-//    void delete(T item) {}
-class ItemColumn {
-    public ItemColumn(String name, String type) {
-        this.name = name;
-        this.type = type;
-    }
-
-    public String name;
-    public String type;
-}
 }
