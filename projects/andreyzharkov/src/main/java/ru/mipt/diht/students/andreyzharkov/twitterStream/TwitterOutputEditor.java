@@ -15,10 +15,10 @@ import twitter4j.*;
  */
 public class TwitterOutputEditor {
     //colors
-    private static final String SET_BLUE_TEXT_COLOR = (char) 27 + "[" + (char) 34 + "m";
-    private static final String SET_STANDART_TEXT_COLOR = (char) 27 + "[" + (char) 37 + "m";
-    //private static final String SET_BLUE_TEXT_COLOR = "";
-    //private static final String SET_STANDART_TEXT_COLOR = "";
+    //private static final String SET_BLUE_TEXT_COLOR = (char) 27 + "[" + (char) 34 + "m";
+    //private static final String SET_STANDART_TEXT_COLOR = (char) 27 + "[" + (char) 37 + "m";
+    private static final String SET_BLUE_TEXT_COLOR = "";
+    private static final String SET_STANDART_TEXT_COLOR = "";
     private static final int SLEEP_TIME = 1000;
     private static final int QUEUE_MAX_SIZE = 1000;
     private static final char EXIT_KEY = (char) 27;
@@ -34,9 +34,13 @@ public class TwitterOutputEditor {
         twitter = new TwitterFactory().getInstance();
         this.programArguments = prArguments;
     }
+    //for tests only
+    TwitterOutputEditor(ArgumentsList prArguments, Twitter twittr) {
+        this.programArguments = prArguments;
+        this.twitter = twittr;
+    }
 
-
-    public final String convertTime(Date date) {
+    static String convertTime(Date date) {
         LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDateTime tweetDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         Duration timeAfterTweet = Duration.between(tweetDateTime, currentDateTime);
@@ -58,11 +62,11 @@ public class TwitterOutputEditor {
                 + TimeDeclension.timeInRightForm(Time.DAY, (int) (timeAfterTweet.toDays())) + " назад";
     }
 
-    final String convertNick(User user) {
+    static String convertNick(User user) {
         return SET_BLUE_TEXT_COLOR + "@" + user.getName() + SET_STANDART_TEXT_COLOR;
     }
 
-    final String convertRetweetsCount(int count) {
+    static String convertRetweetsCount(int count) {
         if (count == 0) {
             return "";
         }
@@ -92,7 +96,7 @@ public class TwitterOutputEditor {
         System.out.println(result);
     }
 
-    public final LocationSearcher findLocation(String region) throws TwitterException {
+    final LocationSearcher findLocation(String region) throws TwitterException {
         if (region.equals("anywhere")) {
             return null;
         }
