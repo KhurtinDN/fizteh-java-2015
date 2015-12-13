@@ -34,6 +34,7 @@ public class TwitterOutputEditor {
         twitter = new TwitterFactory().getInstance();
         this.programArguments = prArguments;
     }
+
     //for tests only
     TwitterOutputEditor(ArgumentsList prArguments, Twitter twittr) {
         this.programArguments = prArguments;
@@ -88,11 +89,14 @@ public class TwitterOutputEditor {
         if (tweet.isRetweet()) {
             result.append("ретвитнул ");
             result.append(convertNick(tweet.getRetweetedStatus().getUser()));
+            result.append(" ");
         }
 
         result.append(tweet.getText());
-        result.append(" ");
-        result.append(convertRetweetsCount(tweet.getRetweetCount()));
+        if (tweet.getRetweetCount() > 0) {
+            result.append(" ");
+            result.append(convertRetweetsCount(tweet.getRetweetCount()));
+        }
         System.out.println(result);
     }
 
