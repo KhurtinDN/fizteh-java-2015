@@ -8,12 +8,12 @@ import org.junit.Test;
  */
 public class TimeDeclentionTest extends TestCase {
     @Test
-    public final void declentionTest() {
+    public final void testTimeDeclention() {
         assertEquals(TimeDeclension.timeInRightForm(TwitterOutputEditor.Time.DAY, 1), "день");
         assertEquals(TimeDeclension.timeInRightForm(TwitterOutputEditor.Time.DAY, 33), "дня");
         assertEquals(TimeDeclension.timeInRightForm(TwitterOutputEditor.Time.DAY, 105), "дней");
         assertEquals(TimeDeclension.timeInRightForm(TwitterOutputEditor.Time.MINUTE, 13), "минут");
-        assertEquals(TimeDeclension.timeInRightForm(TwitterOutputEditor.Time.MINUTE, 21), "минута");
+        assertEquals(TimeDeclension.timeInRightForm(TwitterOutputEditor.Time.MINUTE, 21), "минуту");
         assertEquals(TimeDeclension.timeInRightForm(TwitterOutputEditor.Time.MINUTE, 34), "минуты");
         assertEquals(TimeDeclension.timeInRightForm(TwitterOutputEditor.Time.HOUR, 101), "час");
         assertEquals(TimeDeclension.timeInRightForm(TwitterOutputEditor.Time.HOUR, 72), "часа");
