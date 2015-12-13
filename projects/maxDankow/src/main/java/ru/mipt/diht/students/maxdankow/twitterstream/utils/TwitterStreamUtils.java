@@ -12,7 +12,7 @@ import java.util.Date;
 public class TwitterStreamUtils {
     // Разграничитель твиттов.
     private static final int DELIMITER_LENGTH = 200;
-    public static final String delimiter = StringUtils.repeat("-", DELIMITER_LENGTH);
+    public static final String DELIMITER = StringUtils.repeat("-", DELIMITER_LENGTH);
 
     public static enum TextColor {
         CLEAR(0),
@@ -27,8 +27,8 @@ public class TwitterStreamUtils {
 
         private int colorCode;
 
-        TextColor(int colorCode) {
-            this.colorCode = colorCode;
+        TextColor(int code) {
+            colorCode = code;
         }
 
         public String getEscapeCodePrefix() {
@@ -99,6 +99,6 @@ public class TwitterStreamUtils {
 
     public static void printTweet(Status tweet, boolean shouldShowTime) {
         System.out.println(buildFormattedTweet(tweet, shouldShowTime));
-        System.out.println(delimiter);
+        System.out.println(DELIMITER);
     }
 }

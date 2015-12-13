@@ -1,10 +1,14 @@
-package ru.mipt.diht.students.maxDankow.threads;
+package ru.mipt.diht.students.maxdankow.threads;
 
 import java.util.Random;
 import java.util.concurrent.*;
 
 public class RollCaller {
-    public static volatile Integer count = 0;
+    private static volatile Integer count = 0;
+
+    public static Integer getCount() {
+        return count;
+    }
 
     public static void iAmReady() {
         synchronized (count) {
@@ -13,16 +17,18 @@ public class RollCaller {
     }
 
     // Ожидает завершения всех потоков в исполнителе.
-    public void waitForAll(ExecutorService exec) {
+    public final void waitForAll(ExecutorService exec) {
         exec.shutdown();
         try {
-            while (!exec.awaitTermination(Integer.MAX_VALUE, TimeUnit.SECONDS)) ;
+            while (!exec.isTerminated()) {
+                exec.awaitTermination(Integer.MAX_VALUE, TimeUnit.SECONDS);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public void rollCall(int unitNumber) {
+    public final void rollCall(int unitNumber) {
         ExecutorService exec = Executors.newCachedThreadPool();
         CyclicBarrier barrier = new CyclicBarrier(unitNumber, () -> {
             synchronized (count) {
@@ -44,13 +50,15 @@ public class RollCaller {
     }
 
     private class RollCallUnit implements Runnable {
-        int id;
-        CyclicBarrier barrier;
-        final Random random = new Random();
+        private int id;
+        private CyclicBarrier barrier;
+        private final Random random = new Random();
+        private final int randomUpperBound = 99;
+        private final int successBound = 10;
 
-        public RollCallUnit(int id, CyclicBarrier barrier) {
-            this.id = id;
-            this.barrier = barrier;
+        RollCallUnit(int newId, CyclicBarrier newBarrier) {
+            id = newId;
+            barrier = newBarrier;
         }
 
         @Override
@@ -62,8 +70,8 @@ public class RollCaller {
         public void run() {
             try {
                 while (!Thread.interrupted()) {
-                    if (random.nextInt(99) < 10) {
-                        System.out.println(this + "- No");
+                    if (random.nextInt(randomUpperBound) < successBound) {
+                        System.out.println(this + ": No");
                     } else {
                         System.out.println(this + ": Yes");
                         RollCaller.iAmReady();

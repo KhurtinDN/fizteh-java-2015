@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.maxDankow.threads;
+package ru.mipt.diht.students.maxdankow.threads;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,11 +8,11 @@ public class BlockingQueue<E> {
     private volatile Queue<E> queue;
     private int elementsNumberLimit;
 
-    public BlockingQueue(int elementsNumberLimit) {
-        this.elementsNumberLimit = elementsNumberLimit;
+    public BlockingQueue(int amount) {
+        elementsNumberLimit = amount;
     }
 
-    public void offer(List<E> elements) throws IllegalArgumentException, InterruptedException {
+    public final void offer(List<E> elements) throws IllegalArgumentException, InterruptedException {
         if (elements.size() > elementsNumberLimit) {
             throw new IllegalArgumentException("Queue limit overflow.");
         }
@@ -26,7 +26,7 @@ public class BlockingQueue<E> {
         }
     }
 
-    public List<E> take(int amount) throws IllegalArgumentException, InterruptedException {
+    public final List<E> take(int amount) throws IllegalArgumentException, InterruptedException {
         if (amount > elementsNumberLimit) {
             throw new IllegalArgumentException("Queue limit overflow.");
         }

@@ -1,11 +1,15 @@
-package ru.mipt.diht.students.maxDankow.threads;
+package ru.mipt.diht.students.maxdankow.threads;
 
 import java.util.concurrent.*;
 
 public class Counter {
-    public static volatile Integer count = 0;
+    private static volatile Integer count = 0;
 
-    public void counting(int unitNumber) {
+    public static Integer getCount() {
+        return count;
+    }
+
+    public final void counting(int unitNumber) {
         count = 0;
         ExecutorService exec = Executors.newCachedThreadPool();
         CyclicBarrier barrier = new CyclicBarrier(unitNumber, () -> {
@@ -24,22 +28,24 @@ public class Counter {
     }
 
     // Ожидает завершения всех потоков в исполнителе.
-    public void waitForAll(ExecutorService exec) {
+    public final void waitForAll(ExecutorService exec) {
         exec.shutdown();
         try {
-            while (!exec.awaitTermination(Integer.MAX_VALUE, TimeUnit.SECONDS)) ;
+            while (!exec.isTerminated()) {
+                exec.awaitTermination(Integer.MAX_VALUE, TimeUnit.SECONDS);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     private class CountingUnit implements Runnable {
-        int id;
-        CyclicBarrier barrier;
+        private int id;
+        private CyclicBarrier barrier;
 
-        public CountingUnit(int id, CyclicBarrier barrier) {
-            this.id = id;
-            this.barrier = barrier;
+        CountingUnit(int newId, CyclicBarrier newBarrier) {
+            id = newId;
+            barrier = newBarrier;
         }
 
         @Override
@@ -51,7 +57,7 @@ public class Counter {
         public void run() {
             try {
                 while (!Thread.interrupted()) {
-                    synchronized (Counter.count) {
+                    synchronized (count) {
                         if (count == id) {
                             System.out.println(this);
                         }
