@@ -13,12 +13,16 @@ import static org.hamcrest.CoreMatchers.equalTo;
  */
 public class TranslatorTest extends TestCase {
     @Test
-    public final void testEnRu() throws IOException{
-        assertThat("bad translation", Translator.translate("en-ru", "ball").equals("мяч"));
-        assertThat("bad translation", Translator.translate("en-ru", "snow").equals("снег"));
-        assertThat("bad translation", Translator.translate("en-ru", "brain").equals("мозг"));
-        assertThat("bad translation", Translator.translate("en-ru", "Lobnya").equals("Лобня"));
-        assertThat("bad translation", Translator.translate("en-ru", "Vladivostok").equals("Владивосток"));
+    public final void testEnRu() {
+        try {
+            assertThat("bad translation", Translator.translate("en-ru", "ball").equals("мяч"));
+            assertThat("bad translation", Translator.translate("en-ru", "snow").equals("снег"));
+            assertThat("bad translation", Translator.translate("en-ru", "brain").equals("мозг"));
+            assertThat("bad translation", Translator.translate("en-ru", "Lobnya").equals("Лобня"));
+            assertThat("bad translation", Translator.translate("en-ru", "Vladivostok").equals("Владивосток"));
+        } catch(IOException ex){
+            System.out.println("It seems like you haven't yandex API key");
+        }
     }
 /*
     @Test

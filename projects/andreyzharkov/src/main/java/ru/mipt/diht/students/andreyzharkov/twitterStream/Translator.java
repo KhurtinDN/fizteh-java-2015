@@ -1,6 +1,8 @@
 package ru.mipt.diht.students.andreyzharkov.twitterStream;
 
 import javax.net.ssl.HttpsURLConnection;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -12,17 +14,21 @@ public class Translator {
     //нормально переводит только с английского на русский, но не наоборот
     //ибо какая-то проблема с кодировкой
     private static int tryingTimes = 0;
+    private static String yandexAPIkey = null;
 
     public static String translate(String lang, String input) throws IOException {
         tryingTimes++;
+        if (yandexAPIkey == null){
+            BufferedReader reader = new BufferedReader(new FileReader("key.txt"));
+            yandexAPIkey = reader.readLine();
+        }
 
         if (input.equals("Dolgoprudnyy")) {
             return "Долгопрудный"; //костыль. yandex translated Doldoprudnyy as "Долгопрудном", что не ищется
         }
 
-        String urlStr = "https://translate.yandex.net/api/v1.5/tr.json/translate?key="
-                + "trnsl.1.1.20151014T174735Z.84c9a75c05df4e5e.cb5a00eacf7657d7969a3c2a0e1421712d67bdb5";
-        urlStr += "&text=" + input + "&lang=" + lang;
+        String urlStr = "https://translate.yandex.net/api/v1.5/tr.json/translate?key=";
+        urlStr += yandexAPIkey + "&text=" + input + "&lang=" + lang;
         URL urlObj = new URL(urlStr);
         HttpsURLConnection connection = (HttpsURLConnection) urlObj.openConnection();
 
