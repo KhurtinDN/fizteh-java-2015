@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.lenazherdeva.threads;
+package ru.mipt.diht.students.lenazherdeva.threads.threadsCounter;
 
 /**
  * Created by admin on 13.12.2015.
