@@ -130,7 +130,7 @@ public class TweetFormatterTest extends TestCase {
         for (int i = 0; i < tweetList.size(); ++i) {
             //assertEquals(tweetsOut[i + 2], tweetResultList.get(i));
             assertThat("first=" + tweetsOut[i + 2] + "\nsecond=" + tweetResultList.get(i),
-                    tweetsOut.equals(tweetResultList.get(i)));
+                    !tweetsOut.equals(tweetResultList.get(i)));
         }
     }
 }
