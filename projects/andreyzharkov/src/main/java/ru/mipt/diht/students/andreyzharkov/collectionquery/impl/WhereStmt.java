@@ -1,5 +1,8 @@
 package ru.mipt.diht.students.andreyzharkov.collectionquery.impl;
 
+import javafx.util.Pair;
+import ru.mipt.diht.students.andreyzharkov.collectionquery.Aggregates;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -18,6 +21,7 @@ public class WhereStmt<T, R> implements Query<R> {
     private Predicate<R> groupingCondition;
     private T example;//for initialization of out output class constructor arguments
     private boolean isDistinct;
+    long maxResultSize;
 
     Object[] constructorArguments;
     Class[] resultClasses;
@@ -49,7 +53,7 @@ public class WhereStmt<T, R> implements Query<R> {
     }
 
     public WhereStmt<T, R> limit(int amount) {
-        stream.limit(amount);
+        maxResultSize = amount;
         return this;
     }
 
@@ -58,26 +62,74 @@ public class WhereStmt<T, R> implements Query<R> {
     }
 
     @Override
-    public Iterable<R> execute() {
-        throw new UnsupportedOperationException();
+    public Iterable<R> execute() throws QueryExecuteException {
+        return this.stream().collect(Collectors.toList());
     }
 
     @Override
-    public Stream<R> stream() throws  QueryExecuteException {
+    public Stream<R> stream() throws QueryExecuteException {
         constructorArguments = new Object[convertFunctions.length];
         resultClasses = new Class[convertFunctions.length];
+        //
         for (int i = 0; i < convertFunctions.length; i++) {
             resultClasses[i] = convertFunctions[i].apply(example).getClass();
         }
 
         ArrayList<R> result = new ArrayList<>();
-        for(T element: stream.collect(Collectors.toList())){
-            addToList(result, element);
+        if (groupingFunctions != null) {
+            Map<Integer, Integer> mapped = new HashMap<>();
+            List<List<T>> groupedElements = new ArrayList<>();
+            List<Pair<T, Integer>> grouped = new ArrayList<>();
+            String[] results = new String[groupingFunctions.length];
+            stream.forEach(
+                    element -> {
+                        for (int i = 0; i < groupingFunctions.length; i++) {
+                            results[i] = (String) groupingFunctions[i].apply(element);
+                        }
+                        if (!mapped.containsKey(Objects.hash(results))) {
+                            mapped.put(Objects.hash(results), mapped.size());
+                        }
+                        grouped.add(new Pair<>(element, mapped.get(Objects.hash(results))));
+                    }
+            );
+
+            for (int i = 0; i < mapped.size(); i++) {
+                groupedElements.add(new ArrayList<>());
+            }
+
+            for (Pair<T, Integer> element : grouped) {
+                groupedElements.get(element.getValue()).add(element.getKey());
+            }
+            for (List<T> group : groupedElements) {
+                for (int i = 0; i < convertFunctions.length; i++) {
+                    if (convertFunctions[i] instanceof Aggregates.Agregator) {
+                        constructorArguments[i] = ((Aggregates.Agregator) convertFunctions[i]).apply(group);
+                    } else {
+                        constructorArguments[i] = convertFunctions[i].apply(group.get(0));
+                    }
+                    resultClasses[i] = constructorArguments[i].getClass();
+                }
+                try {
+                    R newElement = (R) returnedClass.getConstructor(resultClasses).newInstance(constructorArguments);
+                    result.add(newElement);
+                } catch (Exception ex) {
+                    throw new QueryExecuteException("Failed to construct output class!", ex);
+                }
+            }
+        } else {
+            //лямбда исключение не прокидывает
+            for (T element : stream.collect(Collectors.toList())) {
+                addToList(result, element);
+            }
         }
-        return result.stream().filter(groupingCondition);
+
+        if (isDistinct) {
+            return result.stream().filter(groupingCondition).distinct().limit(maxResultSize);
+        }
+        return result.stream().filter(groupingCondition).limit(maxResultSize);
     }
 
-    private void addToList(List<R> list, T element) throws  QueryExecuteException{
+    private void addToList(List<R> list, T element) throws QueryExecuteException {
         for (int i = 0; i < convertFunctions.length; i++) {
             constructorArguments[i] = convertFunctions[i].apply(element);
         }
