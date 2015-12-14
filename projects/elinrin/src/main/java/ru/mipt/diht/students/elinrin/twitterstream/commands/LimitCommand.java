@@ -12,7 +12,7 @@ public class LimitCommand extends Commands {
     private int number;
 
     @Override
-    public void execute(final TwitterProvider twitterPr) {
+    public final void execute(final TwitterProvider twitterPr) {
 
 
         List<Status> statusList = null;

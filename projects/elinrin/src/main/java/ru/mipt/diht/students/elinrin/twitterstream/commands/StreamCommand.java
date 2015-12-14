@@ -14,7 +14,7 @@ public class StreamCommand extends Commands {
 
     static final int SLEEP_TIME = 1000;
     @Override
-    public void execute(TwitterProvider twitterPr) {
+    public final void execute(final TwitterProvider twitterPr) {
 
         List<Status> statusList = null;
         try {
@@ -36,7 +36,7 @@ public class StreamCommand extends Commands {
     }
 
     @Override
-    protected int numberOfArguments() {
+    protected final int numberOfArguments() {
         return 0;
     }
 

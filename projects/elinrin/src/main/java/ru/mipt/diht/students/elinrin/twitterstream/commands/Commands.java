@@ -1,5 +1,6 @@
 package ru.mipt.diht.students.elinrin.twitterstream.commands;
 
+
 import ru.mipt.diht.students.elinrin.twitterstream.TwitterProvider;
 
 import java.util.HashMap;
@@ -7,16 +8,6 @@ import java.util.NoSuchElementException;
 
 public abstract class Commands {
     private static final HashMap<String, Commands> COMMANDS;
-
-    /*
-     * [--query|-q <query or keywords for stream>]
-     * [--place|-p <location|'nearby'>]
-     * [--stream|-s]
-     * [--hideRetweets]
-     * [--limit|-l <tweets>]
-     * [--help|-h]
-     */
-    
     static {
         COMMANDS = new HashMap<>();
         COMMANDS.put("--query", new QueryCommand());
@@ -43,8 +34,8 @@ public abstract class Commands {
         if (COMMANDS.containsKey(s[0])) {
             Commands command = COMMANDS.get(s[0]);
             if (s.length - 1 != command.numberOfArguments()) {
-                    throw new NoSuchElementException("Unexpected number of arguments: "
-                            + command.numberOfArguments() + " required");
+                throw new NoSuchElementException("Unexpected number of arguments: "
+                        + command.numberOfArguments() + " required");
             }
             if ((s.equals("--hideRetweets") || s.equals("-hRtws"))
                     && !((s[1].equals("+")) || (s[1].equals("-")))) {
@@ -58,7 +49,9 @@ public abstract class Commands {
     }
 
     public abstract void execute(TwitterProvider twitter);
+
     protected void putArguments(final String[] args) {
     }
+
     protected abstract int numberOfArguments();
 }

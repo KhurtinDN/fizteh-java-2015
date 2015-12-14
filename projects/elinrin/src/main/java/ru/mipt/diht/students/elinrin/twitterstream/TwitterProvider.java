@@ -8,9 +8,9 @@ public class TwitterProvider {
     private boolean hideRetweets;
     private String place;
 
-    public TwitterProvider(final Twitter twitter) {
+    public TwitterProvider(final Twitter twitterUser) {
 
-        this.twitter = twitter;
+        twitter = twitterUser;
         hideRetweets = false;
         place = " ";
     }
