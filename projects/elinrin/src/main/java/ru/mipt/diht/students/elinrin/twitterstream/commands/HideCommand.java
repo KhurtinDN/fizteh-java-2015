@@ -4,9 +4,9 @@ package ru.mipt.diht.students.elinrin.twitterstream.commands;
 import ru.mipt.diht.students.elinrin.twitterstream.TwitterProvider;
 
 public class HideCommand extends Commands {
-    String parameter;
+    private String parameter;
     @Override
-    public void execute(TwitterProvider twitterPr) {
+    public final void execute(final TwitterProvider twitterPr) {
         if (parameter.equals("+")) {
             twitterPr.changeParameterRetweets(true);
         } else {
@@ -15,12 +15,12 @@ public class HideCommand extends Commands {
     }
 
     @Override
-    protected int numberOfArguments() {
+    protected final int numberOfArguments() {
         return 1;
     }
 
     @Override
-    protected void putArguments(String[] args) {
+    protected final void putArguments(final String[] args) {
         parameter = args[1];
     }
 

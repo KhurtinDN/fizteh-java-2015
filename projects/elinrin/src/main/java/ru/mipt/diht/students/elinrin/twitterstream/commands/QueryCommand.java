@@ -10,7 +10,7 @@ public class QueryCommand extends Commands {
     private String searchString;
 
     @Override
-    public void execute(TwitterProvider twitterPr) {
+    public final void execute(final TwitterProvider twitterPr) {
 
         Query query = new Query(searchString);
         QueryResult result = null;
@@ -29,12 +29,12 @@ public class QueryCommand extends Commands {
     }
 
     @Override
-    protected int numberOfArguments() {
+    protected final int numberOfArguments() {
         return 1;
     }
 
     @Override
-    protected void putArguments(String[] args) {
+    protected final void putArguments(final String[] args) {
         searchString = args[1];
     }
 }

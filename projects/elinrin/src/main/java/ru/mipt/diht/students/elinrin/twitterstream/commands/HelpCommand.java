@@ -8,7 +8,7 @@ public class HelpCommand extends Commands {
     static final String BLACK = "\033[0m";
 
     @Override
-    public void execute(TwitterProvider twitter) {
+    public final void execute(final TwitterProvider twitter) {
 
         System.out.println(PURPLE + "Параметры\n"
                 + LIGHT_BLUE + "stream " + BLACK
@@ -33,7 +33,7 @@ public class HelpCommand extends Commands {
     }
 
     @Override
-    protected int numberOfArguments() {
+    protected final int numberOfArguments() {
         return 0;
     }
 }

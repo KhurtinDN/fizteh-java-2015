@@ -12,7 +12,7 @@ public class LimitCommand extends Commands {
     private int number;
 
     @Override
-    public void execute(TwitterProvider twitterPr) {
+    public void execute(final TwitterProvider twitterPr) {
 
 
         List<Status> statusList = null;
@@ -35,12 +35,12 @@ public class LimitCommand extends Commands {
     }
 
     @Override
-    protected int numberOfArguments() {
+    protected final int numberOfArguments() {
         return 1;
     }
 
     @Override
-    protected void putArguments(String[] args) {
+    protected final void putArguments(final String[] args) {
         number = Integer.parseInt(args[1]);
     }
 }

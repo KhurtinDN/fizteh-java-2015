@@ -35,7 +35,7 @@ public abstract class Commands {
         COMMANDS.put("-exit", new ExitCommand());
     }
 
-    public static Commands fromString(String[] s) throws Exception {
+    public static Commands fromString(final String[] s) throws Exception {
         if (s[0].equals("")) {
             throw new NoSuchElementException("");
         }
@@ -58,7 +58,7 @@ public abstract class Commands {
     }
 
     public abstract void execute(TwitterProvider twitter);
-    protected void putArguments(String[] args) {
+    protected void putArguments(final String[] args) {
     }
     protected abstract int numberOfArguments();
 }

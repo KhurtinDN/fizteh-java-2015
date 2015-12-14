@@ -5,7 +5,7 @@ import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 
 public class RunTwitter {
-    public static void main(String[] args)  {
+    public static void main(final String[] args)  {
 
 
 

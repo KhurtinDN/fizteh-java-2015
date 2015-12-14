@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 public class PackageParse {
     static final String USER_MOD = "user";
 
-    public static void parse(TwitterProvider twitterPr, String[] args) {
+    public static void parse(final TwitterProvider twitterPr, final String[] args) {
 
 
         try {

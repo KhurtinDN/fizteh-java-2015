@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class InteractiveParse {
     static final String USER_MOD = "user";
 
-    public static void parse(TwitterProvider twitterPr) {
+    public static void parse(final TwitterProvider twitterPr) {
         Scanner in = new Scanner(System.in);
         try {
             while (true) {

@@ -5,22 +5,22 @@ import ru.mipt.diht.students.elinrin.twitterstream.TwitterProvider;
 
 public class PlaceCommand extends Commands {
 
-    String searchPlace;
+    private String searchPlace;
 
     @Override
-    public void execute(TwitterProvider twitterPr) {
+    public final void execute(final TwitterProvider twitterPr) {
 
         twitterPr.changeParameterPlase(searchPlace);
 
     }
 
     @Override
-    protected int numberOfArguments() {
+    protected final int numberOfArguments() {
         return 1;
     }
 
     @Override
-    protected void putArguments(String[] args) {
+    protected final void putArguments(final String[] args) {
         searchPlace = args[1];
     }
 }

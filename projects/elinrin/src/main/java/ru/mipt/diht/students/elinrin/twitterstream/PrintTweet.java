@@ -39,8 +39,8 @@ public class PrintTweet {
             {"день", "дня", "дней"}
     };
 
-    public static int pluralForm(long numeral) {
-        numeral = abs(numeral) % HUNDRED;
+    public static int pluralForm(final long num) {
+        long numeral = abs(num) % HUNDRED;
         if (numeral > TEN && numeral < TWENTY) {
             return NOUN_FORM_3;
         }
@@ -53,7 +53,7 @@ public class PrintTweet {
         return NOUN_FORM_3;
     }
 
-    public static String tweetDate(Date givenDate) {
+    public static String tweetDate(final Date givenDate) {
 
         StringBuilder result = new StringBuilder().append("[ ");
 
@@ -78,7 +78,7 @@ public class PrintTweet {
         return result.append(" ] ").toString();
     }
 
-    public static String print(Status tweet, boolean stream) {
+    public static String print(final Status tweet, final boolean stream) {
         StringBuilder result = new StringBuilder();
 
         if (!stream) {
@@ -106,7 +106,7 @@ public class PrintTweet {
         return result.toString();
     }
 
-    public static String printUserName(Status tweet) {
+    public static String printUserName(final Status tweet) {
         String result  = "@" + BLUE + tweet.getUser().getScreenName()
                 + BLACK + ": ";
         return result;

@@ -3,16 +3,16 @@ package ru.mipt.diht.students.elinrin.twitterstream.exception;
 public class HandlerException {
     static final String USER_MOD = "user";
 
-    public static void handler(String message, Throwable cause) {
+    public static void handler(final String message, final Throwable cause) {
         System.err.println(message + ". " + cause.getMessage());
         System.exit(1);
     }
-    public static void handler(Throwable cause) {
+    public static void handler(final Throwable cause) {
         System.err.println(cause.getMessage());
         System.exit(1);
     }
 
-    public static void handler(Throwable cause, String mod) {
+    public static void handler(final Throwable cause, final String mod) {
         if (mod.equals(USER_MOD)) {
             System.err.println(cause.getMessage());
         } else {

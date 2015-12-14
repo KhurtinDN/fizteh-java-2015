@@ -8,31 +8,31 @@ public class TwitterProvider {
     private boolean hideRetweets;
     private String place;
 
-    public TwitterProvider(Twitter twitter) {
+    public TwitterProvider(final Twitter twitter) {
 
         this.twitter = twitter;
         hideRetweets = false;
         place = " ";
     }
 
-    public void changeParameterRetweets(boolean parameter) {
+    public final void changeParameterRetweets(final boolean parameter) {
         hideRetweets = parameter;
     }
 
-    public void changeParameterPlase(String parameter) {
+    public final void changeParameterPlase(final String parameter) {
         place = parameter;
     }
 
 
-    public Twitter twitter() {
+    public final Twitter twitter() {
         return twitter;
     }
 
-    public boolean isHideRetweets() {
+    public final boolean isHideRetweets() {
         return hideRetweets;
     }
 
-    public String getPlace() {
+    public final String getPlace() {
         return place;
     }
 
