@@ -3,6 +3,7 @@ package ru.mipt.diht.students.maxdankow.miniorm;
 import org.junit.Before;
 import org.junit.Test;
 import ru.mipt.diht.students.maxdankow.miniorm.DatabaseService.Column;
+import ru.mipt.diht.students.maxdankow.miniorm.DatabaseService.PrimaryKey;
 import ru.mipt.diht.students.maxdankow.miniorm.DatabaseService.Table;
 
 import java.util.ArrayList;
@@ -42,13 +43,15 @@ public class DatabaseServiceTest {
         } catch (InstantiationException e) {
             e.printStackTrace();
         }
+        Student student = studentsDB.queryById("Mattew");
+        System.err.println(student);
 //        studentsDB.dropTable();
     }
 
     @Test
     public void createQueryBuilderTest() {
         DatabaseService<Student> studentDatabaseService = new DatabaseService<>(Student.class);
-        assertEquals("CREATE TABLE IF NOT EXISTS students (FIO VARCHAR(255), group_id INTEGER, has_salary BOOLEAN)",
+        assertEquals("CREATE TABLE IF NOT EXISTS students (FIO VARCHAR(255) NOT NULL, group_id INTEGER, has_salary BOOLEAN)",
                 studentDatabaseService.buildCreateStatement());
     }
 
@@ -103,6 +106,7 @@ public class DatabaseServiceTest {
 class Student {
 
     @Column(name = "FIO", type = "VARCHAR(255)")
+    @PrimaryKey
     public String name;
 
     @Column(type = "INTEGER")

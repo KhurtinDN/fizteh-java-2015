@@ -21,4 +21,12 @@ public class Utils {
         }
         return lowerCaseText.toString();
     }
+
+    public static <T> String getSqlValue(T object) {
+        if (object instanceof String) {
+            return "\'" + object.toString() + "\'";
+        } else {
+            return object.toString();
+        }
+    }
 }

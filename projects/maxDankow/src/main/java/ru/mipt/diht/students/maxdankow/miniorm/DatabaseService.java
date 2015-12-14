@@ -33,8 +33,9 @@ public class DatabaseService<T> {
     public @interface PrimaryKey {
     }
 
-    private String tableName;
-    private List<ItemColumn> columnList;
+    private String tableName = null;
+    private List<ItemColumn> columnList = null;
+    private ItemColumn primaryKey = null;
 
     private static final String DATABASE_PATH = "jdbc:h2:./simple_database";
     Class itemsClass;
@@ -56,6 +57,9 @@ public class DatabaseService<T> {
             createQuery.append(column.name)
                     .append(" ")
                     .append(column.type);
+            if (column == primaryKey) {
+                createQuery.append(" NOT NULL");
+            }
             if (count + 1 < columnList.size()) {
                 createQuery.append(", ");
             }
@@ -101,10 +105,26 @@ public class DatabaseService<T> {
         try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
             Statement createStatement = connection.createStatement();
             createStatement.execute(buildCreateStatement());
+            if (primaryKey != null) {
+                addPrimaryKey(primaryKey);
+            }
         } catch (SQLException e) {
 //            System.err.println("An SQL error occurred: " + e.getMessage());
             throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
         }
+    }
+
+    public void addPrimaryKey(ItemColumn key) {
+        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
+            Statement addPrimaryKeyStatement =
+                    connection.createStatement();
+            addPrimaryKeyStatement.execute("ALTER TABLE " + tableName + " ADD PRIMARY KEY (" + primaryKey.name + ")");
+            System.err.println("PK успешно добавлен.");
+        } catch (SQLException e) {
+//            System.err.println("An SQL error occurred: " + e.getMessage());
+            throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
+        }
+
     }
 
     public void dropTable() throws IllegalStateException {
@@ -152,17 +172,17 @@ public class DatabaseService<T> {
                     // TODO: Вынести в отдельный метод.
                     if (field.getType() == String.class) {
                         String value = resultSet.getString(column.name);
-                        itemField.set(item, value);
+                        field.set(item, value);
                     }
                     // int
                     if (field.getType() == int.class) {
                         int value = resultSet.getInt(column.name);
-                        itemField.set(item, value);
+                        field.set(item, value);
                     }
                     // boolean
                     if (field.getType() == boolean.class) {
                         boolean value = resultSet.getBoolean(column.name);
-                        itemField.set(item, value);
+                        field.set(item, value);
                     }
                 }
                 selectAddList.add(item);
@@ -176,9 +196,58 @@ public class DatabaseService<T> {
         return selectAddList;
     }
 
-    ;
+    public <K> T queryById(K key) {
+        T item = null;
+        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
+            Statement selectAllStatement = connection.createStatement();
+            ResultSet resultSet = selectAllStatement.executeQuery("SELECT * FROM " + tableName
+                    + " WHERE " + primaryKey.name + "=" + Utils.getSqlValue(key));
 
-    //    T queryById(K){}
+            // Обрабатываем полученный результат.
+            if (resultSet.next()) {
+                // Создаем новый объект пустым конструктором.
+                item = (T) itemsClass.newInstance();
+                Field[] itemFields = item.getClass().getFields();
+
+                // Перебираем все нужные столбцы-поля.
+                for (ItemColumn column : columnList) {
+                    Field field = column.field;
+                    Field itemField = item.getClass().getField(field.getName());
+
+                    // Определяем какой тип получать в соостветствии с типом поля.
+                    // String
+                    // TODO: Вынести в отдельный метод.
+                    if (field.getType() == String.class) {
+                        String value = resultSet.getString(column.name);
+                        field.set(item, value);
+                    }
+                    // int
+                    if (field.getType() == int.class) {
+                        int value = resultSet.getInt(column.name);
+                        field.set(item, value);
+                    }
+                    // boolean
+                    if (field.getType() == boolean.class) {
+                        boolean value = resultSet.getBoolean(column.name);
+                        field.set(item, value);
+                    }
+                }
+            }
+            if (resultSet.next()) {
+                throw new IllegalStateException("Primary key search sesult is not single");
+            }
+        } catch (SQLException e) {
+//            System.err.println("An SQL error occurred: " + e.getMessage());
+            throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return item;
+    }
 //
 //    void update(T item){}
 //    void delete(T item) {}
@@ -201,11 +270,13 @@ public class DatabaseService<T> {
 
     public List<ItemColumn> getColumnList() {
         List<ItemColumn> columnList = new ArrayList<>();
+        primaryKey = null;
 
         // Пройдемся по полям класса и найдем аннотированные @Column
         Field[] fields = itemsClass.getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(Column.class)) {
+
                 Column column = field.getAnnotation(Column.class);
                 String name = column.name();
                 String type = column.type();
@@ -214,7 +285,16 @@ public class DatabaseService<T> {
                 if (name.equals("")) {
                     name = camelCaseToLowerCase(field.getName());
                 }
-                columnList.add(new ItemColumn(name, type, field));
+                ItemColumn itemColumn = new ItemColumn(name, type, field);
+                columnList.add(itemColumn);
+
+                if (field.isAnnotationPresent(PrimaryKey.class)) {
+                    // Объявление более одного @PrimaryKey недопустимо.
+                    if (primaryKey != null) {
+                        throw new IllegalStateException("More than one primary key presents");
+                    }
+                    primaryKey = itemColumn;
+                }
             }
         }
         return columnList;
