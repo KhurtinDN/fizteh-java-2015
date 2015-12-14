@@ -56,8 +56,10 @@ public class DatabaseTableServiceTest extends TestCase {
             service.insert(new Student("ivanov", "497", 18));
             service.insert(new Student("petrov", "497", 18));
             service.insert(new Student("sidorov", "497", 19));
+            service.insert(new Student("nobody", "497", 17));
             service.update(new Student("petrov", "496", 18));
-            service.delete(new Student("sidorov", "498", 30));
+            service.deleteByKey("sidorov");
+            service.delete(new Student("nobody", "498", 30));
             
             assertNull(service.queryById("sidorov"));
             assertEquals("[Student{ivanov|497|18}, Student{petrov|496|18}]", service.queryForAll().toString());

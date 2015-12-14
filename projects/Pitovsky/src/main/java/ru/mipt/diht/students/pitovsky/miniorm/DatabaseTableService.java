@@ -19,6 +19,8 @@ public class DatabaseTableService<T> {
     private List<TypedColumn> columns;
     private TypedColumn primaryKeyColumn;
 
+    private static final String STANDARD_DATABASE_PATH = "./pitovskydb";
+
     private enum DataType {
         INTEGER ("INT", Boolean.class, Byte.class, Short.class, Integer.class, Long.class),
         DOUBLE ("DOUBLE", Float.class, Double.class),
@@ -89,7 +91,7 @@ public class DatabaseTableService<T> {
         return values.toString();
     }
 
-    public DatabaseTableService(Class<T> annotatedTableClass) throws DatabaseServiceException {
+    private void initDatabaseTable(Class<T> annotatedTableClass) throws DatabaseServiceException {
         tableClass = annotatedTableClass;
         Table tableAnnotation = tableClass.getAnnotation(Table.class);
         if (tableAnnotation == null) {
@@ -105,17 +107,40 @@ public class DatabaseTableService<T> {
             if (field.isAnnotationPresent(Column.class)) {
                 columns.add(new TypedColumn(field));
                 if (field.isAnnotationPresent(PrimaryKey.class)) {
+                    if (primaryKeyColumn != null) {
+                        throw new DatabaseServiceException("table must have not more than one primary key");
+                    }
                     primaryKeyColumn = columns.get(columns.size() - 1);
                 }
             }
         }
+    }
+
+    private void initConnection(String databasePath) throws DatabaseServiceException {
         try {
-            dbConnection = DriverManager.getConnection("jdbc:h2:./pitovskydb", "sa", "");
+            dbConnection = DriverManager.getConnection("jdbc:h2:" + databasePath, "sa", "");
         } catch (SQLException e) {
             throw new DatabaseServiceException("Can not find connection: " + e.getMessage(), e);
         }
     }
 
+    /**
+     * Create service for database operations on table from metadata of the class and create
+     * a connection with standard database.
+     * @param annotatedTableClass class, which will be used as columns (<code>@Column</code>)
+     * and can contain a primary key (<code>@PrimaryKey</code>), only one, of course.
+     * @throws DatabaseServiceException if class is not annotated by <code>@Table</code>, or
+     * has more than one primary key, or some other syntax or database server problems.
+     */
+    public DatabaseTableService(Class<T> annotatedTableClass) throws DatabaseServiceException {
+        initDatabaseTable(annotatedTableClass);
+        initConnection(STANDARD_DATABASE_PATH);
+    }
+
+    /**
+     * Create an empty table in current database.
+     * @throws DatabaseServiceException if any sql server problems occurred
+     */
     public final void createTable() throws DatabaseServiceException {
         StringBuilder columnsString = new StringBuilder();
         for (TypedColumn column : columns) {
@@ -136,6 +161,10 @@ public class DatabaseTableService<T> {
         }
     }
 
+    /**
+     * Drop the table of the class from the current database.
+     * @throws DatabaseServiceException if any sql server problems occurred
+     */
     public final void dropTable() throws DatabaseServiceException {
         try {
             dbConnection.createStatement().execute("DROP TABLE " + tableName);
@@ -144,6 +173,12 @@ public class DatabaseTableService<T> {
         }
     }
 
+    /**
+     * Insert a new row into this class table in current database.
+     * @param row class which will be interpreted as table row
+     * @throws DatabaseServiceException if any sql server problems, or database is not correct for operation
+     * (you have not permissions or table is not table from this class metadata)
+     */
     public final void insert(T row) throws DatabaseServiceException {
         try {
             PreparedStatement statement = dbConnection.prepareStatement("INSERT INTO " + tableName
@@ -157,6 +192,11 @@ public class DatabaseTableService<T> {
         }
     }
 
+    /**
+     * Update row by primary key.
+     * @param row class which contains data for new row. All columns will be updated
+     * @throws DatabaseServiceException if any database problems or if the class have not primary key
+     */
     public final void update(T row) throws DatabaseServiceException {
         if (primaryKeyColumn == null) {
             throw new DatabaseServiceException("table must have primary key for this operation");
@@ -174,16 +214,35 @@ public class DatabaseTableService<T> {
         }
     }
 
-    public final void delete(T row) throws DatabaseServiceException {
+    /**
+     * Delete row by primary key.
+     * @param key primary key - element of type of field, which has primary key in the class.
+     * @throws DatabaseServiceException if any database problems or if the class have not primary key
+     */
+    public final <K> void deleteByKey(K key) throws DatabaseServiceException {
         if (primaryKeyColumn == null) {
             throw new DatabaseServiceException("table must have primary key for this operation");
         }
         try {
             PreparedStatement statement = dbConnection.prepareStatement("DELETE FROM " + tableName
                     + " WHERE " + primaryKeyColumn.name + "=?");
-            statement.setString(1, primaryKeyColumn.field.get(row).toString());
+            statement.setString(1, key.toString());
             statement.execute();
-        } catch (SQLException | IllegalArgumentException | IllegalAccessException e) {
+        } catch (SQLException | IllegalArgumentException e) {
+            throw new DatabaseServiceException("Can not delete the row: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Delete row by primary key. Equals to <code>deleteByKey(row.getKey())</code>, where getKey
+     * returning a primary key field value.
+     * @param row class, which has same primary key with clearing row. Other fields will not affected.
+     * @throws DatabaseServiceException if any database problems or if the class have not primary key
+     */
+    public final void delete(T row) throws DatabaseServiceException {
+        try {
+            deleteByKey(primaryKeyColumn.field.get(row).toString());
+        } catch (IllegalAccessException e) {
             throw new DatabaseServiceException("Can not delete the row: " + e.getMessage());
         }
     }
@@ -208,6 +267,13 @@ public class DatabaseTableService<T> {
         return output;
     }
 
+    /**
+     * Get class of row, founded by primary key.
+     * @param key primary key - element of type of field which has primary key in the class.
+     * @return instance of the table class, created with <code>class.getInstance()</code>, with fields
+     * containing founded row columns. If no row with this key found, return <code>null</code>.
+     * @throws DatabaseServiceException if any database problems or if the class have not primary key
+     */
     public final <K> T queryById(K key) throws DatabaseServiceException {
         if (primaryKeyColumn == null) {
             throw new DatabaseServiceException("table must have primary key for this operation");
@@ -231,9 +297,16 @@ public class DatabaseTableService<T> {
         }
     }
 
+    /**
+     * Select all rows from table and pack it into list of new instances of table class.
+     * Uses <code>class.getInstance()</code>.
+     * @return list of rows. Never <code>null</code>, but can be an empty list.
+     * @throws DatabaseServiceException if any database problems or if the class have not primary key
+     */
     public final List<T> queryForAll() throws DatabaseServiceException {
         try {
-            return getRealClasses(dbConnection.prepareStatement("SELECT * FROM " + tableName).executeQuery());
+            return getRealClasses(dbConnection.prepareStatement("SELECT " + createColumnsPattern(c -> c.name)
+                    + " FROM " + tableName).executeQuery());
         } catch (SQLException | IllegalArgumentException | IllegalAccessException
                 | InstantiationException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
             throw new DatabaseServiceException("Can not get or instantiate the row: " + e.getMessage(), e);
