@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.elinrin;
+package ru.mipt.diht.students.elinrin.twitterstream;
 
 
 import twitter4j.Twitter;

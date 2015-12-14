@@ -1,8 +1,8 @@
-package ru.mipt.diht.students.elinrin;
+package ru.mipt.diht.students.elinrin.twitterstream;
 
 
-import ru.mipt.diht.students.elinrin.exception.HandlerException;
-import ru.mipt.diht.students.elinrin.commands.Commands;
+import ru.mipt.diht.students.elinrin.twitterstream.exception.HandlerException;
+import ru.mipt.diht.students.elinrin.twitterstream.commands.Commands;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;

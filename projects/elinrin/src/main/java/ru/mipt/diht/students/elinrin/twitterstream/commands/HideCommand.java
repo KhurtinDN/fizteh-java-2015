@@ -1,7 +1,7 @@
-package ru.mipt.diht.students.elinrin.commands;
+package ru.mipt.diht.students.elinrin.twitterstream.commands;
 
 
-import ru.mipt.diht.students.elinrin.TwitterProvider;
+import ru.mipt.diht.students.elinrin.twitterstream.TwitterProvider;
 
 public class HideCommand extends Commands {
     String parameter;

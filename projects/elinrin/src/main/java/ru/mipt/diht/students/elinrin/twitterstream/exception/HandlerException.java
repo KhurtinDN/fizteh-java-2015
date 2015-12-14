@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.elinrin.exception;
+package ru.mipt.diht.students.elinrin.twitterstream.exception;
 
 public class HandlerException {
     static final String USER_MOD = "user";

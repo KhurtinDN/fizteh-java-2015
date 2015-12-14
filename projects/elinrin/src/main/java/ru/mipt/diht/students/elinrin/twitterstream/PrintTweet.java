@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.elinrin;
+package ru.mipt.diht.students.elinrin.twitterstream;
 
 import twitter4j.Status;
 
@@ -20,6 +20,9 @@ public class PrintTweet {
     static final int NOUN_FORM_1 = 0;
     static final int NOUN_FORM_2 = 1;
     static final int NOUN_FORM_3 = 2;
+
+    static final String BLUE = "\033[34m";
+    static final String BLACK = "\033[0m";
 
 
     static final String[][] wordPlural = {
@@ -95,8 +98,8 @@ public class PrintTweet {
 
     public static String printUserName(Status tweet) {
         StringBuilder result = new StringBuilder();
-        result.append("@").append("\033[34m").append(tweet.getUser().getScreenName())
-                .append( "\033[0m").append(": ");
+        result.append("@").append(BLUE).append(tweet.getUser().getScreenName())
+                .append(BLACK).append(": ");
         return result.toString();
     }
 

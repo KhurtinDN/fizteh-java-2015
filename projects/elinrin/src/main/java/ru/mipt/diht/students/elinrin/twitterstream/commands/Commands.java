@@ -1,6 +1,6 @@
-package ru.mipt.diht.students.elinrin.commands;
+package ru.mipt.diht.students.elinrin.twitterstream.commands;
 
-import ru.mipt.diht.students.elinrin.TwitterProvider;
+import ru.mipt.diht.students.elinrin.twitterstream.TwitterProvider;
 
 import java.util.HashMap;
 import java.util.NoSuchElementException;

@@ -1,7 +1,7 @@
-package ru.mipt.diht.students.elinrin;
+package ru.mipt.diht.students.elinrin.twitterstream;
 
-import ru.mipt.diht.students.elinrin.exception.HandlerException;
-import ru.mipt.diht.students.elinrin.commands.Commands;
+import ru.mipt.diht.students.elinrin.twitterstream.exception.HandlerException;
+import ru.mipt.diht.students.elinrin.twitterstream.commands.Commands;
 
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -14,10 +14,10 @@ public class InteractiveParse {
         try {
             while (true) {
                 System.out.print("$ ");
-                String s;
-                s = in.nextLine();
-                s = s.trim();
-                String[] current = s.split("\\s+");
+                String arguments;
+                arguments = in.nextLine();
+                arguments = arguments.trim();
+                String[] current = arguments.split("\\s+");
                 for (int i = 0; i < current.length; ++i) {
                     current[i].trim();
                 }

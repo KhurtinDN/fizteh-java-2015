@@ -1,8 +1,8 @@
-package ru.mipt.diht.students.elinrin.commands;
+package ru.mipt.diht.students.elinrin.twitterstream.commands;
 
-import ru.mipt.diht.students.elinrin.PrintTweet;
-import ru.mipt.diht.students.elinrin.TwitterProvider;
-import ru.mipt.diht.students.elinrin.exception.HandlerException;
+import ru.mipt.diht.students.elinrin.twitterstream.PrintTweet;
+import ru.mipt.diht.students.elinrin.twitterstream.TwitterProvider;
+import ru.mipt.diht.students.elinrin.twitterstream.exception.HandlerException;
 import twitter4j.Status;
 import twitter4j.TwitterException;
 
