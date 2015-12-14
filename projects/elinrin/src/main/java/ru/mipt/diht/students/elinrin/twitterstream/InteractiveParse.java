@@ -18,8 +18,8 @@ public class InteractiveParse {
                 arguments = in.nextLine();
                 arguments = arguments.trim();
                 String[] current = arguments.split("\\s+");
-                for (int i = 0; i < current.length; ++i) {
-                    current[i].trim();
+                for (String aCurrent : current) {
+                    aCurrent.trim();
                 }
                 try {
                     Commands command = Commands.fromString(current);
@@ -33,9 +33,9 @@ public class InteractiveParse {
                 in.close();
                 System.out.println("Goodbye");
                 System.exit(0);
-            }
-            else
+            } else {
                 HandlerException.handler(e);
+            }
         } catch (NoSuchElementException e) {
             HandlerException.handler(e);
         } catch (Exception e) {

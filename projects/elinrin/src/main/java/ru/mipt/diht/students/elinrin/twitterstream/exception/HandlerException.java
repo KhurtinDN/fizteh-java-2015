@@ -15,9 +15,7 @@ public class HandlerException {
     public static void handler(Throwable cause, String mod) {
         if (mod.equals(USER_MOD)) {
             System.err.println(cause.getMessage());
-        }
-        else
-        {
+        } else {
             System.err.println(cause.getMessage());
             System.exit(1);
         }

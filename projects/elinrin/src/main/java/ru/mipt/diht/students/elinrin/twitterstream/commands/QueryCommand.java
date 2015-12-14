@@ -20,8 +20,10 @@ public class QueryCommand extends Commands {
             HandlerException.handler(e);
         }
         for (Status status : result.getTweets()) {
-            if ( (!twitterPr.isHideRetweets()) || !(status.isRetweet()) )
+            if ((!twitterPr.isHideRetweets()) || !(status.isRetweet())) {
                 System.out.println(new PrintTweet().print(status, false));
+
+            }
         }
 
     }

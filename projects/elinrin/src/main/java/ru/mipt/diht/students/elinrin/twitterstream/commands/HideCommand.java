@@ -7,8 +7,11 @@ public class HideCommand extends Commands {
     String parameter;
     @Override
     public void execute(TwitterProvider twitterPr) {
-        if (parameter.equals("+")) twitterPr.changeParameterRetweets(true);
-        else twitterPr.changeParameterRetweets(false);
+        if (parameter.equals("+")) {
+            twitterPr.changeParameterRetweets(true);
+        } else {
+            twitterPr.changeParameterRetweets(false);
+        }
     }
 
     @Override

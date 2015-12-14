@@ -43,16 +43,11 @@ public abstract class Commands {
         if (COMMANDS.containsKey(s[0])) {
             Commands command = COMMANDS.get(s[0]);
             if (s.length - 1 != command.numberOfArguments()) {
-                /* if ( (s.length - 1 == command.numberOfArguments() + 1) &&
-                        !(s[command.numberOfArguments() + 1].equals("hRts")) ) {
-                    throw new NoSuchElementException("Wrong the second argument." +
-                            "Expected null or hRts(for stream, query and limit).");
-                }
-                if ( (s.length - 1 != command.numberOfArguments() + 1) )*/
                     throw new NoSuchElementException("Unexpected number of arguments: "
                             + command.numberOfArguments() + " required");
             }
-            if ( (s.equals("--hideRetweets") || s.equals("-hRtws")) && !( (s[1].equals("+")) || (s[1].equals("-"))) ) {
+            if ((s.equals("--hideRetweets") || s.equals("-hRtws"))
+                    && !((s[1].equals("+")) || (s[1].equals("-")))) {
                 throw new NoSuchElementException("Wrong second arguments. Expected + or -. ");
             }
             command.putArguments(s);

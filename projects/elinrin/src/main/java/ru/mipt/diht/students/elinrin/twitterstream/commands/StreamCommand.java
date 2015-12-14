@@ -12,6 +12,7 @@ import static java.lang.Thread.sleep;
 
 public class StreamCommand extends Commands {
 
+    static final int SLEEP_TIME = 1000;
     @Override
     public void execute(TwitterProvider twitterPr) {
 
@@ -22,11 +23,12 @@ public class StreamCommand extends Commands {
             HandlerException.handler(e);
         }
         for (Status status: statusList) {
-            if ( (!twitterPr.isHideRetweets()) || !(status.isRetweet()) )
+            if ((!twitterPr.isHideRetweets()) || !(status.isRetweet())) {
                 System.out.println(new PrintTweet().print(status, false));
+            }
 
             try {
-                sleep(1000);
+                sleep(SLEEP_TIME);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

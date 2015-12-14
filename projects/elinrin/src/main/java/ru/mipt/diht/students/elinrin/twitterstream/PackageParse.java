@@ -44,7 +44,7 @@ public class PackageParse {
         } catch (IllegalArgumentException e) {
             HandlerException.handler("Wrong arguments", e);
         } catch (Exception e) {
-            HandlerException.handler( e);
+            HandlerException.handler(e);
         }
     }
 }
