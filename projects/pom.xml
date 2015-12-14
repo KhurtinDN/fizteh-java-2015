@@ -30,7 +30,6 @@
         <module>dkhurtin</module>
         <module>ale3otik</module>
         <module>Pitovsky</module>
-        <module>sopilnyak</module>
     </modules>
 
     <dependencyManagement>
@@ -133,4 +132,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
