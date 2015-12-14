@@ -11,7 +11,8 @@ public class UtilsTest {
     public void camelCaseToLowerCaseTest() {
         assertEquals("to_lower_case", camelCaseToLowerCase("toLowerCase"));
         assertEquals("to_lower12e", camelCaseToLowerCase("toLower12e"));
-        assertEquals("a_b_c", camelCaseToLowerCase("aBC"));
+        assertEquals("a_b_c", camelCaseToLowerCase("ABC"));
         assertEquals("simple", camelCaseToLowerCase("simple"));
+        assertEquals("simple", camelCaseToLowerCase("Simple"));
     }
 }

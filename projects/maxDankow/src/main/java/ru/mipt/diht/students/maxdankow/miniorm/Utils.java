@@ -11,8 +11,10 @@ public class Utils {
         for (int i = 0; i < text.length(); ++i) {
             char ch = text.charAt(i);
             if (isUpperCase(ch)) {
-                lowerCaseText.append("_")
-                        .append(toLowerCase(ch));
+                if (i != 0) {
+                    lowerCaseText.append("_");
+                }
+                lowerCaseText.append(toLowerCase(ch));
             } else {
                 lowerCaseText.append(ch);
             }
