@@ -1,7 +1,7 @@
 package ru.mipt.diht.students.elinrin.twitterstream;
 
 
-import ru.mipt.diht.students.elinrin.twitterstream.exception.HandlerException;
+import ru.mipt.diht.students.elinrin.twitterstream.exception.HandlerOfException;
 import ru.mipt.diht.students.elinrin.twitterstream.commands.Commands;
 
 import java.util.ArrayList;
@@ -35,16 +35,16 @@ public class PackageParse {
                     Commands command = Commands.fromString(com);
                     command.execute(twitterPr);
                 } catch (NoSuchElementException e) {
-                    HandlerException.handler(e, USER_MOD);
+                    HandlerOfException.handler(e, USER_MOD);
                 }
             }
         } catch (IllegalMonitorStateException e) {
             System.out.println("Goodbye");
             System.exit(0);
         } catch (IllegalArgumentException e) {
-            HandlerException.handler("Wrong arguments", e);
+            HandlerOfException.handler("Wrong arguments", e);
         } catch (Exception e) {
-            HandlerException.handler(e);
+            HandlerOfException.handler(e);
         }
     }
 }

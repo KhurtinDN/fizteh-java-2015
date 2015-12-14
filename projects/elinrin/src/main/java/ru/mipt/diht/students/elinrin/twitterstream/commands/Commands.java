@@ -26,25 +26,22 @@ public abstract class Commands {
         COMMANDS.put("-exit", new ExitCommand());
     }
 
-    public static Commands fromString(final String[] s) throws Exception {
-        if (s[0].equals("")) {
+    public static Commands fromString(final String[] arguments) {
+        if (arguments[0].equals("")) {
             throw new NoSuchElementException("");
         }
 
-        if (COMMANDS.containsKey(s[0])) {
-            Commands command = COMMANDS.get(s[0]);
-            if (s.length - 1 != command.numberOfArguments()) {
+        if (COMMANDS.containsKey(arguments[0])) {
+            Commands command = COMMANDS.get(arguments[0]);
+            if (arguments.length - 1 != command.numberOfArguments()) {
                 throw new NoSuchElementException("Unexpected number of arguments: "
                         + command.numberOfArguments() + " required");
             }
-            if ((s.equals("--hideRetweets") || s.equals("-hRtws"))
-                    && !((s[1].equals("+")) || (s[1].equals("-")))) {
-                throw new NoSuchElementException("Wrong second arguments. Expected + or -. ");
-            }
-            command.putArguments(s);
+
+            command.putArguments(arguments);
             return command;
         } else {
-            throw new NoSuchElementException(s[0] + " is unknown command");
+            throw new NoSuchElementException(arguments[0] + " is unknown command");
         }
     }
 

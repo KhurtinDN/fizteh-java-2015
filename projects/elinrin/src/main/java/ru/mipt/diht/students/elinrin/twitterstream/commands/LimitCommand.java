@@ -1,7 +1,7 @@
 package ru.mipt.diht.students.elinrin.twitterstream.commands;
 
 import ru.mipt.diht.students.elinrin.twitterstream.TwitterProvider;
-import ru.mipt.diht.students.elinrin.twitterstream.exception.HandlerException;
+import ru.mipt.diht.students.elinrin.twitterstream.exception.HandlerOfException;
 import ru.mipt.diht.students.elinrin.twitterstream.PrintTweet;
 import twitter4j.Status;
 import twitter4j.TwitterException;
@@ -20,7 +20,7 @@ public class LimitCommand extends Commands {
             statusList = twitterPr.twitter().getHomeTimeline();
 
         } catch (TwitterException e) {
-            HandlerException.handler(e);
+            HandlerOfException.handler(e);
         }
         for (Status status: statusList) {
             if ((!twitterPr.isHideRetweets()) || !(status.isRetweet())) {

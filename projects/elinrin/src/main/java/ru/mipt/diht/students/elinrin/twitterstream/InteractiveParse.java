@@ -1,6 +1,6 @@
 package ru.mipt.diht.students.elinrin.twitterstream;
 
-import ru.mipt.diht.students.elinrin.twitterstream.exception.HandlerException;
+import ru.mipt.diht.students.elinrin.twitterstream.exception.HandlerOfException;
 import ru.mipt.diht.students.elinrin.twitterstream.commands.Commands;
 
 import java.util.NoSuchElementException;
@@ -18,14 +18,14 @@ public class InteractiveParse {
                 arguments = in.nextLine();
                 arguments = arguments.trim();
                 String[] current = arguments.split("\\s+");
-                for (String aCurrent : current) {
-                    aCurrent.trim();
+                for (String argument : current) {
+                    argument.trim();
                 }
                 try {
                     Commands command = Commands.fromString(current);
                     command.execute(twitterPr);
                 } catch (NoSuchElementException e) {
-                    HandlerException.handler(e, USER_MOD);
+                    HandlerOfException.handler(e, USER_MOD);
                 }
             }
         } catch (IllegalMonitorStateException e) {
@@ -34,13 +34,13 @@ public class InteractiveParse {
                 System.out.println("Goodbye");
                 System.exit(0);
             } else {
-                HandlerException.handler(e);
+                HandlerOfException.handler(e);
             }
         } catch (NoSuchElementException e) {
-            HandlerException.handler(e);
+            HandlerOfException.handler(e);
         } catch (Exception e) {
             in.close();
-            HandlerException.handler(e);
+            HandlerOfException.handler(e);
         }
         in.close();
     }

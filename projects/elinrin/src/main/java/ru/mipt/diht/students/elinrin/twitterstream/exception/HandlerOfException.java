@@ -1,6 +1,6 @@
 package ru.mipt.diht.students.elinrin.twitterstream.exception;
 
-public class HandlerException {
+public class HandlerOfException {
     static final String USER_MOD = "user";
 
     public static void handler(final String message, final Throwable cause) {

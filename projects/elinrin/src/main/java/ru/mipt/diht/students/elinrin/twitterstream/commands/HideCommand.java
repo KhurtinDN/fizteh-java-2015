@@ -3,6 +3,8 @@ package ru.mipt.diht.students.elinrin.twitterstream.commands;
 
 import ru.mipt.diht.students.elinrin.twitterstream.TwitterProvider;
 
+import java.util.NoSuchElementException;
+
 public class HideCommand extends Commands {
     private String parameter;
     @Override
@@ -21,6 +23,9 @@ public class HideCommand extends Commands {
 
     @Override
     protected final void putArguments(final String[] args) {
+        if (!((args[1].equals("+")) || (args[1].equals("-")))) {
+            throw new NoSuchElementException("Wrong second arguments. Expected + or -. ");
+        }
         parameter = args[1];
     }
 

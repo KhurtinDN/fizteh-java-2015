@@ -1,9 +1,12 @@
 package ru.mipt.diht.students.elinrin.twitterstream.commands;
 
 import ru.mipt.diht.students.elinrin.twitterstream.TwitterProvider;
-import ru.mipt.diht.students.elinrin.twitterstream.exception.HandlerException;
+import ru.mipt.diht.students.elinrin.twitterstream.exception.HandlerOfException;
 import ru.mipt.diht.students.elinrin.twitterstream.PrintTweet;
-import twitter4j.*;
+import twitter4j.Query;
+import twitter4j.QueryResult;
+import twitter4j.Status;
+import twitter4j.TwitterException;
 
 public class QueryCommand extends Commands {
 
@@ -17,7 +20,7 @@ public class QueryCommand extends Commands {
         try {
             result = twitterPr.twitter().search(query);
         } catch (TwitterException e) {
-            HandlerException.handler(e);
+            HandlerOfException.handler(e);
         }
         for (Status status : result.getTweets()) {
             if ((!twitterPr.isHideRetweets()) || !(status.isRetweet())) {

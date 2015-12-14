@@ -1,6 +1,6 @@
 package ru.mipt.diht.students.elinrin.twitterstream;
 
-import ru.mipt.diht.students.elinrin.twitterstream.exception.HandlerException;
+import ru.mipt.diht.students.elinrin.twitterstream.exception.HandlerOfException;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 
@@ -18,7 +18,7 @@ public class RunTwitter {
                 PackageParse.parse(twitterPr, args);
             }
         } catch (IllegalArgumentException e) {
-            HandlerException.handler(e);
+            HandlerOfException.handler(e);
         }
     }
 }
