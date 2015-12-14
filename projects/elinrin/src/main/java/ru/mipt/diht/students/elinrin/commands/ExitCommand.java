@@ -1,6 +1,6 @@
-package ru.mipt.diht.studens.commands;
+package ru.mipt.diht.students.elinrin.commands;
 
-import ru.mipt.diht.studens.TwitterProvider;
+import ru.mipt.diht.students.elinrin.TwitterProvider;
 
 public class ExitCommand extends Commands {
 

@@ -1,4 +1,4 @@
-package ru.mipt.diht.studens;
+package ru.mipt.diht.students.elinrin;
 
 
 import twitter4j.Twitter;
@@ -6,13 +6,13 @@ import twitter4j.Twitter;
 public class TwitterProvider {
     private Twitter twitter;
     private boolean hideRetweets;
-    private String plase;
+    private String place;
 
     public TwitterProvider(Twitter twitter) {
 
         this.twitter = twitter;
         hideRetweets = false;
-        plase = " ";
+        place = " ";
     }
 
     public void changeParameterRetweets(boolean parameter) {
@@ -20,7 +20,7 @@ public class TwitterProvider {
     }
 
     public void changeParameterPlase(String parameter) {
-        plase = parameter;
+        place = parameter;
     }
 
 
@@ -32,8 +32,8 @@ public class TwitterProvider {
         return hideRetweets;
     }
 
-    public String getPlase() {
-        return plase;
+    public String getPlace() {
+        return place;
     }
 
 

@@ -1,6 +1,6 @@
-package ru.mipt.diht.studens.commands;
+package ru.mipt.diht.students.elinrin.commands;
 
-import ru.mipt.diht.studens.TwitterProvider;
+import ru.mipt.diht.students.elinrin.TwitterProvider;
 
 import java.util.HashMap;
 import java.util.NoSuchElementException;
@@ -21,8 +21,8 @@ public abstract class Commands {
         COMMANDS = new HashMap<>();
         COMMANDS.put("--query", new QueryCommand());
         COMMANDS.put("-q", new QueryCommand());
-        COMMANDS.put("--place", new PlaseCommand());
-        COMMANDS.put("-p", new PlaseCommand());
+        COMMANDS.put("--place", new PlaceCommand());
+        COMMANDS.put("-p", new PlaceCommand());
         COMMANDS.put("--stream", new StreamCommand());
         COMMANDS.put("-s", new StreamCommand());
         COMMANDS.put("--hideRetweets", new HideCommand());

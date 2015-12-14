@@ -1,8 +1,8 @@
-package ru.mipt.diht.studens.commands;
+package ru.mipt.diht.students.elinrin.commands;
 
-import ru.mipt.diht.studens.PrintTweet;
-import ru.mipt.diht.studens.TwitterProvider;
-import ru.mipt.diht.studens.exception.HandlerException;
+import ru.mipt.diht.students.elinrin.TwitterProvider;
+import ru.mipt.diht.students.elinrin.exception.HandlerException;
+import ru.mipt.diht.students.elinrin.PrintTweet;
 import twitter4j.*;
 
 public class QueryCommand extends Commands {

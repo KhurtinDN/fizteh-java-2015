@@ -1,20 +1,12 @@
-package ru.mipt.diht.studens;
+package ru.mipt.diht.students.elinrin;
 
-import ru.mipt.diht.studens.exception.HandlerException;
-import twitter4j.Status;
+import ru.mipt.diht.students.elinrin.exception.HandlerException;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
-import twitter4j.util.TimeSpanConverter;
-
-import java.awt.*;
-import java.sql.Time;
-import java.text.StringCharacterIterator;
-import java.util.Date;
-import java.util.List;
 
 public class RunTwitter {
-    public static void main(String[] args) throws TwitterException {
+    public static void main(String[] args)  {
 
 
 

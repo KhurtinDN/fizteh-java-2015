@@ -1,43 +1,41 @@
-package ru.mipt.diht.studens.commands;
+package ru.mipt.diht.students.elinrin.commands;
 
-import ru.mipt.diht.studens.PrintTweet;
-import ru.mipt.diht.studens.TwitterProvider;
-import ru.mipt.diht.studens.exception.HandlerException;
+import ru.mipt.diht.students.elinrin.PrintTweet;
+import ru.mipt.diht.students.elinrin.TwitterProvider;
+import ru.mipt.diht.students.elinrin.exception.HandlerException;
 import twitter4j.Status;
 import twitter4j.TwitterException;
 
 import java.util.List;
 
-public class LimitCommand extends Commands {
-    private int number;
+import static java.lang.Thread.sleep;
+
+public class StreamCommand extends Commands {
 
     @Override
     public void execute(TwitterProvider twitterPr) {
 
-
         List<Status> statusList = null;
         try {
             statusList = twitterPr.twitter().getHomeTimeline();
-
         } catch (TwitterException e) {
             HandlerException.handler(e);
         }
         for (Status status: statusList) {
-            if ((!twitterPr.isHideRetweets()) || !(status.isRetweet()))
+            if ( (!twitterPr.isHideRetweets()) || !(status.isRetweet()) )
                 System.out.println(new PrintTweet().print(status, false));
-            number-=1;
-            if (number == 0) break;
-        }
 
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
     protected int numberOfArguments() {
-        return 1;
+        return 0;
     }
 
-    @Override
-    protected void putArguments(String[] args) {
-        number = Integer.parseInt(args[1]);
-    }
 }

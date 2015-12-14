@@ -1,4 +1,4 @@
-package ru.mipt.diht.studens;
+package ru.mipt.diht.students.elinrin;
 
 import twitter4j.Status;
 
@@ -12,14 +12,14 @@ import static java.lang.Math.abs;
 public class PrintTweet {
 
     static final int LENGTH = 170;
-    static final int MIN = 1;
-    static final int HOUR = 2;
-    static final int DAY = 3;
-    static final int RETW = 0;
+    static final int MIN_MOD = 1;
+    static final int HOUR_MOD = 2;
+    static final int DAY_MOD = 3;
+    static final int RETWEET_MOD = 0;
 
-    static final int FORM_1 = 0;
-    static final int FORM_2 = 1;
-    static final int FORM_3 = 2;
+    static final int NOUN_FORM_1 = 0;
+    static final int NOUN_FORM_2 = 1;
+    static final int NOUN_FORM_3 = 2;
 
 
     static final String[][] wordPlural = {
@@ -29,14 +29,13 @@ public class PrintTweet {
             {"день", "дня", "дней"}
     };
 
-    public static int pluralForm(long n)
+    public static int pluralForm(long numeral)
     {
-        n = abs(n) % 100;
-        long n1 = n % 10;
-        if (n > 10 && n < 20) return FORM_3;
-        if (n1 > 1 && n1 < 5) return FORM_2;
-        if (n1 == 1) return FORM_1;
-        return FORM_3;
+        numeral = abs(numeral) % 100;
+        if (numeral > 10 && numeral < 20) return NOUN_FORM_3;
+        if ((numeral % 10) > 1 && (numeral % 10) < 5) return NOUN_FORM_2;
+        if ((numeral % 10) == 1) return NOUN_FORM_1;
+        return NOUN_FORM_3;
     }
 
     public static String tweetDate(Date givenDate) {
@@ -50,13 +49,16 @@ public class PrintTweet {
         if (goneTime.toMinutes() < 2) {
             result.append("Только что");
         } else if (goneTime.toHours() <= 0) {
-            result.append(goneTime.toMinutes()).append(" ").append(wordPlural[MIN][pluralForm(goneTime.toMinutes())]).append(" назад");
+            result.append(goneTime.toMinutes()).append(" ")
+                    .append(wordPlural[MIN_MOD][pluralForm(goneTime.toMinutes())]).append(" назад");
         } else if (goneTime.toDays() <= 0) {
-            result.append(goneTime.toHours()).append(" ").append(wordPlural[HOUR][pluralForm(goneTime.toHours())]).append(" назад");
+            result.append(goneTime.toHours()).append(" ")
+                    .append(wordPlural[HOUR_MOD][pluralForm(goneTime.toHours())]).append(" назад");
         } else if ( goneTime.toDays() == 1) {
             result.append("Вчера");
         } else {
-            result.append(goneTime.toDays()).append(" ").append(wordPlural[DAY][pluralForm(goneTime.toDays())]).append(" назад");
+            result.append(goneTime.toDays()).append(" ")
+                    .append(wordPlural[DAY_MOD][pluralForm(goneTime.toDays())]).append(" назад");
         }
         return result.append(" ] ").toString();
     }
@@ -68,17 +70,17 @@ public class PrintTweet {
             result.append(tweetDate(tweet.getCreatedAt()));
         }
 
-        result.append("@").append("\033[34m").append(tweet.getUser().getScreenName())
-                .append( "\033[0m").append(": ");
+        result.append(printUserName(tweet));
 
         if (tweet.isRetweet() ) {
-            result.append("ретвитнул @").append("\033[34m").append(tweet.getRetweetedStatus().getUser().getScreenName())
-                    .append( "\033[0m ").append(tweet.getRetweetedStatus().getText());
+            result.append("ретвитнул ").append(printUserName(tweet.getRetweetedStatus()))
+                    .append(tweet.getRetweetedStatus().getText());
         } else {
             result.append(tweet.getText());
         }
         if (!tweet.isRetweet() && tweet.getRetweetCount() != 0) {
-            result.append(" (").append(tweet.getRetweetCount()).append(" ").append(wordPlural[RETW][pluralForm(tweet.getRetweetCount())]).append(")");
+            result.append(" (").append(tweet.getRetweetCount()).append(" ")
+                    .append(wordPlural[RETWEET_MOD][pluralForm(tweet.getRetweetCount())]).append(")");
         }
 
         result.append("\n");
@@ -88,4 +90,12 @@ public class PrintTweet {
 
         return result.toString();
     }
+
+    public static String printUserName(Status tweet) {
+        StringBuilder result = new StringBuilder();
+        result.append("@").append("\033[34m").append(tweet.getUser().getScreenName())
+                .append( "\033[0m").append(": ");
+        return result.toString();
+    }
+
 }

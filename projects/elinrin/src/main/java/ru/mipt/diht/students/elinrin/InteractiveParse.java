@@ -1,13 +1,14 @@
-package ru.mipt.diht.studens;
+package ru.mipt.diht.students.elinrin;
 
-import ru.mipt.diht.studens.commands.Commands;
-import ru.mipt.diht.studens.exception.HandlerException;
-import twitter4j.Twitter;
+import ru.mipt.diht.students.elinrin.exception.HandlerException;
+import ru.mipt.diht.students.elinrin.commands.Commands;
 
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class InteractiveParse {
+    static final String USER_MOD = "user";
+
     public static void parse(TwitterProvider twitterPr) {
         Scanner in = new Scanner(System.in);
         try {
@@ -24,7 +25,7 @@ public class InteractiveParse {
                     Commands command = Commands.fromString(current);
                     command.execute(twitterPr);
                 } catch (NoSuchElementException e) {
-                    System.out.println("\033[31m" + e.getMessage() + "\033[0m");
+                    HandlerException.handler(e, USER_MOD);
                 }
             }
         } catch (IllegalMonitorStateException e) {
