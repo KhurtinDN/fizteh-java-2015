@@ -239,18 +239,72 @@ public class DatabaseService<T> {
         } catch (SQLException e) {
 //            System.err.println("An SQL error occurred: " + e.getMessage());
             throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (NoSuchFieldException | IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
         }
         return item;
     }
-//
-//    void update(T item){}
-//    void delete(T item) {}
+
+    public String buildUpdateStatement(T newItem) {
+        StringBuilder updateQuery = new StringBuilder("");
+        updateQuery.append("UPDATE ")
+                .append(tableName)
+                .append(" SET ");
+        List<Field> values = getValueList(newItem);
+        assert values.size() == columnList.size();
+
+        for (int i = 0; i < values.size(); ++i) {
+            updateQuery.append(columnList.get(i).name)
+                    .append("=");
+            Field field = values.get(i);
+            field.setAccessible(true);
+
+            try {
+                if (field.getType() == String.class || field.getType() == char.class) {
+                    updateQuery.append('\'')
+                            .append(field.get(newItem))
+                            .append('\'');
+                } else {
+                    updateQuery.append(field.get(newItem));
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+            if (i + 1 < columnList.size()) {
+                updateQuery.append(", ");
+            }
+        }
+        try {
+            updateQuery.append(" WHERE ")
+                    .append(primaryKey.name)
+                    .append("=")
+                    .append(Utils.getSqlValue(primaryKey.field.get(newItem)));
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return updateQuery.toString();
+    }
+
+    public void update(T item) {
+        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
+            Statement updateStatement = connection.createStatement();
+            updateStatement.execute(buildUpdateStatement(item));
+        } catch (SQLException e) {
+            throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
+        }
+    }
+
+    public <K> void delete(K key) {
+        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
+            Statement deleteStatement = connection.createStatement();
+            deleteStatement.execute("DELETE FROM " + tableName
+                    + " WHERE " + primaryKey.name + "=" + Utils.getSqlValue(key));
+        } catch (SQLException e) {
+            throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
+        }
+    }
+
     public String getTableName() {
         // Проверяем, проаннотирован ли класс @Table
         Table tableAnnotation;

@@ -38,13 +38,22 @@ public class DatabaseServiceTest {
             List<Student> sqlStudents = studentsDB.queryForAll();
             System.err.println(sqlStudents);
 //            assert false;
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
+        } catch (IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
         }
-        Student student = studentsDB.queryById("Mattew");
-        System.err.println(student);
+        Student studentMattew = studentsDB.queryById("Mattew");
+        System.err.println(studentMattew);
+//        studentsDB.delete("Mattew");
+        studentMattew.setGroupId(9991);
+        studentMattew.setHasSalary(false);
+        studentsDB.update(studentMattew);
+        try {
+            List<Student> sqlStudents = studentsDB.queryForAll();
+            System.err.println(sqlStudents);
+//            assert false;
+        } catch (IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+        }
 //        studentsDB.dropTable();
     }
 
@@ -53,6 +62,14 @@ public class DatabaseServiceTest {
         DatabaseService<Student> studentDatabaseService = new DatabaseService<>(Student.class);
         assertEquals("CREATE TABLE IF NOT EXISTS students (FIO VARCHAR(255) NOT NULL, group_id INTEGER, has_salary BOOLEAN)",
                 studentDatabaseService.buildCreateStatement());
+    }
+
+    @Test
+    public void updateQueryBuilderTest() {
+        DatabaseService<Student> studentDatabaseService = new DatabaseService<>(Student.class);
+        Student student = new Student("Peter", 999, true);
+        assertEquals("UPDATE students SET FIO='Peter', group_id=999, has_salary=true WHERE FIO='Peter'",
+                studentDatabaseService.buildUpdateStatement(student));
     }
 
     @Test
