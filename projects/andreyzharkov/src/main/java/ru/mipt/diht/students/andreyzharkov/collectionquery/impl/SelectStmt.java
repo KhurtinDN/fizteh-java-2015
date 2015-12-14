@@ -1,6 +1,5 @@
 package ru.mipt.diht.students.andreyzharkov.collectionquery.impl;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -37,7 +36,7 @@ public class SelectStmt<T, R> implements Query<R> {
     }
 
     public WhereStmt<T, R> where(Predicate<T> predicate) {
-        throw new UnsupportedOperationException();
+        return new WhereStmt<>(data, returnedClass, predicate, isDistinct, functions);
     }
 
     @Override
