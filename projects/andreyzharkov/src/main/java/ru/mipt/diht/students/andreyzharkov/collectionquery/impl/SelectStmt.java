@@ -7,28 +7,23 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class SelectStmt<T, R> {
-    Function<T, R>[] functions;
-    Collection<T> collection;
-    Class<R> returnedClass;
-    boolean isDistinct;
+public class SelectStmt<T, R> implements Query<R> {
 
     @SafeVarargs
-    public SelectStmt(Collection<T> collection, boolean isDistinct, Class<R> returnedClass, Function<T, R>... s) {
-        functions = s;
-        this.returnedClass = returnedClass;
-        this.collection = collection;
-        this.isDistinct = isDistinct;
+    public SelectStmt(Function<T, R>... s) {
+        throw new UnsupportedOperationException();
     }
 
     public WhereStmt<T, R> where(Predicate<T> predicate) {
-        return new WhereStmt<T, R>(collection, isDistinct, returnedClass, predicate, functions);
+        throw new UnsupportedOperationException();
     }
 
+    @Override
     public Iterable<R> execute() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Stream<R> stream() {
         throw new UnsupportedOperationException();
     }

@@ -1,5 +1,6 @@
 package ru.mipt.diht.students.andreyzharkov.collectionquery;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Function;
 
@@ -7,6 +8,10 @@ import java.util.function.Function;
  * Aggregate functions.
  */
 public class Aggregates {
+
+    public interface Agregator<C, T> extends Function<C, T>{
+        T apply(Collection<C> collection);
+    }
 
     /**
      * Maximum value for expression for elements of given collecdtion.
@@ -16,11 +21,25 @@ public class Aggregates {
      * @param <T>
      * @return
      */
-    public static <C, T extends Comparable<T>> Function<C, T> max(Function<C, T> expression) {
-        return new Function<C, T>() {
+    public static <C, T extends Comparable<T>> Agregator<C, T> max(Function<C, T> expression) {
+        return new Agregator<C, T>() {
             @Override
-            public T apply(C collection) {
-                return expression.apply(collection);
+            public T apply(Collection<C> collection) {
+                if (collection.isEmpty()){
+                    return null;
+                }
+                T res = expression.apply(collection.iterator().next());
+                for (C element : collection){
+                    if (expression.apply(element).compareTo(res) > 0){
+                        res = expression.apply(element);
+                    }
+                }
+                return res;
+            }
+
+            @Override
+            public T apply(C c) {
+                return null;
             }
         };
     }
@@ -33,11 +52,25 @@ public class Aggregates {
      * @param <T>
      * @return
      */
-    public static <C, T extends Comparable<T>> Function<C, T> min(Function<C, T> expression) {
-        return new Function<C, T>() {
+    public static <C, T extends Comparable<T>> Agregator<C, T> min(Function<C, T> expression) {
+        return new Agregator<C, T>() {
             @Override
-            public T apply(C collection) {
-                return expression.apply(collection);
+            public T apply(Collection<C> collection) {
+                if (collection.isEmpty()){
+                    return null;
+                }
+                T res = expression.apply(collection.iterator().next());
+                for (C element : collection){
+                    if (expression.apply(element).compareTo(res) < 0){
+                        res = expression.apply(element);
+                    }
+                }
+                return res;
+            }
+
+            @Override
+            public T apply(C c) {
+                return null;
             }
         };
     }
@@ -50,8 +83,27 @@ public class Aggregates {
      * @param <T>
      * @return
      */
-    public static <C, T extends Comparable<T>> Function<C, T> count(Function<C, T> expression) {
-        throw new UnsupportedOperationException();
+    public static <C, T extends Comparable<T>> Function<C, Long> count(Function<C, T> expression) {
+        return new Agregator<C, Long>() {
+            @Override
+            public Long apply(Collection<C> collection) {
+                long counter = 0;
+                for (C element : collection){
+                    if (expression.apply(element) != null){
+                        counter++;
+                    }
+                }
+                return  counter;
+            }
+
+            @Override
+            public Long apply(C c) {
+                if (expression.apply(c) != null){
+                    return (long)1;
+                }
+                return (long)0;
+            }
+        };
     }
 
     /**
@@ -62,8 +114,18 @@ public class Aggregates {
      * @param <T>
      * @return
      */
-    public static <C, T extends Comparable<T>> Function<C, T> avg(Function<C, T> expression) {
-        throw new UnsupportedOperationException();
+    public static <C, T extends Number> Agregator<C, T> avg(Function<C, T> expression) {
+        return new Agregator<C, T>() {
+            @Override
+            public T apply(Collection<C> collection) {
+                return null;
+            }
+
+            @Override
+            public T apply(C c) {
+                return null;
+            }
+        };
     }
 
 }

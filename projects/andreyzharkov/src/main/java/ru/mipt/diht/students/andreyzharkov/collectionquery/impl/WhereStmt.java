@@ -4,28 +4,12 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * Created by Андрей on 08.12.2015.
  */
-public class WhereStmt<T, R> {
-    private Collection<T> collection;
-    private Comparator<T>[] comparators;
-    private Function<T, ?>[] groupingFunctions;
-    private Predicate<T> predicate;
-    private Class<R> returnedClass;
-    private int amount;
-    private boolean isDistinct;
-
-    public WhereStmt(Collection<T> collection, boolean isDistinct, Class<R> returnedClass,
-                     Predicate<T> predicate, Function<T, R>... s) {
-        this.collection = collection;
-        this.predicate = predicate;
-        this.groupingFunctions = s;
-        this.isDistinct = isDistinct;
-        this.returnedClass = returnedClass;
-    }
-
+public class WhereStmt<T, R> implements Query<R> {
     @SafeVarargs
     public final WhereStmt<T, R> groupBy(Function<T, ?>... expressions) {
         throw new UnsupportedOperationException();
@@ -45,6 +29,16 @@ public class WhereStmt<T, R> {
     }
 
     public UnionStmt union() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Iterable<R> execute() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Stream<R> stream() {
         throw new UnsupportedOperationException();
     }
 }
