@@ -29,12 +29,14 @@ public class PrintTweet {
             {"день", "дня", "дней"}
     };
 
-    public static int pluralForm(long numeral)
-    {
+    public static int pluralForm(long numeral) {
         numeral = abs(numeral) % 100;
-        if (numeral > 10 && numeral < 20) return NOUN_FORM_3;
-        if ((numeral % 10) > 1 && (numeral % 10) < 5) return NOUN_FORM_2;
-        if ((numeral % 10) == 1) return NOUN_FORM_1;
+        if (numeral > 10 && numeral < 20)
+            return NOUN_FORM_3;
+        if ((numeral % 10) > 1 && (numeral % 10) < 5)
+            return NOUN_FORM_2;
+        if ((numeral % 10) == 1)
+            return NOUN_FORM_1;
         return NOUN_FORM_3;
     }
 
