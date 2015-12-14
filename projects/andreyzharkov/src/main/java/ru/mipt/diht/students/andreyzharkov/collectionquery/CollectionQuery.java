@@ -1,5 +1,7 @@
 package ru.mipt.diht.students.andreyzharkov.collectionquery;
 
+import ru.mipt.diht.students.andreyzharkov.collectionquery.impl.QueryExecuteException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -20,7 +22,7 @@ public class CollectionQuery {
      *
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws QueryExecuteException {
         Iterable<Statistics> statistics =
                 from(list(
                         student("ivanov", LocalDate.parse("1986-08-06"), "494"),

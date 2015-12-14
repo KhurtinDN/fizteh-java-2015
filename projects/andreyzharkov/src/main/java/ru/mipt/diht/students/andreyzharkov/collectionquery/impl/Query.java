@@ -1,13 +1,14 @@
 package ru.mipt.diht.students.andreyzharkov.collectionquery.impl;
 
 import java.util.stream.Stream;
+
 /**
  * Created by Андрей on 14.12.2015.
  */
 
 public interface Query<R> {
 
-    Iterable<R> execute();
+    Iterable<R> execute() throws QueryExecuteException;
 
-    Stream<R> stream();
+    Stream<R> stream() throws QueryExecuteException;
 }

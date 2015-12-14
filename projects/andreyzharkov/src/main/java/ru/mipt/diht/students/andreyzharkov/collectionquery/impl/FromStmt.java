@@ -1,5 +1,6 @@
 package ru.mipt.diht.students.andreyzharkov.collectionquery.impl;
 
+import java.util.List;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -7,21 +8,31 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FromStmt<T> {
+    Iterable<T> data;
+
+    private FromStmt(Iterable<T> iterable) {
+        this.data = iterable;
+    }
+
+    private FromStmt(Stream<T> stream) {
+        data = stream.collect(Collectors.toList());
+    }
+
     public static <T> FromStmt<T> from(Iterable<T> iterable) {
-        throw new UnsupportedOperationException();
+        return new FromStmt<>(iterable);
     }
 
     public static <T> FromStmt<T> from(Stream<T> stream) {
-        throw new UnsupportedOperationException();
+        return new FromStmt<>(stream);
     }
 
-    public static <T> FromStmt<T> from(Query query) {
-        throw new UnsupportedOperationException();
+    public static <T> FromStmt<T> from(Query<T> query) throws QueryExecuteException {
+        return new FromStmt<>(query.execute());
     }
 
     @SafeVarargs
     public final <R> SelectStmt<T, R> select(Class<R> clazz, Function<T, ?>... s) {
-        throw new UnsupportedOperationException();
+        return new SelectStmt<>(data, clazz, false, s);
     }
 
     /**
@@ -32,7 +43,7 @@ public class FromStmt<T> {
      * @return statement resulting in collection of R
      */
     public final <R> SelectStmt<T, R> select(Function<T, R> s) {
-        throw new UnsupportedOperationException();
+        return new SelectStmt<>(data, false, s);
     }
 
     /**
@@ -45,12 +56,12 @@ public class FromStmt<T> {
      * @return statement resulting in collection of R
      */
     public final <F, S> SelectStmt<T, Tuple<F, S>> select(Function<T, F> first, Function<T, S> second) {
-        throw new UnsupportedOperationException();
+        return new SelectStmt<>(data, false, first, second);
     }
 
     @SafeVarargs
     public final <R> SelectStmt<T, R> selectDistinct(Class<R> clazz, Function<T, ?>... s) {
-        throw new UnsupportedOperationException();
+        return new SelectStmt<>(data, clazz, true, s);
     }
 
     /**
@@ -61,7 +72,7 @@ public class FromStmt<T> {
      * @return statement resulting in collection of R
      */
     public final <R> SelectStmt<T, R> selectDistinct(Function<T, R> s) {
-        throw new UnsupportedOperationException();
+        return new SelectStmt<>(data, false, s);
     }
 
     public <J> JoinClause<T, J> join(Iterable<J> iterable) {

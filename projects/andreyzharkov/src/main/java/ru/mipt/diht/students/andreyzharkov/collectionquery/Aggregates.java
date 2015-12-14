@@ -1,7 +1,6 @@
 package ru.mipt.diht.students.andreyzharkov.collectionquery;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.function.Function;
 
 /**
@@ -9,7 +8,7 @@ import java.util.function.Function;
  */
 public class Aggregates {
 
-    public interface Agregator<C, T> extends Function<C, T>{
+    public interface Agregator<C, T> extends Function<C, T> {
         T apply(Collection<C> collection);
     }
 
@@ -25,12 +24,12 @@ public class Aggregates {
         return new Agregator<C, T>() {
             @Override
             public T apply(Collection<C> collection) {
-                if (collection.isEmpty()){
+                if (collection.isEmpty()) {
                     return null;
                 }
                 T res = expression.apply(collection.iterator().next());
-                for (C element : collection){
-                    if (expression.apply(element).compareTo(res) > 0){
+                for (C element : collection) {
+                    if (expression.apply(element).compareTo(res) > 0) {
                         res = expression.apply(element);
                     }
                 }
@@ -56,12 +55,12 @@ public class Aggregates {
         return new Agregator<C, T>() {
             @Override
             public T apply(Collection<C> collection) {
-                if (collection.isEmpty()){
+                if (collection.isEmpty()) {
                     return null;
                 }
                 T res = expression.apply(collection.iterator().next());
-                for (C element : collection){
-                    if (expression.apply(element).compareTo(res) < 0){
+                for (C element : collection) {
+                    if (expression.apply(element).compareTo(res) < 0) {
                         res = expression.apply(element);
                     }
                 }
@@ -88,20 +87,20 @@ public class Aggregates {
             @Override
             public Long apply(Collection<C> collection) {
                 long counter = 0;
-                for (C element : collection){
-                    if (expression.apply(element) != null){
+                for (C element : collection) {
+                    if (expression.apply(element) != null) {
                         counter++;
                     }
                 }
-                return  counter;
+                return counter;
             }
 
             @Override
             public Long apply(C c) {
-                if (expression.apply(c) != null){
-                    return (long)1;
+                if (expression.apply(c) != null) {
+                    return (long) 1;
                 }
-                return (long)0;
+                return (long) 0;
             }
         };
     }

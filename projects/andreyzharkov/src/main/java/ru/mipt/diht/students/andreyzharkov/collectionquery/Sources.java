@@ -40,9 +40,9 @@ public class Sources {
      * @throws ClassCastException
      */
     public static <T> Stream<T> lines(InputStream inputStream) throws IOException, ClassCastException {
-        final int BUFFER_SIZE = 1000;
+        final int bufferSize = 1000;
         StringBuilder builder = new StringBuilder();
-        byte[] data = new byte[BUFFER_SIZE];
+        byte[] data = new byte[bufferSize];
         Stream.Builder<T> stream = Stream.builder();
 
         while (inputStream.read(data) > 0) {
