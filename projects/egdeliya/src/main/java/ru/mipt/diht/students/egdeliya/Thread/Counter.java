@@ -1,10 +1,5 @@
 package ru.mipt.diht.students.egdeliya.Thread;
 
-//import java.util.Objects;
-//import java.util.concurrent.ThreadFactory;
-//import java.util.concurrent.locks.Lock;
-//import java.util.concurrent.locks.ReentrantLock;
-
 /**
  * Created by Эгделия on 15.12.2015.
  */
