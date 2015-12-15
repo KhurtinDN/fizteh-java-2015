@@ -30,8 +30,8 @@
         <module>dkhurtin</module>
         <module>ale3otik</module>
         <module>Pitovsky</module>
-    	<module>glutolik</module>
-    </modules>
+    <module>glutolik</module>
+  </modules>
 
     <dependencyManagement>
         <dependencies>
