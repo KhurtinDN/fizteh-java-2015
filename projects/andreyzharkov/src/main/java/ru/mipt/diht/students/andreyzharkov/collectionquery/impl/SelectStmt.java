@@ -16,40 +16,41 @@ public class SelectStmt<T, R> implements Query<R> {
     private boolean isTupleR;
 
     @SafeVarargs
-    SelectStmt(Iterable<R> previous, Iterable<T> data, Class<R> clazz, boolean isDistinct, Function<T, ?>... s) {
-        this.data = data;
-        this.previous = previous;
+    SelectStmt(Iterable<R> prvious, Iterable<T> dta, Class<R> clazz, boolean isDistnct, Function<T, ?>... s) {
+        this.data = dta;
+        this.previous = prvious;
         functions = s;
         returnedClass = clazz;
-        this.isDistinct = isDistinct;
+        this.isDistinct = isDistnct;
         isTupleR = false;
     }
 
-    SelectStmt(Iterable<R> previous, Iterable<T> data, boolean isDistinct, Function<T, R> func) {
-        this.data = data;
-        this.previous = previous;
+    SelectStmt(Iterable<R> prvious, Iterable<T> dta, boolean isDistnct, Function<T, R> func) {
+        this.data = dta;
+        this.previous = prvious;
         functions = new Function[]{func};
         returnedClass = (Class<R>) func.apply(data.iterator().next()).getClass();
-        this.isDistinct = isDistinct;
+        this.isDistinct = isDistnct;
         isTupleR = false;
     }
 
-    <F, S> SelectStmt(Iterable<R> previous, Iterable<T> data, boolean isDistinct, Function<T, F> first, Function<T, S> second) {
-        this.data = data;
-        this.previous = previous;
+    <F, S> SelectStmt(Iterable<R> prvious, Iterable<T> dta, boolean isDistnct,
+                      Function<T, F> first, Function<T, S> second) {
+        this.data = dta;
+        this.previous = prvious;
         functions = new Function[]{first, second};
         returnedClass = (Class<R>) (new Tuple(first.apply(data.iterator().next()),
                 second.apply(data.iterator().next()))).getClass();
-        this.isDistinct = isDistinct;
+        this.isDistinct = isDistnct;
         isTupleR = true;
     }
 
-    public WhereStmt<T, R> where(Predicate<T> predicate) {
+    public final WhereStmt<T, R> where(Predicate<T> predicate) {
         return new WhereStmt<>(previous, data, returnedClass, predicate, isDistinct, isTupleR, functions);
     }
 
     @Override
-    public Iterable<R> execute() throws QueryExecuteException {
+    public final Iterable<R> execute() throws QueryExecuteException {
         if (data == null) {
             return new ArrayList<>();
         }
@@ -88,8 +89,7 @@ public class SelectStmt<T, R> implements Query<R> {
     }
 
     @Override
-    public Stream<R> stream() throws QueryExecuteException {
+    public final Stream<R> stream() throws QueryExecuteException {
         return StreamSupport.stream(execute().spliterator(), false);
     }
-
 }

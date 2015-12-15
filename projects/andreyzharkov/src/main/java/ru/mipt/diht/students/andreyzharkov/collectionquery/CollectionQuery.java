@@ -26,6 +26,7 @@ public class CollectionQuery {
      *
      * @param args
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public static void main(String[] args) throws QueryExecuteException,
             UnequalUnionClassesException, EmptyCollectionException {
         Iterable<Statistics> statistics =
@@ -61,25 +62,25 @@ public class CollectionQuery {
 
         private final String group;
 
-        public String getName() {
+        public final String getName() {
             return name;
         }
 
-        public Student(String name, LocalDate dateOfBith, String group) {
-            this.name = name;
-            this.dateOfBith = dateOfBith;
-            this.group = group;
+        public Student(String nme, LocalDate datOfBith, String grop) {
+            this.name = nme;
+            this.dateOfBith = datOfBith;
+            this.group = grop;
         }
 
-        public LocalDate getDateOfBith() {
+        public final LocalDate getDateOfBith() {
             return dateOfBith;
         }
 
-        public String getGroup() {
+        public final String getGroup() {
             return group;
         }
 
-        public long age() {
+        public final long age() {
             return ChronoUnit.YEARS.between(getDateOfBith(), LocalDateTime.now());
         }
 
@@ -92,16 +93,16 @@ public class CollectionQuery {
         private final String group;
         private final String mentor;
 
-        public Group(String group, String mentor) {
-            this.group = group;
-            this.mentor = mentor;
+        public Group(String grop, String mentr) {
+            this.group = grop;
+            this.mentor = mentr;
         }
 
-        public String getGroup() {
+        public final String getGroup() {
             return group;
         }
 
-        public String getMentor() {
+        public final String getMentor() {
             return mentor;
         }
     }
@@ -113,26 +114,26 @@ public class CollectionQuery {
         private final Long count;
         private final Long age;
 
-        public String getGroup() {
+        public final String getGroup() {
             return group;
         }
 
-        public Long getCount() {
+        public final Long getCount() {
             return count;
         }
 
-        public Long getAge() {
+        public final Long getAge() {
             return age;
         }
 
-        public Statistics(String group, Long count, Long age) {
-            this.group = group;
-            this.count = count;
-            this.age = age;
+        public Statistics(String grop, Long cnt, Long ag) {
+            this.group = grop;
+            this.count = cnt;
+            this.age = ag;
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return "Statistics{"
                     + "group='" + group + '\''
                     + ", count=" + count

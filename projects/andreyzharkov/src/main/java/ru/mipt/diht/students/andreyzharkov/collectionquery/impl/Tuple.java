@@ -8,21 +8,21 @@ public class Tuple<F, S> {
     private final F first;
     private final S second;
 
-    public Tuple(F first, S second) {
-        this.first = first;
-        this.second = second;
+    public Tuple(F fst, S snd) {
+        this.first = fst;
+        this.second = snd;
     }
 
-    public F getFirst() {
+    public final F getFirst() {
         return first;
     }
 
-    public S getSecond() {
+    public final S getSecond() {
         return second;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return "Tuple{"
                 + "first=" + first
                 + ", second=" + second

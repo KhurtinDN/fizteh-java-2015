@@ -21,22 +21,22 @@ public class WhereStmt<T, R> implements Query<R> {
     private Function<T, Comparable<?>>[] groupingFunctions;
     private Predicate<R> groupingCondition;
     private Comparator<T> resultComparator;
-    private T example;//for initialization of out output class constructor arguments
+    private T example; //for initialization of out output class constructor arguments
     private boolean isDistinct;
     private boolean isTupleR;
-    long maxResultSize;
+    private long maxResultSize;
 
-    Object[] constructorArguments;
-    Class[] resultClasses;
+    private Object[] constructorArguments;
+    private Class[] resultClasses;
 
-    WhereStmt(Iterable<R> previous, Iterable<T> iterable, Class<R> clazz, Predicate<T> predicate,
-              boolean isDistinct, boolean isTupleR, Function<T, ?>[] convertFunctions) {
+    WhereStmt(Iterable<R> prev, Iterable<T> iterable, Class<R> clazz, Predicate<T> predicate,
+              boolean isDistnct, boolean isTuplR, Function<T, ?>[] convFunctions) {
         stream = StreamSupport.stream(iterable.spliterator(), false).filter(predicate);
         returnedClass = clazz;
-        this.previous = previous;
-        this.convertFunctions = convertFunctions;
-        this.isDistinct = isDistinct;
-        this.isTupleR = isTupleR;
+        this.previous = prev;
+        this.convertFunctions = convFunctions;
+        this.isDistinct = isDistnct;
+        this.isTupleR = isTuplR;
         groupingCondition = null;
         example = iterable.iterator().next();
     }
@@ -53,27 +53,28 @@ public class WhereStmt<T, R> implements Query<R> {
         return this;
     }
 
-    public WhereStmt<T, R> having(Predicate<R> condition) {
+    public final WhereStmt<T, R> having(Predicate<R> condition) {
         groupingCondition = condition;
         return this;
     }
 
-    public WhereStmt<T, R> limit(int amount) {
+    public final WhereStmt<T, R> limit(int amount) {
         maxResultSize = amount;
         return this;
     }
 
-    public UnionStmt<R> union() throws UnequalUnionClassesException, QueryExecuteException, EmptyCollectionException {
+    public final UnionStmt<R> union() throws UnequalUnionClassesException,
+            QueryExecuteException, EmptyCollectionException {
         return new UnionStmt<>(this.execute());
     }
 
     @Override
-    public Iterable<R> execute() throws QueryExecuteException, EmptyCollectionException {
+    public final Iterable<R> execute() throws QueryExecuteException, EmptyCollectionException {
         return this.stream().collect(Collectors.toList());
     }
 
     @Override
-    public Stream<R> stream() throws QueryExecuteException, EmptyCollectionException {
+    public final Stream<R> stream() throws QueryExecuteException, EmptyCollectionException {
         constructorArguments = new Object[convertFunctions.length];
         resultClasses = new Class[convertFunctions.length];
         //
@@ -119,8 +120,8 @@ public class WhereStmt<T, R> implements Query<R> {
                     if (isTupleR) {
                         result.add((R) new Tuple<>(constructorArguments[0], constructorArguments[1]));
                     } else {
-                        R newElement = (R) returnedClass.getConstructor(resultClasses).newInstance(constructorArguments);
-                        result.add(newElement);
+                        result.add(returnedClass.getConstructor(resultClasses)
+                                .newInstance(constructorArguments));
                     }
                 } catch (Exception ex) {
                     throw new QueryExecuteException("Failed to construct output class!", ex);

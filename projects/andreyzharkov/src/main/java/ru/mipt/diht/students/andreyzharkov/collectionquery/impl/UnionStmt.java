@@ -7,7 +7,7 @@ public class UnionStmt<R> {
         previous = iterable;
     }
 
-    public <T> FromStmt<T> from(Iterable<T> list) {
+    public final <T> FromStmt<T> from(Iterable<T> list) {
         return new FromStmt<>(list, previous);
     }
 }
