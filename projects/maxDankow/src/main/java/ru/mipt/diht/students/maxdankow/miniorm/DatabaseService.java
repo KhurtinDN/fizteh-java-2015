@@ -25,6 +25,7 @@ public class DatabaseService<T> {
     @Target(ElementType.FIELD)
     public @interface Column {
         String name() default UNNAMED;
+
         String type();
     }
 
@@ -52,7 +53,25 @@ public class DatabaseService<T> {
         return statementBuilder;
     }
 
+    @FunctionalInterface
+    public interface CheckedFunction<T, R> {
+        R apply(T t) throws SQLException, IllegalStateException;
+    }
+
+    private <R> R databaseRequest(CheckedFunction<Statement, R> action) {
+        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
+            Statement statement = connection.createStatement();
+            return action.apply(statement);
+        } catch (SQLException e) {
+            throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
+        }
+    }
+
     public void createTable() throws IllegalStateException {
+//        databaseRequest((Statement s) -> {
+//            s.execute(statementBuilder.buildCreate());
+//            return true;
+//        });
         try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
             Statement createStatement = connection.createStatement();
             createStatement.execute(statementBuilder.buildCreate());
@@ -77,82 +96,65 @@ public class DatabaseService<T> {
     }
 
     public void dropTable() throws IllegalStateException {
-        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
-            Statement dropStatement = connection.createStatement();
-            dropStatement.execute("DROP TABLE IF EXISTS " + tableName);
-        } catch (SQLException e) {
-            throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
-        }
+        databaseRequest((Statement statement) -> {
+            statement.execute("DROP TABLE IF EXISTS " + tableName);
+            return true;
+        });
     }
 
     void insert(T newItem) {
-        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
-            Statement InsertStatement = connection.createStatement();
-            int added = InsertStatement.executeUpdate(statementBuilder.buildInsert(newItem));
+        int added = databaseRequest((Statement statement) -> statement.executeUpdate(statementBuilder.buildInsert(newItem)));
 
-            if (added != 0) {
-                System.err.println("Элемент успешно добавлен.");
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
+        if (added != 0) {
+            System.err.println("Элемент успешно добавлен.");
         }
     }
 
     public List<T> queryForAll() {
-        List<T> selectAddList = new ArrayList<>();
-        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
-            Statement selectAllStatement = connection.createStatement();
-            ResultSet resultSet = selectAllStatement.executeQuery("SELECT * FROM " + tableName);
+        List<T> allItems = databaseRequest((Statement statement) -> {
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tableName);
             // Обрабатываем полученные результаты.
+            List<T> selectAllList = new ArrayList<>();
             while (resultSet.next()) {
                 T item = Utils.createItemFromSqlResult(resultSet, columnList, itemsClass);
-                selectAddList.add(item);
+                selectAllList.add(item);
             }
-        } catch (SQLException e) {
-            throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
-        }
-        return selectAddList;
+            return selectAllList;
+        });
+        System.err.println("Get all items: " + allItems);
+        return allItems;
     }
 
     public <K> T queryById(K key) {
-        T item = null;
-        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
-            Statement selectAllStatement = connection.createStatement();
-            ResultSet resultSet = selectAllStatement.executeQuery("SELECT * FROM " + tableName
+        T itemById = databaseRequest((Statement statement) -> {
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tableName
                     + " WHERE " + primaryKey.name + "=" + Utils.getSqlValue(key));
-
             // Обрабатываем полученный результат.
+            T item = null;
             if (resultSet.next()) {
                 item = Utils.createItemFromSqlResult(resultSet, columnList, itemsClass);
             }
             if (resultSet.next()) {
-                throw new IllegalStateException("Primary key search sesult is not single");
+                throw new IllegalStateException("Primary key search result is not single");
             }
-        } catch (SQLException e) {
-            throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
-        }
-        return item;
+            return item;
+        });
+        System.err.println("Get item by ID: " + itemById);
+        return itemById;
     }
 
-
-
     public void update(T item) {
-        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
-            Statement updateStatement = connection.createStatement();
-            updateStatement.execute(statementBuilder.buildUpdate(item));
-        } catch (SQLException e) {
-            throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
-        }
+        databaseRequest((Statement statement) -> {
+            statement.execute(statementBuilder.buildUpdate(item));
+            return true;
+        });
     }
 
     public <K> void delete(K key) {
-        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
-            Statement deleteStatement = connection.createStatement();
-            deleteStatement.execute("DELETE FROM " + tableName
-                    + " WHERE " + primaryKey.name + "=" + Utils.getSqlValue(key));
-        } catch (SQLException e) {
-            throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
-        }
+        databaseRequest((Statement statement) -> {
+            statement.execute("DELETE FROM " + tableName + " WHERE " + primaryKey.name + "=" + Utils.getSqlValue(key));
+            return true;
+        });
     }
 
     public String getTableName() {
@@ -204,18 +206,5 @@ public class DatabaseService<T> {
         return columnList;
     }
 
-    private List<Field> getValueList(T item) {
-        List<Field> values = new ArrayList<>();
-        // Пройдемся по полям класса и найдем аннотированные @Column
-        Field[] fields = itemsClass.getDeclaredFields();
-        for (Field field : fields) {
-            // Будем осходить из того, что внутри одного запуска программы
-            // порядок методов, возвращаемых getFields, не меняется.
-            if (field.isAnnotationPresent(Column.class)) {
-                values.add(field);
-            }
-        }
-        return values;
-    }
 }
 

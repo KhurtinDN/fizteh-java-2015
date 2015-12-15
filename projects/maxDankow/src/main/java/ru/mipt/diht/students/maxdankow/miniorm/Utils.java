@@ -3,6 +3,8 @@ package ru.mipt.diht.students.maxdankow.miniorm;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.util.Date;
 import java.util.List;
 
 import static java.lang.Character.isUpperCase;
@@ -42,7 +44,6 @@ public class Utils {
         try {
             // Создаем новый объект пустым конструктором.
             newItem = (T) itemClass.newInstance();
-            Field[] itemFields = newItem.getClass().getFields();
 
             // Перебираем все нужные столбцы-поля.
             for (ItemColumn column : columnList) {
@@ -51,19 +52,33 @@ public class Utils {
 
                 // Определяем какой тип получать в соостветствии с типом поля.
                 // String
-                // TODO: Вынести в отдельный метод.
-                if (field.getType() == String.class) {
+                if (field.getType() == String.class || field.getType() == char.class) {
                     String value = resultSet.getString(column.name);
                     field.set(newItem, value);
                 }
                 // int
-                if (field.getType() == int.class) {
+                if (field.getType() == int.class || field.getType() == Integer.class) {
                     int value = resultSet.getInt(column.name);
+                    field.set(newItem, value);
+                }
+                // float
+                if (field.getType() == float.class || field.getType() == Double.class) {
+                    float value = resultSet.getFloat(column.name);
                     field.set(newItem, value);
                 }
                 // boolean
                 if (field.getType() == boolean.class) {
                     boolean value = resultSet.getBoolean(column.name);
+                    field.set(newItem, value);
+                }
+                // Date
+                if (field.getType() == Date.class) {
+                    Date value = resultSet.getDate(column.name);
+                    field.set(newItem, value);
+                }
+                // Time
+                if (field.getType() == Time.class) {
+                    Time value = resultSet.getTime(column.name);
                     field.set(newItem, value);
                 }
             }

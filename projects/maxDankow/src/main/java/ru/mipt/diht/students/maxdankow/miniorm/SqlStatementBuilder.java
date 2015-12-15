@@ -28,28 +28,28 @@ public class SqlStatementBuilder<T> {
                 .append(tableName)
                 .append(" (");
 
-        int count = 0;
+        List<String> columns = new ArrayList<>();
         for (ItemColumn column : columnList) {
-            createQuery.append(column.name)
+            StringBuilder columnsBuilder = new StringBuilder();
+            columnsBuilder.append(column.name)
                     .append(" ")
                     .append(column.type);
             if (column == primaryKey) {
-                createQuery.append(" NOT NULL");
+                columnsBuilder.append(" NOT NULL");
             }
-            if (count + 1 < columnList.size()) {
-                createQuery.append(", ");
-            }
-            ++count;
+            columns.add(columnsBuilder.toString());
         }
-        createQuery.append(")");
+
+        createQuery.append(columns.stream().collect(joining(", "))).append(")");
         return createQuery.toString();
     }
 
     public String buildInsert(T newItem) {
-        StringBuilder insertQuery = new StringBuilder("");
+        StringBuilder insertQuery = new StringBuilder();
         insertQuery.append("INSERT INTO ")
                 .append(tableName)
                 .append(" VALUES (");
+
         List<String> columns = new ArrayList<>();
         for (ItemColumn column : columnList) {
             Field field = column.field;
@@ -61,20 +61,20 @@ public class SqlStatementBuilder<T> {
                 e.printStackTrace();
             }
         }
-        insertQuery.append(columns.stream().collect(joining(", ")))
-                .append(")");
+
+        insertQuery.append(columns.stream().collect(joining(", "))).append(")");
         return insertQuery.toString();
     }
 
     public String buildUpdate(T item) {
-        StringBuilder updateStatement = new StringBuilder("");
+        StringBuilder updateStatement = new StringBuilder();
         updateStatement.append("UPDATE ")
                 .append(tableName)
                 .append(" SET ");
-        List<String> columns = new ArrayList<>();
 
+        List<String> columns = new ArrayList<>();
         for (ItemColumn column : columnList) {
-            StringBuilder columnBuilder = new StringBuilder("");
+            StringBuilder columnBuilder = new StringBuilder();
             columnBuilder.append(column.name)
                     .append("=");
 
@@ -87,6 +87,7 @@ public class SqlStatementBuilder<T> {
             }
             columns.add(columnBuilder.toString());
         }
+
         updateStatement.append(columns.stream().collect(joining(", ")));
         try {
             updateStatement.append(" WHERE ")
