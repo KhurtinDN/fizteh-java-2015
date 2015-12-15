@@ -5,7 +5,7 @@ import com.beust.jcommander.JCommander;
 /**
  * Created by glutolik on 13.12.15.
  */
-public class RunTwitterStream {
+public class Main {
     public static void main(String[] args) {
 
         TerminalArguments arguments = new TerminalArguments();

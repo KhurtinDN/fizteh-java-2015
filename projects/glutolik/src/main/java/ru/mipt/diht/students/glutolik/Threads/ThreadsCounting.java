@@ -2,8 +2,6 @@ package ru.mipt.diht.students.glutolik.Threads;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 
 /**
  * Created by glutolik on 14.12.15.
@@ -11,6 +9,7 @@ import java.util.concurrent.CyclicBarrier;
 public class ThreadsCounting {
     private static volatile Integer numberOfThreads;
     private List<Thread> kinderGarten = new ArrayList<>();
+    private volatile Integer current = 1;
 
     public static Integer getNumber() {
         return numberOfThreads;
@@ -18,11 +17,10 @@ public class ThreadsCounting {
 
     private class Child extends Thread {
         private int id;
-        private CyclicBarrier barrier;
 
-        Child(int number, CyclicBarrier barrier1) {
+
+        Child(int number) {
             id = number;
-            barrier = barrier1;
         }
 
         @Override
@@ -32,37 +30,25 @@ public class ThreadsCounting {
 
         @Override
         public void run() {
-            try {
-                while (!Thread.interrupted()) {
-                    synchronized (numberOfThreads) {
-                        if (numberOfThreads == id) {
-                            System.out.println(this);
+            while (!Thread.interrupted()) {
+                synchronized (current) {
+                    if (current == id) {
+                        System.out.println(this);
+                        current++;
+                        Thread.currentThread().interrupt();
+                        if (current > numberOfThreads) {
+                            current = 0;
                         }
                     }
-                    barrier.await();
                 }
-            } catch (InterruptedException exception) {
-            } catch (BrokenBarrierException exception1) {
-                exception1.printStackTrace();
             }
         }
     }
 
     public ThreadsCounting(int number) {
-        numberOfThreads = 0;
-        CyclicBarrier barrier1 = new CyclicBarrier(number, () -> {
-            synchronized (numberOfThreads) {
-                if (numberOfThreads < number) {
-                    ++numberOfThreads;
-                } else {
-                    for (Thread ch : kinderGarten) {
-                        ch.interrupt();
-                    }
-                }
-            }
-        });
-        for (int i = 0; i < number; i++) {
-            Thread child = new Child(i + 1, barrier1);
+        numberOfThreads = number;
+        for (int i = 0; i < numberOfThreads; i++) {
+            Thread child = new Child(i + 1);
             child.start();
             kinderGarten.add(child);
         }
