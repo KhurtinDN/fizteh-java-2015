@@ -50,7 +50,7 @@ public class CollectionQueryTest extends TestCase {
                         .select(Statistics.class, Student::getGroup, count(Student::getGroup), max(Student::age))
                         .where(s -> s.age() > 20)
                         .groupBy(Student::getGroup)
-                        .orderBy(asc(Student::getGroup)))
+                        .orderBy(asc(Statistics::getGroup)))
                     .select(Statistics.class, Statistics::getGroup, Statistics::getCount, Statistics::getAge)
                     .where(s -> s.getCount() > 1)
                     .execute();
@@ -75,7 +75,7 @@ public class CollectionQueryTest extends TestCase {
                     .select(Statistics.class, Student::getGroup, count(Student::getGroup), avg(Student::age))
                     .where(s -> s.age() > 17)
                     .groupBy(Student::getGroup)
-                    .orderBy(asc(Student::getGroup))
+                    .orderBy(asc(Statistics::getGroup))
                 .union()
                     .from(list(student("urcoff", LocalDate.parse("1985-07-07"), "494")))
                     .selectDistinct(Statistics.class, s -> "all", count(s -> 1), avg(Student::age))
@@ -149,7 +149,7 @@ public class CollectionQueryTest extends TestCase {
                         .where(sg -> sg.first().age() > 20)
                         .groupBy(sg -> sg.first().getGroup())
                         .having(s-> s.getCount() > 1)
-                        .orderBy((s1, s2) -> s1.first().getGroup().compareTo(s2.first().getGroup()))
+                        .orderBy((s1, s2) -> s1.getGroup().compareTo(s2.getGroup()))
                     .execute();
         } catch (CollectionQueryExecuteException | CollectionQuerySyntaxException e) {
             fail(e.getMessage());

@@ -3,9 +3,9 @@ package ru.mipt.diht.students.pitovsky.collectionquery.impl;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -24,7 +24,9 @@ public class SelectStmt<T, R> {
     private Function<T, ?>[] convertFunctions;
 
     private Function<T, Comparable<?>>[] groupingFunctions;
-    private Predicate<R> groupingCondition = s -> true;
+    private Predicate<R> groupingCondition = null;
+    private Comparator<R> finalComparator = null;
+    private int finalLimit = -1;
 
     private boolean isDistinct;
 
@@ -44,20 +46,43 @@ public class SelectStmt<T, R> {
         return outputClass;
     }
 
+    private static <T> Comparator<T> getCombinedComparator(Iterable<Comparator<T>> comparators) {
+        return new Comparator<T>() {
+            @Override
+            public int compare(T first, T second) {
+                for (Comparator<T> comparator : comparators) {
+                    int result = comparator.compare(first, second);
+                    if (result != 0) {
+                        return result;
+                    }
+                }
+                return 0;
+            }
+        };
+    }
+
     /**
      * Select only rows, which is good for this predicate.
      * @param predicate
      * @return
      */
     public final WhereStmt<T, R> where(Predicate<T> predicate) {
-        return new WhereStmt<>(this, predicate);
+        stream = stream.filter(predicate);
+        return new WhereStmt<>(this);
     }
 
-    final void setGroupingFunctions(Function<T, Comparable<?>>[] expressions) {
+    @SafeVarargs
+    public final void groupBy(Function<T, Comparable<?>>... expressions) throws CollectionQuerySyntaxException {
+        if (groupingFunctions != null) {
+            throw new CollectionQuerySyntaxException("you also group table in the query");
+        }
         groupingFunctions = expressions;
     }
 
-    final void setGroupingCondition(Predicate<R> condition) {
+    public final void having(Predicate<R> condition) throws CollectionQuerySyntaxException {
+        if (groupingCondition != null) {
+            throw new CollectionQuerySyntaxException("you also set grouping conditions");
+        }
         groupingCondition = condition;
     }
 
@@ -103,7 +128,7 @@ public class SelectStmt<T, R> {
     private Collection<FinalRow<T, R>> goodGroups(Collection<FinalRow<T, R>> table) {
         List<FinalRow<T, R>> output = new ArrayList<>();
         for (FinalRow<T, R> row : table) {
-            if (groupingCondition.test(row.get())) {
+            if (groupingCondition == null || groupingCondition.test(row.get())) {
                 output.add(row);
             }
         }
@@ -150,11 +175,7 @@ public class SelectStmt<T, R> {
      */
     public final Collection<R> execute() throws CollectionQueryExecuteException {
         Collection<FinalRow<T, R>> output = null;
-        if (isDistinct) {
-            output = new HashSet<>();
-        } else {
-            output = new ArrayList<>();
-        }
+        output = new ArrayList<>();
 
         try {
             stream.forEach(new Applier(output, getAskedConstructor()));
@@ -178,7 +199,7 @@ public class SelectStmt<T, R> {
                     return result1.compareTo(function.apply(r2.getAnyFrom()));
                 });
             }
-            Comparator<FinalRow<T, R>> groupsComparator = WhereStmt.getCombinedComparator(resultComparators);
+            Comparator<FinalRow<T, R>> groupsComparator = getCombinedComparator(resultComparators);
             preCalcSortedTable.sort(groupsComparator);
             Collection<FinalRow<T, R>> groupedTable = new ArrayList<>();
 
@@ -198,7 +219,32 @@ public class SelectStmt<T, R> {
             aggregatingGroups(output);
             output = goodGroups(groupedTable);
         }
-        return convertToFinal(output);
+        Stream<R> finalOutput = convertToFinal(output).stream();
+        if (finalLimit >= 0) {
+            finalOutput = finalOutput.limit(finalLimit);
+        }
+        if (finalComparator != null) {
+            finalOutput = finalOutput.sorted(finalComparator);
+        }
+        if (isDistinct) {
+            finalOutput = finalOutput.distinct();
+        }
+        return finalOutput.collect(() -> new ArrayList<R>(), (l, e) -> l.add(e), (l1, l2) -> l1.addAll(l2));
+    }
+
+    public final void limit(int limit) throws CollectionQuerySyntaxException {
+        if (limit >= 0) {
+            throw new CollectionQuerySyntaxException("you also set limitation");
+        }
+        finalLimit = limit;
+    }
+
+    @SafeVarargs
+    public final void orderBy(Comparator<R>... comparators) throws CollectionQuerySyntaxException {
+        if (finalComparator != null) {
+            throw new CollectionQuerySyntaxException("you also set ordering functions");
+        }
+        finalComparator = getCombinedComparator(Arrays.asList(comparators));
     }
 
     public final Stream<R> stream() throws CollectionQueryExecuteException {
@@ -207,10 +253,6 @@ public class SelectStmt<T, R> {
 
     final Stream<T> currentStream() {
         return stream;
-    }
-
-    final void updateStream(Stream<T> newStream) {
-        stream = newStream;
     }
 
     /**
