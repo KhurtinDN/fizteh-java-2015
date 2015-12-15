@@ -5,6 +5,10 @@ package ru.mipt.diht.students.egdeliya.TwitterStream;
  */
 public class MyStreamer {
     public static void main(String[] args) {
-        System.out.println("hello, World!");
+        JCommanderParser commandParser = new JCommanderParser(args);
+
+        String query = commandParser.getQuery();
+
+
     }
 }
