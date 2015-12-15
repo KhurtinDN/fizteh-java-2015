@@ -57,8 +57,8 @@ public class WhereStmt<T, R> implements Query<R> {
         return this;
     }
 
-    public UnionStmt union() {
-        throw new UnsupportedOperationException();
+    public UnionStmt union() throws UnequalUnionClassesException, QueryExecuteException {
+        return new UnionStmt<>(this.execute());
     }
 
     @Override

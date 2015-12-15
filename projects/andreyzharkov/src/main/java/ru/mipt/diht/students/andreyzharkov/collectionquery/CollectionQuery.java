@@ -2,6 +2,7 @@ package ru.mipt.diht.students.andreyzharkov.collectionquery;
 
 import ru.mipt.diht.students.andreyzharkov.collectionquery.impl.QueryExecuteException;
 import ru.mipt.diht.students.andreyzharkov.collectionquery.impl.Tuple;
+import ru.mipt.diht.students.andreyzharkov.collectionquery.impl.UnequalUnionClassesException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,7 +25,7 @@ public class CollectionQuery {
      *
      * @param args
      */
-    public static void main(String[] args) throws QueryExecuteException{
+    public static void main(String[] args) throws QueryExecuteException, UnequalUnionClassesException {
         Iterable<Statistics> statistics =
                 from(list(
                         student("ivanov", LocalDate.parse("1986-08-06"), "494"),

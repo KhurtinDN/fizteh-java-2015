@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 public class FromStmt<T> {
     Iterable<T> data;
 
-    private FromStmt(Iterable<T> iterable) {
+    FromStmt(Iterable<T> iterable) {
         this.data = iterable;
     }
 
