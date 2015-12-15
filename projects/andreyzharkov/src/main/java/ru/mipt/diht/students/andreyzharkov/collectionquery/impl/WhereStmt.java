@@ -33,6 +33,7 @@ public class WhereStmt<T, R> implements Query<R> {
         this.convertFunctions = convertFunctions;
         this.isDistinct = isDistinct;
         groupingCondition = null;
+        example = iterable.iterator().next();
     }
 
     @SafeVarargs
@@ -43,7 +44,7 @@ public class WhereStmt<T, R> implements Query<R> {
 
     @SafeVarargs
     public final WhereStmt<T, R> orderBy(Comparator<T>... comparators) {
-        stream.sorted(getCombinedComparator(Arrays.asList(comparators)));
+        //stream.sorted(getCombinedComparator(Arrays.asList(comparators)));
         return this;
     }
 
@@ -57,17 +58,17 @@ public class WhereStmt<T, R> implements Query<R> {
         return this;
     }
 
-    public UnionStmt union() throws UnequalUnionClassesException, QueryExecuteException {
+    public UnionStmt<R> union() throws UnequalUnionClassesException, QueryExecuteException, EmptyCollectionException {
         return new UnionStmt<>(this.execute());
     }
 
     @Override
-    public Iterable<R> execute() throws QueryExecuteException {
+    public Iterable<R> execute() throws QueryExecuteException, EmptyCollectionException {
         return this.stream().collect(Collectors.toList());
     }
 
     @Override
-    public Stream<R> stream() throws QueryExecuteException {
+    public Stream<R> stream() throws QueryExecuteException, EmptyCollectionException {
         constructorArguments = new Object[convertFunctions.length];
         resultClasses = new Class[convertFunctions.length];
         //

@@ -1,5 +1,6 @@
 package ru.mipt.diht.students.andreyzharkov.collectionquery;
 
+import ru.mipt.diht.students.andreyzharkov.collectionquery.impl.EmptyCollectionException;
 import ru.mipt.diht.students.andreyzharkov.collectionquery.impl.QueryExecuteException;
 import ru.mipt.diht.students.andreyzharkov.collectionquery.impl.Tuple;
 import ru.mipt.diht.students.andreyzharkov.collectionquery.impl.UnequalUnionClassesException;
@@ -25,7 +26,8 @@ public class CollectionQuery {
      *
      * @param args
      */
-    public static void main(String[] args) throws QueryExecuteException, UnequalUnionClassesException {
+    public static void main(String[] args) throws QueryExecuteException,
+            UnequalUnionClassesException, EmptyCollectionException {
         Iterable<Statistics> statistics =
                 from(list(
                         student("ivanov", LocalDate.parse("1986-08-06"), "494"),

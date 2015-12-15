@@ -1,7 +1,12 @@
 package ru.mipt.diht.students.andreyzharkov.collectionquery;
 
+import ru.mipt.diht.students.andreyzharkov.collectionquery.impl.EmptyCollectionException;
+
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Aggregate functions.
@@ -9,7 +14,7 @@ import java.util.function.Function;
 public class Aggregates {
 
     public interface Agregator<C, T> extends Function<C, T> {
-        T apply(Collection<C> collection);
+        T apply(Collection<C> collection) throws EmptyCollectionException;
     }
 
     /**
@@ -23,22 +28,16 @@ public class Aggregates {
     public static <C, T extends Comparable<T>> Agregator<C, T> max(Function<C, T> expression) {
         return new Agregator<C, T>() {
             @Override
-            public T apply(Collection<C> collection) {
+            public T apply(Collection<C> collection) throws EmptyCollectionException {
                 if (collection.isEmpty()) {
-                    return null;
+                    throw new EmptyCollectionException("Method max was called for empty collection.");
                 }
-                T res = expression.apply(collection.iterator().next());
-                for (C element : collection) {
-                    if (expression.apply(element).compareTo(res) > 0) {
-                        res = expression.apply(element);
-                    }
-                }
-                return res;
+                return Collections.max(collection.stream().map(expression).collect(Collectors.toList()));
             }
 
             @Override
             public T apply(C c) {
-                return null;
+                return expression.apply(c);
             }
         };
     }
@@ -54,22 +53,16 @@ public class Aggregates {
     public static <C, T extends Comparable<T>> Agregator<C, T> min(Function<C, T> expression) {
         return new Agregator<C, T>() {
             @Override
-            public T apply(Collection<C> collection) {
+            public T apply(Collection<C> collection) throws EmptyCollectionException {
                 if (collection.isEmpty()) {
-                    return null;
+                    throw new EmptyCollectionException("Method min was called for empty collection.");
                 }
-                T res = expression.apply(collection.iterator().next());
-                for (C element : collection) {
-                    if (expression.apply(element).compareTo(res) < 0) {
-                        res = expression.apply(element);
-                    }
-                }
-                return res;
+                return Collections.max(collection.stream().map(expression).collect(Collectors.toList()));
             }
 
             @Override
             public T apply(C c) {
-                return null;
+                return expression.apply(c);
             }
         };
     }
@@ -86,21 +79,15 @@ public class Aggregates {
         return new Agregator<C, Long>() {
             @Override
             public Long apply(Collection<C> collection) {
-                long counter = 0;
-                for (C element : collection) {
-                    if (expression.apply(element) != null) {
-                        counter++;
-                    }
-                }
-                return counter;
+                return collection.stream().map(expression).count();
             }
 
             @Override
             public Long apply(C c) {
                 if (expression.apply(c) != null) {
-                    return (long) 1;
+                    return 1L;
                 }
-                return (long) 0;
+                return 0L;
             }
         };
     }
@@ -116,13 +103,31 @@ public class Aggregates {
     public static <C, T extends Number> Agregator<C, T> avg(Function<C, T> expression) {
         return new Agregator<C, T>() {
             @Override
-            public T apply(Collection<C> collection) {
-                return null;
+            public T apply(Collection<C> collection) throws EmptyCollectionException {
+                if (collection.isEmpty()) {
+                    throw new EmptyCollectionException("Method avg was called for empty collection.");
+                }
+                T example = expression.apply(collection.iterator().next());
+                if (example instanceof Long || example instanceof Integer || example instanceof Short) {
+                    long sum = 0;
+                    for (C elem : collection) {
+                        sum += (Long) expression.apply(elem);
+                    }
+                    return (T) Long.valueOf(sum / collection.size());
+                }
+                if (example instanceof Double || example instanceof Float) {
+                    double sum = 0;
+                    for (C elem : collection) {
+                        sum += (Long) expression.apply(elem);
+                    }
+                    return (T) Double.valueOf(sum / collection.size());
+                }
+                throw new ClassCastException("Class type is not detected!");
             }
 
             @Override
             public T apply(C c) {
-                return null;
+                return expression.apply(c);
             }
         };
     }
