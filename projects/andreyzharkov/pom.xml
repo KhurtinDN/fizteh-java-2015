@@ -67,7 +67,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>ru.mipt.diht.students.TwitterStream</mainClass>
+                            <mainClass>ru.mipt.diht.students.andreyzharkov.collectionquery.CollectionQuery</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
