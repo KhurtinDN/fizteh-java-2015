@@ -5,44 +5,53 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class SelectStmt<T, R> implements Query<R> {
     private Iterable<T> data;
+    private Iterable<R> previous;
     private Function<T, ?>[] functions;
     private Class<R> returnedClass;
     private boolean isDistinct;
+    private boolean isTupleR;
 
     @SafeVarargs
-    SelectStmt(Iterable<T> data, Class<R> clazz, boolean isDistinct, Function<T, ?>... s) {
+    SelectStmt(Iterable<R> previous, Iterable<T> data, Class<R> clazz, boolean isDistinct, Function<T, ?>... s) {
         this.data = data;
+        this.previous = previous;
         functions = s;
         returnedClass = clazz;
         this.isDistinct = isDistinct;
+        isTupleR = false;
     }
 
-    SelectStmt(Iterable<T> data, boolean isDistinct, Function<T, R> func) {
+    SelectStmt(Iterable<R> previous, Iterable<T> data, boolean isDistinct, Function<T, R> func) {
         this.data = data;
+        this.previous = previous;
         functions = new Function[]{func};
         returnedClass = (Class<R>) func.apply(data.iterator().next()).getClass();
         this.isDistinct = isDistinct;
+        isTupleR = false;
     }
 
-    <F, S> SelectStmt(Iterable<T> data, boolean isDistinct, Function<T, F> first, Function<T, S> second) {
+    <F, S> SelectStmt(Iterable<R> previous, Iterable<T> data, boolean isDistinct, Function<T, F> first, Function<T, S> second) {
         this.data = data;
+        this.previous = previous;
         functions = new Function[]{first, second};
         returnedClass = (Class<R>) (new Tuple(first.apply(data.iterator().next()),
                 second.apply(data.iterator().next()))).getClass();
         this.isDistinct = isDistinct;
+        isTupleR = true;
     }
 
     public WhereStmt<T, R> where(Predicate<T> predicate) {
-        return new WhereStmt<>(data, returnedClass, predicate, isDistinct, functions);
+        return new WhereStmt<>(previous, data, returnedClass, predicate, isDistinct, isTupleR, functions);
     }
 
     @Override
     public Iterable<R> execute() throws QueryExecuteException {
         if (data == null) {
-            return null;
+            return new ArrayList<>();
         }
 
         Object[] constructorArguments = new Object[functions.length];
@@ -57,10 +66,19 @@ public class SelectStmt<T, R> implements Query<R> {
                 constructorArguments[i] = functions[i].apply(element);
             }
             try {
-                result.add(returnedClass.getConstructor(resultClasses).newInstance(constructorArguments));
+                if (isTupleR) {
+                    //почему-то не находит его конструктор, пришлось отдельно рассмотреть
+                    result.add((R) new Tuple(constructorArguments[0], constructorArguments[1]));
+                } else {
+                    result.add(returnedClass.getConstructor(resultClasses).newInstance(constructorArguments));
+                }
             } catch (Exception ex) {
                 throw new QueryExecuteException("Failed to construct output class!", ex);
             }
+        }
+
+        if (previous != null) {
+            previous.forEach(result::add);
         }
 
         if (isDistinct) {
@@ -71,32 +89,7 @@ public class SelectStmt<T, R> implements Query<R> {
 
     @Override
     public Stream<R> stream() throws QueryExecuteException {
-        if (data == null) {
-            return null;
-        }
-
-        Object[] constructorArguments = new Object[functions.length];
-        Class[] resultClasses = new Class[functions.length];
-        for (int i = 0; i < functions.length; i++) {
-            resultClasses[i] = functions[i].apply(data.iterator().next()).getClass();
-        }
-
-        ArrayList<R> result = new ArrayList<>();
-        for (T element : data) {
-            for (int i = 0; i < functions.length; i++) {
-                constructorArguments[i] = functions[i].apply(element);
-            }
-            try {
-                result.add(returnedClass.getConstructor(resultClasses).newInstance(constructorArguments));
-            } catch (Exception ex) {
-                throw new QueryExecuteException("Failed to construct output class!", ex);
-            }
-        }
-
-        if (isDistinct) {
-            return result.stream().distinct();
-        }
-        return result.stream();
+        return StreamSupport.stream(execute().spliterator(), false);
     }
 
 }

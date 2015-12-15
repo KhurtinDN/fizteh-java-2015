@@ -7,11 +7,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FromStmt<T> {
-    List<Iterable<?>> previousQuerys;//because of union
+    Iterable<?> previousQuery;//because of union
     Iterable<T> data;
 
     FromStmt(Iterable<T> iterable) {
         this.data = iterable;
+    }
+
+    FromStmt(Iterable<T> iterable, Iterable<?> previous){
+        data = iterable;
+        previousQuery = previous;
     }
 
     private FromStmt(Stream<T> stream) {
@@ -31,8 +36,12 @@ public class FromStmt<T> {
     }
 
     @SafeVarargs
-    public final <R> SelectStmt<T, R> select(Class<R> clazz, Function<T, ?>... s) {
-        return new SelectStmt<>(data, clazz, false, s);
+    public final <R> SelectStmt<T, R> select(Class<R> clazz, Function<T, ?>... s) throws UnequalUnionClassesException {
+        try{
+            return new SelectStmt<>((Iterable<R>)previousQuery, data, clazz, false, s);
+        } catch(ClassCastException ex){
+            throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+        }
     }
 
     /**
@@ -42,8 +51,12 @@ public class FromStmt<T> {
      * @param <R>
      * @return statement resulting in collection of R
      */
-    public final <R> SelectStmt<T, R> select(Function<T, R> s) {
-        return new SelectStmt<>(data, false, s);
+    public final <R> SelectStmt<T, R> select(Function<T, R> s) throws UnequalUnionClassesException {
+        try{
+            return new SelectStmt<>((Iterable<R>)previousQuery, data, false, s);
+        } catch(ClassCastException ex){
+            throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+        }
     }
 
     /**
@@ -55,13 +68,23 @@ public class FromStmt<T> {
      * @param <S>
      * @return statement resulting in collection of R
      */
-    public final <F, S> SelectStmt<T, Tuple<F, S>> select(Function<T, F> first, Function<T, S> second) {
-        return new SelectStmt<>(data, false, first, second);
+    public final <F, S> SelectStmt<T, Tuple<F, S>> select(Function<T, F> first, Function<T, S> second)
+            throws UnequalUnionClassesException {
+        try{
+            return new SelectStmt<>((Iterable<Tuple<F, S>>)previousQuery, data, false, first, second);
+        } catch(ClassCastException ex){
+            throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+        }
     }
 
     @SafeVarargs
-    public final <R> SelectStmt<T, R> selectDistinct(Class<R> clazz, Function<T, ?>... s) {
-        return new SelectStmt<>(data, clazz, true, s);
+    public final <R> SelectStmt<T, R> selectDistinct(Class<R> clazz, Function<T, ?>... s)
+            throws UnequalUnionClassesException {
+        try{
+            return new SelectStmt<>((Iterable<R>)previousQuery, data, clazz, true, s);
+        } catch(ClassCastException ex){
+            throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+        }
     }
 
     /**
@@ -71,8 +94,12 @@ public class FromStmt<T> {
      * @param <R>
      * @return statement resulting in collection of R
      */
-    public final <R> SelectStmt<T, R> selectDistinct(Function<T, R> s) {
-        return new SelectStmt<>(data, false, s);
+    public final <R> SelectStmt<T, R> selectDistinct(Function<T, R> s) throws UnequalUnionClassesException {
+        try{
+            return new SelectStmt<>((Iterable<R>)previousQuery, data, false, s);
+        } catch(ClassCastException ex){
+            throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+        }
     }
 
     public <J> JoinClause<T, J> join(Iterable<J> iterable) {

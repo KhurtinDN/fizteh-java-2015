@@ -15,23 +15,28 @@ import java.util.stream.StreamSupport;
  */
 public class WhereStmt<T, R> implements Query<R> {
     private Stream<T> stream;
+    private Iterable<R> previous;
     private Function<T, ?>[] convertFunctions;
     private Class<R> returnedClass;
     private Function<T, Comparable<?>>[] groupingFunctions;
     private Predicate<R> groupingCondition;
+    private Comparator<T> resultComparator;
     private T example;//for initialization of out output class constructor arguments
     private boolean isDistinct;
+    private boolean isTupleR;
     long maxResultSize;
 
     Object[] constructorArguments;
     Class[] resultClasses;
 
-    WhereStmt(Iterable<T> iterable, Class<R> clazz, Predicate<T> predicate,
-              boolean isDistinct, Function<T, ?>[] convertFunctions) {
+    WhereStmt(Iterable<R> previous, Iterable<T> iterable, Class<R> clazz, Predicate<T> predicate,
+              boolean isDistinct, boolean isTupleR, Function<T, ?>[] convertFunctions) {
         stream = StreamSupport.stream(iterable.spliterator(), false).filter(predicate);
         returnedClass = clazz;
+        this.previous = previous;
         this.convertFunctions = convertFunctions;
         this.isDistinct = isDistinct;
+        this.isTupleR = isTupleR;
         groupingCondition = null;
         example = iterable.iterator().next();
     }
@@ -44,7 +49,7 @@ public class WhereStmt<T, R> implements Query<R> {
 
     @SafeVarargs
     public final WhereStmt<T, R> orderBy(Comparator<T>... comparators) {
-        //stream.sorted(getCombinedComparator(Arrays.asList(comparators)));
+        resultComparator = getCombinedComparator(Arrays.asList(comparators));
         return this;
     }
 
@@ -111,17 +116,25 @@ public class WhereStmt<T, R> implements Query<R> {
                     resultClasses[i] = constructorArguments[i].getClass();
                 }
                 try {
-                    R newElement = (R) returnedClass.getConstructor(resultClasses).newInstance(constructorArguments);
-                    result.add(newElement);
+                    if (isTupleR) {
+                        result.add((R) new Tuple<>(constructorArguments[0], constructorArguments[1]));
+                    } else {
+                        R newElement = (R) returnedClass.getConstructor(resultClasses).newInstance(constructorArguments);
+                        result.add(newElement);
+                    }
                 } catch (Exception ex) {
                     throw new QueryExecuteException("Failed to construct output class!", ex);
                 }
             }
         } else {
             //лямбда исключение не прокидывает
-            for (T element : stream.collect(Collectors.toList())) {
+            for (T element : stream.sorted(resultComparator).collect(Collectors.toList())) {
                 addToList(result, element);
             }
+        }
+
+        if (previous != null) {
+            previous.forEach(result::add);
         }
 
         if (isDistinct) {
