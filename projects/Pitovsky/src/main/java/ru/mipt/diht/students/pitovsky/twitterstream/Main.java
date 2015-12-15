@@ -64,7 +64,9 @@ public class Main {
     public static void main(String[] args) {
         JCommanderList jcParams = new JCommanderList();
         JCommander jcommander = new JCommander(jcParams);
-        jcommander.setProgramName(args[0]);
+        if (args.length > 0) {
+            jcommander.setProgramName(args[0]);
+        }
         try {
             jcommander.parse(args);
         } catch (ParameterException pe) {

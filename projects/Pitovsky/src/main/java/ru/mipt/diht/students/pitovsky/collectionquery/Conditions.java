@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.dkhurtin.collectionquery2;
+package ru.mipt.diht.students.pitovsky.collectionquery;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -17,7 +17,13 @@ public class Conditions<T> {
      * @return
      */
     public static <T> Predicate<T> rlike(Function<T, String> expression, String regexp) {
-        throw new UnsupportedOperationException();
+        return new Predicate<T>() {
+
+            @Override
+            public boolean test(T element) {
+                return expression.apply(element).matches(regexp);
+            }
+        };
     }
 
     /**

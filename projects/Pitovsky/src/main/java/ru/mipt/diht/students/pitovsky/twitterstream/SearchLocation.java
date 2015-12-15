@@ -95,7 +95,7 @@ public class SearchLocation {
         double minY = searchLocations.get(0).getLongitude();
         double maxY = searchLocations.get(0).getLongitude();
 
-        for (GeoLocation location: searchLocations) {
+        for (GeoLocation location : searchLocations) {
             if (location.getLatitude() < minX) {
                 minX = location.getLatitude();
             }

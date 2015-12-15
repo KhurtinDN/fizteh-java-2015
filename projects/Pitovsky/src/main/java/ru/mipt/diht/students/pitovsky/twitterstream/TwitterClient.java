@@ -1,6 +1,7 @@
 package ru.mipt.diht.students.pitovsky.twitterstream;
 
 import java.io.IOException;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -26,20 +27,21 @@ import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.User;
 
-class TwitterClient {
+public class TwitterClient {
 
     private static final int STREAM_SLEEP_TIME = 1000; //in ms
     private static final int STREAM_EXIT_KEY = 27; //escape-key
     private static final int STREAM_MAX_QUEUE_SIZE = 1000; //i know, it is impossible, more than 1000 tweets per sec
 
     private Twitter twitter;
+    private Clock clock;
     private BlockingQueue<Status> tweetsQueue;
     private boolean hideRetweets;
     private boolean isDebugMode;
 
 
-    public static String convertDate(Date date) {
-        LocalDateTime currentDateTime = LocalDateTime.now();
+    public final String convertDate(Date date) {
+        LocalDateTime currentDateTime = LocalDateTime.now(clock);
         LocalDateTime tweetDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         if (tweetDateTime.isAfter(currentDateTime)) {
             return "еще не опубликовано";
@@ -65,7 +67,7 @@ class TwitterClient {
         return ConsoleUtils.colorizeString("@" + user.getScreenName(), TextColor.BLUE);
     }
 
-    private static String tweetOneString(Status tweet, boolean withDate, boolean withPlace) {
+    private String tweetOneString(Status tweet, boolean withDate, boolean withPlace) {
         StringBuilder tweetOut = new StringBuilder();
         if (withDate) {
             tweetOut.append(ConsoleUtils.colorizeString("[" + convertDate(tweet.getCreatedAt()) + "]",
@@ -105,7 +107,7 @@ class TwitterClient {
         }
     };
 
-    public SearchLocation findLocation(String region) throws TwitterException {
+    public final SearchLocation findLocation(String region) throws TwitterException {
         GeoQuery gquery = new GeoQuery("192.168.1.1"); //an useless ip
         gquery.setQuery(region);
         ResponseList<Place> searchPlaces = twitter.searchPlaces(gquery);
@@ -118,13 +120,29 @@ class TwitterClient {
         return location;
     }
 
-    TwitterClient(boolean needHideRetweets, boolean withDebug) {
+    private void init(boolean needHideRetweets, boolean withDebug, Clock clientClock, Twitter activeTwitter) {
         hideRetweets = needHideRetweets;
         isDebugMode = withDebug;
-        twitter = new TwitterFactory().getInstance();
+        clock = clientClock;
+        twitter = activeTwitter;
     }
 
-    public void startStreaming(String queryString, SearchLocation searchLocation) throws TwitterException {
+    public TwitterClient(boolean needHideRetweets, boolean withDebug) {
+        Clock clientClock = Clock.systemDefaultZone();
+        Twitter activeTwitter = new TwitterFactory().getInstance();
+        init(needHideRetweets, withDebug, clientClock, activeTwitter);
+    }
+
+    public TwitterClient(boolean needHideRetweets, boolean withDebug, Clock clientClock) {
+        Twitter activeTwitter = new TwitterFactory().getInstance();
+        init(needHideRetweets, withDebug, clientClock, activeTwitter);
+    }
+
+    public TwitterClient(boolean needHideRetweets, boolean withDebug, Clock clientClock, Twitter activeTwitter) {
+        init(needHideRetweets, withDebug, clientClock, activeTwitter);
+    }
+
+    public final void startStreaming(String queryString, SearchLocation searchLocation) throws TwitterException {
         tweetsQueue = new ArrayBlockingQueue<Status>(STREAM_MAX_QUEUE_SIZE);
         TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
         twitterStream.addListener(tweetListener);
@@ -171,7 +189,8 @@ class TwitterClient {
         }
     }
 
-    public void printTweets(String queryString,  SearchLocation searchLocation, int limit) throws TwitterException {
+    public final void printTweets(String queryString, SearchLocation searchLocation, int limit)
+            throws TwitterException {
         Query query = new Query(queryString);
         if (searchLocation != null) {
             query.setGeoCode(searchLocation.getCenter(), searchLocation.getRadius(), Query.Unit.km);

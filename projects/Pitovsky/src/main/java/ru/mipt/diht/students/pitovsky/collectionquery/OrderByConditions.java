@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.dkhurtin.collectionquery;
+package ru.mipt.diht.students.pitovsky.collectionquery;
 
 import java.util.Comparator;
 import java.util.function.Function;
