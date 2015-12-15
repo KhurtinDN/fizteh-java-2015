@@ -13,7 +13,7 @@ public class JCommanderArgs {
     private String query;
 
     @Parameter (names = { "-p" , "--place" }, description = "Location to search tweets; enter name or nearby keyword")
-    private String location;
+    private String location = "";
 
     @Parameter (names = { "-s" , "--stream" }, description = "Enter stream mode")
     private boolean isStream = false;

@@ -26,7 +26,6 @@ public class TwitterStream {
 
         String locationQuery = jargs.getLocation();
         LocationTools.setProperties(locationQuery);
-
         String textQuery = jargs.getQuery();
         Query query = new Query(textQuery);
 
@@ -36,13 +35,12 @@ public class TwitterStream {
         boolean isStream = jargs.isStream();
 
         if (isStream) {
-            StreamRunner.StreamTweets(textQuery, doHideRetweets, LocationTools.getGeoLocation());
-        }
-        else {
-            LocationTools.setGeoLocation(query);
+            StreamRunner.streamTweets(textQuery, doHideRetweets, LocationTools.getGeoLocation());
+        } else {
+            if (!locationQuery.equals("")) {
+                LocationTools.setGeoLocation(query);
+            }
             SearchRunner.getTweetsByQuery(query, doHideRetweets, tweetsLimit);
         }
     }
-
-
 }

@@ -14,22 +14,29 @@ import java.util.List;
 public class LocationTools {
 
     public static final double EARTH_RADIUS = 6371;
+    public static final double EARTH_SURFACE_AREA = 26 * 1000000;
     private static double latitude;
     private static double longtitude;
     private static double radius;
 
     public static void setProperties(String locationName) {
         try {
-            final Geocoder geocoder = new Geocoder();
-            GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().
-                    setAddress(locationName).getGeocoderRequest();
-            GeocodeResponse geocodeResponse = geocoder.geocode(geocoderRequest);
-            List<GeocoderResult> results = geocodeResponse.getResults();
+            if (locationName.equals("")) {
+                radius = EARTH_SURFACE_AREA;
+                latitude = 0;
+                longtitude = 0;
+            } else {
+                final Geocoder geocoder = new Geocoder();
+                GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().
+                        setAddress(locationName).getGeocoderRequest();
+                GeocodeResponse geocodeResponse = geocoder.geocode(geocoderRequest);
+                List<GeocoderResult> results = geocodeResponse.getResults();
 
-            latitude = results.get(0).getGeometry().getLocation().getLat().doubleValue();
-            longtitude = results.get(0).getGeometry().getLocation().getLng().doubleValue();
-            LatLngBounds bounds = results.get(0).getGeometry().getBounds();
-            radius = getRadius(bounds);
+                latitude = results.get(0).getGeometry().getLocation().getLat().doubleValue();
+                longtitude = results.get(0).getGeometry().getLocation().getLng().doubleValue();
+                LatLngBounds bounds = results.get(0).getGeometry().getBounds();
+                radius = getRadius(bounds);
+            }
 
         } catch (java.io.IOException e) {
             e.printStackTrace();
@@ -40,11 +47,11 @@ public class LocationTools {
         query.setGeoCode(getGeoLocation(), radius, Query.Unit.km);
     }
 
-    private static double getRadius(LatLngBounds bnds) {
-        double latitude1 = Math.toRadians(bnds.getNortheast().getLat().doubleValue());
-        double longtitude1 = Math.toRadians(bnds.getNortheast().getLng().doubleValue());
-        double latitude2 = Math.toRadians(bnds.getSouthwest().getLat().doubleValue());
-        double longtitude2 = Math.toRadians(bnds.getNortheast().getLng().doubleValue());
+    private static double getRadius(LatLngBounds bounds) {
+        double latitude1 = Math.toRadians(bounds.getNortheast().getLat().doubleValue());
+        double longtitude1 = Math.toRadians(bounds.getNortheast().getLng().doubleValue());
+        double latitude2 = Math.toRadians(bounds.getSouthwest().getLat().doubleValue());
+        double longtitude2 = Math.toRadians(bounds.getNortheast().getLng().doubleValue());
         double longtitudeDiff = longtitude2 - longtitude1;
         double angleDistance = Math.atan(Math.sqrt(Math.pow(Math.cos(latitude2) * Math.sin(longtitudeDiff), 2.0)
                 + Math.pow(Math.cos(latitude1) * Math.sin(latitude2)

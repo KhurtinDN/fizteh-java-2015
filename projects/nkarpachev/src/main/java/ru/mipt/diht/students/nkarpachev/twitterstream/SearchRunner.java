@@ -28,7 +28,8 @@ public class SearchRunner {
                         printedTweets++;
                     }
                 }
-            } while (((query = result.nextQuery()) != null) && (printedTweets < tweetLimit));
+                query = result.nextQuery();
+            } while ((query != null) && (printedTweets < tweetLimit));
             System.exit(0);
         } catch (TwitterException te) {
             te.printStackTrace();

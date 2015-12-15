@@ -12,117 +12,87 @@ import static java.lang.Math.abs;
 
 public class DateFormatTools {
 
+    private static String[] retweetForms = {"ретвит", "ретвита", "ретвитов"};
+    private static String[] minuteForms = {"минута", "минуты", "минут"};
+    private static String[] hourForms = {"час", "часа", "часов"};
+    private static String[] dayForms = {"день", "дня", "дней"};
+
+    private static final int TWO_DIGITS = 10;
+    private static final int CHANGED_FORM_BORDER = 5;
+
+    private static final int TIME_FORM_BORDER = 2;
+    private static final int MINUTES_IN_HOUR = 60;
+
+    private enum Noun {
+        MINUTE, HOUR, DAY, RETWEET
+    }
+
     public static String getTweetDate(Date srcDate) {
         LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDateTime tweetDateTime = srcDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
         Duration timeDiff = Duration.between(tweetDateTime, currentDateTime);
-        if (timeDiff.toDays() >= 2) {
-            return getFormattedString((int) timeDiff.toDays(), "день") + " назад";
+        String tweetDate;
+        if (timeDiff.toDays() >= TIME_FORM_BORDER) {
+            tweetDate = getFormattedString((int) timeDiff.toDays(), Noun.DAY) + " назад";
         }
         if (abs(currentDateTime.getDayOfMonth() - tweetDateTime.getDayOfMonth()) != 0) {
-            return "вчера";
+            tweetDate = "вчера";
         }
-        if (timeDiff.toMinutes() > 60) {
-            return getFormattedString((int) timeDiff.toHours(), "час") + " назад";
+        if (timeDiff.toMinutes() > MINUTES_IN_HOUR) {
+            tweetDate = getFormattedString((int) timeDiff.toHours(), Noun.HOUR) + " назад";
         }
-        if (timeDiff.toMinutes() >= 2) {
-            return getFormattedString((int) timeDiff.toMinutes(), "минута") + " назад";
-        } else return "только что";
+        if (timeDiff.toMinutes() >= TIME_FORM_BORDER) {
+            tweetDate = getFormattedString((int) timeDiff.toMinutes(), Noun.MINUTE) + " назад";
+        } else {
+            tweetDate = "только что";
+        }
+        return tweetDate;
     }
-    
+
     public static String getRetweetsCnt(Status tweet) {
         int retweetsNumber = tweet.getRetweetCount();
-        return getFormattedString(retweetsNumber, "ретвит");
+        return getFormattedString(retweetsNumber, Noun.RETWEET);
     }
 
-    private static String getFormattedString(int amount, String measure) {
-        return amount + makeForm(getForm(amount), measure);
+    private static String getFormattedString(int amount, Noun entity) {
+        return amount + " " + makeForm(amount, entity);
     }
 
-    private static String getForm(int formNumber) {
-        formNumber %= 100;
-        if (formNumber / 10 == 1) {
-            return "PL";
+    private static String makeForm(int formNumber, Noun entity) {
+        formNumber %= TWO_DIGITS;
+        String form = new String();
+        if ((formNumber == 0) || (formNumber >= CHANGED_FORM_BORDER)) {
+            form = getForm(2, entity);
         }
-        formNumber %= 10;
-        String form = "I";
-        switch (formNumber) {
-            case 1:
-                form = "I";
-            break;
-            case 2:
-            case 3:
-            case 4:
-                // C - changed form
-                form = "C";
-            break;
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 0:
-                // PL - changed and plural form
-                form = "PL";
-            break;
-
+        if (formNumber == 1) {
+            form = getForm(0, entity);
+        }
+        if ((formNumber > 1) && (formNumber < CHANGED_FORM_BORDER)) {
+            form = getForm(1, entity);
         }
         return form;
     }
 
-    private static String makeForm(String form, String noun) {
-        String nounForm = "единиц";
-        switch (noun) {
-            case "минута":
-                if (form.equals("I")) {
-                    nounForm = " минуту";
-                }
-                if (form.equals("C")) {
-                    nounForm = " минуты";
-                }
-                if (form.equals("PL")) {
-                    nounForm = " минут";
-                }
+    private static String getForm(int formNumber, Noun entity) {
+        String newNoun = new String();
+        switch (entity) {
+            case RETWEET:
+                newNoun = retweetForms[formNumber];
                 break;
-
-            case "час":
-                if (form.equals("I")) {
-                    nounForm = " час";
-                }
-                if (form.equals("C")) {
-                    nounForm = " часа";
-                }
-                if (form.equals("PL")) {
-                    nounForm = " часов";
-                }
+            case MINUTE:
+                newNoun = minuteForms[formNumber];
                 break;
-
-            case "день":
-                if (form.equals("I")) {
-                    nounForm = " день";
-                }
-                if (form.equals("C")) {
-                    nounForm = " дня";
-                }
-                if (form.equals("PL")) {
-                    nounForm = " дней";
-                }
+            case HOUR:
+                newNoun = hourForms[formNumber];
                 break;
-
-            case "ретвмт" :
-                if (form.equals("I")) {
-                    nounForm = " ретвит";
-                }
-                if (form.equals("C")) {
-                    nounForm = " ретвита";
-                }
-                if (form.equals("PL")) {
-                    nounForm = " ретвитов";
-                }
+            case DAY:
+                newNoun = dayForms[formNumber];
+                break;
+            default:
                 break;
         }
-        return nounForm;
+        return newNoun;
     }
 }
 

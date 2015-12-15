@@ -14,7 +14,7 @@ public class StreamRunner {
 
     private static final int SECOND = 1000;
 
-    public static void StreamTweets(String query, boolean doHideRetweets, GeoLocation locale) {
+    public static void streamTweets(String query, boolean doHideRetweets, GeoLocation locale) {
         twitter4j.TwitterStream stream = new TwitterStreamFactory().getInstance();
         Queue<Status> tweetsQueue = new LinkedList<>();
 
