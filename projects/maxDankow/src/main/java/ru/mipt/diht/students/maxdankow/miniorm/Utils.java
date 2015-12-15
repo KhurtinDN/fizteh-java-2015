@@ -76,7 +76,7 @@ public class Utils {
                 if (field.isAnnotationPresent(PrimaryKey.class)) {
                     // Объявление более одного @PrimaryKey недопустимо.
                     if (primaryKey != null) {
-                        throw new IllegalStateException("More than one primary key presents");
+                        throw new IllegalArgumentException("More than one primary key presents");
                     }
                     primaryKey = itemColumn;
                 }
@@ -93,7 +93,7 @@ public class Utils {
         }
     }
 
-    static public <T> T createItemFromSqlResult(ResultSet resultSet,
+    public static <T> T createItemFromSqlResult(ResultSet resultSet,
                                                 List<ItemColumn> columnList,
                                                 Class itemClass) throws SQLException {
         T newItem = null;
@@ -103,42 +103,41 @@ public class Utils {
 
             // Перебираем все нужные столбцы-поля.
             for (ItemColumn column : columnList) {
-                Field field = column.field;
-                Field itemField = newItem.getClass().getField(field.getName());
+                Field field = column.getField();
 
                 // Определяем какой тип получать в соостветствии с типом поля.
                 // String
                 if (field.getType() == String.class || field.getType() == char.class) {
-                    String value = resultSet.getString(column.name);
+                    String value = resultSet.getString(column.getName());
                     field.set(newItem, value);
                 }
                 // int
                 if (field.getType() == int.class || field.getType() == Integer.class) {
-                    int value = resultSet.getInt(column.name);
+                    int value = resultSet.getInt(column.getName());
                     field.set(newItem, value);
                 }
                 // float
                 if (field.getType() == float.class || field.getType() == Double.class) {
-                    float value = resultSet.getFloat(column.name);
+                    float value = resultSet.getFloat(column.getName());
                     field.set(newItem, value);
                 }
                 // boolean
                 if (field.getType() == boolean.class) {
-                    boolean value = resultSet.getBoolean(column.name);
+                    boolean value = resultSet.getBoolean(column.getName());
                     field.set(newItem, value);
                 }
                 // Date
                 if (field.getType() == Date.class) {
-                    Date value = resultSet.getDate(column.name);
+                    Date value = resultSet.getDate(column.getName());
                     field.set(newItem, value);
                 }
                 // Time
                 if (field.getType() == Time.class) {
-                    Time value = resultSet.getTime(column.name);
+                    Time value = resultSet.getTime(column.getName());
                     field.set(newItem, value);
                 }
             }
-        } catch (InstantiationException | IllegalAccessException | NoSuchFieldException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
         return newItem;

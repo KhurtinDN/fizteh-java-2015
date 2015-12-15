@@ -49,7 +49,7 @@ public class DatabaseService<T> {
                 primaryKey, itemsClass);
     }
 
-    public SqlStatementBuilder<T> getStatementBuilder() {
+    public final SqlStatementBuilder<T> getStatementBuilder() {
         return statementBuilder;
     }
 
@@ -68,33 +68,35 @@ public class DatabaseService<T> {
         }
     }
 
-    public void createTable() {
+    public final void createTable() {
         databaseRequest((Statement statement) -> {
             statement.execute(statementBuilder.buildCreate());
             if (primaryKey != null) {
-                statement.execute("ALTER TABLE " + tableName + " ADD PRIMARY KEY (" + primaryKey.name + ")");
+                statement.execute("ALTER TABLE " + tableName + " ADD PRIMARY KEY (" + primaryKey.getName() + ")");
                 System.err.println("PK успешно добавлен.");
             }
             return true;
         });
     }
 
-    public void dropTable() {
+    public final void dropTable() {
         databaseRequest((Statement statement) -> {
             statement.execute("DROP TABLE IF EXISTS " + tableName);
             return true;
         });
     }
 
-    void insert(T newItem) {
-        int added = databaseRequest((Statement statement) -> statement.executeUpdate(statementBuilder.buildInsert(newItem)));
+    public final void insert(T newItem) {
+        int added = databaseRequest(
+                (Statement statement) -> statement.executeUpdate(statementBuilder.buildInsert(newItem))
+        );
 
         if (added != 0) {
             System.err.println("Элемент успешно добавлен.");
         }
     }
 
-    public List<T> queryForAll() {
+    public final List<T> queryForAll() {
         List<T> allItems = databaseRequest((Statement statement) -> {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tableName);
             // Обрабатываем полученные результаты.
@@ -109,10 +111,10 @@ public class DatabaseService<T> {
         return allItems;
     }
 
-    public <K> T queryById(K key) {
+    public final <K> T queryById(K key) {
         T itemById = databaseRequest((Statement statement) -> {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tableName
-                    + " WHERE " + primaryKey.name + "=" + Utils.getSqlValue(key));
+                    + " WHERE " + primaryKey.getName() + "=" + Utils.getSqlValue(key));
             // Обрабатываем полученный результат.
             T item = null;
             if (resultSet.next()) {
@@ -127,16 +129,17 @@ public class DatabaseService<T> {
         return itemById;
     }
 
-    public void update(T item) {
+    public final void update(T item) {
         databaseRequest((Statement statement) -> {
             statement.execute(statementBuilder.buildUpdate(item));
             return true;
         });
     }
 
-    public <K> void delete(K key) {
+    public final <K> void delete(K key) {
         databaseRequest((Statement statement) -> {
-            statement.execute("DELETE FROM " + tableName + " WHERE " + primaryKey.name + "=" + Utils.getSqlValue(key));
+            statement.execute("DELETE FROM " + tableName + " WHERE "
+                    + primaryKey.getName() + "=" + Utils.getSqlValue(key));
             return true;
         });
     }

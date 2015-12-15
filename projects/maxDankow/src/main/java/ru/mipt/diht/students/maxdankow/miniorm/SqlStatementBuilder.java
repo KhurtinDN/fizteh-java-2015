@@ -10,20 +10,20 @@ public class SqlStatementBuilder<T> {
     private String tableName = null;
     private List<ItemColumn> columnList = null;
     private ItemColumn primaryKey = null;
-    Class itemsClass;
+    private Class itemsClass;
 
-    public SqlStatementBuilder(String tableName,
-                               List<ItemColumn> columnList,
-                               ItemColumn primaryKey,
-                               Class itemsClass) {
-        this.tableName = tableName;
-        this.columnList = columnList;
-        this.primaryKey = primaryKey;
-        this.itemsClass = itemsClass;
+    public SqlStatementBuilder(String newTableName,
+                               List<ItemColumn> newColumnList,
+                               ItemColumn newPrimaryKey,
+                               Class newItemsClass) {
+        this.tableName = newTableName;
+        this.columnList = newColumnList;
+        this.primaryKey = newPrimaryKey;
+        this.itemsClass = newItemsClass;
     }
 
-    public String buildCreate() {
-        StringBuilder createQuery = new StringBuilder("");
+    public final String buildCreate() {
+        StringBuilder createQuery = new StringBuilder();
         createQuery.append("CREATE TABLE IF NOT EXISTS ")
                 .append(tableName)
                 .append(" (");
@@ -31,9 +31,9 @@ public class SqlStatementBuilder<T> {
         List<String> columns = new ArrayList<>();
         for (ItemColumn column : columnList) {
             StringBuilder columnsBuilder = new StringBuilder();
-            columnsBuilder.append(column.name)
+            columnsBuilder.append(column.getName())
                     .append(" ")
-                    .append(column.type);
+                    .append(column.getType());
             if (column == primaryKey) {
                 columnsBuilder.append(" NOT NULL");
             }
@@ -44,7 +44,7 @@ public class SqlStatementBuilder<T> {
         return createQuery.toString();
     }
 
-    public String buildInsert(T newItem) {
+    public final String buildInsert(T newItem) {
         StringBuilder insertQuery = new StringBuilder();
         insertQuery.append("INSERT INTO ")
                 .append(tableName)
@@ -52,7 +52,7 @@ public class SqlStatementBuilder<T> {
 
         List<String> columns = new ArrayList<>();
         for (ItemColumn column : columnList) {
-            Field field = column.field;
+            Field field = column.getField();
             field.setAccessible(true);
 
             try {
@@ -66,7 +66,7 @@ public class SqlStatementBuilder<T> {
         return insertQuery.toString();
     }
 
-    public String buildUpdate(T item) {
+    public final String buildUpdate(T item) {
         StringBuilder updateStatement = new StringBuilder();
         updateStatement.append("UPDATE ")
                 .append(tableName)
@@ -75,10 +75,10 @@ public class SqlStatementBuilder<T> {
         List<String> columns = new ArrayList<>();
         for (ItemColumn column : columnList) {
             StringBuilder columnBuilder = new StringBuilder();
-            columnBuilder.append(column.name)
+            columnBuilder.append(column.getName())
                     .append("=");
 
-            Field field = column.field;
+            Field field = column.getField();
             field.setAccessible(true);
             try {
                 columnBuilder.append(Utils.getSqlValue(field.get(item)));
@@ -91,9 +91,9 @@ public class SqlStatementBuilder<T> {
         updateStatement.append(columns.stream().collect(joining(", ")));
         try {
             updateStatement.append(" WHERE ")
-                    .append(primaryKey.name)
+                    .append(primaryKey.getName())
                     .append("=")
-                    .append(Utils.getSqlValue(primaryKey.field.get(item)));
+                    .append(Utils.getSqlValue(primaryKey.getField().get(item)));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }

@@ -10,14 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 
 public class DatabaseServiceTest {
     private List<Student> students = new ArrayList<>();
 
     @Before
-    public void initStudents() {
+    public final void initStudents() {
         students.add(new Student("Peter", 497, false));
         students.add(new Student("Mike", 499, true));
         students.add(new Student("Xander", 499, true));
@@ -27,119 +26,129 @@ public class DatabaseServiceTest {
     }
 
     @Test
-    public void test() {
+    public final void sequenceTest() {
         DatabaseService<Student> studentsDB = new DatabaseService<>(Student.class);
         studentsDB.dropTable();
         studentsDB.createTable();
         for (Student student : students) {
             studentsDB.insert(student);
         }
-        studentsDB.queryForAll();
+        assertEquals(students, studentsDB.queryForAll());
 
         Student studentMattew = studentsDB.queryById("Mattew");
+        assertEquals(new Student("Mattew", 497, true), studentsDB.queryById("Mattew"));
 
         studentMattew.setGroupId(9991);
         studentMattew.setHasSalary(false);
         studentsDB.update(studentMattew);
+        assertEquals(new Student("Mattew", 9991, false), studentsDB.queryById("Mattew"));
+
         studentsDB.delete("Mike");
-        studentsDB.queryById("Mike");
-
+        assertEquals(null, studentsDB.queryById("Mike"));
         studentsDB.queryForAll();
-
     }
 
-    @Test
-    public void getTableNameTest() {
-        assertEquals("simple", Utils.getTableName(Simple.class));
-    }
-
-    @Test
-    public void getColumnListTest() {
-        List<ItemColumn> expectedList = new ArrayList<>();
-        try {
-            expectedList.add(new ItemColumn("FIO", "VARCHAR(255)", Student.class.getField("name")));
-            expectedList.add(new ItemColumn("group_id", "INTEGER", Student.class.getField("groupId")));
-            expectedList.add(new ItemColumn("has_salary", "BOOLEAN", Student.class.getField("hasSalary")));
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-
-        List<ItemColumn> actualList = Utils.analyseColumns(Student.class).getKey();
-        // Т.к. порядок не ганантирован, то проверяем на равенство без его учета.
-        assertTrue(expectedList.containsAll(actualList)
-                && actualList.containsAll(expectedList));
-    }
-
-//    @Test(expected = IllegalStateException.class)
-//    public void doubleDropTest() {
-//        DatabaseService<Simple> simpleDS = new DatabaseService<>(Simple.class);
-//        simpleDS.dropTable();
-//        simpleDS.dropTable();
-//    }
-
-
-    @Table
-    private class Simple {
-        @Column(type = "INTEGER")
-        public int number;
-    }
 }
 
-@Table(name = "students")
+@Table(name = "SiMpLe")
+class Simple {
+    @Column(type = "INTEGER")
+    private int number;
+}
+
+@Table
+class DoublePrimaryKey {
+    @Column(type = "INTEGER")
+    @PrimaryKey
+    private int firstKey;
+
+    @Column(type = "INTEGER")
+    @PrimaryKey
+    private int secondKey;
+
+}
+
+@Table
 class Student {
 
     @Column(name = "FIO", type = "VARCHAR(255)")
     @PrimaryKey
-    public String name;
+    private String name;
 
     @Column(type = "INTEGER")
-    public int groupId;
+    private int groupId;
 
     @Column(type = "BOOLEAN")
-    public boolean hasSalary;
+    private boolean hasSalary;
 
-    public Student() {
+    Student() {
         name = null;
         groupId = 0;
         hasSalary = false;
     }
 
-    public Student(String name, int groupId, boolean hasSalary) {
-        this.name = name;
-        this.groupId = groupId;
-        this.hasSalary = hasSalary;
+    Student(String newName, int newGroupId, boolean newHasSalary) {
+        this.name = newName;
+        this.groupId = newGroupId;
+        this.hasSalary = newHasSalary;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String newName) {
+        this.name = newName;
     }
 
     public int getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(int groupId) {
-        this.groupId = groupId;
+    public void setGroupId(int newGroupId) {
+        this.groupId = newGroupId;
     }
 
     public boolean isHasSalary() {
         return hasSalary;
     }
 
-    public void setHasSalary(boolean hasSalary) {
-        this.hasSalary = hasSalary;
+    public void setHasSalary(boolean newHasSalary) {
+        this.hasSalary = newHasSalary;
     }
 
     @Override
     public String toString() {
-        return "Student{" +
-                "name='" + name + '\'' +
-                ", groupId=" + groupId +
-                ", hasSalary=" + hasSalary +
-                '}';
+        return "Student{"
+                + "name='" + name + '\''
+                + ", groupId=" + groupId
+                + ", hasSalary=" + hasSalary
+                + '}';
+    }
+
+    // Из-за CheckStyle =(
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null) {
+            return false;
+        }
+
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Student other = (Student) obj;
+        return this.name.equals(other.name)
+                && this.groupId == other.groupId
+                && this.hasSalary == other.hasSalary;
     }
 }
