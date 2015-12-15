@@ -1,11 +1,18 @@
 package ru.mipt.diht.students.maxdankow.miniorm;
 
+import javafx.util.Pair;
+import ru.mipt.diht.students.maxdankow.miniorm.DatabaseService.Column;
+import ru.mipt.diht.students.maxdankow.miniorm.DatabaseService.PrimaryKey;
+import ru.mipt.diht.students.maxdankow.miniorm.DatabaseService.Table;
+
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static java.lang.Character.isUpperCase;
 import static java.lang.Character.toLowerCase;
@@ -27,6 +34,55 @@ public class Utils {
             }
         }
         return lowerCaseText.toString();
+    }
+
+    public static String getTableName(Class itemClass) throws IllegalArgumentException {
+        // Проверяем, проаннотирован ли класс @Table
+        Table tableAnnotation;
+        if (itemClass.isAnnotationPresent(Table.class)) {
+            tableAnnotation = (Table) itemClass.getAnnotation(Table.class);
+        } else {
+            throw new IllegalArgumentException("Class has no @Table annotation");
+        }
+
+        // Если имя таблицы не указано, то сгерерируем его.
+        String tableName = tableAnnotation.name();
+        if (Objects.equals(tableName, DatabaseService.UNNAMED)) {
+            tableName = camelCaseToLowerCase(itemClass.getSimpleName());
+        }
+        return tableName;
+    }
+
+    public static Pair<List<ItemColumn>, ItemColumn> analyseColumns(Class itemClass) {
+        List<ItemColumn> columnList = new ArrayList<>();
+        ItemColumn primaryKey = null;
+
+        // Пройдемся по полям класса и найдем аннотированные @Column
+        Field[] fields = itemClass.getDeclaredFields();
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(Column.class)) {
+
+                Column column = field.getAnnotation(Column.class);
+                String name = column.name();
+                String type = column.type();
+
+                // Если имя не задано, то сгернерируем.
+                if (name.equals(DatabaseService.UNNAMED)) {
+                    name = camelCaseToLowerCase(field.getName());
+                }
+                ItemColumn itemColumn = new ItemColumn(name, type, field);
+                columnList.add(itemColumn);
+
+                if (field.isAnnotationPresent(PrimaryKey.class)) {
+                    // Объявление более одного @PrimaryKey недопустимо.
+                    if (primaryKey != null) {
+                        throw new IllegalStateException("More than one primary key presents");
+                    }
+                    primaryKey = itemColumn;
+                }
+            }
+        }
+        return new Pair<List<ItemColumn>, ItemColumn>(columnList, primaryKey);
     }
 
     public static <T> String getSqlValue(T object) {

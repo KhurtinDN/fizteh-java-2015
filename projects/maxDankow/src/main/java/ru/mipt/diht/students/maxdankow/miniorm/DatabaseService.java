@@ -1,16 +1,14 @@
 package ru.mipt.diht.students.maxdankow.miniorm;
 
+import javafx.util.Pair;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-import static ru.mipt.diht.students.maxdankow.miniorm.Utils.camelCaseToLowerCase;
 
 public class DatabaseService<T> {
     static final String UNNAMED = "";
@@ -41,10 +39,12 @@ public class DatabaseService<T> {
     private ItemColumn primaryKey = null;
     private Class itemsClass;
 
-    DatabaseService(Class newItemsClass) {
+    DatabaseService(Class newItemsClass) throws IllegalArgumentException {
         itemsClass = newItemsClass;
-        tableName = getTableName();
-        columnList = getColumnList();
+        tableName = Utils.getTableName(itemsClass);
+        Pair<List<ItemColumn>, ItemColumn> pair = Utils.analyseColumns(itemsClass);
+        columnList = pair.getKey();
+        primaryKey = pair.getValue();
         statementBuilder = new SqlStatementBuilder<>(tableName, columnList,
                 primaryKey, itemsClass);
     }
@@ -58,6 +58,7 @@ public class DatabaseService<T> {
         R apply(T t) throws SQLException, IllegalStateException;
     }
 
+    // Осуществляет указанное действие с базой данных.
     private <R> R databaseRequest(CheckedFunction<Statement, R> action) {
         try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
             Statement statement = connection.createStatement();
@@ -67,35 +68,18 @@ public class DatabaseService<T> {
         }
     }
 
-    public void createTable() throws IllegalStateException {
-//        databaseRequest((Statement s) -> {
-//            s.execute(statementBuilder.buildCreate());
-//            return true;
-//        });
-        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
-            Statement createStatement = connection.createStatement();
-            createStatement.execute(statementBuilder.buildCreate());
+    public void createTable() {
+        databaseRequest((Statement statement) -> {
+            statement.execute(statementBuilder.buildCreate());
             if (primaryKey != null) {
-                addPrimaryKey(primaryKey);
+                statement.execute("ALTER TABLE " + tableName + " ADD PRIMARY KEY (" + primaryKey.name + ")");
+                System.err.println("PK успешно добавлен.");
             }
-        } catch (SQLException e) {
-            throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
-        }
+            return true;
+        });
     }
 
-    public void addPrimaryKey(ItemColumn key) {
-        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
-            Statement addPrimaryKeyStatement =
-                    connection.createStatement();
-            addPrimaryKeyStatement.execute("ALTER TABLE " + tableName + " ADD PRIMARY KEY (" + key.name + ")");
-            System.err.println("PK успешно добавлен.");
-        } catch (SQLException e) {
-            throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
-        }
-
-    }
-
-    public void dropTable() throws IllegalStateException {
+    public void dropTable() {
         databaseRequest((Statement statement) -> {
             statement.execute("DROP TABLE IF EXISTS " + tableName);
             return true;
@@ -156,55 +140,5 @@ public class DatabaseService<T> {
             return true;
         });
     }
-
-    public String getTableName() {
-        // Проверяем, проаннотирован ли класс @Table
-        Table tableAnnotation;
-        if (itemsClass.isAnnotationPresent(Table.class)) {
-            tableAnnotation = (Table) itemsClass.getAnnotation(Table.class);
-        } else {
-            throw new IllegalArgumentException("Class has no @Table annotation");
-        }
-
-        // Если имя таблицы не указано, то сгерерируем его.
-        String tableName = tableAnnotation.name();
-        if (Objects.equals(tableName, UNNAMED)) {
-            tableName = camelCaseToLowerCase(itemsClass.getSimpleName());
-        }
-        return tableName;
-    }
-
-    public List<ItemColumn> getColumnList() {
-        List<ItemColumn> columnList = new ArrayList<>();
-        primaryKey = null;
-
-        // Пройдемся по полям класса и найдем аннотированные @Column
-        Field[] fields = itemsClass.getDeclaredFields();
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(Column.class)) {
-
-                Column column = field.getAnnotation(Column.class);
-                String name = column.name();
-                String type = column.type();
-
-                // Если имя не задано, то сгернерируем.
-                if (name.equals(UNNAMED)) {
-                    name = camelCaseToLowerCase(field.getName());
-                }
-                ItemColumn itemColumn = new ItemColumn(name, type, field);
-                columnList.add(itemColumn);
-
-                if (field.isAnnotationPresent(PrimaryKey.class)) {
-                    // Объявление более одного @PrimaryKey недопустимо.
-                    if (primaryKey != null) {
-                        throw new IllegalStateException("More than one primary key presents");
-                    }
-                    primaryKey = itemColumn;
-                }
-            }
-        }
-        return columnList;
-    }
-
 }
 

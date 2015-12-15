@@ -50,13 +50,11 @@ public class DatabaseServiceTest {
 
     @Test
     public void getTableNameTest() {
-        DatabaseService<Simple> simpleDatabaseService = new DatabaseService<>(Simple.class);
-        assertEquals("simple", simpleDatabaseService.getTableName());
+        assertEquals("simple", Utils.getTableName(Simple.class));
     }
 
     @Test
     public void getColumnListTest() {
-        DatabaseService<Student> studentDatabaseService = new DatabaseService<>(Student.class);
         List<ItemColumn> expectedList = new ArrayList<>();
         try {
             expectedList.add(new ItemColumn("FIO", "VARCHAR(255)", Student.class.getField("name")));
@@ -66,7 +64,7 @@ public class DatabaseServiceTest {
             e.printStackTrace();
         }
 
-        List<ItemColumn> actualList = studentDatabaseService.getColumnList();
+        List<ItemColumn> actualList = Utils.analyseColumns(Student.class).getKey();
         // Т.к. порядок не ганантирован, то проверяем на равенство без его учета.
         assertTrue(expectedList.containsAll(actualList)
                 && actualList.containsAll(expectedList));
