@@ -13,18 +13,18 @@ import java.util.Objects;
 import static ru.mipt.diht.students.maxdankow.miniorm.Utils.camelCaseToLowerCase;
 
 public class DatabaseService<T> {
+    static final String UNNAMED = "";
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     public @interface Table {
-        String name() default "";
+        String name() default UNNAMED;
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     public @interface Column {
-        String name() default "";
-
+        String name() default UNNAMED;
         String type();
     }
 
@@ -33,83 +33,33 @@ public class DatabaseService<T> {
     public @interface PrimaryKey {
     }
 
+    private static final String DATABASE_PATH = "jdbc:h2:./simple_database";
+    private SqlStatementBuilder<T> statementBuilder = null;
     private String tableName = null;
     private List<ItemColumn> columnList = null;
     private ItemColumn primaryKey = null;
-
-    private static final String DATABASE_PATH = "jdbc:h2:./simple_database";
-    Class itemsClass;
+    private Class itemsClass;
 
     DatabaseService(Class newItemsClass) {
         itemsClass = newItemsClass;
         tableName = getTableName();
         columnList = getColumnList();
+        statementBuilder = new SqlStatementBuilder<>(tableName, columnList,
+                primaryKey, itemsClass);
     }
 
-    public String buildCreateStatement() {
-        StringBuilder createQuery = new StringBuilder("");
-        createQuery.append("CREATE TABLE IF NOT EXISTS ")
-                .append(tableName)
-                .append(" (");
-
-        int count = 0;
-        for (ItemColumn column : columnList) {
-            createQuery.append(column.name)
-                    .append(" ")
-                    .append(column.type);
-            if (column == primaryKey) {
-                createQuery.append(" NOT NULL");
-            }
-            if (count + 1 < columnList.size()) {
-                createQuery.append(", ");
-            }
-            ++count;
-        }
-        createQuery.append(")");
-        return createQuery.toString();
-    }
-
-    public String buildInsertStatement(T newItem) {
-        StringBuilder insertQuery = new StringBuilder("");
-        insertQuery.append("INSERT INTO ")
-                .append(tableName)
-                .append(" VALUES (");
-        List<Field> values = getValueList(newItem);
-        assert values.size() == columnList.size();
-
-        for (int i = 0; i < values.size(); ++i) {
-            Field field = values.get(i);
-            field.setAccessible(true);
-
-            try {
-                if (field.getType() == String.class || field.getType() == char.class) {
-                    insertQuery.append('\'')
-                            .append(field.get(newItem))
-                            .append('\'');
-                } else {
-                    insertQuery.append(field.get(newItem));
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-            if (i + 1 < columnList.size()) {
-                insertQuery.append(", ");
-            }
-        }
-        insertQuery.append(")");
-        return insertQuery.toString();
+    public SqlStatementBuilder<T> getStatementBuilder() {
+        return statementBuilder;
     }
 
     public void createTable() throws IllegalStateException {
         try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
             Statement createStatement = connection.createStatement();
-            createStatement.execute(buildCreateStatement());
+            createStatement.execute(statementBuilder.buildCreate());
             if (primaryKey != null) {
                 addPrimaryKey(primaryKey);
             }
         } catch (SQLException e) {
-//            System.err.println("An SQL error occurred: " + e.getMessage());
             throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
         }
     }
@@ -118,10 +68,9 @@ public class DatabaseService<T> {
         try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
             Statement addPrimaryKeyStatement =
                     connection.createStatement();
-            addPrimaryKeyStatement.execute("ALTER TABLE " + tableName + " ADD PRIMARY KEY (" + primaryKey.name + ")");
+            addPrimaryKeyStatement.execute("ALTER TABLE " + tableName + " ADD PRIMARY KEY (" + key.name + ")");
             System.err.println("PK успешно добавлен.");
         } catch (SQLException e) {
-//            System.err.println("An SQL error occurred: " + e.getMessage());
             throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
         }
 
@@ -132,15 +81,14 @@ public class DatabaseService<T> {
             Statement dropStatement = connection.createStatement();
             dropStatement.execute("DROP TABLE IF EXISTS " + tableName);
         } catch (SQLException e) {
-//            System.err.println("An SQL error occurred: " + e.getMessage());
             throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
         }
     }
 
-    void insert(T item) {
+    void insert(T newItem) {
         try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
             Statement InsertStatement = connection.createStatement();
-            int added = InsertStatement.executeUpdate(buildInsertStatement(item));
+            int added = InsertStatement.executeUpdate(statementBuilder.buildInsert(newItem));
 
             if (added != 0) {
                 System.err.println("Элемент успешно добавлен.");
@@ -150,48 +98,18 @@ public class DatabaseService<T> {
         }
     }
 
-    public List<T> queryForAll() throws IllegalAccessException, InstantiationException {
+    public List<T> queryForAll() {
         List<T> selectAddList = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
             Statement selectAllStatement = connection.createStatement();
             ResultSet resultSet = selectAllStatement.executeQuery("SELECT * FROM " + tableName);
-
             // Обрабатываем полученные результаты.
             while (resultSet.next()) {
-                // Создаем новый объект пустым конструктором.
-                T item = (T) itemsClass.newInstance();
-                Field[] itemFields = item.getClass().getFields();
-
-                // Перебираем все нужные столбцы-поля.
-                for (ItemColumn column : columnList) {
-                    Field field = column.field;
-                    Field itemField = item.getClass().getField(field.getName());
-
-                    // Определяем какой тип получать в соостветствии с типом поля.
-                    // String
-                    // TODO: Вынести в отдельный метод.
-                    if (field.getType() == String.class) {
-                        String value = resultSet.getString(column.name);
-                        field.set(item, value);
-                    }
-                    // int
-                    if (field.getType() == int.class) {
-                        int value = resultSet.getInt(column.name);
-                        field.set(item, value);
-                    }
-                    // boolean
-                    if (field.getType() == boolean.class) {
-                        boolean value = resultSet.getBoolean(column.name);
-                        field.set(item, value);
-                    }
-                }
+                T item = Utils.createItemFromSqlResult(resultSet, columnList, itemsClass);
                 selectAddList.add(item);
             }
         } catch (SQLException e) {
-//            System.err.println("An SQL error occurred: " + e.getMessage());
             throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
         }
         return selectAddList;
     }
@@ -205,91 +123,23 @@ public class DatabaseService<T> {
 
             // Обрабатываем полученный результат.
             if (resultSet.next()) {
-                // Создаем новый объект пустым конструктором.
-                item = (T) itemsClass.newInstance();
-                Field[] itemFields = item.getClass().getFields();
-
-                // Перебираем все нужные столбцы-поля.
-                for (ItemColumn column : columnList) {
-                    Field field = column.field;
-                    Field itemField = item.getClass().getField(field.getName());
-
-                    // Определяем какой тип получать в соостветствии с типом поля.
-                    // String
-                    // TODO: Вынести в отдельный метод.
-                    if (field.getType() == String.class) {
-                        String value = resultSet.getString(column.name);
-                        field.set(item, value);
-                    }
-                    // int
-                    if (field.getType() == int.class) {
-                        int value = resultSet.getInt(column.name);
-                        field.set(item, value);
-                    }
-                    // boolean
-                    if (field.getType() == boolean.class) {
-                        boolean value = resultSet.getBoolean(column.name);
-                        field.set(item, value);
-                    }
-                }
+                item = Utils.createItemFromSqlResult(resultSet, columnList, itemsClass);
             }
             if (resultSet.next()) {
                 throw new IllegalStateException("Primary key search sesult is not single");
             }
         } catch (SQLException e) {
-//            System.err.println("An SQL error occurred: " + e.getMessage());
             throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
-        } catch (NoSuchFieldException | IllegalAccessException | InstantiationException e) {
-            e.printStackTrace();
         }
         return item;
     }
 
-    public String buildUpdateStatement(T newItem) {
-        StringBuilder updateQuery = new StringBuilder("");
-        updateQuery.append("UPDATE ")
-                .append(tableName)
-                .append(" SET ");
-        List<Field> values = getValueList(newItem);
-        assert values.size() == columnList.size();
 
-        for (int i = 0; i < values.size(); ++i) {
-            updateQuery.append(columnList.get(i).name)
-                    .append("=");
-            Field field = values.get(i);
-            field.setAccessible(true);
-
-            try {
-                if (field.getType() == String.class || field.getType() == char.class) {
-                    updateQuery.append('\'')
-                            .append(field.get(newItem))
-                            .append('\'');
-                } else {
-                    updateQuery.append(field.get(newItem));
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-            if (i + 1 < columnList.size()) {
-                updateQuery.append(", ");
-            }
-        }
-        try {
-            updateQuery.append(" WHERE ")
-                    .append(primaryKey.name)
-                    .append("=")
-                    .append(Utils.getSqlValue(primaryKey.field.get(newItem)));
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return updateQuery.toString();
-    }
 
     public void update(T item) {
         try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
             Statement updateStatement = connection.createStatement();
-            updateStatement.execute(buildUpdateStatement(item));
+            updateStatement.execute(statementBuilder.buildUpdate(item));
         } catch (SQLException e) {
             throw new IllegalStateException("An SQL error occurred: " + e.getMessage());
         }
@@ -316,7 +166,7 @@ public class DatabaseService<T> {
 
         // Если имя таблицы не указано, то сгерерируем его.
         String tableName = tableAnnotation.name();
-        if (Objects.equals(tableName, "")) {
+        if (Objects.equals(tableName, UNNAMED)) {
             tableName = camelCaseToLowerCase(itemsClass.getSimpleName());
         }
         return tableName;
@@ -336,7 +186,7 @@ public class DatabaseService<T> {
                 String type = column.type();
 
                 // Если имя не задано, то сгернерируем.
-                if (name.equals("")) {
+                if (name.equals(UNNAMED)) {
                     name = camelCaseToLowerCase(field.getName());
                 }
                 ItemColumn itemColumn = new ItemColumn(name, type, field);
@@ -359,15 +209,9 @@ public class DatabaseService<T> {
         // Пройдемся по полям класса и найдем аннотированные @Column
         Field[] fields = itemsClass.getDeclaredFields();
         for (Field field : fields) {
+            // Будем осходить из того, что внутри одного запуска программы
+            // порядок методов, возвращаемых getFields, не меняется.
             if (field.isAnnotationPresent(Column.class)) {
-                Column column = field.getAnnotation(Column.class);
-                String name = column.name();
-                String type = column.type();
-
-                // Если имя не задано, то сгернерируем.
-                if (name.equals("")) {
-                    name = camelCaseToLowerCase(field.getName());
-                }
                 values.add(field);
             }
         }
@@ -375,31 +219,3 @@ public class DatabaseService<T> {
     }
 }
 
-class ItemColumn {
-    public ItemColumn(String name, String type, Field field) {
-        this.name = name;
-        this.type = type;
-        this.field = field;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-
-        if (obj == null)
-            return false;
-
-        if (getClass() != obj.getClass())
-            return false;
-
-        ItemColumn other = (ItemColumn) obj;
-        return this.name.equals(other.name)
-                && this.type.equals(other.type)
-                /*&& this.field == other.field*/;
-    }
-
-    public String name;
-    public String type;
-    Field field;
-}

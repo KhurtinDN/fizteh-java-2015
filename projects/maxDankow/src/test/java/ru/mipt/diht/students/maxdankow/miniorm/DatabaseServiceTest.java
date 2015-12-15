@@ -34,50 +34,44 @@ public class DatabaseServiceTest {
         for (Student student : students) {
             studentsDB.insert(student);
         }
-        try {
-            List<Student> sqlStudents = studentsDB.queryForAll();
-            System.err.println(sqlStudents);
-//            assert false;
-        } catch (IllegalAccessException | InstantiationException e) {
-            e.printStackTrace();
-        }
+        List<Student> sqlStudents = studentsDB.queryForAll();
+        System.err.println(sqlStudents);
+
         Student studentMattew = studentsDB.queryById("Mattew");
         System.err.println(studentMattew);
-//        studentsDB.delete("Mattew");
+
         studentMattew.setGroupId(9991);
         studentMattew.setHasSalary(false);
         studentsDB.update(studentMattew);
-        try {
-            List<Student> sqlStudents = studentsDB.queryForAll();
-            System.err.println(sqlStudents);
-//            assert false;
-        } catch (IllegalAccessException | InstantiationException e) {
-            e.printStackTrace();
-        }
-//        studentsDB.dropTable();
+
+        sqlStudents = studentsDB.queryForAll();
+        System.err.println(sqlStudents);
     }
 
     @Test
     public void createQueryBuilderTest() {
-        DatabaseService<Student> studentDatabaseService = new DatabaseService<>(Student.class);
+        DatabaseService<Student> studentDBS = new DatabaseService<>(Student.class);
+        SqlStatementBuilder<Student> statementBuilder = studentDBS.getStatementBuilder();
         assertEquals("CREATE TABLE IF NOT EXISTS students (FIO VARCHAR(255) NOT NULL, group_id INTEGER, has_salary BOOLEAN)",
-                studentDatabaseService.buildCreateStatement());
+                statementBuilder.buildCreate());
     }
 
     @Test
     public void updateQueryBuilderTest() {
-        DatabaseService<Student> studentDatabaseService = new DatabaseService<>(Student.class);
+        DatabaseService<Student> studentDBS = new DatabaseService<>(Student.class);
+        SqlStatementBuilder<Student> statementBuilder = studentDBS.getStatementBuilder();
         Student student = new Student("Peter", 999, true);
         assertEquals("UPDATE students SET FIO='Peter', group_id=999, has_salary=true WHERE FIO='Peter'",
-                studentDatabaseService.buildUpdateStatement(student));
+                statementBuilder.buildUpdate(student));
     }
 
     @Test
     public void insertQueryBuilderTest() {
-        DatabaseService<Student> studentDatabaseService = new DatabaseService<>(Student.class);
+        DatabaseService<Student> studentDBS = new DatabaseService<>(Student.class);
+        SqlStatementBuilder<Student> statementBuilder = studentDBS.getStatementBuilder();
         Student student = new Student("Alex", 123, false);
         assertEquals("INSERT INTO students VALUES ('Alex', 123, false)",
-                studentDatabaseService.buildInsertStatement(student));
+                statementBuilder.buildInsert(student));
     }
 
     @Test
