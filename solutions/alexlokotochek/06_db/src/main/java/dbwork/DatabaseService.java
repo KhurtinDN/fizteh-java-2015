@@ -11,7 +11,6 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.stream.Collectors.joining;
-import static junit.framework.TestCase.assertEquals;
 
 public class DatabaseService {
 
@@ -68,6 +67,7 @@ public class DatabaseService {
     }
 
     public Class<?> aClass;
+    public Class<?> primaryKeyClass;
 
     public DatabaseService(Class<?> ac) {
         aClass = ac;
@@ -111,7 +111,6 @@ public class DatabaseService {
     public <T> List<T> queryForAll() {
         List<T> answers = new ArrayList<>();
         Table annotation = aClass.getAnnotation(Table.class);
-        String table = annotation.name();
         Field[] fields = aClass.getDeclaredFields();
         List<String> columns = new ArrayList<>();
 
@@ -128,10 +127,8 @@ public class DatabaseService {
             ResultSet rs = statement.executeQuery("SELECT * FROM users");
 
             while (rs.next()) {
-                //System.out.println(rs.getString("name") + rs.getString("age"));
-                T answer = (T)aClass.newInstance();
+                T answer = (T) aClass.newInstance();
                 for (Field field : fields) {
-                    //@TODO: Сделать полями не только числа/строки
                     if (field.getType() == int.class) {
                         field.set(answer, rs.getInt(field.getName()));
                     } else {
@@ -139,18 +136,9 @@ public class DatabaseService {
                     }
                 }
                 answers.add(answer);
-
-                //@TODO: понять различия между полями и именами колонок
-                // camelCase и тд
-                // ой, всё. не хочу((
-
-//                for (int i = 0; i < fields.length; ++i){
-//                    T answer = (T)aClass.newInstance();
-//                    fields[i].set(answer, rs.getString(columns[i].name()))
-//                }
             }
         } catch (SQLException sqle) {
-            System.out.println("Exception caught in queryById");
+            System.out.println("SQLException caught in queryForAll: " + sqle.getMessage());
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -164,16 +152,15 @@ public class DatabaseService {
     public <T, K> T queryById(K key) {
 
         Table annotation = aClass.getAnnotation(Table.class);
-        String table = annotation.name();
         Field[] fields = aClass.getDeclaredFields();
         Field pk = null;
+        primaryKeyClass = key.getClass();
         List<String> columns = new ArrayList<>();
 
         for (Field field : fields) {
             if (field.isAnnotationPresent(PrimaryKey.class)) {
                 pk = field;
                 break;
-                // TODO: exception if >1 PK
             }
 
             Column column = field.getAnnotation(Column.class);
@@ -187,17 +174,13 @@ public class DatabaseService {
         try (Connection connection = DriverManager.getConnection("jdbc:h2:./miniORM2")) {
 
             String keyToFind = key.toString();
-            //System.out.println("pkFieldName: " + pkFieldName);
-
             PreparedStatement preparedStatement =
                     connection.prepareStatement("SELECT * FROM users WHERE " + pkFieldName + "= ?");
             preparedStatement.setString(1, keyToFind);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                //System.out.println(rs.getString("name") + rs.getString("age"));
-                T answer = (T)aClass.newInstance();
+                T answer = (T) aClass.newInstance();
                 for (Field field : fields) {
-                    //@TODO: Сделать полями не только числа/строки
                     if (field.getType() == int.class) {
                         field.set(answer, rs.getInt(field.getName()));
                     } else {
@@ -205,27 +188,93 @@ public class DatabaseService {
                     }
                 }
                 answers.add(answer);
-
-                //@TODO: понять различия между полями и именами колонок
-                // camelCase и тд
-                // ой, всё. не хочу((
-
-//                for (int i = 0; i < fields.length; ++i){
-//                    T answer = (T)aClass.newInstance();
-//                    fields[i].set(answer, rs.getString(columns[i].name()))
-//                }
             }
         } catch (SQLException sqle) {
-            System.out.println("Exception caught in queryById");
+            System.out.println("SQLException caught in queryById: " + sqle.getMessage());
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
 
-        assert(answers.size() <= 1);
+        assert (answers.size() <= 1);
         if (answers.size() == 0) {
             return null;
         }
         return answers.get(0);
+    }
+
+    public <T> void update(T entity) {
+        Field[] fields = aClass.getDeclaredFields();
+        Field pk = null;
+        List<String> columns = new ArrayList<>();
+        String keyStr = new String();
+
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(PrimaryKey.class)) {
+                pk = field;
+                field.setAccessible(true);
+                try {
+                    field.setAccessible(true);
+                    keyStr = (String)field.get(entity);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+            Column column = field.getAnnotation(Column.class);
+            if (column != null) {
+                columns.add(column.name());
+            }
+        }
+        String pkFieldName = pk.getName();
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:./miniORM2")) {
+
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement("DELETE FROM users WHERE " + pkFieldName + " = ?");
+            preparedStatement.setString(1, keyStr);
+            preparedStatement.executeUpdate();
+            insert(entity);
+        } catch (SQLException sqle) {
+            System.out.println("SQLException caught in update: " + sqle.getMessage());
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public <T> void delete(T entity) {
+        Field[] fields = aClass.getDeclaredFields();
+        Field pk = null;
+        List<String> columns = new ArrayList<>();
+        Object key = null;
+        String keyStr = new String();
+
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(PrimaryKey.class)) {
+                pk = field;
+                field.setAccessible(true);
+                try {
+                    field.setAccessible(true);
+                    keyStr = (String)field.get(entity);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+            Column column = field.getAnnotation(Column.class);
+            if (column != null) {
+                columns.add(column.name());
+            }
+        }
+        String pkFieldName = pk.getName();
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:./miniORM2")) {
+
+            String keyToFind = keyStr;
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement("DELETE FROM users WHERE " + pkFieldName + " = ?");
+            preparedStatement.setString(1, keyToFind);
+            preparedStatement.executeUpdate();
+        } catch (SQLException sqle) {
+            System.out.println("SQLException caught in delete: " + sqle.getMessage());
+        }
     }
 
 }
