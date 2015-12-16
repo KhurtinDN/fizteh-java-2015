@@ -14,7 +14,7 @@ public class TwitterStreamUtils {
     private static final int DELIMITER_LENGTH = 200;
     public static final String DELIMITER = StringUtils.repeat("-", DELIMITER_LENGTH);
 
-    public static enum TextColor {
+    public enum TextColor {
         CLEAR(0),
         BLACK(30),
         RED(31),
@@ -70,7 +70,7 @@ public class TwitterStreamUtils {
     }
 
     public static String buildFormattedTweet(Status tweet, boolean shouldShowTime) {
-        StringBuilder message = new StringBuilder("");
+        StringBuilder message = new StringBuilder();
         if (shouldShowTime) {
             message.append("[")
                     .append(convertTimeToRussianWords(tweet.getCreatedAt(), new Date()))
