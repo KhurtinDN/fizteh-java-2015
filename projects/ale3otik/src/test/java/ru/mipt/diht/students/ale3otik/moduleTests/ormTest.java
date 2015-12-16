@@ -4,6 +4,8 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import ru.mipt.diht.students.ale3otik.miniorm.DatabaseService;
 
+import java.util.List;
+
 /**
  * Created by alex on 15.12.15.
  */
@@ -38,14 +40,23 @@ public class ormTest extends TestCase{
 
     @Test
     public void testOrm() throws Exception {
-//        User user = new User();
-//        user.setName("Alex");
-//        user.setAge(18);
+        User user = new User();
+        user.setName("Alex");
+        user.setAge(18);
 
+        User user2 = new User();
+        user2.setName("Vasiya");
+        user2.setAge(20);
 
-        DatabaseService<User> db = new DatabaseService<User>(User.class);
-        db.createTable();
-//        db.insert(user);
-        db.queryForAll();
+        DatabaseService<User> db = new DatabaseService<>(User.class);
+//        db.dropTable();
+//        db.createTable();
+//        db.insert(user2);
+        List<User> list =  db.queryForAll();
+        for(User u : list) {
+            System.out.println(u.toString());
+        }
+
+        System.out.println(db.queryById("Vasiya").toString());
     }
 }
