@@ -31,7 +31,7 @@
         <module>dkhurtin</module>
         <module>semyonkozloff</module>
         <module>ale3otik</module>
-        <!--Add you module here-->
+        <module>Pitovsky</module>
     </modules>
 
     <dependencyManagement>
@@ -114,6 +114,7 @@
                         <phase>validate</phase>
                         <configuration>
                             <configLocation>checkstyle.xml</configLocation>
+                            <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
                             <encoding>UTF-8</encoding>
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>true</failsOnError>

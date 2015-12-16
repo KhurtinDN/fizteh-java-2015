@@ -14,6 +14,9 @@ import static java.lang.Math.*;
 
 public class LocationSearch {
 
+    private static final int EARTH_RADIUS = 6366;
+    private static final int N_DEGREES_IN_SEMICIRCLE = 180;
+
     public static Geometry findLocation(String location) {
         if (location == null) {
             return null;
@@ -43,20 +46,20 @@ public class LocationSearch {
     }
 
     public static double computeCoordinatesDistance(LatLng a, LatLng b) {
-        double pk = (float) (N_DEGREES_IN_SEMICIRCLE / PI);
+        double k = (float) (N_DEGREES_IN_SEMICIRCLE / PI);
 
-        double a1 = a.lat / pk;
-        double a2 = a.lng / pk;
-        double b1 = b.lat / pk;
-        double b2 = b.lng / pk;
+        double a1 = a.lat / k;
+        double a2 = a.lng / k;
+        double b1 = b.lat / k;
+        double b2 = b.lng / k;
 
         double t1 = cos(a1) * cos(a2) * cos(b1) * cos(b2);
         double t2 = cos(a1) * sin(a2) * cos(b1) * sin(b2);
         double t3 = sin(a1) * sin(b1);
-        double tt = acos(t1 + t2 + t3);
 
-        return EARTH_RADIUS * tt;
+        return EARTH_RADIUS * acos(t1 + t2 + t3);
     }
+
 
     /*
     public boolean isTweetFromLocation(Status tweet, Geometry locationBox) {
@@ -82,7 +85,4 @@ public class LocationSearch {
                 latitude < locationBox.bounds.northeast.lat;
     }
     */
-
-    private static final int EARTH_RADIUS = 6366;
-    private static final int N_DEGREES_IN_SEMICIRCLE = 180;
 }

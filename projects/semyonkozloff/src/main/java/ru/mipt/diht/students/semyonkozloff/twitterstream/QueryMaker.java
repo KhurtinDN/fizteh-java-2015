@@ -7,8 +7,7 @@ import twitter4j.FilterQuery;
 import twitter4j.GeoLocation;
 import twitter4j.Query;
 
-import static
-        ru.mipt.diht.students.semyonkozloff.twitterstream.LocationSearch.*;
+import static ru.mipt.diht.students.semyonkozloff.twitterstream.LocationSearch.*;
 
 public class QueryMaker {
 

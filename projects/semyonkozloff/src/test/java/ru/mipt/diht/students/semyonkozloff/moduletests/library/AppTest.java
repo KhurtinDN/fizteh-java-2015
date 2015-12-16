@@ -1,4 +1,4 @@
-package ru.mipt.diht.students;
+package ru.mipt.diht.students.semyonkozloff.moduletests.library;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

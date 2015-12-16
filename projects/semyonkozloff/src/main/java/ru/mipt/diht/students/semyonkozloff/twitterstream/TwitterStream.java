@@ -1,17 +1,21 @@
 package ru.mipt.diht.students.semyonkozloff.twitterstream;
 
 import com.beust.jcommander.JCommander;
-
 import twitter4j.*;
 
 import java.util.List;
 
-import static ru.mipt.diht.students.semyonkozloff.twitterstream.TweetPrinter.*;
-import static ru.mipt.diht.students.semyonkozloff.twitterstream.QueryMaker.*;
 import static
         ru.mipt.diht.students.semyonkozloff.twitterstream.ConnectionChecker.*;
+import static ru.mipt.diht.students.semyonkozloff.twitterstream.QueryMaker.*;
+import static ru.mipt.diht.students.semyonkozloff.twitterstream.TweetPrinter.*;
+
 
 public final class TwitterStream {
+
+    private static final int TWEET_PRINT_DELAY = 1000;
+
+    private Configuration configuration = null;
 
     public TwitterStream(String[] arguments) {
         configuration = new Configuration();
@@ -106,7 +110,7 @@ public final class TwitterStream {
 
     public void printHelp() {
         JCommander jCommander = new JCommander(new Configuration());
-        jCommander.setProgramName("TwitterStream");
+        jCommander.setProgramName("twitterstream");
         jCommander.usage();
     }
 
@@ -123,9 +127,5 @@ public final class TwitterStream {
             twitterStream.printHelp();
         }
     }
-
-    private Configuration configuration = null;
-
-    private static final int TWEET_PRINT_DELAY = 1000;
 }
 

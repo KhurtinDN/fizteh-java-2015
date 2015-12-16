@@ -1,7 +1,6 @@
 package ru.mipt.diht.students.semyonkozloff.twitterstream;
 
 import com.google.common.base.Strings;
-
 import twitter4j.Status;
 
 import java.time.LocalDateTime;
@@ -10,6 +9,16 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class TweetPrinter {
+
+    private static final int DELIMITER_LENGTH = 160;
+
+    private static final String DELIMITER =
+            Strings.repeat("-", DELIMITER_LENGTH);
+
+    private static final String ANSI_BLUE = "\u001B[34m";
+    private static final String ANSI_CYAN = "\u001B[36m";
+    private static final String ANSI_GREEN = "\u001B[32m";
+    private static final String ANSI_RESET = "\u001B[0m";
 
     public static void printTweet(Status tweet) {
         System.out.print("@" + ANSI_BLUE
@@ -57,14 +66,4 @@ public class TweetPrinter {
 
         System.out.print(ANSI_RESET + "] ");
     }
-
-    private static final int DELIMITER_LENGTH = 160;
-
-    private static final String DELIMITER =
-            Strings.repeat("-", DELIMITER_LENGTH);
-
-    private static final String ANSI_BLUE = "\u001B[34m";
-    private static final String ANSI_CYAN = "\u001B[36m";
-    private static final String ANSI_GREEN = "\u001B[32m";
-    private static final String ANSI_RESET = "\u001B[0m";
 }
