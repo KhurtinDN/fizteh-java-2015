@@ -1,9 +1,6 @@
 package ru.mipt.diht.students.alokotok.collectionquery.impl;
 
 import javafx.util.Pair;
-import ru.mipt.diht.students.alokotok.collectionquery.impl.Aggregator;
-
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Function;
@@ -15,27 +12,27 @@ import java.util.function.Predicate;
  */
 public class SelectStmt<T, R> {
 
-    public boolean isDistinct() {
+    public final boolean isDistinct() {
         return isDistinct;
     }
 
-    public Function[] getFunctions() {
+    public final Function[] getFunctions() {
         return functions;
     }
 
-    public Class getReturnClass() {
+    public final Class getReturnClass() {
         return returnClass;
     }
 
-    public int getNumberOfObjects() {
+    public final int getNumberOfObjects() {
         return numberOfObjects;
     }
 
-    public boolean isUnion() {
+    public final boolean isUnion() {
         return isUnion;
     }
 
-    public List<T> getElements() {
+    public final List<T> getElements() {
         return elements;
     }
 
@@ -44,7 +41,7 @@ public class SelectStmt<T, R> {
     private Function[] functions;
     private List<T> elements;
 
-    public List<R> getPastElements() {
+    public final List<R> getPastElements() {
         return pastElements;
     }
 
@@ -78,7 +75,6 @@ public class SelectStmt<T, R> {
     public SelectStmt(List<T> elements, boolean isDistinct, Function<T, ?> first, Function<T, ?> second) {
         this.elements = new ArrayList<>();
         for (T element : elements) {
-            //System.out.println(element.toString());
             this.elements.add(element);
         }
         this.returnClass = elements.get(0).getClass();
@@ -104,7 +100,7 @@ public class SelectStmt<T, R> {
         this.pastElements = pastElements;
     }
 
-    public SelectStmt<T, R> where(Predicate<T> predicate) {
+    public final SelectStmt<T, R> where(Predicate<T> predicate) {
         this.whereCondition = predicate;
         return this;
     }
@@ -122,17 +118,17 @@ public class SelectStmt<T, R> {
         return this;
     }
 
-    public SelectStmt<T, R> having(Predicate<R> condition) {
+    public final SelectStmt<T, R> having(Predicate<R> condition) {
         this.havingCondition = condition;
         return this;
     }
 
-    public SelectStmt<T, R> limit(int amount) {
+    public final SelectStmt<T, R> limit(int amount) {
         this.numberOfObjects = amount;
         return this;
     }
 
-    public Iterable<R> execute() throws NoSuchMethodException, IllegalAccessException,
+    public final Iterable<R> execute() throws NoSuchMethodException, IllegalAccessException,
             InvocationTargetException, InstantiationException {
         List<R> result = new ArrayList<>();
         Object[] arguments = new Object[functions.length];
@@ -177,11 +173,7 @@ public class SelectStmt<T, R> {
                 if (isJoin) {
                     Tuple newElement = new Tuple(arguments[0], arguments[1]);
                     result.add((R) newElement);
-                } else {
-                    //R newElement = (R) returnClass.getConstructor(returnClasses).newInstance(arguments);
-                    //result.add(newElement);
                 }
-
             }
             if (havingCondition != null) {
                 List<R> filtered = new ArrayList<>();
@@ -245,7 +237,7 @@ public class SelectStmt<T, R> {
         return result;
     }
 
-    public UnionStmt<T, R> union() throws InvocationTargetException, NoSuchMethodException,
+    public final UnionStmt<T, R> union() throws InvocationTargetException, NoSuchMethodException,
             InstantiationException, IllegalAccessException {
         List<R> result = (List<R>) this.execute();
         return new UnionStmt(result);
@@ -259,7 +251,7 @@ public class SelectStmt<T, R> {
         }
 
         @Override
-        public int compare(K first, K second) {
+        public final int compare(K first, K second) {
             for (Comparator<K> comparator : comparators) {
                 if (comparator.compare(first, second) != 0) {
                     return comparator.compare(first, second);

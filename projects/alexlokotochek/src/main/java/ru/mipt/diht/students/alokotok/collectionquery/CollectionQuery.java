@@ -1,20 +1,8 @@
 package ru.mipt.diht.students.alokotok.collectionquery;
 
-import ru.mipt.diht.students.alokotok.collectionquery.impl.Tuple;
-
-
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Objects;
-
-import static ru.mipt.diht.students.alokotok.collectionquery.CollectionQuery.Student.student;
-import static ru.mipt.diht.students.alokotok.collectionquery.Sources.list;
-import static ru.mipt.diht.students.alokotok.collectionquery.impl.FromStmt.from;
-
-import static ru.mipt.diht.students.alokotok.collectionquery.Conditions.rlike;
-import static ru.mipt.diht.students.alokotok.collectionquery.OrderByConditions.desc;
 
 /**
  * Created by lokotochek on 30.11.15.
@@ -31,11 +19,11 @@ public class CollectionQuery {
 
         private final String group;
 
-        public String getName() {
+        public final String getName() {
             return name;
         }
 
-        public String getGroup() {
+        public final String getGroup() {
             return group;
         }
 
@@ -51,11 +39,11 @@ public class CollectionQuery {
             this.group = group;
         }
 
-        public LocalDate getDateOfBith() {
+        public final LocalDate getDateOfBith() {
             return dateOfBith;
         }
 
-        public Double age() {
+        public final Double age() {
             return (double) ChronoUnit.YEARS.between(getDateOfBith(), LocalDateTime.now());
         }
 
@@ -68,7 +56,7 @@ public class CollectionQuery {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             StringBuilder result = new StringBuilder().append("Student{");
             if (group != null) {
                 result.append("group='").append(group).append('\'');
@@ -90,15 +78,15 @@ public class CollectionQuery {
         private final Integer count;
         private final Double age;
 
-        public String getGroup() {
+        public final String getGroup() {
             return group;
         }
 
-        public Integer getCount() {
+        public final Integer getCount() {
             return count;
         }
 
-        public Double getAge() {
+        public final Double getAge() {
             return age;
         }
 
@@ -121,7 +109,7 @@ public class CollectionQuery {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             StringBuilder result = new StringBuilder().append("Statistics{");
             if (group != null) {
                 result.append("group='").append(group).append('\'');

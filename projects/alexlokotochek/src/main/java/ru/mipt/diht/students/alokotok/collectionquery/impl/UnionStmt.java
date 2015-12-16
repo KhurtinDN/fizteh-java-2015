@@ -9,13 +9,13 @@ import java.util.function.Function;
  */
 public class UnionStmt<T, R> {
 
-    public List<R> getPastElements() {
+    public final List<R> getPastElements() {
         return pastElements;
     }
 
     private List<R> pastElements = new ArrayList<>();
 
-    public List<T> getElements() {
+    public final List<T> getElements() {
         return elements;
     }
 
@@ -34,14 +34,14 @@ public class UnionStmt<T, R> {
         }
     }
 
-    public UnionStmt<T, R> from(Iterable<T> elements) {
+    public final UnionStmt<T, R> from(Iterable<T> elements) {
         return new UnionStmt<>(pastElements, elements);
     }
 
 
     @SafeVarargs
     public final SelectStmt<T, R> select(Class<R> returnClass, Function<T, ?>... functions) {
-        return new SelectStmt<T, R> ((List<R>) pastElements, elements, returnClass, false, functions);
+        return new SelectStmt<T, R>((List<R>) pastElements, elements, returnClass, false, functions);
     }
 
     @SafeVarargs

@@ -1,6 +1,5 @@
 package ru.mipt.diht.students.alokotok.collectionquery.impl;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 
@@ -15,7 +14,7 @@ public class Max<T, R extends Comparable<R>> implements Aggregator<T, R> {
     }
 
     @Override
-    public R apply(List<T> elements) {
+    public final R apply(List<T> elements) {
 
         T result = elements.get(0);
 
@@ -29,7 +28,7 @@ public class Max<T, R extends Comparable<R>> implements Aggregator<T, R> {
     }
 
     @Override
-    public R apply(T t) {
+    public final R apply(T t) {
         return null;
     }
 }

@@ -18,7 +18,7 @@ public class Count<T> implements Aggregator<T, Integer> {
 
     //(наследуем интерфейс от Aggregator)
     @Override
-    public Integer apply(List<T> elements) {
+    public final Integer apply(List<T> elements) {
 
         // считаем лямбду от элементов, а затем -
         // сколько уникальных результатов получилось
@@ -34,7 +34,7 @@ public class Count<T> implements Aggregator<T, Integer> {
     }
 
     @Override
-    public Integer apply(T t) {
+    public final Integer apply(T t) {
         return null;
     }
 

@@ -14,16 +14,16 @@ public class Tuple<F, S> {
         this.second = second;
     }
 
-    public F getFirst() {
+    public final F getFirst() {
         return first;
     }
 
-    public S getSecond() {
+    public final S getSecond() {
         return second;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return
                 first + " -> " + second + '\n';
     }

@@ -16,8 +16,8 @@ public class Avg<T> implements Aggregator<T, Double> {
 
     //(наследуем интерфейс от Aggregator)
     @Override
-    public Double apply(List<T> elements) {
-        Double elementsAmount = (double)elements.size(), sum = 0.0;
+    public final Double apply(List<T> elements) {
+        Double elementsAmount = (double) elements.size(), sum = 0.0;
         for (T element : elements) {
             sum += (Double) function.apply(element);
         }
@@ -25,7 +25,7 @@ public class Avg<T> implements Aggregator<T, Double> {
     }
 
     @Override
-    public Double apply(T element) {
+    public final Double apply(T element) {
         return (Double) function.apply(element);
     }
 

@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
  * Created by lokotochek on 30.11.15.
  */
 public class FromStmt<T> {
-    public List<T> getElements() {
+    public final List<T> getElements() {
         return elements;
     }
 
@@ -41,7 +41,7 @@ public class FromStmt<T> {
         return new SelectStmt<>(elements, false, first, second);
     }
 
-    public <J> JoinClause<T, J> join(Iterable<J> iterable) {
+    public final <J> JoinClause<T, J> join(Iterable<J> iterable) {
         return new JoinClause<T, J>(elements, iterable);
     }
 
@@ -58,7 +58,7 @@ public class FromStmt<T> {
             }
         }
 
-        public FromStmt<Tuple<S, J>> on(BiPredicate<S, J> condition) {
+        public final FromStmt<Tuple<S, J>> on(BiPredicate<S, J> condition) {
             for (S first : firstElements) {
                 for (J second : secondElements) {
                     if (condition.test(first, second)) {
@@ -68,6 +68,7 @@ public class FromStmt<T> {
             }
             return new FromStmt<>(elements);
         }
+
 
     }
 }

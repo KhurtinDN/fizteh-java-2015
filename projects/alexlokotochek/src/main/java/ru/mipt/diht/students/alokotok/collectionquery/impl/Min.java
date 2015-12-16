@@ -15,7 +15,7 @@ public class Min<T, R extends Comparable<R>> implements Aggregator<T, R> {
     }
 
     @Override
-    public R apply(List<T> elements) {
+    public final R apply(List<T> elements) {
 
         if (elements.isEmpty()) {
             return null;
@@ -33,7 +33,7 @@ public class Min<T, R extends Comparable<R>> implements Aggregator<T, R> {
     }
 
     @Override
-    public R apply(T t) {
+    public final R apply(T t) {
         return null;
     }
 
