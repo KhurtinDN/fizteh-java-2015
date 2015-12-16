@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.ale3otik.moduleTests.library;
+package ru.mipt.diht.students.ale3otik.moduletests.library;
 
 import com.beust.jcommander.JCommander;
 import junit.framework.TestCase;
@@ -10,7 +10,6 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import ru.mipt.diht.students.ale3otik.twitter.TwitterClient;
 import ru.mipt.diht.students.ale3otik.twitter.TwitterClientArguments;
 import ru.mipt.diht.students.ale3otik.twitter.TwitterSingleQuery;
 import ru.mipt.diht.students.ale3otik.twitter.TwitterUtils;

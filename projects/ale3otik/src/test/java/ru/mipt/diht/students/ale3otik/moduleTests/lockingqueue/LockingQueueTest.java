@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.ale3otik.moduleTests.lockingQueueTest;
+package ru.mipt.diht.students.ale3otik.moduletests.lockingqueue;
 
 import junit.framework.TestCase;
 import org.junit.Before;

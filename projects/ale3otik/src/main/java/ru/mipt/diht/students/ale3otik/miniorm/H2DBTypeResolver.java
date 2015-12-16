@@ -23,6 +23,7 @@ public class H2DBTypeResolver {
         h2dbPrimeTypes.put("long", "BIGINT");
         h2dbPrimeTypes.put("float", "FLOAT");
         h2dbPrimeTypes.put("double", "DOUBLE");
+        h2dbPrimeTypes.put("char", "CHAR");
 
         h2dbTypes = new HashMap<>();
         h2dbTypes.put(Integer.class, "INTEGER");
@@ -41,10 +42,8 @@ public class H2DBTypeResolver {
         h2dbTypes.put(UUID.class, "UUID");
     }
 
-    public static String resolve(Class type) {
-        if (type.isArray()) {
-            return "ARRAY";
-        } else if (type.isPrimitive()) {
+    public static String resolve(Class<?> type) {
+        if (type.isPrimitive()) {
             if (h2dbPrimeTypes.containsKey(type.toString())) {
                 return h2dbPrimeTypes.get(type.toString());
             }

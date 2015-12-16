@@ -59,7 +59,7 @@ public class DatabaseService<T> {
                 throw new DatabaseServiceException("not unique @PrimaryKey field");
             }
             if (H2DBTypeResolver.resolve(fields[i].getType()) == null) {
-                throw new DatabaseServiceException(fields[i].getType().toString() + "is not allowed");
+                throw new DatabaseServiceException(fields[i].getType().toString() + " is not allowed");
             }
         }
         if (pkCount == 0) {
@@ -86,11 +86,11 @@ public class DatabaseService<T> {
     private String toSnakeCase(String source) {
         StringBuilder resultBuilder = new StringBuilder();
         for (int i = 0; i < source.length(); ++i) {
-            if (source.charAt(i) >= 'A' && source.charAt(i) <= 'Z') {
-                if (i > 0 && source.charAt(i - 1) >= 'a' && source.charAt(i - 1) <= 'z') {
+            if (Character.isUpperCase(source.charAt(i))) {
+                if (i > 0 && Character.isLowerCase(source.charAt(i - 1))) {
                     resultBuilder.append("_");
                 }
-                resultBuilder.append((char) (source.charAt(i) - 'A' + 'a'));
+                resultBuilder.append(Character.toLowerCase(source.charAt(i)));
             } else {
                 resultBuilder.append(source.charAt(i));
             }

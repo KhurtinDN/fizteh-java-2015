@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.ale3otik.moduleTests.library;
+package ru.mipt.diht.students.ale3otik.moduletests.library;
 
 import junit.framework.TestCase;
 import org.junit.BeforeClass;
@@ -6,7 +6,6 @@ import org.junit.Test;
 import ru.mipt.diht.students.ale3otik.twitter.TimeDeterminer;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 
 /**
