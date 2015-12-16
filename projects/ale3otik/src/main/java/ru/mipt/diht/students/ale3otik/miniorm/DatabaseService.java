@@ -48,9 +48,6 @@ public class DatabaseService<T> {
 
         int pkCount = 0;
         for (int i = 0; i < fields.length; ++i) {
-            if (fields[i].getAnnotatedType() == null) {
-                continue;
-            }
             if (fields[i].isAnnotationPresent(PrimaryKey.class)) {
                 if (!fields[i].isAnnotationPresent(Column.class)) {
                     throw new DatabaseServiceException("@PrimaryKey must have @Column annotation");
