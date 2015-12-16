@@ -18,13 +18,13 @@ public class BlockingQueue<T> {
     private Condition popWait = stateChanged.newCondition();
     private Condition pushWait = stateChanged.newCondition();
 
-    BlockingQueue(int maxSize) {
-        this.maxSize = maxSize;
+    BlockingQueue(int inputMaxSize) {
+        this.maxSize = inputMaxSize;
         queue = new ArrayDeque<>();
     }
 
     // push_back to the queue
-    public void offer(List<T> e) {
+    public final void offer(List<T> e) {
         try {
             offer(e, 0, false);
         } catch (InterruptedException ex) {
@@ -33,7 +33,7 @@ public class BlockingQueue<T> {
     }
 
     // pop_front from the queue
-    public List<T> take(int n) {
+    public final List<T> take(int n) {
         try {
             return take(n, 0, false);
         } catch (InterruptedException e) {
@@ -42,11 +42,11 @@ public class BlockingQueue<T> {
         }
     }
 
-    public void offer(List<T> e, long timeout) throws InterruptedException {
+    public final void offer(List<T> e, long timeout) throws InterruptedException {
         offer(e, timeout, true);
     }
 
-    public List<T> take(int n, long timeout) throws InterruptedException {
+    public final List<T> take(int n, long timeout) throws InterruptedException {
         return take(n, timeout, true);
     }
 
@@ -58,7 +58,7 @@ public class BlockingQueue<T> {
         return timeLimit - currTime;
     }
 
-    public void offer(List<T> e, long timeout, boolean needTimeout) throws InterruptedException {
+    public final void offer(List<T> e, long timeout, boolean needTimeout) throws InterruptedException {
         long timeLimit = System.currentTimeMillis() + timeout;
 
         if (needTimeout) {
@@ -105,7 +105,7 @@ public class BlockingQueue<T> {
         }
     }
 
-    List<T> take(int n, long timeout, boolean needTimeout) throws InterruptedException {
+    public final List<T> take(int n, long timeout, boolean needTimeout) throws InterruptedException {
         long timeLimit = System.currentTimeMillis() + timeout;
         if (needTimeout) {
             if (!stateChanged.tryLock(getTimeout(timeLimit), TimeUnit.MILLISECONDS)) {

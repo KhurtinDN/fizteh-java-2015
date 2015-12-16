@@ -14,7 +14,7 @@ public class Rollcall {
 
     private static class CountThread extends Thread {
 
-        private final int PROBABILITY = 10;
+        private final int probability = 10;
 
         private boolean result;
         private Random random = new Random();
@@ -29,7 +29,7 @@ public class Rollcall {
                 } catch (BrokenBarrierException e) {
                     e.printStackTrace();
                 }
-                result = random.nextInt(PROBABILITY) != 0;
+                result = random.nextInt(probability) != 0;
                 if (result) {
                     System.out.println("Yes");
                 } else {

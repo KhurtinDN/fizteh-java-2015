@@ -10,9 +10,9 @@ public class Counter {
 
         private int id, nextId;
 
-        ThreadCount(int id, int nextId) {
-            this.id = id;
-            this.nextId = nextId;
+        ThreadCount(int inputId, int inputNextId) {
+            this.id = inputId;
+            this.nextId = inputNextId;
         }
 
         @Override
