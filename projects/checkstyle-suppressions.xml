@@ -6,4 +6,5 @@
 
 <suppressions>
     <suppress files="[\\/]ru[\\/]mipt[\\/]diht[\\/]students[\\/]dkhurtin[\\/]" checks=".*"/>
+    <suppress files="[\\/]ru[\\/]mipt[\\/]diht[\\/]students[\\/]alexlokotochek" checks="AvoidInlineConditionalsCheck"/>
 </suppressions>

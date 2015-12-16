@@ -30,6 +30,7 @@
         <module>dkhurtin</module>
         <module>ale3otik</module>
         <module>Pitovsky</module>
+        <module>alexlokotochek</module>
     </modules>
 
     <dependencyManagement>
