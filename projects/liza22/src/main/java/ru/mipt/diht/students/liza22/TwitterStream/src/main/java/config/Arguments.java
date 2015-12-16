@@ -15,7 +15,9 @@ public final class Arguments {
 
     private Arguments() { }
 
-    public static Arguments getInstance() { return INSTANCE; }
+    public static Arguments getInstance() {
+        return INSTANCE;
+    }
 
     @Parameter(names = {"--query", "-q"},
             required = true,

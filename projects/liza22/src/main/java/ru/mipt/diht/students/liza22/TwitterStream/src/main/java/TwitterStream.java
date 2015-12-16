@@ -14,7 +14,7 @@ import java.io.*;
  * Main Class.
  */
 
-final int LINE_LENGTH = 1024;
+public static final int LINE_LENGTH = 1024;
 
 public class TwitterStream {
 
