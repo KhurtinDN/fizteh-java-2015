@@ -13,6 +13,9 @@ import java.io.*;
 /**
  * Main Class.
  */
+
+final int LINE_LENGTH = 1024;
+
 public class TwitterStream {
 
     public static void main(final String[] argsString) {
@@ -39,8 +42,8 @@ public class TwitterStream {
             // start tweets providing and handling
             tweetsProvider.provide(tweetHandler);
         } catch (Exception e) {
-            System.err.println("Application TwitterStream has been occasionally crashed " +
-                    "with error = \"" + e.getMessage() + "\"");
+            System.err.println("Application TwitterStream has been occasionally crashed "
+                    + "with error = \"" + e.getMessage() + "\"");
             System.err.println("Application will be terminated with error code.");
             System.exit(1);
         }
@@ -62,7 +65,7 @@ public class TwitterStream {
      */
     private static void printHelp(OutputStream out) {
         try {
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[LINE_LENGTH];
             try (InputStream input = TwitterStream.class.getClassLoader().getResourceAsStream(Constants.HELP_FILE)) {
                 for (int length; (length = input.read(buffer)) != -1;) {
                     out.write(buffer, 0, length);

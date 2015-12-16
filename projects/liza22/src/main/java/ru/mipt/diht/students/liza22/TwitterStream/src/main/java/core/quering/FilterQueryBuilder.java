@@ -11,11 +11,11 @@ import twitter4j.*;
 public class FilterQueryBuilder {
     private Twitter twitter;
 
-    public FilterQueryBuilder(Twitter twitter) {
-        this.twitter = twitter;
+    public FilterQueryBuilder(Twitter _twitter) {
+        this.twitter = _twitter;
     }
 
-    public FilterQuery buildQuery() {
+    public final FilterQuery buildQuery() {
         Arguments arguments = Arguments.getInstance();
 
         FilterQuery query = new FilterQuery();

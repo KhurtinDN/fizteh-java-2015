@@ -9,16 +9,16 @@ public class TwitterUser {
     private Long id;
     private String name;
 
-    public TwitterUser(Long id, String name) {
-        this.id = id;
-        this.name = name;
+    public TwitterUser(Long userid, String username) {
+        this.id = userid;
+        this.name = username;
     }
 
-    public Long getId() {
+    public final Long getId() {
         return id;
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -32,10 +32,11 @@ public class TwitterUser {
     }
 
     @Override
-    public String toString() {
-        return "TwitterUser{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+    public final String toString() {
+        return "TwitterUser{"
+                + "id=" + id
+                + ", name='" + name
+                + '\''
+                + '}';
     }
 }

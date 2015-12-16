@@ -13,9 +13,9 @@ import java.util.List;
 public final class Arguments {
     private static final Arguments INSTANCE = new Arguments();
 
-    private Arguments() {}
+    private Arguments() { }
 
-    public static Arguments getInstance() {return INSTANCE;}
+    public static Arguments getInstance() { return INSTANCE; }
 
     @Parameter(names = {"--query", "-q"},
             required = true,
@@ -91,9 +91,10 @@ public final class Arguments {
 
     @Override
     public String toString() {
-        return "Arguments{" +
-                "keywords=" + keywords
-                + ", place='" + place + '\''
+        return "Arguments{"
+                + "keywords=" + keywords
+                + ", place='" + place
+                + '\''
                 + ", streamMode=" + streamMode
                 + ", hideRetweets=" + hideRetweets
                 + ", limitOfTweets=" + limitOfTweets

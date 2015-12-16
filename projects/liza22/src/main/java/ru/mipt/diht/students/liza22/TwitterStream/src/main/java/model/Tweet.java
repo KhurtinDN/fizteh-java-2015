@@ -12,51 +12,51 @@ public class Tweet {
     private long retweetCount;
     private Tweet retweetedTweet;
 
-    public String getText() {
+    public final String getText() {
         return text;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setText(String tweetText) {
+        this.text = tweetText;
     }
 
-    public TwitterUser getAuthor() {
+    public final TwitterUser getAuthor() {
         return author;
     }
 
-    public void setAuthor(TwitterUser author) {
-        this.author = author;
+    public void setAuthor(TwitterUser tweetAuthor) {
+        this.author = tweetAuthor;
     }
 
-    public long getRetweetCount() {
+    public final long getRetweetCount() {
         return retweetCount;
     }
 
-    public void setRetweetCount(long retweetCount) {
-        this.retweetCount = retweetCount;
+    public void setRetweetCount(long count) {
+        this.retweetCount = count;
     }
 
-    public long getTime() {
+    public final long getTime() {
         return time;
     }
 
-    public void setTime(long time) {
-        this.time = time;
+    public void setTime(long tweetTime) {
+        this.time = tweetTime;
     }
 
-    public Tweet getRetweetedTweet() {
+    public final Tweet getRetweetedTweet() {
         return retweetedTweet;
     }
 
-    public void setRetweetedTweet(Tweet retweetedTweet) {
-        this.retweetedTweet = retweetedTweet;
+    public void setRetweetedTweet(Tweet retweeted) {
+        this.retweetedTweet = retweeted;
     }
 
-    public boolean isRetweet() {
+    public final boolean isRetweet() {
         return null != retweetedTweet;
     }
 
-    public boolean isNotRetweet() {
+    public final boolean isNotRetweet() {
         return !isRetweet();
     }
 

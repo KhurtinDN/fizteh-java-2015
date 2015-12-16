@@ -16,11 +16,11 @@ import java.util.List;
 public class SearchQueryBuilder {
     private Twitter twitter;
 
-    public SearchQueryBuilder(Twitter twitter) {
-        this.twitter = twitter;
+    public SearchQueryBuilder(Twitter _twitter) {
+        this.twitter = _twitter;
     }
 
-    public Query buildQuery() {
+    public final Query buildQuery() {
         Arguments arguments = Arguments.getInstance();
         Query query = new Query();
         // set query for tweets
@@ -68,8 +68,8 @@ public class SearchQueryBuilder {
     public static double getRadius(GeoLocation[] vertices) {
         List<Double> distances = new ArrayList<>();
         // calculate distances between all vertices
-        for (int i = 0; i < vertices.length-1; i++) {
-            for (int j = i+1; j < vertices.length; j++) {
+        for (int i = 0; i < vertices.length - 1; i++) {
+            for (int j = i + 1; j < vertices.length; j++) {
                 GeoLocation vertex1 = vertices[i];
                 GeoLocation vertex2 = vertices[j];
                 distances.add(GeoUtils.distanceBetweenTwoCoordinates(
@@ -84,7 +84,7 @@ public class SearchQueryBuilder {
         return distances.get(0);
     }
 
-    public static double getArithmeticMean(double[] numbers){
+    public static double getArithmeticMean(double[] numbers) {
         double sum = 0;
         for (double num : numbers) {
             sum += num;

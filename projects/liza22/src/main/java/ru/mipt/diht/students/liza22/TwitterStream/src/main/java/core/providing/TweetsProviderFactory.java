@@ -7,9 +7,9 @@ import model.Mode;
 /**
  * Tweets provider factory.
  */
-public class TweetsProviderFactory {
+public final class TweetsProviderFactory {
 
-    private TweetsProviderFactory() {}
+    private TweetsProviderFactory() { }
 
     /**
      * Gets tweets provider depending on the working mode.
