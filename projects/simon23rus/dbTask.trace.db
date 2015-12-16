@@ -1,0 +1,483 @@
+2015-12-16 13:38:00 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Синтаксическая ошибка в выражении SQL "CREATE TABLE IF NOT EXISTS NULL[*]( INTEGERNOT NULL PRIMARY KEY,  VARCHAR(20),  BIGINT,  VARCHAR(20)) "; ожидалось "identifier"
+Syntax error in SQL statement "CREATE TABLE IF NOT EXISTS NULL[*]( INTEGERNOT NULL PRIMARY KEY,  VARCHAR(20),  BIGINT,  VARCHAR(20)) "; expected "identifier"; SQL statement:
+CREATE TABLE IF NOT EXISTS null( INTEGERNOT NULL PRIMARY KEY,  VARCHAR(20),  BIGINT,  VARCHAR(20)) [42001-190]
+2015-12-16 13:38:16 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Синтаксическая ошибка в выражении SQL "CREATE TABLE IF NOT EXISTS NULL[*]( INTEGERNOT NULL PRIMARY KEY,  VARCHAR(20),  BIGINT,  VARCHAR(20)) "; ожидалось "identifier"
+Syntax error in SQL statement "CREATE TABLE IF NOT EXISTS NULL[*]( INTEGERNOT NULL PRIMARY KEY,  VARCHAR(20),  BIGINT,  VARCHAR(20)) "; expected "identifier"; SQL statement:
+CREATE TABLE IF NOT EXISTS null( INTEGERNOT NULL PRIMARY KEY,  VARCHAR(20),  BIGINT,  VARCHAR(20)) [42001-190]
+2015-12-16 13:40:28 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Неизвестный тип данных: "("
+Unknown data type: "("; SQL statement:
+CREATE TABLE IF NOT EXISTS player( INTEGERNOT NULL PRIMARY KEY,  VARCHAR(20),  BIGINT,  VARCHAR(20)) [50004-190]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:345)
+	at org.h2.message.DbException.get(DbException.java:179)
+	at org.h2.message.DbException.get(DbException.java:155)
+	at org.h2.command.Parser.parseColumnWithType(Parser.java:4009)
+	at org.h2.command.Parser.parseColumnForTable(Parser.java:3872)
+	at org.h2.command.Parser.parseCreateTable(Parser.java:5808)
+	at org.h2.command.Parser.parseCreate(Parser.java:4167)
+	at org.h2.command.Parser.parsePrepared(Parser.java:349)
+	at org.h2.command.Parser.parse(Parser.java:304)
+	at org.h2.command.Parser.parse(Parser.java:276)
+	at org.h2.command.Parser.prepareCommand(Parser.java:241)
+	at org.h2.engine.Session.prepareLocal(Session.java:460)
+	at org.h2.engine.Session.prepareCommand(Session.java:402)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1188)
+	at org.h2.jdbc.JdbcStatement.executeUpdateInternal(JdbcStatement.java:126)
+	at org.h2.jdbc.JdbcStatement.executeUpdate(JdbcStatement.java:115)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseService.createTable(DatabaseService.java:235)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseServiceTest.createTableTest(DatabaseServiceTest.java:44)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.mockito.internal.runners.JUnit45AndHigherRunnerImpl.run(JUnit45AndHigherRunnerImpl.java:37)
+	at org.mockito.runners.MockitoJUnitRunner.run(MockitoJUnitRunner.java:62)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:78)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:212)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:68)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:140)
+2015-12-16 13:41:29 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Неизвестный тип данных: "NOT"
+Unknown data type: "NOT"; SQL statement:
+CREATE TABLE IF NOT EXISTS player( INTEGER NOT NULL PRIMARY KEY,  VARCHAR(20),  BIGINT,  VARCHAR(20)) [50004-190]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:345)
+	at org.h2.message.DbException.get(DbException.java:179)
+	at org.h2.message.DbException.get(DbException.java:155)
+	at org.h2.command.Parser.parseColumnWithType(Parser.java:4009)
+	at org.h2.command.Parser.parseColumnForTable(Parser.java:3872)
+	at org.h2.command.Parser.parseCreateTable(Parser.java:5808)
+	at org.h2.command.Parser.parseCreate(Parser.java:4167)
+	at org.h2.command.Parser.parsePrepared(Parser.java:349)
+	at org.h2.command.Parser.parse(Parser.java:304)
+	at org.h2.command.Parser.parse(Parser.java:276)
+	at org.h2.command.Parser.prepareCommand(Parser.java:241)
+	at org.h2.engine.Session.prepareLocal(Session.java:460)
+	at org.h2.engine.Session.prepareCommand(Session.java:402)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1188)
+	at org.h2.jdbc.JdbcStatement.executeUpdateInternal(JdbcStatement.java:126)
+	at org.h2.jdbc.JdbcStatement.executeUpdate(JdbcStatement.java:115)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseService.createTable(DatabaseService.java:235)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseServiceTest.createTableTest(DatabaseServiceTest.java:44)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.mockito.internal.runners.JUnit45AndHigherRunnerImpl.run(JUnit45AndHigherRunnerImpl.java:37)
+	at org.mockito.runners.MockitoJUnitRunner.run(MockitoJUnitRunner.java:62)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:78)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:212)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:68)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:140)
+2015-12-16 13:42:57 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Неизвестный тип данных: "NOT"
+Unknown data type: "NOT"; SQL statement:
+CREATE TABLE IF NOT EXISTS player( INTEGER NOT NULL PRIMARY KEY,  VARCHAR(20),  BIGINT,  VARCHAR(20)) [50004-190]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:345)
+	at org.h2.message.DbException.get(DbException.java:179)
+	at org.h2.message.DbException.get(DbException.java:155)
+	at org.h2.command.Parser.parseColumnWithType(Parser.java:4009)
+	at org.h2.command.Parser.parseColumnForTable(Parser.java:3872)
+	at org.h2.command.Parser.parseCreateTable(Parser.java:5808)
+	at org.h2.command.Parser.parseCreate(Parser.java:4167)
+	at org.h2.command.Parser.parsePrepared(Parser.java:349)
+	at org.h2.command.Parser.parse(Parser.java:304)
+	at org.h2.command.Parser.parse(Parser.java:276)
+	at org.h2.command.Parser.prepareCommand(Parser.java:241)
+	at org.h2.engine.Session.prepareLocal(Session.java:460)
+	at org.h2.engine.Session.prepareCommand(Session.java:402)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1188)
+	at org.h2.jdbc.JdbcStatement.executeUpdateInternal(JdbcStatement.java:126)
+	at org.h2.jdbc.JdbcStatement.executeUpdate(JdbcStatement.java:115)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseService.createTable(DatabaseService.java:236)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseServiceTest.createTableTest(DatabaseServiceTest.java:44)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.mockito.internal.runners.JUnit45AndHigherRunnerImpl.run(JUnit45AndHigherRunnerImpl.java:37)
+	at org.mockito.runners.MockitoJUnitRunner.run(MockitoJUnitRunner.java:62)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:78)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:212)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:68)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:140)
+2015-12-16 13:44:41 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Неизвестный тип данных: "NOT"
+Unknown data type: "NOT"; SQL statement:
+CREATE TABLE IF NOT EXISTS player( INTEGER NOT NULL PRIMARY KEY,  VARCHAR(20),  BIGINT,  VARCHAR(20)) [50004-190]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:345)
+	at org.h2.message.DbException.get(DbException.java:179)
+	at org.h2.message.DbException.get(DbException.java:155)
+	at org.h2.command.Parser.parseColumnWithType(Parser.java:4009)
+	at org.h2.command.Parser.parseColumnForTable(Parser.java:3872)
+	at org.h2.command.Parser.parseCreateTable(Parser.java:5808)
+	at org.h2.command.Parser.parseCreate(Parser.java:4167)
+	at org.h2.command.Parser.parsePrepared(Parser.java:349)
+	at org.h2.command.Parser.parse(Parser.java:304)
+	at org.h2.command.Parser.parse(Parser.java:276)
+	at org.h2.command.Parser.prepareCommand(Parser.java:241)
+	at org.h2.engine.Session.prepareLocal(Session.java:460)
+	at org.h2.engine.Session.prepareCommand(Session.java:402)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1188)
+	at org.h2.jdbc.JdbcStatement.executeUpdateInternal(JdbcStatement.java:126)
+	at org.h2.jdbc.JdbcStatement.executeUpdate(JdbcStatement.java:115)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseService.createTable(DatabaseService.java:236)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseServiceTest.createTableTest(DatabaseServiceTest.java:44)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.mockito.internal.runners.JUnit45AndHigherRunnerImpl.run(JUnit45AndHigherRunnerImpl.java:37)
+	at org.mockito.runners.MockitoJUnitRunner.run(MockitoJUnitRunner.java:62)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:78)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:212)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:68)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:140)
+2015-12-16 13:45:41 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Неизвестный тип данных: "NOT"
+Unknown data type: "NOT"; SQL statement:
+CREATE TABLE IF NOT EXISTS player( INTEGER NOT NULL PRIMARY KEY,  VARCHAR(20),  BIGINT,  VARCHAR(20)) [50004-190]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:345)
+	at org.h2.message.DbException.get(DbException.java:179)
+	at org.h2.message.DbException.get(DbException.java:155)
+	at org.h2.command.Parser.parseColumnWithType(Parser.java:4009)
+	at org.h2.command.Parser.parseColumnForTable(Parser.java:3872)
+	at org.h2.command.Parser.parseCreateTable(Parser.java:5808)
+	at org.h2.command.Parser.parseCreate(Parser.java:4167)
+	at org.h2.command.Parser.parsePrepared(Parser.java:349)
+	at org.h2.command.Parser.parse(Parser.java:304)
+	at org.h2.command.Parser.parse(Parser.java:276)
+	at org.h2.command.Parser.prepareCommand(Parser.java:241)
+	at org.h2.engine.Session.prepareLocal(Session.java:460)
+	at org.h2.engine.Session.prepareCommand(Session.java:402)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1188)
+	at org.h2.jdbc.JdbcStatement.executeUpdateInternal(JdbcStatement.java:126)
+	at org.h2.jdbc.JdbcStatement.executeUpdate(JdbcStatement.java:115)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseService.createTable(DatabaseService.java:237)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseServiceTest.createTableTest(DatabaseServiceTest.java:44)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.mockito.internal.runners.JUnit45AndHigherRunnerImpl.run(JUnit45AndHigherRunnerImpl.java:37)
+	at org.mockito.runners.MockitoJUnitRunner.run(MockitoJUnitRunner.java:62)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:78)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:212)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:68)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:140)
+2015-12-16 13:56:25 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Объект уже закрыт
+The object is already closed [90007-190]
+2015-12-16 14:51:35 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYER" уже существует
+Table "PLAYER" already exists; SQL statement:
+CREATE TABLE PLAYER(id INTEGER NOT NULL PRIMARY KEY, last_name VARCHAR(20), salary BIGINT, club VARCHAR(20)) [42101-190]
+2015-12-16 15:25:52 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Синтаксическая ошибка в выражении SQL "INSERT INTO PLAYER VALUES (?, ?, ?, ? [*]"; ожидалось "[, ::, *, /, %, +, -, ||, ~, !~, NOT, LIKE, REGEXP, IS, IN, BETWEEN, AND, OR, ,, )"
+Syntax error in SQL statement "INSERT INTO PLAYER VALUES (?, ?, ?, ? [*]"; expected "[, ::, *, /, %, +, -, ||, ~, !~, NOT, LIKE, REGEXP, IS, IN, BETWEEN, AND, OR, ,, )"; SQL statement:
+INSERT INTO player VALUES (?, ?, ?, ? [42001-190]
+2015-12-16 17:15:47 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Синтаксическая ошибка в выражении SQL "UPDATE PLAYER SET ID=?, LAST_NAME=?, SALARY=?, CLUB=? WHEREID[*]=? "
+Syntax error in SQL statement "UPDATE PLAYER SET ID=?, LAST_NAME=?, SALARY=?, CLUB=? WHEREID[*]=? "; SQL statement:
+UPDATE player SET id=?, last_name=?, salary=?, club=? WHEREid=? [42000-190]
+2015-12-16 17:16:05 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Синтаксическая ошибка в выражении SQL "UPDATE PLAYER SET ID=?, LAST_NAME=?, SALARY=?, CLUB=? WHEREID[*]=? "
+Syntax error in SQL statement "UPDATE PLAYER SET ID=?, LAST_NAME=?, SALARY=?, CLUB=? WHEREID[*]=? "; SQL statement:
+UPDATE player SET id=?, last_name=?, salary=?, club=? WHEREid=? [42000-190]
+2015-12-16 17:19:42 jdbc[5]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYERWHERE" не найдена
+Table "PLAYERWHERE" not found; SQL statement:
+SELECT * FROM playerWHERE id=? [42102-190]
+2015-12-16 17:42:00 jdbc[27]: exception
+org.h2.jdbc.JdbcSQLException: Недопустимое значение "5" для параметра "parameterIndex"
+Invalid value "5" for parameter "parameterIndex" [90008-190]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:345)
+	at org.h2.message.DbException.get(DbException.java:179)
+	at org.h2.message.DbException.getInvalidValueException(DbException.java:228)
+	at org.h2.jdbc.JdbcPreparedStatement.setParameter(JdbcPreparedStatement.java:1382)
+	at org.h2.jdbc.JdbcPreparedStatement.setObject(JdbcPreparedStatement.java:460)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseService.delete(DatabaseService.java:213)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseServiceTest.deleteTest(DatabaseServiceTest.java:157)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.mockito.internal.runners.JUnit45AndHigherRunnerImpl.run(JUnit45AndHigherRunnerImpl.java:37)
+	at org.mockito.runners.MockitoJUnitRunner.run(MockitoJUnitRunner.java:62)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:78)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:212)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:68)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:140)
+2015-12-16 18:14:37 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYER" не найдена
+Table "PLAYER" not found; SQL statement:
+SELECT * FROM player [42102-190]
+2015-12-16 18:15:36 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYER" не найдена
+Table "PLAYER" not found; SQL statement:
+SELECT * FROM player [42102-190]
+2015-12-16 18:16:31 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYER" не найдена
+Table "PLAYER" not found; SQL statement:
+SELECT * FROM PLAYER [42102-190]
+2015-12-16 18:17:40 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYER" не найдена
+Table "PLAYER" not found; SQL statement:
+SELECT * FROM PLAYER [42102-190]
+2015-12-16 18:21:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYER" не найдена
+Table "PLAYER" not found; SQL statement:
+SELECT * FROM PLAYER [42102-190]
+2015-12-16 18:22:05 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYER" не найдена
+Table "PLAYER" not found; SQL statement:
+SELECT * FROM PLAYER [42102-190]
+2015-12-16 18:23:10 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYER" не найдена
+Table "PLAYER" not found; SQL statement:
+SELECT * FROM PLAYER [42102-190]
+2015-12-16 18:41:50 jdbc[7]: null
+org.h2.message.DbException: Незакрытое приложением соединение уничтожено сборщиком мусора
+The connection was not closed by the application and is garbage collected [90018-190]
+	at org.h2.message.DbException.get(DbException.java:179)
+	at org.h2.message.DbException.get(DbException.java:155)
+	at org.h2.message.DbException.get(DbException.java:144)
+	at org.h2.jdbc.JdbcConnection.closeOld(JdbcConnection.java:173)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:118)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:91)
+	at org.h2.Driver.connect(Driver.java:72)
+	at java.sql.DriverManager.getConnection(DriverManager.java:664)
+	at java.sql.DriverManager.getConnection(DriverManager.java:270)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseService.<init>(DatabaseService.java:62)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseServiceTest.insertTest(DatabaseServiceTest.java:102)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.mockito.internal.runners.JUnit45AndHigherRunnerImpl.run(JUnit45AndHigherRunnerImpl.java:37)
+	at org.mockito.runners.MockitoJUnitRunner.run(MockitoJUnitRunner.java:62)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:78)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:212)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:68)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:140)
+Caused by: org.h2.jdbc.JdbcSQLException: Незакрытое приложением соединение уничтожено сборщиком мусора
+The connection was not closed by the application and is garbage collected [90018-190]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:345)
+	... 39 more
+2015-12-16 18:44:06 jdbc[9]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYER" уже существует
+Table "PLAYER" already exists; SQL statement:
+CREATE TABLE player(id INTEGER NOT NULL PRIMARY KEY, last_name VARCHAR(20), salary BIGINT, club VARCHAR(20)) [42101-190]
+2015-12-16 18:44:51 jdbc[14]: exception
+org.h2.jdbc.JdbcSQLException: Синтаксическая ошибка в выражении SQL "CREATE TABLE IF NOT EXISTSPLAYER[*](ID INTEGER NOT NULL PRIMARY KEY, LAST_NAME VARCHAR(20), SALARY BIGINT, CLUB VARCHAR(20)) "; ожидалось "EXISTS"
+Syntax error in SQL statement "CREATE TABLE IF NOT EXISTSPLAYER[*](ID INTEGER NOT NULL PRIMARY KEY, LAST_NAME VARCHAR(20), SALARY BIGINT, CLUB VARCHAR(20)) "; expected "EXISTS"; SQL statement:
+CREATE TABLE IF NOT EXISTSplayer(id INTEGER NOT NULL PRIMARY KEY, last_name VARCHAR(20), salary BIGINT, club VARCHAR(20)) [42001-190]
+2015-12-16 18:44:51 jdbc[17]: exception
+org.h2.jdbc.JdbcSQLException: Синтаксическая ошибка в выражении SQL "CREATE TABLE IF NOT EXISTSPLAYER[*](ID INTEGER NOT NULL PRIMARY KEY, LAST_NAME VARCHAR(20), SALARY BIGINT, CLUB VARCHAR(20)) "; ожидалось "EXISTS"
+Syntax error in SQL statement "CREATE TABLE IF NOT EXISTSPLAYER[*](ID INTEGER NOT NULL PRIMARY KEY, LAST_NAME VARCHAR(20), SALARY BIGINT, CLUB VARCHAR(20)) "; expected "EXISTS"; SQL statement:
+CREATE TABLE IF NOT EXISTSplayer(id INTEGER NOT NULL PRIMARY KEY, last_name VARCHAR(20), salary BIGINT, club VARCHAR(20)) [42001-190]
+2015-12-16 18:44:51 jdbc[20]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYER" не найдена
+Table "PLAYER" not found; SQL statement:
+DELETE FROM player WHERE id=? [42102-190]
+2015-12-16 18:45:12 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYER" не найдена
+Table "PLAYER" not found; SQL statement:
+SELECT * FROM player WHERE id=? [42102-190]
+2015-12-16 18:45:12 jdbc[7]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYER" не найдена
+Table "PLAYER" not found; SQL statement:
+UPDATE player SET id=?, last_name=?, salary=?, club=? WHERE id=? [42102-190]
+2015-12-16 18:45:12 jdbc[14]: exception
+org.h2.jdbc.JdbcSQLException: Синтаксическая ошибка в выражении SQL "CREATE TABLE IF NOT EXISTSPLAYER[*](ID INTEGER NOT NULL PRIMARY KEY, LAST_NAME VARCHAR(20), SALARY BIGINT, CLUB VARCHAR(20)) "; ожидалось "EXISTS"
+Syntax error in SQL statement "CREATE TABLE IF NOT EXISTSPLAYER[*](ID INTEGER NOT NULL PRIMARY KEY, LAST_NAME VARCHAR(20), SALARY BIGINT, CLUB VARCHAR(20)) "; expected "EXISTS"; SQL statement:
+CREATE TABLE IF NOT EXISTSplayer(id INTEGER NOT NULL PRIMARY KEY, last_name VARCHAR(20), salary BIGINT, club VARCHAR(20)) [42001-190]
+2015-12-16 18:45:12 jdbc[17]: exception
+org.h2.jdbc.JdbcSQLException: Синтаксическая ошибка в выражении SQL "CREATE TABLE IF NOT EXISTSPLAYER[*](ID INTEGER NOT NULL PRIMARY KEY, LAST_NAME VARCHAR(20), SALARY BIGINT, CLUB VARCHAR(20)) "; ожидалось "EXISTS"
+Syntax error in SQL statement "CREATE TABLE IF NOT EXISTSPLAYER[*](ID INTEGER NOT NULL PRIMARY KEY, LAST_NAME VARCHAR(20), SALARY BIGINT, CLUB VARCHAR(20)) "; expected "EXISTS"; SQL statement:
+CREATE TABLE IF NOT EXISTSplayer(id INTEGER NOT NULL PRIMARY KEY, last_name VARCHAR(20), salary BIGINT, club VARCHAR(20)) [42001-190]
+2015-12-16 18:45:12 jdbc[20]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYER" не найдена
+Table "PLAYER" not found; SQL statement:
+DELETE FROM player WHERE id=? [42102-190]
+2015-12-16 18:45:25 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYER" не найдена
+Table "PLAYER" not found; SQL statement:
+SELECT * FROM player WHERE id=? [42102-190]
+2015-12-16 18:45:25 jdbc[7]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "PLAYER" не найдена
+Table "PLAYER" not found; SQL statement:
+UPDATE player SET id=?, last_name=?, salary=?, club=? WHERE id=? [42102-190]
+2015-12-16 18:46:22 jdbc[7]: null
+org.h2.message.DbException: Незакрытое приложением соединение уничтожено сборщиком мусора
+The connection was not closed by the application and is garbage collected [90018-190]
+	at org.h2.message.DbException.get(DbException.java:179)
+	at org.h2.message.DbException.get(DbException.java:155)
+	at org.h2.message.DbException.get(DbException.java:144)
+	at org.h2.jdbc.JdbcConnection.closeOld(JdbcConnection.java:173)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:118)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:91)
+	at org.h2.Driver.connect(Driver.java:72)
+	at java.sql.DriverManager.getConnection(DriverManager.java:664)
+	at java.sql.DriverManager.getConnection(DriverManager.java:270)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseService.<init>(DatabaseService.java:62)
+	at ru.mipt.diht.students.simon23rus.DatabaseService.DatabaseServiceTest.insertTest(DatabaseServiceTest.java:102)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.mockito.internal.runners.JUnit45AndHigherRunnerImpl.run(JUnit45AndHigherRunnerImpl.java:37)
+	at org.mockito.runners.MockitoJUnitRunner.run(MockitoJUnitRunner.java:62)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:78)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:212)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:68)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:140)
+Caused by: org.h2.jdbc.JdbcSQLException: Незакрытое приложением соединение уничтожено сборщиком мусора
+The connection was not closed by the application and is garbage collected [90018-190]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:345)
+	... 39 more
