@@ -98,7 +98,7 @@ public class DatabaseService<T> {
         return resultBuilder.toString();
     }
 
-    public DatabaseService(Class<T> dataClass) throws SQLException, DatabaseServiceException {
+    public DatabaseService(Class<T> dataClass) throws DatabaseServiceException {
         aClass = dataClass;
         annotation = aClass.getAnnotation(Table.class);
         if (annotation.name().length() > 0) {
@@ -110,107 +110,136 @@ public class DatabaseService<T> {
         fields = aClass.getDeclaredFields();
         validateClassType();
         buildFieldNames();
-        connection = DriverManager.getConnection(PROTOCOL_HEAD);
+        try {
+            connection = DriverManager.getConnection(PROTOCOL_HEAD);
+        } catch (SQLException e) {
+            throw new DatabaseServiceException(e.getMessage());
+        }
     }
 
     //    - возвращает запись по первичному ключу
-    private <T> List<T> buildObjects(ResultSet rs) throws SQLException,
-            IllegalAccessException, InstantiationException {
+    private <T> List<T> buildObjects(ResultSet rs) throws DatabaseServiceException {
         List<T> result = new LinkedList<>();
 
-        while (rs.next()) {
-            T instance = (T) aClass.newInstance();
-            for (int i = 0; i < fields.length; ++i) {
-                fields[i].setAccessible(true);
-                String name = fieldNames.get(i);
-                if (name == null) {
-                    continue;
+        try {
+            while (rs.next()) {
+                T instance = (T) aClass.newInstance();
+                for (int i = 0; i < fields.length; ++i) {
+                    fields[i].setAccessible(true);
+                    String name = fieldNames.get(i);
+                    if (name == null) {
+                        continue;
+                    }
+
+                    fields[i].set(instance, rs.getObject(name));
                 }
-
-                fields[i].set(instance, rs.getObject(name));
+                result.add(instance);
             }
-            result.add(instance);
+            return result;
+        } catch (SQLException | IllegalAccessException | InstantiationException e) {
+            throw new DatabaseServiceException(e.getClass().toString() + " : " + e.getMessage());
         }
-        return result;
+
     }
 
-    public final <K> T queryById(K key) throws SQLException,
-            DatabaseServiceException, IllegalAccessException, InstantiationException {
-
-        String name = fieldNames.get(primaryKeyFieldId);
-        PreparedStatement getStatement =
-                connection.prepareStatement("SELECT * FROM " + table + " WHERE " + name + " = ?");
-        getStatement.setObject(1, key);
-        ResultSet rs = getStatement.executeQuery();
-        List<T> result = buildObjects(rs);
-        if (result.size() == 0) {
-            return null;
-        } else {
-            return result.get(0);
+    public final <K> T queryById(K key) throws DatabaseServiceException {
+        try {
+            String name = fieldNames.get(primaryKeyFieldId);
+            PreparedStatement getStatement =
+                    connection.prepareStatement("SELECT * FROM " + table + " WHERE " + name + " = ?");
+            getStatement.setObject(1, key);
+            ResultSet rs = getStatement.executeQuery();
+            List<T> result = buildObjects(rs);
+            if (result.size() == 0) {
+                return null;
+            } else {
+                return result.get(0);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseServiceException(e.getClass().toString() + " : " + e.getMessage());
         }
     }
 
-    // - возвращает все записи из таблицы
-    public final <T> List<T> queryForAll() throws SQLException, IllegalAccessException, InstantiationException {
-        PreparedStatement getStatement = connection.prepareStatement("SELECT * FROM " + table);
-        ResultSet rs = getStatement.executeQuery();
-        return buildObjects(rs);
-    }
+    public final List<T> queryForAll() throws DatabaseServiceException {
+        try {
+            PreparedStatement getStatement = connection.prepareStatement("SELECT * FROM " + table);
+            ResultSet rs = getStatement.executeQuery();
 
+            return buildObjects(rs);
+        } catch (SQLException e) {
+            throw new DatabaseServiceException(e.getClass().toString() + " : " + e.getMessage());
+        }
+    }
     //- добавляет запись
-    public final void insert(T entity) throws SQLException, IllegalAccessException {
+    public final void insert(T entity) throws DatabaseServiceException {
         List<String> columns = new ArrayList<>();
         ArrayList<Object> values = new ArrayList<>();
 
-        for (int i = 0; i < fields.length; ++i) {
-            fields[i].setAccessible(true);
-            String name = fieldNames.get(i);
-            if (name != null) {
-                columns.add(name);
-                values.add(fields[i].get(entity));
+        try {
+            for (int i = 0; i < fields.length; ++i) {
+                fields[i].setAccessible(true);
+                String name = fieldNames.get(i);
+                if (name != null) {
+                    columns.add(name);
+                    values.add(fields[i].get(entity));
+                }
             }
-        }
 
-        String columnsLine = columns.stream().collect(joining(", "));
-        String valuesLine = values.stream()
-                .map(x -> " ? ")
-                .collect(joining(", "));
+            String columnsLine = columns.stream().collect(joining(", "));
+            String valuesLine = values.stream()
+                    .map(x -> " ? ")
+                    .collect(joining(", "));
 
-        StringBuilder requestBuilder = new StringBuilder();
-        requestBuilder.append("INSERT INTO ")
-                .append(table)
-                .append(" (").append(columnsLine).append(") ")
-                .append("VALUES (").append(valuesLine).append(")");
-        PreparedStatement insertStatement
-                = connection.prepareStatement(requestBuilder.toString());
-        for (int i = 0; i < values.size(); ++i) {
-            insertStatement.setObject(i + 1, values.get(i));
+            StringBuilder requestBuilder = new StringBuilder();
+            requestBuilder.append("INSERT INTO ")
+                    .append(table)
+                    .append(" (").append(columnsLine).append(") ")
+                    .append("VALUES (").append(valuesLine).append(")");
+            PreparedStatement insertStatement
+                    = connection.prepareStatement(requestBuilder.toString());
+            for (int i = 0; i < values.size(); ++i) {
+                insertStatement.setObject(i + 1, values.get(i));
+            }
+            insertStatement.execute();
+        } catch (SQLException | IllegalAccessException e) {
+            throw new DatabaseServiceException(e.getMessage());
         }
-        insertStatement.execute();
     }
 
     // - редактирует запись по первичному ключу
-    public final void update(T newRecord) throws SQLException, IllegalAccessException {
-        if (deleteById(fields[primaryKeyFieldId].get(newRecord))) {
-            insert(newRecord);
+    public final void update(T newRecord) throws DatabaseServiceException {
+        try {
+            if (deleteById(fields[primaryKeyFieldId].get(newRecord))) {
+                insert(newRecord);
+            }
+        } catch (IllegalAccessException e) {
+            throw new DatabaseServiceException(e.getMessage());
         }
     }
 
     //    удаляет запись по первичному ключу
-    public final <K> boolean deleteById(K key) throws SQLException {
+    public final <K> boolean deleteById(K key) throws DatabaseServiceException {
         String name = fieldNames.get(primaryKeyFieldId);
-        PreparedStatement deleteStatement =
-                connection.prepareStatement("DELETE FROM " + table + " WHERE " + name + " = ?");
-        deleteStatement.setObject(1, key);
-        return deleteStatement.executeUpdate() > 0;
+        try {
+            PreparedStatement deleteStatement =
+                    connection.prepareStatement("DELETE FROM " + table + " WHERE " + name + " = ?");
+            deleteStatement.setObject(1, key);
+            return deleteStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new DatabaseServiceException(e.getMessage());
+        }
     }
 
-    public final boolean delete(T example) throws SQLException, IllegalAccessException {
-        return deleteById(fields[primaryKeyFieldId].get(example));
+    public final boolean delete(T example) throws DatabaseServiceException {
+        try {
+            return deleteById(fields[primaryKeyFieldId].get(example));
+        } catch (IllegalAccessException e) {
+            throw new DatabaseServiceException(e.getClass().toString() + " " + e.getMessage());
+        }
     }
 
     // - создаёт таблицу по метаданным класса T.
-    public final void createTable() throws SQLException {
+    public final void createTable() throws DatabaseServiceException {
         StringBuilder headBuilder = new StringBuilder();
         for (int i = 0; i < fields.length; ++i) {
             if (i != 0) {
@@ -225,22 +254,31 @@ public class DatabaseService<T> {
                 }
             }
         }
-        connection.createStatement().execute("CREATE TABLE IF NOT EXISTS " + table
-                + "(" + headBuilder.toString() + ")");
+        try {
+            connection.createStatement().execute("CREATE TABLE IF NOT EXISTS " + table
+                    + "(" + headBuilder.toString() + ")");
+        } catch (SQLException e) {
+            throw new DatabaseServiceException(e.getMessage());
+        }
     }
 
     // - удаляет таблицу, соответствующую T
-    public final void dropTable() throws SQLException {
-        Statement createStatement = connection.createStatement();
-        createStatement.execute("DROP TABLE IF EXISTS " + table);
+    public final void dropTable() throws DatabaseServiceException {
+        try {
+            Statement createStatement = connection.createStatement();
+            createStatement.execute("DROP TABLE IF EXISTS " + table);
+        } catch (SQLException e) {
+            throw new DatabaseServiceException(e.getMessage());
+        }
     }
 
     @Override
-    protected final void finalize() throws SQLException {
-        if (connection.isClosed()) {
-            return;
-        }
+    protected final void finalize() throws DatabaseServiceException {
         try {
+            if (connection.isClosed()) {
+                return;
+            }
+
             connection.close();
         } catch (SQLException e) {
             System.err.println("can't close connection: " + e.getMessage());
