@@ -14,9 +14,9 @@ import java.io.*;
  * Main Class.
  */
 
-public static final int LINE_LENGTH = 1024;
-
 public class TwitterStream {
+
+    public static final int LINE_LENGTH = 1024;
 
     public static void main(final String[] argsString) {
         extractArguments(argsString);
