@@ -48,6 +48,11 @@ public class TwitterStreamUtilsTests {
                         new GregorianCalendar(2015, 11, 31, 0, 0, 15),
                         new GregorianCalendar(2015, 11, 31, 0, 0, 20),
                         "Только что"
+                },
+                {
+                        new GregorianCalendar(2015, 11, 31, 15, 40, 15),
+                        new GregorianCalendar(2015, 11, 31, 13, 25, 20),
+                        "2 часов назад"
                 }
         };
     }
@@ -76,40 +81,43 @@ public class TwitterStreamUtilsTests {
                 TwitterStreamUtils.colorizeText("", TwitterStreamUtils.TextColor.WHITE));
     }
 
-    @Test
-    public void testBuildFormattedTweet() {
-        Status mockStatus = mock(Status.class);
+    Status mockStatus;
+    User mockUser;
+
+    @Before
+    public void before() {
+        mockStatus = mock(Status.class);
+        mockUser = mock(User.class);
+
         when(mockStatus.getText()).thenReturn("This is a test tweet. #test01 #Java");
         when(mockStatus.getUser()).thenReturn(mockUser);
-        User mockUser = mock(User.class);
-
         when(mockUser.getScreenName()).thenReturn("Real-UserNAME");
+        when(mockStatus.getCreatedAt()).thenReturn(new Date());
+    }
+
+    @Test
+    public void testBuildFormattedTweet() {
         String result = TwitterStreamUtils.buildFormattedTweet(mockStatus, false);
         assertEquals("\033[34m@Real-UserNAME\033[0m: This is a test tweet. #test01 #Java", result);
     }
 
     @Test
     public void testBuildFormattedTweetWithDate() {
-        Status mockStatus = mock(Status.class);
-        when(mockStatus.getText()).thenReturn("This is a test tweet. #test01 #Java");
-        when(mockStatus.getUser()).thenReturn(mockUser);
-        when(mockStatus.getCreatedAt()).thenReturn(new Date());
-
-        User mockUser = mock(User.class);
-        when(mockUser.getScreenName()).thenReturn("Real-UserNAME");
-
         String result = TwitterStreamUtils.buildFormattedTweet(mockStatus, true);
         assertEquals("[Только что]\033[34m@Real-UserNAME\033[0m: This is a test tweet. #test01 #Java", result);
     }
 
-    Status mockStatus = mock(Status.class);
-    User mockUser = mock(User.class);
+    @Test
+    public void testBuildFormattedTweetWithRetweet() {
+        Status originalTweetMock = mock(Status.class);
+        when(originalTweetMock.getText()).thenReturn("Original Tweet text!");
+        when(originalTweetMock.getUser()).thenReturn(mockUser);
 
-    @Before
-    public void before() {
-        when(mockStatus.getText()).thenReturn("This is a test tweet. #test01 #Java");
-        when(mockStatus.getUser()).thenReturn(mockUser);
-        when(mockUser.getScreenName()).thenReturn("Real-UserNAME");
+        when(mockStatus.isRetweet()).thenReturn(true);
+        when(mockStatus.getRetweetedStatus()).thenReturn(originalTweetMock);
+
+        String result = TwitterStreamUtils.buildFormattedTweet(mockStatus, true);
+        assertEquals("[Только что]\033[34m@Real-UserNAME\033[0m: ретвитнул \033[34m@Real-UserNAME\033[0m: Original Tweet text!", result);
     }
 
     @Test
