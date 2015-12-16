@@ -15,11 +15,13 @@ import java.io.*;
  */
 public class TwitterStream {
 
-    public static void main(String[] argsString) {
+    public static void main(final String[] argsString) {
         extractArguments(argsString);
         Arguments arguments = Arguments.getInstance();
 
-        // In case of HELP page is requested, just print HELP file content and exit application
+        /* In case of HELP page is requested,
+         * just print HELP file content and exit application
+         */
         if (arguments.isHelpRequest()) {
             printHelp(System.out);
             System.exit(0);
@@ -48,7 +50,7 @@ public class TwitterStream {
      * Transforms arguments string to Arguments object with parsed fields.
      * @param argsString arguments strings from the input
      */
-    private static void extractArguments(String[] argsString) {
+    private static void extractArguments(final String[] argsString) {
         JCommander jCommander = new JCommander();
         jCommander.addObject(Arguments.getInstance());
         jCommander.parse(argsString);
@@ -62,7 +64,7 @@ public class TwitterStream {
         try {
             byte[] buffer = new byte[1024];
             try (InputStream input = TwitterStream.class.getClassLoader().getResourceAsStream(Constants.HELP_FILE)) {
-                for (int length; (length = input.read(buffer)) != -1; ) {
+                for (int length; (length = input.read(buffer)) != -1;) {
                     out.write(buffer, 0, length);
                 }
             }

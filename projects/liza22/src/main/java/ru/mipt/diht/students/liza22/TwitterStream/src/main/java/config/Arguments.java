@@ -10,14 +10,12 @@ import java.util.List;
  *
  * @see <a href="http://jcommander.org/">http://jcommander.org/</a>
  */
-public class Arguments {
+public final class Arguments {
     private static final Arguments INSTANCE = new Arguments();
 
     private Arguments() {}
 
-    public static Arguments getInstance() {
-        return INSTANCE;
-    }
+    public static Arguments getInstance() {return INSTANCE;}
 
     @Parameter(names = {"--query", "-q"},
             required = true,
@@ -94,13 +92,13 @@ public class Arguments {
     @Override
     public String toString() {
         return "Arguments{" +
-                "keywords=" + keywords +
-                ", place='" + place + '\'' +
-                ", streamMode=" + streamMode +
-                ", hideRetweets=" + hideRetweets +
-                ", limitOfTweets=" + limitOfTweets +
-                ", helpRequest=" + helpRequest +
-                ", verboseMode=" + verbose +
-                '}';
+                "keywords=" + keywords
+                + ", place='" + place + '\''
+                + ", streamMode=" + streamMode
+                + ", hideRetweets=" + hideRetweets
+                + ", limitOfTweets=" + limitOfTweets
+                + ", helpRequest=" + helpRequest
+                + ", verboseMode=" + verbose
+                + '}';
     }
 }

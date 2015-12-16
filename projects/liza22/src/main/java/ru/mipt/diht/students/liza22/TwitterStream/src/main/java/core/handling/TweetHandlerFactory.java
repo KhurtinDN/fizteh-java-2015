@@ -4,9 +4,9 @@ import core.handling.impl.PrintResultOfQueryTweetsHandler;
 import core.handling.impl.PrintStreamOfTweetsHandler;
 import model.Mode;
 
-public class TweetHandlerFactory {
+public final class TweetHandlerFactory {
 
-    private TweetHandlerFactory() {}
+    private TweetHandlerFactory() { }
 
     /**
      * Gets tweets handler depending on the working mode.

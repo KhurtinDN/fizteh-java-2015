@@ -6,11 +6,11 @@ public final class TextUtils {
 
     // to prevent instantiating
     // this class must be used as static only
-    private TextUtils() {}
+    private TextUtils() { }
 
     public static String coloredText(String text, String color) {
-        return color +
-                text +
-                COLOR_RESET;
+        return color
+                + text
+                + COLOR_RESET;
     }
 }

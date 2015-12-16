@@ -21,17 +21,17 @@ public class PrintResultOfQueryTweetsHandler implements TweetHandler {
 
     private AtomicLong tweetCounter = new AtomicLong(0);
 
-    public PrintResultOfQueryTweetsHandler(PrintStream out) {
-        this.out = out;
+    public PrintResultOfQueryTweetsHandler(PrintStream outStream) {
+        this.out = outStream;
     }
 
     @Override
-    public void handle(Tweet tweet) {
+    public final void handle(Tweet tweet) {
         out.println("Tweet#" + tweetCounter.incrementAndGet() + ":");
         out.println(formatTweet(tweet));
     }
 
-    /**
+    /*
      * Print format is the following:
      *
      * If tweet IS NOT retweeted
@@ -71,7 +71,7 @@ public class PrintResultOfQueryTweetsHandler implements TweetHandler {
         return TextUtils.coloredText(nick, TextUtils.COLOR_BLUE);
     }
 
-    /**
+    /*
      * Time format is the following:
      * Время должно быть в формате:
      *      "Только что" - если менее 2х минут назад

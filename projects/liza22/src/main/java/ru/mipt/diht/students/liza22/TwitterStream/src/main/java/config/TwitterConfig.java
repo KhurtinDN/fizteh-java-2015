@@ -6,7 +6,7 @@ import twitter4j.conf.ConfigurationBuilder;
 
 import java.io.*;
 
-/**
+/*
  * Class loads and holds Twitter Access configuration from file resource
  * and provides methods to get {@link twitter4j.conf.Configuration} and {@link twitter4j.auth.AccessToken}
  */
@@ -27,8 +27,7 @@ public class TwitterConfig {
 
     private void init() {
         File cfgFile = new File(Constants.TWITTER_CONFIG_FILE);
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(cfgFile))))
-        {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(cfgFile)))) {
             while (in.ready()) {
                 String line = in.readLine();
                 int indexOfDelimiter = line.indexOf('=');
@@ -37,7 +36,7 @@ public class TwitterConfig {
                     continue;
                 }
                 String propName = line.substring(0, indexOfDelimiter);
-                String propValue = line.substring(indexOfDelimiter+1, line.length());
+                String propValue = line.substring(indexOfDelimiter + 1, line.length());
                 switch (propName) {
                     case CONSUMER_KEY_PROP_NAME:
                         consumerKey = propValue;
@@ -65,19 +64,19 @@ public class TwitterConfig {
     }
 
     private void validate() {
-        if (consumerKey == null ||
-                consumerSecret == null ||
-                accessToken == null ||
-                accessTokenSecret == null) {
+        if (consumerKey == null
+                || consumerSecret == null
+                || accessToken == null
+                || accessTokenSecret == null) {
             throw new IllegalStateException("Twitter configuration file is incorrect");
         }
     }
 
-    public AccessToken getAccessToken() {
+    public final AccessToken getAccessToken() {
         return new AccessToken(accessToken, accessTokenSecret);
     }
 
-    public Configuration getConfiguration() {
+    public final Configuration getConfiguration() {
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder().
                 setOAuthConsumerKey(consumerKey).
                 setOAuthConsumerSecret(consumerSecret).
@@ -87,12 +86,16 @@ public class TwitterConfig {
     }
 
     @Override
-    public String toString() {
-        return "TwitterConfig{" +
-                "consumerKey='" + consumerKey + '\'' +
-                ", consumerSecret='" + consumerSecret + '\'' +
-                ", accessToken='" + accessToken + '\'' +
-                ", accessTokenSecret='" + accessTokenSecret + '\'' +
-                '}';
+    public final String toString() {
+        return "TwitterConfig{"
+                + "consumerKey='" + consumerKey
+                + '\''
+                + ", consumerSecret='" + consumerSecret
+                + '\''
+                + ", accessToken='" + accessToken
+                + '\''
+                + ", accessTokenSecret='" + accessTokenSecret
+                + '\''
+                + '}';
     }
 }

@@ -13,7 +13,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
+/*
  * This handler is used in STREAM mode of application.
  * It prints tweets every Constants.PRINT_TWEET_DELAY_SECS (by default every 1 second).
  *
@@ -30,8 +30,8 @@ public class PrintStreamOfTweetsHandler implements TweetHandler {
     private boolean started = false;
     private AtomicLong tweetCounter = new AtomicLong(0);
 
-    public PrintStreamOfTweetsHandler(final PrintStream out) {
-        this.out = out;
+    public PrintStreamOfTweetsHandler(final PrintStream outStream) {
+        this.out = outStream;
         tweetQueue = new ArrayDeque<>();
     }
 
@@ -59,7 +59,7 @@ public class PrintStreamOfTweetsHandler implements TweetHandler {
         }
     }
 
-    /**
+    /*
      * Print format is the following:
      *
      * If tweet IS NOT retweeted
