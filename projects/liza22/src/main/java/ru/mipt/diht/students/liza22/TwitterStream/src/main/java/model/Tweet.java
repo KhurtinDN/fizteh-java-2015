@@ -5,7 +5,7 @@ import twitter4j.Status;
 /**
  * Class represents Tweet object.
  */
-public class Tweet {
+public final class Tweet {
     private String text;
     private TwitterUser author;
     private long time;

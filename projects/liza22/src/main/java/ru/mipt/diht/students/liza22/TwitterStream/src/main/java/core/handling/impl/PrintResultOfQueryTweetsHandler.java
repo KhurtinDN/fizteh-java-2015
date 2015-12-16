@@ -16,7 +16,11 @@ import java.util.concurrent.atomic.AtomicLong;
  * When new tweet is obtained (method 'handle' invoked) this handler prints
  * formatted representation of this new tweet.
  */
-public class PrintResultOfQueryTweetsHandler implements TweetHandler {
+public final class PrintResultOfQueryTweetsHandler implements TweetHandler {
+    private static final int MILLI = 1_000;
+    private static final int SEC_IN_MIN = 60;
+    private static final int STRING_SIZE = 256;
+
     private PrintStream out;
 
     private AtomicLong tweetCounter = new AtomicLong(0);
@@ -48,7 +52,7 @@ public class PrintResultOfQueryTweetsHandler implements TweetHandler {
      * @return text representation of tweet according to format
      */
     private static String formatTweet(Tweet tweet) {
-        StringBuilder tweetView = new StringBuilder(256);
+        StringBuilder tweetView = new StringBuilder(STRING_SIZE);
         tweetView.append("----------------------------------------------------------------------------------------\n");
         if (tweet.isNotRetweet()) {
             tweetView.append("[").append(formatTime(tweet.getTime())).append("] ").
@@ -85,7 +89,7 @@ public class PrintResultOfQueryTweetsHandler implements TweetHandler {
      */
     private static String formatTime(long then) {
         long now = new Date().getTime();
-        long diffInMinutes = (now - then) / 1_000 / 60; // milliseconds/1_000/60 = minutes
+        long diffInMinutes = (now - then) / MILLI / SEC_IN_MIN;
         if (diffInMinutes < 2) {
             return "Только что";
         } else if (TimeUnit.MINUTES.toHours(diffInMinutes) < 1) {

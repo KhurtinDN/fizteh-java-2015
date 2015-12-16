@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * internal Tweet objects, after that these tweets are sent to
  * handler.
  */
-public class TweetsByQueryProvider implements TweetsProvider {
+public final class TweetsByQueryProvider implements TweetsProvider {
     private Twitter twitter;
     private Query query;
 

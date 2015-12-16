@@ -5,6 +5,8 @@ import twitter4j.*;
 import static java.lang.Math.*;
 
 public final class GeoUtils {
+    public static final int CONST1 = 60;
+    public static final double CONST2 = 1.1515;
 
     private GeoUtils() { }
 
@@ -43,7 +45,7 @@ public final class GeoUtils {
                 + cos(toRadians(lat1)) * cos(toRadians(lat2)) * cos(toRadians(theta));
         dist = acos(dist);
         dist = toDegrees(dist);
-        dist = dist * 60 * 1.1515;
+        dist = dist * CONST1 * CONST2;
         return dist;
     }
 }

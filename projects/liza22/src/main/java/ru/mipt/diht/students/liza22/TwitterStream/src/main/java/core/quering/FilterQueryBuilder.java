@@ -11,8 +11,8 @@ import twitter4j.*;
 public class FilterQueryBuilder {
     private Twitter twitter;
 
-    public FilterQueryBuilder(Twitter _twitter) {
-        this.twitter = _twitter;
+    public FilterQueryBuilder(Twitter twiter) {
+        this.twitter = twiter;
     }
 
     public final FilterQuery buildQuery() {

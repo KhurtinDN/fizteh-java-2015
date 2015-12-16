@@ -16,8 +16,8 @@ import java.util.List;
 public class SearchQueryBuilder {
     private Twitter twitter;
 
-    public SearchQueryBuilder(Twitter _twitter) {
-        this.twitter = _twitter;
+    public SearchQueryBuilder(Twitter twiter) {
+        this.twitter = twiter;
     }
 
     public final Query buildQuery() {

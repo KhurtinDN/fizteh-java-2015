@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * internal Tweet object performed, after that this Tweet sent
  * to the handler.
  */
-public class TweetsStreamProvider extends StatusAdapter implements TweetsProvider {
+public final class TweetsStreamProvider extends StatusAdapter implements TweetsProvider {
     private Configuration configuration;
     private AccessToken accessToken;
 

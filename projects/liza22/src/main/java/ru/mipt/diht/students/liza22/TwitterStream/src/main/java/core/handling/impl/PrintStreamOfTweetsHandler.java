@@ -23,7 +23,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * In case when no available tweet in queue, it will print nothing or
  * Constants.NO_TWEET_MESSAGE in VERBOSE mode.
  */
-public class PrintStreamOfTweetsHandler implements TweetHandler {
+public final class PrintStreamOfTweetsHandler implements TweetHandler {
+    public static final int STRING_SIZE = 256;
+    public static final int KILO = 1_000;
     private PrintStream out;
     private Queue<Tweet> tweetQueue;
 
@@ -54,7 +56,7 @@ public class PrintStreamOfTweetsHandler implements TweetHandler {
                         }
                     }
                 }
-            }, 0, Constants.PRINT_TWEET_DELAY_SECS * 1_000);
+            }, 0, Constants.PRINT_TWEET_DELAY_SECS * KILO);
             started = true;
         }
     }
@@ -76,7 +78,7 @@ public class PrintStreamOfTweetsHandler implements TweetHandler {
      * @return text representation of tweet according to format
      */
     private static String formatTweet(Tweet tweet) {
-        StringBuilder tweetView = new StringBuilder(256);
+        StringBuilder tweetView = new StringBuilder(STRING_SIZE);
         tweetView.append("----------------------------------------------------------------------------------------\n");
         if (tweet.isNotRetweet()) {
             tweetView.append("@").append(getNickname(tweet)).
