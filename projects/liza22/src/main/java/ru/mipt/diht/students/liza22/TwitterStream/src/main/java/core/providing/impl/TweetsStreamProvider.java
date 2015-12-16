@@ -44,7 +44,7 @@ public final class TweetsStreamProvider extends StatusAdapter implements TweetsP
     }
 
     @Override
-    public final void onStatus(Status status) {
+    public void onStatus(Status status) {
         Tweet tweet = Tweet.valueOf(status);
         if (Arguments.getInstance().hideRetweets() && tweet.isRetweet()) {
             // skip this tweet
@@ -54,7 +54,7 @@ public final class TweetsStreamProvider extends StatusAdapter implements TweetsP
     }
 
     @Override
-    public final void onException(Exception e) {
+    public void onException(Exception e) {
         System.err.println("Twitter stream has been occasionally crashed with error: \"" + e.getMessage() + "\"");
         System.err.println("Try to reconnect... [timeout = " + Constants.RECONNECT_TIMEOUT_SECS + " secs]");
         reconnect();

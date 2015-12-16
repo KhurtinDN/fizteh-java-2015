@@ -12,7 +12,7 @@ public final class Tweet {
     private long retweetCount;
     private Tweet retweetedTweet;
 
-    public final String getText() {
+    public String getText() {
         return text;
     }
 
@@ -20,7 +20,7 @@ public final class Tweet {
         this.text = tweetText;
     }
 
-    public final TwitterUser getAuthor() {
+    public TwitterUser getAuthor() {
         return author;
     }
 
@@ -28,7 +28,7 @@ public final class Tweet {
         this.author = tweetAuthor;
     }
 
-    public final long getRetweetCount() {
+    public long getRetweetCount() {
         return retweetCount;
     }
 
@@ -36,7 +36,7 @@ public final class Tweet {
         this.retweetCount = count;
     }
 
-    public final long getTime() {
+    public long getTime() {
         return time;
     }
 
@@ -44,7 +44,7 @@ public final class Tweet {
         this.time = tweetTime;
     }
 
-    public final Tweet getRetweetedTweet() {
+    public Tweet getRetweetedTweet() {
         return retweetedTweet;
     }
 
@@ -52,11 +52,11 @@ public final class Tweet {
         this.retweetedTweet = retweeted;
     }
 
-    public final boolean isRetweet() {
+    public boolean isRetweet() {
         return null != retweetedTweet;
     }
 
-    public final boolean isNotRetweet() {
+    public boolean isNotRetweet() {
         return !isRetweet();
     }
 

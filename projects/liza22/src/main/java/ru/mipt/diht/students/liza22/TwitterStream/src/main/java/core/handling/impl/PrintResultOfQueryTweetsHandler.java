@@ -30,7 +30,7 @@ public final class PrintResultOfQueryTweetsHandler implements TweetHandler {
     }
 
     @Override
-    public final void handle(Tweet tweet) {
+    public void handle(Tweet tweet) {
         out.println("Tweet#" + tweetCounter.incrementAndGet() + ":");
         out.println(formatTweet(tweet));
     }

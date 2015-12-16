@@ -33,7 +33,12 @@ public class TwitterStream {
             // read and initialize twitter configuration
             TwitterConfig twitterConfig = new TwitterConfig();
             // define working mode of application
-            Mode workingMode = (arguments.isStreamMode()) ? Mode.STREAM : Mode.QUERY;
+            Mode workingMode;
+            if (arguments.isStreamMode()) {
+                workingMode = Mode.STREAM;
+            } else {
+                workingMode = Mode.QUERY;
+            }
             // get tweets provider for selected working mode and initialize this one
             TweetsProvider tweetsProvider = TweetsProviderFactory.getProvider(workingMode);
             tweetsProvider.init(twitterConfig);
@@ -67,7 +72,8 @@ public class TwitterStream {
         try {
             byte[] buffer = new byte[LINE_LENGTH];
             try (InputStream input = TwitterStream.class.getClassLoader().getResourceAsStream(Constants.HELP_FILE)) {
-                for (int length; (length = input.read(buffer)) != -1;) {
+                for (int length; length != -1;) {
+                    length = input.read(buffer);
                     out.write(buffer, 0, length);
                 }
             }
