@@ -1,6 +1,7 @@
 package ru.mipt.diht.students.maxdankow.threads;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
@@ -10,6 +11,7 @@ public class BlockingQueue<E> {
 
     public BlockingQueue(int amount) {
         elementsNumberLimit = amount;
+        queue = new LinkedList<>();
     }
 
     public final void offer(List<E> elements) throws IllegalArgumentException, InterruptedException {
@@ -34,7 +36,7 @@ public class BlockingQueue<E> {
         // Блокируется все, так как в в противном случае, в момент
         // между получением размера и обработкой могут произойти изменения.
         synchronized (queue) {
-            while (amount < queue.size()) {
+            while (amount > queue.size()) {
                 queue.wait();
             }
             for (int i = 0; i < amount; ++i) {
