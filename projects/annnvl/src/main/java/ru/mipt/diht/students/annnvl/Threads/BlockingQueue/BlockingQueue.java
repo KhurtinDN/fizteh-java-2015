@@ -14,18 +14,18 @@ public class BlockingQueue<T> {
         data = new LinkedList<T>();
     }
 
-    public int size() {
+    public final int size() {
         return data.size();
     }
 
-    synchronized public void offer(List<T> e) {
+    synchronized void offer(List<T> e) {
         while (data.size() + e.size() > maxQueueSize) {
             Thread.yield();
         }
         data.addAll(e);
     }
 
-    synchronized public void offer(List<T> e, long timeout) {
+    synchronized void offer(List<T> e, long timeout) {
         timeout += System.currentTimeMillis();
         while ((data.size() + e.size() > maxQueueSize) && (timeout - System.currentTimeMillis()) > 0) {
             Thread.yield();

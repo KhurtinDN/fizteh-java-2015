@@ -14,7 +14,7 @@ public class CountedThread extends Thread {
     }
 
     @Override
-    public void run() {
+    public final void run() {
         while (true) {
             while (myNumber != currentThread) {
                 Thread.yield();

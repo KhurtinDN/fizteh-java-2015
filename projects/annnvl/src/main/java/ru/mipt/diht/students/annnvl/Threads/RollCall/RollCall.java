@@ -14,11 +14,11 @@ public class RollCall {
             RollCallerThread.makeEverybodyOk();
             System.out.println("Are you ready?\n");
             RollCallerThread.nextRollCall();
-            while (!RollCallerThread.Everybodyasked()) {
+            while (!RollCallerThread.everybodyasked()) {
                 Thread.yield();
             }
             if (RollCallerThread.isEverybodyOk()) {
-                RollCallerThread.Yes();
+                RollCallerThread.yes();
                 RollCallerThread.nextRollCall();
                 return;
             }

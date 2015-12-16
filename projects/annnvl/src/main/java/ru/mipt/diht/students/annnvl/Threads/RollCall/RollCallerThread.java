@@ -3,16 +3,18 @@ package ru.mipt.diht.students.annnvl.Threads.RollCall;
 import java.util.Random;
 
 public class RollCallerThread extends Thread {
+    private static final int HUNDREED = 100;
+    private static final double LOWERBOUND = 0.1;
     private static int numberOfThreads;
     private static volatile int asked = 0;
     private static volatile int timesShouldBe = -1; //какой раз мы проводим опрос
-    private static boolean Yes4all = false;
-    private static boolean EverybodyOk = true;
+    private static boolean yes4all = false;
+    private static boolean everybodyOk = true;
     private Random rand;
-    private int timesNum;//какой раз мы вызываем конкретный процесс
+    private int timesNum; //какой раз мы вызываем конкретный процесс
 
     RollCallerThread() {
-        rand = new Random(100);
+        rand = new Random(HUNDREED);
         timesNum = 0;
     }
 
@@ -20,16 +22,16 @@ public class RollCallerThread extends Thread {
         numberOfThreads = num;
     }
 
-    public static void Yes() {
-        Yes4all = true;
+    public static void yes() {
+        yes4all = true;
     }
 
     public static boolean isEverybodyOk() {
-        return EverybodyOk;
+        return everybodyOk;
     }
 
     public static void makeEverybodyOk() {
-        EverybodyOk = true;
+        everybodyOk = true;
     }
 
     public static void nextRollCall() {
@@ -37,24 +39,24 @@ public class RollCallerThread extends Thread {
         asked = 0;
     }
 
-    public static boolean Everybodyasked() {
+    public static boolean everybodyasked() {
         return (asked == numberOfThreads);
     }
 
     @Override
-    public void run() {
+    public final void run() {
         while (true) {
             synchronized (this) {
                 while (timesNum != timesShouldBe) {
                     Thread.yield();
                 }
-                if (Yes4all) {
+                if (yes4all) {
                     return;
                 }
                 timesNum++;
-                if (rand.nextDouble() < 0.1) {
+                if (rand.nextDouble() < LOWERBOUND) {
                     System.out.println("No\n");
-                    EverybodyOk = false;
+                    everybodyOk = false;
                 } else {
                     System.out.println("Yes\n");
                 }
