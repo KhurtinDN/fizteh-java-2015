@@ -16,11 +16,7 @@ public class DatabaseServiceTest extends TestCase {
 
     @Table
     public static class SimpleStudent {
-        public SimpleStudent() {
-        }
-
-        ;
-
+        public SimpleStudent() {}
         public SimpleStudent(String newName, int newAge, Date newBirthDate) {
             userName = newName;
             userAge = newAge;
