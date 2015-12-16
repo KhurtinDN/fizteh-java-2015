@@ -67,7 +67,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>ru.mipt.diht.students.andreyzharkov.collectionquery.CollectionQuery</mainClass>
+                            <mainClass>ru.mipt.diht.students.andreyzharkov.threads.RollcallThreads</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -33,7 +33,7 @@ public class BlockingQueue<T> {
         try {
             boolean canAdd = true;
             if (timeout == 0) {
-                while (elements.size() + newElements.size() > maxSize){
+                while (elements.size() + newElements.size() > maxSize) {
                     notFull.await();
                 }
             } else {
@@ -68,7 +68,7 @@ public class BlockingQueue<T> {
         lock.lock();
         try {
             if (timeout == 0) {
-                while (elements.size() < count){
+                while (elements.size() < count) {
                     notEmpty.await();
                 }
             } else {
