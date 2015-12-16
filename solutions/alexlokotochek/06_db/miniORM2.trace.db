@@ -425,3 +425,51 @@ DELETE FROM users WHERE name= ? [90002-190]
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
 	at java.lang.reflect.Method.invoke(Method.java:497)
 	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)
+2015-12-16 03:53:33 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "USERS" уже существует
+Table "USERS" already exists; SQL statement:
+CREATE TABLE users (name varchar(255), age int);  [42101-190]
+2015-12-16 03:53:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "USERS" не найдена
+Table "USERS" not found; SQL statement:
+DROP TABLE users [42102-190]
+2015-12-16 03:53:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "USERS" не найдена
+Table "USERS" not found; SQL statement:
+DROP TABLE users [42102-190]
+2015-12-16 03:53:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "USERS" не найдена
+Table "USERS" not found; SQL statement:
+DROP TABLE users [42102-190]
+2015-12-16 03:53:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "USERS" не найдена
+Table "USERS" not found; SQL statement:
+DROP TABLE users [42102-190]
+2015-12-16 03:54:24 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "USERS" не найдена
+Table "USERS" not found; SQL statement:
+DROP TABLE users [42102-190]
+2015-12-16 03:54:24 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "USERS" уже существует
+Table "USERS" already exists; SQL statement:
+CREATE TABLE users (name varchar(255), age int);  [42101-190]
+2015-12-16 03:54:36 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Таблица "USERS" уже существует
+Table "USERS" already exists; SQL statement:
+CREATE TABLE users (name varchar(255), age int);  [42101-190]
+2015-12-16 03:57:56 jdbc[6]: exception
+org.h2.jdbc.JdbcSQLException: Синтаксическая ошибка в выражении SQL "DROP TABLE IF EXISTSUSERS[*]; "; ожидалось "EXISTS"
+Syntax error in SQL statement "DROP TABLE IF EXISTSUSERS[*]; "; expected "EXISTS"; SQL statement:
+DROP TABLE IF EXISTSusers; [42001-190]
+2015-12-16 03:58:05 jdbc[6]: exception
+org.h2.jdbc.JdbcSQLException: Синтаксическая ошибка в выражении SQL "DROP TABLE IF EXISTSUSERS[*]; "; ожидалось "EXISTS"
+Syntax error in SQL statement "DROP TABLE IF EXISTSUSERS[*]; "; expected "EXISTS"; SQL statement:
+DROP TABLE IF EXISTSusers; [42001-190]
+2015-12-16 03:58:54 jdbc[6]: exception
+org.h2.jdbc.JdbcSQLException: Синтаксическая ошибка в выражении SQL "DROP TABLE IF EXISTSUSERS[*]; "; ожидалось "EXISTS"
+Syntax error in SQL statement "DROP TABLE IF EXISTSUSERS[*]; "; expected "EXISTS"; SQL statement:
+DROP TABLE IF EXISTSusers; [42001-190]
+2015-12-16 03:59:35 jdbc[6]: exception
+org.h2.jdbc.JdbcSQLException: Синтаксическая ошибка в выражении SQL "DROP TABLE IF EXISTSUSERS[*]; "; ожидалось "EXISTS"
+Syntax error in SQL statement "DROP TABLE IF EXISTSUSERS[*]; "; expected "EXISTS"; SQL statement:
+DROP TABLE IF EXISTSusers; [42001-190]

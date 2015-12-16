@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import static java.lang.System.exit;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -104,13 +105,14 @@ public class DatabaseService {
             System.out.println("Updated: " + updatedLines);
 
         } catch (SQLException sqle) {
-            System.out.println("Exception caught in insert");
+            System.out.println("Exception caught in insert: " + sqle.getMessage());
         }
     }
 
     public <T> List<T> queryForAll() {
         List<T> answers = new ArrayList<>();
         Table annotation = aClass.getAnnotation(Table.class);
+        String table = annotation.name();
         Field[] fields = aClass.getDeclaredFields();
         List<String> columns = new ArrayList<>();
 
@@ -123,8 +125,8 @@ public class DatabaseService {
 
         try (Connection connection = DriverManager.getConnection("jdbc:h2:./miniORM2")) {
 
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT * FROM users");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table);
+            ResultSet rs = statement.executeQuery();
 
             while (rs.next()) {
                 T answer = (T) aClass.newInstance();
@@ -152,6 +154,7 @@ public class DatabaseService {
     public <T, K> T queryById(K key) {
 
         Table annotation = aClass.getAnnotation(Table.class);
+        String table = annotation.name();
         Field[] fields = aClass.getDeclaredFields();
         Field pk = null;
         primaryKeyClass = key.getClass();
@@ -175,7 +178,7 @@ public class DatabaseService {
 
             String keyToFind = key.toString();
             PreparedStatement preparedStatement =
-                    connection.prepareStatement("SELECT * FROM users WHERE " + pkFieldName + "= ?");
+                    connection.prepareStatement("SELECT * FROM " + table + " WHERE " + pkFieldName + "= ?");
             preparedStatement.setString(1, keyToFind);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
@@ -203,6 +206,8 @@ public class DatabaseService {
     }
 
     public <T> void update(T entity) {
+        Table annotation = aClass.getAnnotation(Table.class);
+        String table = annotation.name();
         Field[] fields = aClass.getDeclaredFields();
         Field pk = null;
         List<String> columns = new ArrayList<>();
@@ -229,7 +234,7 @@ public class DatabaseService {
         try (Connection connection = DriverManager.getConnection("jdbc:h2:./miniORM2")) {
 
             PreparedStatement preparedStatement =
-                    connection.prepareStatement("DELETE FROM users WHERE " + pkFieldName + " = ?");
+                    connection.prepareStatement("DELETE FROM " + table + " WHERE " + pkFieldName + " = ?");
             preparedStatement.setString(1, keyStr);
             preparedStatement.executeUpdate();
             insert(entity);
@@ -241,6 +246,8 @@ public class DatabaseService {
     }
 
     public <T> void delete(T entity) {
+        Table annotation = aClass.getAnnotation(Table.class);
+        String table = annotation.name();
         Field[] fields = aClass.getDeclaredFields();
         Field pk = null;
         List<String> columns = new ArrayList<>();
@@ -269,11 +276,73 @@ public class DatabaseService {
 
             String keyToFind = keyStr;
             PreparedStatement preparedStatement =
-                    connection.prepareStatement("DELETE FROM users WHERE " + pkFieldName + " = ?");
+                    connection.prepareStatement("DELETE FROM " + table + " WHERE " + pkFieldName + " = ?");
             preparedStatement.setString(1, keyToFind);
             preparedStatement.executeUpdate();
         } catch (SQLException sqle) {
             System.out.println("SQLException caught in delete: " + sqle.getMessage());
+        }
+    }
+
+    public void createTable() {
+        Table annotation = aClass.getAnnotation(Table.class);
+        String table = annotation.name();
+        Field[] fields = aClass.getDeclaredFields();
+        List<String> columnsWithTypes = new ArrayList<>();
+        String typename;
+        for (Field field : fields) {
+            Column column = field.getAnnotation(Column.class);
+            if (column != null) {
+                Class<?> type = field.getType();
+                typename = new String();
+                if (type == int.class) {
+                    typename += "int";
+                }
+                if (type == long.class) {
+                    typename += "bigint";
+                }
+                if (type == double.class) {
+                    typename += "real";
+                }
+                if (type == String.class){
+                    typename += "varchar(255)";
+                }
+                if (typename.length() == 0) {
+                    System.out.println("Unsupported type!");
+                    exit(1);
+                }
+                columnsWithTypes.add(column.name() + " " + typename);
+            }
+        }
+
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:./miniORM2")) {
+
+            String columnsLine = columnsWithTypes.stream().collect(joining(", "));
+
+            PreparedStatement statement = connection.prepareStatement("DROP TABLE IF EXISTS " + table);
+
+            statement.executeUpdate();
+
+            statement = connection.prepareStatement(
+                    "CREATE TABLE " + table + " (" + columnsLine + "); ");
+            statement.executeUpdate();
+
+        } catch (SQLException sqle) {
+            System.out.println("Exception caught in create: " + sqle.getMessage());
+        }
+    }
+
+    public void dropTable() {
+        Table annotation = aClass.getAnnotation(Table.class);
+        String table = annotation.name();
+
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:./miniORM2")) {
+
+            PreparedStatement statement = connection.prepareStatement("DROP TABLE IF EXISTS" + table + ";");
+            statement.executeUpdate();
+
+        } catch (SQLException sqle) {
+            System.out.println("Exception caught in drop: " + sqle.getMessage());
         }
     }
 

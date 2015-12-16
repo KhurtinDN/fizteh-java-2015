@@ -24,7 +24,7 @@ public class DatabaseServiceTest {
         try (Connection connection = DriverManager.getConnection("jdbc:h2:./miniORM2")) {
 
             Statement statement = connection.createStatement();
-            statement.executeUpdate("DROP TABLE users");
+            statement.executeUpdate("DROP TABLE IF EXISTS users");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS users (name VARCHAR(255), age int, PRIMARY KEY(name))");
             for (int i = 0; i <= testedUsers; ++i) {
                 int age = i * i + 5;
@@ -47,10 +47,6 @@ public class DatabaseServiceTest {
                 users.add(user);
             }
 
-//            for (Launcher.User user: users){
-//                System.out.println(user.toString());
-//            }
-
             List<DatabaseService.User> correctUsers = new ArrayList<>();
             for (int i = 0; i <= testedUsers; ++i) {
                 int age = i * i + 5;
@@ -60,11 +56,11 @@ public class DatabaseServiceTest {
                 }
             }
 
-            //assertEquals(correctUsers.size(), users.size());
+            assertEquals(correctUsers.size(), users.size());
 
-//            for (int i = 0; i < correctUsers.size(); ++i) {
-//                assertEquals(correctUsers.get(i).toString(), users.get(i).toString());
-//            }
+            for (int i = 0; i < correctUsers.size(); ++i) {
+                assertEquals(correctUsers.get(i).toString(), users.get(i).toString());
+            }
         }
     }
 
@@ -74,7 +70,7 @@ public class DatabaseServiceTest {
 
         try (Connection connection = DriverManager.getConnection("jdbc:h2:./miniORM2")) {
             Statement statement = connection.createStatement();
-            //statement.executeUpdate("DROP TABLE users");
+            statement.executeUpdate("DROP TABLE IF EXISTS users");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS users (name VARCHAR(255), age int, PRIMARY KEY(name))");
             statement.executeUpdate("INSERT INTO users (name, age) VALUES ('Gena', 200)");
             statement.executeUpdate("INSERT INTO users (name, age) VALUES ('Lena', 300)");
@@ -82,11 +78,6 @@ public class DatabaseServiceTest {
 
             String key = "Lena";
             DatabaseService.User answer = dbs.queryById(key);
-//            if (answer != null) {
-//                System.out.println(answer.toString());
-//            } else {
-//                System.out.println("No =(");
-//            }
             assertNotNull(answer);
             assertEquals("User{name='Lena', age=300}", answer.toString());
         }
@@ -100,7 +91,7 @@ public class DatabaseServiceTest {
         try (Connection connection = DriverManager.getConnection("jdbc:h2:./miniORM2")) {
 
             Statement statement = connection.createStatement();
-            statement.executeUpdate("DROP TABLE users");
+            statement.executeUpdate("DROP TABLE IF EXISTS users");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS users (name VARCHAR(255), age int, PRIMARY KEY(name))");
             List<DatabaseService.User> correctUsers = new ArrayList<>();
 
@@ -111,12 +102,7 @@ public class DatabaseServiceTest {
                 correctUsers.add(new DatabaseService.User(name, age));
             }
 
-
             List<DatabaseService.User> users = dbs.queryForAll();
-//            for (DatabaseService.User user: users){
-//                System.out.println(user.toString());
-//            }
-//
             assertEquals(correctUsers.size(), users.size());
             for (int i = 0; i < users.size(); ++i) {
                 assertEquals(correctUsers.get(i).toString(), users.get(i).toString());
@@ -130,7 +116,7 @@ public class DatabaseServiceTest {
 
         try (Connection connection = DriverManager.getConnection("jdbc:h2:./miniORM2")) {
             Statement statement = connection.createStatement();
-            statement.executeUpdate("DROP TABLE users");
+            statement.executeUpdate("DROP TABLE IF EXISTS users");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS users (name VARCHAR(255), age int, PRIMARY KEY(name))");
             statement.executeUpdate("INSERT INTO users (name, age) VALUES ('Gena', 200)");
             statement.executeUpdate("INSERT INTO users (name, age) VALUES ('Lena', 300)");
@@ -155,7 +141,7 @@ public class DatabaseServiceTest {
 
         try (Connection connection = DriverManager.getConnection("jdbc:h2:./miniORM2")) {
             Statement statement = connection.createStatement();
-            statement.executeUpdate("DROP TABLE users");
+            statement.executeUpdate("DROP TABLE IF EXISTS users");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS users (name VARCHAR(255), age int, PRIMARY KEY(name))");
             statement.executeUpdate("INSERT INTO users (name, age) VALUES ('Gena', 200)");
             statement.executeUpdate("INSERT INTO users (name, age) VALUES ('Lena', 300)");
@@ -171,6 +157,52 @@ public class DatabaseServiceTest {
             // Должен вернуть null, то есть не найти ничего
             assertNull(answer);
 
+        }
+    }
+
+    @Test
+    public void testCreateTable() throws Exception {
+        DatabaseService dbs = new DatabaseService(DatabaseService.User.class);
+
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:./miniORM2")) {
+            Statement statement = connection.createStatement();
+            statement.executeUpdate("DROP TABLE IF EXISTS users");
+            dbs.createTable();
+
+            final int testedUsers = 150;
+
+            List<DatabaseService.User> correctUsers = new ArrayList<>();
+
+            for (int i = 0; i <= testedUsers; ++i) {
+                int age = i * i;
+                String name = "User" + i;
+                dbs.insert(new DatabaseService.User(name, age));
+                correctUsers.add(new DatabaseService.User(name, age));
+            }
+
+            List<DatabaseService.User> users = dbs.queryForAll();
+
+            assertEquals(correctUsers.size(), users.size());
+            for (int i = 0; i < users.size(); ++i) {
+                assertEquals(correctUsers.get(i).toString(), users.get(i).toString());
+            }
+
+        }
+    }
+
+    @Test
+    public void testDropTable() throws Exception{
+        DatabaseService dbs = new DatabaseService(DatabaseService.User.class);
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:./miniORM2")) {
+            dbs.createTable();
+            dbs.insert(new DatabaseService.User ("Lena", 300));
+            dbs.dropTable();
+            boolean tableExists = false;
+            ResultSet result = connection.getMetaData().getTables(null, null, "users", null);
+            if ( result.next() ) {
+                tableExists = true;
+            }
+            assertFalse(tableExists);
         }
     }
 
