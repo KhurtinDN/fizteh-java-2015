@@ -163,7 +163,7 @@ public class TweetPrinterTest extends TestCase {
             tweetPrinter.printMessage(randomString);
             String actualString = stringWriter.getBuffer().toString();
 
-            assertThat(expectedString, equalTo(actualString));
+            assertThat(actualString, equalTo(expectedString));
         }
     }
 }
