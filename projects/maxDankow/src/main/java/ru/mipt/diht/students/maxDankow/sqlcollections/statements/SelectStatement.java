@@ -14,6 +14,7 @@ public class SelectStatement<T, R> {
     private Function<T, ?>[] constructorExpressions;
     private Function<T, ?>[] groupByExpressions;
     private Comparator<R>[] orderByComparators;
+    private ItemsComparator<R> comparator;
     private Predicate<T> whereCondition;
     private Predicate<R> havingCondition;
     private boolean isUnited;
@@ -21,15 +22,16 @@ public class SelectStatement<T, R> {
 
     @SafeVarargs
     public SelectStatement(List<T> newItems,
-                           boolean shouldBeDistinct,
-                           Class<R> resultClass,
+                           boolean newDistinct,
+                           Class<R> newResultClass,
                            Function<T, ?>... s) {
         this.items = newItems;
-        this.shouldBeDistinct = shouldBeDistinct;
-        this.resultClass = resultClass;
+        this.shouldBeDistinct = newDistinct;
+        this.resultClass = newResultClass;
         constructorExpressions = s;
     }
 
+    @SafeVarargs
     public SelectStatement(List<R> newPreviousItems,
                            List<T> newItems,
                            boolean newDistinct, Class<R> newResultClass,
@@ -53,23 +55,19 @@ public class SelectStatement<T, R> {
         return this;
     }
 
-    public final Iterable<R> execute() {
-        // todo: здесь главная запара.
-        throw new UnsupportedOperationException();
-    }
-
     public SelectStatement<T, R> having(Predicate<R> condition) {
         havingCondition = condition;
         return this;
     }
 
-    public SelectStatement<T, R> limit(int amount) {
+    public final SelectStatement<T, R> limit(int amount) {
         this.limit = amount;
         return this;
     }
 
-    public UnionStatement union() {
-        throw new UnsupportedOperationException();
+    public final UnionStatement union() {
+        List<R> result = (List<R>) this.execute();
+        return new UnionStatement(result);
     }
 
     @SafeVarargs
@@ -81,7 +79,12 @@ public class SelectStatement<T, R> {
     @SafeVarargs
     public final SelectStatement<T, R> orderBy(Comparator<R>... comparators) {
         orderByComparators = comparators;
-        shouldBeDistinct = true;
+        comparator = new ItemsComparator<>(comparators);
         return this;
+    }
+
+    public final Iterable<R> execute() {
+        // todo: здесь главная запара.
+        throw new UnsupportedOperationException();
     }
 }
