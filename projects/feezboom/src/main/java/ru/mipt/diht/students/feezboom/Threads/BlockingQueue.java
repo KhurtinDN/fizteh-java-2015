@@ -15,13 +15,12 @@ import java.util.concurrent.locks.ReentrantLock;
 @SuppressWarnings("checkstyle:designforextension")
 public class BlockingQueue<T> {
     private Queue<T> ourQueue = new LinkedList<>();
-    private Lock insertionLock = new ReentrantLock();
-    private Lock removingLock = new ReentrantLock();
+    private Lock ourLock = new ReentrantLock();
     private int maxQueueSize;
     private int currentQueueSize = 0;
 
-    private Condition queueNotFull = insertionLock.newCondition();
-    private Condition queueNotEmpty = removingLock.newCondition();
+    private Condition queueNotFull = ourLock.newCondition();
+    private Condition queueNotEmpty = ourLock.newCondition();
 
     BlockingQueue(int maXQueueSize) {
         maxQueueSize = maXQueueSize;
@@ -29,7 +28,7 @@ public class BlockingQueue<T> {
 
     void offer(List<T> toInsert) throws InterruptedException {
         try {
-            insertionLock.lock();
+            ourLock.lock();
             for (T element : toInsert) {
                 if (currentQueueSize + 1 < maxQueueSize) {
                     ourQueue.add(element);
@@ -40,13 +39,13 @@ public class BlockingQueue<T> {
                 }
             }
         } finally {
-            insertionLock.unlock();
+            ourLock.unlock();
         }
     }
     List<T> take(int howManyToTake) throws Exception {
         List<T> listToReturn = new ArrayList<>();
         try {
-            removingLock.lock();
+            ourLock.lock();
             for (int i = 0; i < howManyToTake; i++) {
                 if (currentQueueSize > 0) {
                     T element = ourQueue.element();
@@ -57,7 +56,7 @@ public class BlockingQueue<T> {
                 }
             }
         } finally {
-            removingLock.unlock();
+            ourLock.unlock();
         }
         return listToReturn;
     }
