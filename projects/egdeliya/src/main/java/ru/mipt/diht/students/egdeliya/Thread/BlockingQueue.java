@@ -17,8 +17,10 @@ public class BlockingQueue<T> {
     private Object takeWait = new Object();
     private Object offerWait = new Object();
 
+    //конструктор
     public BlockingQueue(int size) {
         maxQueueSize = size;
+        queue = new ArrayDeque<T>();
     }
 
     //добавление элементов
