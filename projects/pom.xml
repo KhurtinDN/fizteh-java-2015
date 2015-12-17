@@ -29,7 +29,9 @@
     <modules>
         <module>dkhurtin</module>
         <module>ale3otik</module>
-        <module>Pitovsky</module>
+	<module>Pitovsky</module>
+        <module>andreyzharkov</module>
+        <!--Add you module here-->
     </modules>
 
     <dependencyManagement>
