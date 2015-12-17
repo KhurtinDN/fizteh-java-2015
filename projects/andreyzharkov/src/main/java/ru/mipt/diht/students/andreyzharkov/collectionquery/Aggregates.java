@@ -56,7 +56,7 @@ public class Aggregates {
                 if (collection.isEmpty()) {
                     throw new EmptyCollectionException("Method min was called for empty collection.");
                 }
-                return Collections.max(collection.stream().map(expression).collect(Collectors.toList()));
+                return Collections.min(collection.stream().map(expression).collect(Collectors.toList()));
             }
 
             @Override
@@ -74,10 +74,13 @@ public class Aggregates {
      * @param <T>
      * @return
      */
-    public static <C, T extends Comparable<T>> Function<C, Long> count(Function<C, T> expression) {
+    public static <C, T extends Comparable<T>> Agregator<C, Long> count(Function<C, T> expression) {
         return new Agregator<C, Long>() {
             @Override
             public Long apply(Collection<C> collection) {
+                if (collection.isEmpty()) {
+                    return 0L;
+                }
                 return collection.stream().map(expression).count();
             }
 
@@ -107,8 +110,15 @@ public class Aggregates {
                     throw new EmptyCollectionException("Method avg was called for empty collection.");
                 }
                 T example = expression.apply(collection.iterator().next());
-                if (example instanceof Long || example instanceof Integer || example instanceof Short) {
-                    long sum = 0;
+                if (example instanceof Integer) {
+                    int sum = 0;
+                    for (C elem : collection) {
+                        sum += (Integer) expression.apply(elem);
+                    }
+                    return (T) Integer.valueOf(sum / collection.size());
+                }
+                if (example instanceof Long) {
+                    int sum = 0;
                     for (C elem : collection) {
                         sum += (Long) expression.apply(elem);
                     }

@@ -143,7 +143,7 @@ public class FromStmt<T> {
             return new FromStmt<>(result);
         }
 
-        public final <K extends Comparable<?>> FromStmt<Tuple<T, J>> on(
+        public final <K extends Comparable<K>> FromStmt<Tuple<T, J>> on(
                 Function<T, K> leftKey,
                 Function<J, K> rightKey) {
 

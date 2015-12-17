@@ -24,7 +24,7 @@ public class WhereStmt<T, R> implements Query<R> {
     private T example; //for initialization of out output class constructor arguments
     private boolean isDistinct;
     private boolean isTupleR;
-    private long maxResultSize;
+    private long maxResultSize = -1;
 
     private Object[] constructorArguments;
     private Class[] resultClasses;
@@ -129,7 +129,10 @@ public class WhereStmt<T, R> implements Query<R> {
             }
         } else {
             //лямбда исключение не прокидывает
-            for (T element : stream.sorted(resultComparator).collect(Collectors.toList())) {
+            if (resultComparator != null) {
+                stream.sorted(resultComparator);
+            }
+            for (T element : stream.collect(Collectors.toList())) {
                 addToList(result, element);
             }
         }
@@ -138,10 +141,19 @@ public class WhereStmt<T, R> implements Query<R> {
             previous.forEach(result::add);
         }
 
+        Stream<R> finalResult;
         if (isDistinct) {
-            return result.stream().filter(groupingCondition).distinct().limit(maxResultSize);
+            finalResult = result.stream().distinct();
+        } else {
+            finalResult = result.stream();
         }
-        return result.stream().filter(groupingCondition).limit(maxResultSize);
+        if (maxResultSize != -1) {
+            finalResult = finalResult.limit(maxResultSize);
+        }
+        if (groupingCondition != null) {
+            finalResult = finalResult.filter(groupingCondition);
+        }
+        return finalResult;
     }
 
     private void addToList(List<R> list, T element) throws QueryExecuteException {
