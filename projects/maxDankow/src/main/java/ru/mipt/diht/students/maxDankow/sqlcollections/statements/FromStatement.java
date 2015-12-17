@@ -6,7 +6,6 @@ import java.util.function.Function;
 
 public class FromStatement<T> {
     private List<T> items = new ArrayList<>();
-    ;
 
     public FromStatement(Iterable<T> iterable) {
         for (T item : iterable) {
@@ -20,11 +19,11 @@ public class FromStatement<T> {
 
     @SafeVarargs
     public final <R> SelectStatement<T, R> select(Class<R> clazz, Function<T, ?>... s) {
-        return new SelectStatement<T, R>(items, false, clazz, s);
+        return new SelectStatement<>(items, false, clazz, s);
     }
 
     @SafeVarargs
     public final <R> SelectStatement<T, R> selectDistinct(Class<R> clazz, Function<T, ?>... s) {
-        return new SelectStatement<T, R>(items, true, clazz, s);
+        return new SelectStatement<>(items, true, clazz, s);
     }
 }
