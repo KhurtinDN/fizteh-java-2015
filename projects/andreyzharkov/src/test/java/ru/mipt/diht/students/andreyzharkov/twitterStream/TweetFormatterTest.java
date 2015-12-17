@@ -98,7 +98,6 @@ public class TweetFormatterTest extends TestCase {
                 result.append(" ");
                 result.append(TwitterOutputEditor.convertRetweetsCount(tweet.getRetweetCount()));
             }
-            result.append("\r");
             tweetResultList.add(result.toString());
         }
 
@@ -122,12 +121,10 @@ public class TweetFormatterTest extends TestCase {
 
         System.setOut(standartOut);
 
-        String[] tweetsOut = clientByteOut.toString().split("[\n]");
+        String[] tweetsOut = clientByteOut.toString().split(System.lineSeparator());
         for (int i = 0; i < tweetList.size(); ++i) {
-            //у меня этот тест прекрасно заходит, не понимаю почему в репе не прокатывает
-            //там в логе выводятся эти строчки, и видно, что они одинаковые
-            //assertThat(i + "first=" + tweetsOut[i + 2] + "\nsecond=" + tweetResultList.get(i),
-            //        tweetsOut[i + 2].equals(tweetResultList.get(i)));
+            assertThat(i + "first=" + tweetsOut[i + 2] + "\nsecond=" + tweetResultList.get(i),
+                    tweetsOut[i + 2].equals(tweetResultList.get(i)));
         }
     }
 }
