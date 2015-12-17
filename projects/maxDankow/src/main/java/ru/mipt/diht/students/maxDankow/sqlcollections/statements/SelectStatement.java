@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class SelectStmt<T, R> {
+public class SelectStatement<T, R> {
     private Iterable<T> items;
     private boolean shouldBeDistinct;
     private Class<R> resultClass;
@@ -16,17 +16,17 @@ public class SelectStmt<T, R> {
     private int limit = Integer.MAX_VALUE;
 
     @SafeVarargs
-    public SelectStmt(Iterable<T> items,
-                      boolean shouldBeDistinct,
-                      Class<R> resultClass,
-                      Function<T, ?>... s) {
+    public SelectStatement(Iterable<T> items,
+                           boolean shouldBeDistinct,
+                           Class<R> resultClass,
+                           Function<T, ?>... s) {
         this.items = items;
         this.shouldBeDistinct = shouldBeDistinct;
         this.resultClass = resultClass;
         constructorExpressions = s;
     }
 
-    public SelectStmt<T, R> where(Predicate<T> predicate) {
+    public SelectStatement<T, R> where(Predicate<T> predicate) {
         whereCondition = predicate;
         return this;
     }
@@ -36,28 +36,28 @@ public class SelectStmt<T, R> {
         throw new UnsupportedOperationException();
     }
 
-    public SelectStmt<T, R> having(Predicate<R> condition) {
+    public SelectStatement<T, R> having(Predicate<R> condition) {
         havingCondition = condition;
         return this;
     }
 
-    public SelectStmt<T, R> limit(int amount) {
+    public SelectStatement<T, R> limit(int amount) {
         this.limit = amount;
         return this;
     }
 
-    public UnionStmt union() {
+    public UnionStatement union() {
         throw new UnsupportedOperationException();
     }
 
     @SafeVarargs
-    public final SelectStmt<T, R> groupBy(Function<T, ?>... expressions) {
+    public final SelectStatement<T, R> groupBy(Function<T, ?>... expressions) {
         groupByExpressions = expressions;
         return this;
     }
 
     @SafeVarargs
-    public final SelectStmt<T, R> orderBy(Comparator<R>... comparators) {
+    public final SelectStatement<T, R> orderBy(Comparator<R>... comparators) {
         orderByComparators = comparators;
         shouldBeDistinct = true;
         return this;
