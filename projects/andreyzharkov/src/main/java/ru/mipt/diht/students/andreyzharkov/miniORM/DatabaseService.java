@@ -20,7 +20,7 @@ public class DatabaseService<T> {
     private int primaryKey = -1;
     private boolean hasTable = false;
     private String tableName;
-    private static final String DATABASE_NAME = "jdbc:h2:/database";
+    private static final String DATABASE_NAME = "jdbc:h2:~/azharkov";
 
     public DatabaseService(Class<T> typeClas) throws DatabaseServiceException {
         columns = new ArrayList<>();
@@ -36,7 +36,7 @@ public class DatabaseService<T> {
             tableName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, tableName);
         }
 
-        for (Field field : typeClass.getFields()) {
+        for (Field field : typeClass.getDeclaredFields()) {
             if (field.getAnnotation(Column.class) != null) {
                 columns.add(new AnnotatedField(field));
             }
@@ -73,11 +73,11 @@ public class DatabaseService<T> {
 
         for (AnnotatedField field : columns) {
             createRequest.append(field.getColumnName()).append(" ");
-            createRequest.append(field.getSqlType()).append(" ");
+            createRequest.append(field.getSqlType());
             if (field.getField().isAnnotationPresent(PrimaryKey.class)) {
-                createRequest.append("NOT NULL PRIMARY KEY ");
+                createRequest.append(" NOT NULL PRIMARY KEY");
             }
-            createRequest.append(" , ");
+            createRequest.append(", ");
         }
         createRequest.deleteCharAt(createRequest.lastIndexOf(","));
         createRequest.append(")");
