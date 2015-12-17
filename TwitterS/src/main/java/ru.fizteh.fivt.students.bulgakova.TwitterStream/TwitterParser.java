@@ -34,7 +34,7 @@ public class TwitterParser {
     public int getLimit() {
         return limit;
     }
-    //потом надо будет проверить, задано ли ограничение
+    //РїРѕС‚РѕРј РЅР°РґРѕ Р±СѓРґРµС‚ РїСЂРѕРІРµСЂРёС‚СЊ, Р·Р°РґР°РЅРѕ Р»Рё РѕРіСЂР°РЅРёС‡РµРЅРёРµ
 
     @Parameter(names = { "--help", "-h" }, description = "if help is needed")
     private Boolean ifHelp = false;

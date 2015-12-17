@@ -45,22 +45,22 @@ public class TwitterOutput {
         Long passedTime = (new Date().getTime() - status.getCreatedAt().getTime());
 
         if(passedTime < TWO_MINUTES) {
-            stringTweetTime += "òîëüêî ÷òî";
+            stringTweetTime += "Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ñ‡Ñ‚Ð¾";
 
         } else if(passedTime < HOUR) {
             Long minutes = passedTime / MINUTE;
-            stringTweetTime += minutes.toString() + " ìèíóò íàçàä";
+            stringTweetTime += minutes.toString() + " Ð¼Ð¸Ð½ÑƒÑ‚ Ð½Ð°Ð·Ð°Ð´";
 
         } else if(ifToday(tweetTime)) {
             Long hours = passedTime / HOUR;
-            stringTweetTime += hours.toString() + " ÷àñîâ íàçàä";
+            stringTweetTime += hours.toString() + " Ñ‡Ð°ÑÐ¾Ð² Ð½Ð°Ð·Ð°Ð´";
 
         } else if(ifYesterday(tweetTime)) {
-            stringTweetTime += "â÷åðà";
+            stringTweetTime += "Ð²Ñ‡ÐµÑ€Ð°";
 
         } else {
             Long days = passedTime / DAY;
-            stringTweetTime += days.toString() + " äíåé íàçàä";
+            stringTweetTime += days.toString() + " Ð´Ð½ÐµÐ¹ Ð½Ð°Ð·Ð°Ð´";
 
         }
 
@@ -69,13 +69,13 @@ public class TwitterOutput {
 
 
     static void printHelp(){
-        System.out.println("_________________________________________Î ÏÐÎÃÐÀÌÌÅ_________________________________________");
-        System.out.println("TwitterStream - êîíñîëüíîå ïðèëîæåíèå, âûâîäÿùåå íà ýêðàí ïîòîê òâèòîâ ïî çàäàííûì óñëîâèÿì:");
-        System.out.println("\t [--query|-q] - çàäàåò êëþ÷åâîå ñëîâî, ïî êîòîðîìó áóäåò îñóùåñòâëÿòüñÿ ïîèñê òâèòîâ");
-        System.out.println("\t [--stream|-s] - åñëè ïàðàìåòð çàäàí, ïðèëîæåíèå äîëæíî ðàâíîìåðíî è íåïðåðûâíî ñ çàäåðæêîé â ñåêóíäó ïå÷àòàòü òâèòû íà ýêðàí");
-        System.out.println("\t [--hideRetweets] - åñëè ïàðàìåòð çàäàí, íóæíî ôèëüòðîâàòü ðåòâèòû");
-        System.out.println("\t [--limit|-l] - âûâîä òîëüêî îïðåäåëåííîãî êîëè÷åñòâà òâèòîâ, íå ïðèìåíèìî äëÿ --stream ðåæèìà");
-        System.out.println("\t [--help|-h] - ïå÷àòü ñïðàâêè");
+        System.out.println("_________________________________________Ðž ÐŸÐ ÐžÐ“Ð ÐÐœÐœÐ•_________________________________________");
+        System.out.println("TwitterStream - ÐºÐ¾Ð½ÑÐ¾Ð»ÑŒÐ½Ð¾Ðµ Ð¿Ñ€Ð¸Ð»Ð¾Ð¶ÐµÐ½Ð¸Ðµ, Ð²Ñ‹Ð²Ð¾Ð´ÑÑ‰ÐµÐµ Ð½Ð° ÑÐºÑ€Ð°Ð½ Ð¿Ð¾Ñ‚Ð¾Ðº Ñ‚Ð²Ð¸Ñ‚Ð¾Ð² Ð¿Ð¾ Ð·Ð°Ð´Ð°Ð½Ð½Ñ‹Ð¼ ÑƒÑÐ»Ð¾Ð²Ð¸ÑÐ¼:");
+        System.out.println("\t [--query|-q] - Ð·Ð°Ð´Ð°ÐµÑ‚ ÐºÐ»ÑŽÑ‡ÐµÐ²Ð¾Ðµ ÑÐ»Ð¾Ð²Ð¾, Ð¿Ð¾ ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¼Ñƒ Ð±ÑƒÐ´ÐµÑ‚ Ð¾ÑÑƒÑ‰ÐµÑÑ‚Ð²Ð»ÑÑ‚ÑŒÑÑ Ð¿Ð¾Ð¸ÑÐº Ñ‚Ð²Ð¸Ñ‚Ð¾Ð²");
+        System.out.println("\t [--stream|-s] - ÐµÑÐ»Ð¸ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€ Ð·Ð°Ð´Ð°Ð½, Ð¿Ñ€Ð¸Ð»Ð¾Ð¶ÐµÐ½Ð¸Ðµ Ð´Ð¾Ð»Ð¶Ð½Ð¾ Ñ€Ð°Ð²Ð½Ð¾Ð¼ÐµÑ€Ð½Ð¾ Ð¸ Ð½ÐµÐ¿Ñ€ÐµÑ€Ñ‹Ð²Ð½Ð¾ Ñ Ð·Ð°Ð´ÐµÑ€Ð¶ÐºÐ¾Ð¹ Ð² ÑÐµÐºÑƒÐ½Ð´Ñƒ Ð¿ÐµÑ‡Ð°Ñ‚Ð°Ñ‚ÑŒ Ñ‚Ð²Ð¸Ñ‚Ñ‹ Ð½Ð° ÑÐºÑ€Ð°Ð½");
+        System.out.println("\t [--hideRetweets] - ÐµÑÐ»Ð¸ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€ Ð·Ð°Ð´Ð°Ð½, Ð½ÑƒÐ¶Ð½Ð¾ Ñ„Ð¸Ð»ÑŒÑ‚Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ñ€ÐµÑ‚Ð²Ð¸Ñ‚Ñ‹");
+        System.out.println("\t [--limit|-l] - Ð²Ñ‹Ð²Ð¾Ð´ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð½Ð¾Ð³Ð¾ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð° Ñ‚Ð²Ð¸Ñ‚Ð¾Ð², Ð½Ðµ Ð¿Ñ€Ð¸Ð¼ÐµÐ½Ð¸Ð¼Ð¾ Ð´Ð»Ñ --stream Ñ€ÐµÐ¶Ð¸Ð¼Ð°");
+        System.out.println("\t [--help|-h] - Ð¿ÐµÑ‡Ð°Ñ‚ÑŒ ÑÐ¿Ñ€Ð°Ð²ÐºÐ¸");
     }
 
     static void printTweet(Status status, Boolean ifTime) {
@@ -85,17 +85,17 @@ public class TwitterOutput {
             stringTweet += "[" + getTweetTime(status) + "] ";
         }
 
-        // "\u001B[34m", "\u001B[0m" - öâåò íèêà
+        // "\u001B[34m", "\u001B[0m" - Ñ†Ð²ÐµÑ‚ Ð½Ð¸ÐºÐ°
         stringTweet += "\u001B[34m" + " @" + status.getUser().getScreenName() + ": " + "\u001B[0m";
 
         if (status.isRetweet()) {
-            stringTweet += "ðåòâèòíóë " + "\u001B[34m" + " @" + status.getRetweetedStatus().getUser().getScreenName() + ": " + "\u001B[0m";
+            stringTweet += "Ñ€ÐµÑ‚Ð²Ð¸Ñ‚Ð½ÑƒÐ» " + "\u001B[34m" + " @" + status.getRetweetedStatus().getUser().getScreenName() + ": " + "\u001B[0m";
         }
 
         stringTweet += status.getText();
 
         if (!status.isRetweet() && status.isRetweeted()) {
-            stringTweet += "(" + status.getRetweetCount() + " ðåòâèòîâ)";
+            stringTweet += "(" + status.getRetweetCount() + " Ñ€ÐµÑ‚Ð²Ð¸Ñ‚Ð¾Ð²)";
         }
 
         System.out.println(stringTweet);
