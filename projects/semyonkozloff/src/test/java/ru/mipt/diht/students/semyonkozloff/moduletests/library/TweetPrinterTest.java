@@ -106,7 +106,7 @@ public class TweetPrinterTest extends TestCase {
 
 
     @DataProvider
-    public static Object[][] dataProvider() {
+    public static Object[][] datesDataProvider() {
         return new Object[][] {
                 {
                         LocalDateTime.now().minusMinutes(1),
@@ -133,7 +133,7 @@ public class TweetPrinterTest extends TestCase {
     }
 
     @Test
-    @UseDataProvider("dataProvider")
+    @UseDataProvider("datesDataProvider")
     public void testPrintTime(LocalDateTime tweetTime, String expectedTime)
             throws IOException {
         Date tweetDate = Date.from(tweetTime.atZone(ZoneId.systemDefault())
