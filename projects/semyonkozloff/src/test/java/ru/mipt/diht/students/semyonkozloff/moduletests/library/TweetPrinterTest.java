@@ -73,16 +73,16 @@ public class TweetPrinterTest extends TestCase {
 
     @Test
     public void testPrintTweet() throws IOException {
-        final int DELIMITER_LENGTH = 160;
-        final String DELIMITER =
-                Strings.repeat("-", DELIMITER_LENGTH);
+        final int delimiterLength = 160;
+        final String delimiter =
+                Strings.repeat("-", delimiterLength);
 
         // Test 1
         String expectedText = "@\u001B[34mIvan\u001B[0m:"
                 + " retweeted @\u001B[34mJohn\u001B[0m: "
                 + "Now i'm coding Tests, "
                 + "tomorrow i will code MiniORM"
-                + '\n' + DELIMITER + '\n';
+                + '\n' + delimiter + '\n';
 
         stringWriter.getBuffer().setLength(0); // clearing the buffer
         tweetPrinter.printTweet(mockedStatus);
@@ -95,7 +95,7 @@ public class TweetPrinterTest extends TestCase {
                 + "Now i'm coding Tests, "
                 + "tomorrow i will code MiniORM "
                 + "(\u001B[32m123 retweets\u001B[0m)"
-                + '\n' + DELIMITER + '\n';
+                + '\n' + delimiter + '\n';
 
         stringWriter.getBuffer().setLength(0);
         tweetPrinter.printTweet(mockedRetweetedStatus);

@@ -1,6 +1,5 @@
 package ru.mipt.diht.students.semyonkozloff.threads;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -13,22 +12,22 @@ public class Rollcall {
 
     private volatile boolean allThreadsAreReady = true;
 
-    private int nThreads;
+    private final int nThreads;
     private Phaser startPhaser;
     private Phaser finishPhaser;
 
-    public Rollcall(int nThreads) {
-        this.nThreads = nThreads;
+    public Rollcall(int initialNthreads) {
+        this.nThreads = initialNthreads;
     }
 
-    public void startRollCall() {
+    public final void startRollCall() {
         startPhaser = new Phaser(nThreads + 1);
         finishPhaser = new Phaser(nThreads + 1);
         List<Thread> threads = new ArrayList<Thread>();
 
         for (int i = 0; i < nThreads; ++i) {
-            Thread thread = new Thread() {
 
+            Thread thread = new Thread() {
                 private Random randomGenerator = new Random();
 
                 @Override
@@ -69,8 +68,8 @@ public class Rollcall {
     }
 
     public static void main(String[] args) {
-        final int N_THREADS = 8;
-        Rollcall rollcall = new Rollcall(N_THREADS);
+        final int nThreads = 8;
+        Rollcall rollcall = new Rollcall(nThreads);
         rollcall.startRollCall();
     }
 }
