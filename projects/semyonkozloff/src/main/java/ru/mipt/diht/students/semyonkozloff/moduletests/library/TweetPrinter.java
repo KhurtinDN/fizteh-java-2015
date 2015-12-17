@@ -14,13 +14,13 @@ import java.util.Date;
 public final class TweetPrinter {
 
     private static final int DELIMITER_LENGTH = 160;
-
     private static final String DELIMITER =
             Strings.repeat("-", DELIMITER_LENGTH);
 
     private static final String ANSI_BLUE = "\u001B[34m";
     private static final String ANSI_CYAN = "\u001B[36m";
     private static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RED = "\u001B[31m";
     private static final String ANSI_RESET = "\u001B[0m";
 
     private Writer writer;
@@ -40,14 +40,15 @@ public final class TweetPrinter {
                     + ANSI_RESET
                     + ": " + tweet.getText());
         } else {
-            System.out.print(tweet.getText() + " ");
+            writer.write(tweet.getText() + " ");
             if (tweet.isRetweeted()) {
                 writer.write("(" + ANSI_GREEN + tweet.getRetweetCount()
                         + " retweets"
                         + ANSI_RESET + ")");
             }
         }
-        writer.write("\n" + DELIMITER + "\n");
+        writer.write('\n' + DELIMITER + '\n');
+        writer.flush();
     }
 
     public void printTime(Date date) throws IOException {
@@ -73,6 +74,10 @@ public final class TweetPrinter {
                     + " days ago");
         }
 
-        writer.write(ANSI_RESET + "] ");
+        writer.write(ANSI_RESET + "]");
+    }
+
+    public void printMessage(String string) throws IOException {
+        writer.write(ANSI_RED + string + ANSI_RESET + '\n');
     }
 }

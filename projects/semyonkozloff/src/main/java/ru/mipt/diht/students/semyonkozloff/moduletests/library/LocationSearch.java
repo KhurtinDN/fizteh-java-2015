@@ -18,7 +18,7 @@ public class LocationSearch {
     private static final int N_DEGREES_IN_SEMICIRCLE = 180;
 
     public static Geometry findLocation(String location)
-            throws FileNotFoundException, Exception {
+            throws Exception {
         if (location == null) {
             return null;
         }
@@ -29,8 +29,8 @@ public class LocationSearch {
             gmapsApiKey = new Scanner(keyFile).useDelimiter("\\Z").next();
         } catch (FileNotFoundException exception) {
             FileNotFoundException fileNotFoundException =
-                    new FileNotFoundException("Can't find file "
-                            + "\"googlemaps.properties\".");
+                    new FileNotFoundException("Unable to find file "
+                            + "\"googlemaps.properties\" ");
             fileNotFoundException.initCause(exception);
             throw fileNotFoundException;
         }
@@ -40,10 +40,7 @@ public class LocationSearch {
         try {
             geocodingResults = GeocodingApi.geocode(context, location).await();
         } catch (Exception e) {
-            Exception exception =
-                    new Exception("Fail of getting geocoding result.");
-            exception.initCause(e);
-            throw exception;
+            throw new Exception("Fail of getting geocoding result ", e);
         }
 
         return geocodingResults[0].geometry;

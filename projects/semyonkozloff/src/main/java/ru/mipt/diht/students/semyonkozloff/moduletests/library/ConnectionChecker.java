@@ -34,14 +34,7 @@ public class ConnectionChecker {
         } catch (IOException exception) {
             return false;
         } finally {
-            try {
-                socket.close();
-            } catch (IOException exception) {
-                IOException ioException =
-                        new IOException("Can't close socket.");
-                ioException.initCause(exception);
-                throw ioException;
-            }
+            socket.close();
         }
     }
 }

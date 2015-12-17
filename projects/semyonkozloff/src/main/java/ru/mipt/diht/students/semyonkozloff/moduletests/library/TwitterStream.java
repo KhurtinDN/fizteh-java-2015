@@ -6,61 +6,51 @@ import twitter4j.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
+import java.net.ConnectException;
 import java.util.List;
 
 import static ru.mipt.diht.students.semyonkozloff.
         moduletests.library.ConnectionChecker.*;
-import static ru.mipt.diht.students.semyonkozloff.moduletests.library.QueryMaker.*;
+import static
+        ru.mipt.diht.students.semyonkozloff.moduletests.library.QueryMaker.*;
 
 public final class TwitterStream {
 
     private static final int TWEET_PRINT_DELAY = 1000;
 
-    private Configuration configuration = null;
+    private Configuration configuration;
+    private TweetPrinter tweetPrinter;
 
-    public TwitterStream(String[] arguments) {
+    public TwitterStream(String[] arguments, Writer writer) {
+        tweetPrinter = new TweetPrinter(writer);
         configuration = new Configuration();
+
         new JCommander(configuration, arguments);
     }
 
     public void runStream() throws Exception {
         if (!hasConnection("api.twitter.com")) {
-            System.err.print("No connection.");
-            System.exit(1);
+            throw new ConnectException("No connection");
         }
 
         twitter4j.TwitterStream twitterStream =
                 new TwitterStreamFactory().getInstance();
 
-        TweetPrinter tweetPrinter = new TweetPrinter(new PrintWriter(System.out));
-
         StatusListener tweetListener = new StatusAdapter() {
 
             @Override
-            public void onStatus(Status tweet)  {
+            public void onStatus(Status tweet) {
                 if (configuration.shouldHideRetweets() && tweet.isRetweet()) {
                     return;
                 }
 
                 try {
                     tweetPrinter.printTweet(tweet);
-                } catch (IOException ioException) { }
-
-                try {
                     Thread.sleep(TWEET_PRINT_DELAY);
-                } catch (InterruptedException exception) {
-                    Thread.currentThread().interrupt();
-                    System.err.print("Thread can't sleep: ");
-                    exception.printStackTrace(System.err);
-                    System.exit(1);
+                } catch (InterruptedException | IOException exception) {
+                    return;
                 }
-            }
-
-            @Override
-            public void onException(Exception exception) {
-                System.err.print("Stream error: ");
-                exception.printStackTrace(System.err);
-                System.exit(1);
             }
         };
 
@@ -72,8 +62,7 @@ public final class TwitterStream {
 
     public void findTweets() throws Exception {
         if (!hasConnection("api.twitter.com")) {
-            System.err.print("No connection.");
-            System.exit(1);
+            throw new ConnectException("No connection");
         }
 
         Twitter twitter = new TwitterFactory().getInstance();
@@ -86,16 +75,13 @@ public final class TwitterStream {
             try {
                 queryResult = twitter.search(query);
             } catch (TwitterException exception) {
-                System.err.print("Fail of searching tweets: ");
-                exception.printStackTrace(System.err);
-                System.exit(1);
+                throw new TwitterException("Fail searching tweets", exception);
             }
 
             if (queryResult == null) {
                 break;
             }
             List<Status> tweets = queryResult.getTweets();
-            TweetPrinter tweetPrinter = new TweetPrinter(new PrintWriter(System.out));
             for (Status tweet : tweets) {
                 tweetPrinter.printTime(tweet.getCreatedAt());
                 tweetPrinter.printTweet(tweet);
@@ -110,7 +96,7 @@ public final class TwitterStream {
         } while (queryResult.hasNext());
 
         if (tweetsCounter == 0) { // if no tweets match a query
-            System.out.println("No tweets found");
+            tweetPrinter.printMessage("No tweets have been found");
         }
     }
 
@@ -121,7 +107,8 @@ public final class TwitterStream {
     }
 
     public static void main(String[] args) throws Exception {
-        TwitterStream twitterStream = new TwitterStream(args);
+        TwitterStream twitterStream =
+                new TwitterStream(args, new PrintWriter(System.out));
 
         if (twitterStream.configuration.getQuery() != null) {
             if (twitterStream.configuration.isStream()) {

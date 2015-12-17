@@ -21,10 +21,8 @@ public class QueryMaker {
         Geometry locationBox = null;
         try {
             locationBox = findLocation(configuration.getLocation());
-        } catch (Exception e) {
-            Exception exception = new Exception("Fail of finding location.");
-            exception.initCause(e);
-            throw exception;
+        } catch (Exception exception) {
+            throw new Exception("Fail finding location", exception);
         }
 
         if (locationBox != null) {
@@ -59,9 +57,7 @@ public class QueryMaker {
         try {
             locationBox = findLocation(configuration.getLocation());
         } catch (Exception e) {
-            Exception exception = new Exception("Fail of finding location.");
-            exception.initCause(e);
-            throw exception;
+            throw new Exception("Fail finding location", e);
         }
 
         if (locationBox != null) {
