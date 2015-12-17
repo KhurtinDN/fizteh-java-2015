@@ -10,6 +10,7 @@ import java.util.Map;
 /**
  * Created by Андрей on 17.12.2015.
  */
+@SuppressWarnings("Duplicates")
 public class AnnotatedField {
     private String columnName;
     private Field field;
@@ -35,23 +36,23 @@ public class AnnotatedField {
         SQL_TYPE.put(Character.TYPE, "VARCHAR(10)");
     }
 
-    public String getColumnName() {
+    public final String getColumnName() {
         return columnName;
     }
 
-    public Field getField() {
+    public final Field getField() {
         return field;
     }
 
-    public String getSqlType() throws DatabaseServiceException {
+    public final String getSqlType() throws DatabaseServiceException {
         if (SQL_TYPE.get(field.getType()) == null) {
             throw new DatabaseServiceException(columnName + " doesn't have good sql name!");
         }
         return SQL_TYPE.get(field.getType());
     }
 
-    public AnnotatedField(Field field) {
-        this.field = field;
+    public AnnotatedField(Field fild) {
+        this.field = fild;
         Column column = field.getAnnotation(Column.class);
         columnName = column.name();
         if (columnName.equals("")) {

@@ -22,9 +22,9 @@ public class DatabaseService<T> {
     private String tableName;
     private static final String DATABASE_NAME = "jdbc:h2:/database";
 
-    public DatabaseService(Class<T> typeClass) throws DatabaseServiceException {
+    public DatabaseService(Class<T> typeClas) throws DatabaseServiceException {
         columns = new ArrayList<>();
-        this.typeClass = typeClass;
+        this.typeClass = typeClas;
         Table table = typeClass.getAnnotation(Table.class);
         if (table == null) {
             throw new DatabaseServiceException("Class must be annotated with Table");
@@ -63,7 +63,7 @@ public class DatabaseService<T> {
         }
     }
 
-    public void createTable() throws DatabaseServiceException {
+    public final void createTable() throws DatabaseServiceException {
         if (hasTable) {
             throw new DatabaseServiceException("There is table already");
         }
@@ -92,7 +92,7 @@ public class DatabaseService<T> {
         }
     }
 
-    public void dropTable() throws DatabaseServiceException {
+    public final void dropTable() throws DatabaseServiceException {
         if (!hasTable) {
             throw new DatabaseServiceException("there is no database to drop");
         }
@@ -107,7 +107,7 @@ public class DatabaseService<T> {
     }
 
     //if element is not in table return null
-    public <K> T queryById(K key) throws DatabaseServiceException {
+    public final <K> T queryById(K key) throws DatabaseServiceException {
         if (!hasTable) {
             throw new DatabaseServiceException("there is no table");
         }
@@ -140,22 +140,22 @@ public class DatabaseService<T> {
         }
     }
 
-    public List<T> queryForAll() throws DatabaseServiceException {
+    public final List<T> queryForAll() throws DatabaseServiceException {
         if (!hasTable) {
             throw new DatabaseServiceException("there is no table");
         }
-        try{
+        try {
             return queryWithRequest("SELECT * FROM " + tableName);
         } catch (SQLException ex) {
             throw new DatabaseServiceException("Connection with database failed!", ex);
         }
     }
 
-    public boolean isTableCreated() {
+    public final boolean isTableCreated() {
         return hasTable;
     }
 
-    public void insert(T element) throws DatabaseServiceException {
+    public final void insert(T element) throws DatabaseServiceException {
         if (!hasTable) {
             throw new DatabaseServiceException("there is no table");
         }
@@ -189,7 +189,7 @@ public class DatabaseService<T> {
         }
     }
 
-    public void update(T element) throws DatabaseServiceException {
+    public final void update(T element) throws DatabaseServiceException {
         if (!hasTable) {
             throw new DatabaseServiceException("there is no table");
         }
@@ -221,7 +221,7 @@ public class DatabaseService<T> {
         }
     }
 
-    public <K> void deleteByKey(K key) throws DatabaseServiceException {
+    public final <K> void deleteByKey(K key) throws DatabaseServiceException {
         if (!hasTable) {
             throw new DatabaseServiceException("there is no table");
         }
@@ -245,7 +245,7 @@ public class DatabaseService<T> {
         }
     }
 
-    public void delete(T line) throws DatabaseServiceException {
+    public final void delete(T line) throws DatabaseServiceException {
         if (!hasTable) {
             throw new DatabaseServiceException("there is no table");
         }
