@@ -3,9 +3,10 @@ package ru.mipt.diht.students.feezboom.Threads;
 /**
  * * Created by avk on 17.12.15.
  **/
+@SuppressWarnings("checkstyle:magicnumber")
 public class ThreadsCounting {
-    private Object lock = new Object();
-    private int currentNumber = 1;
+    private final Object lock = new Object();
+    private int currentNumber = 0;
     private int threadsNumber;
 
     ThreadsCounting(int numberOfThreadsToStart) {
@@ -35,14 +36,14 @@ public class ThreadsCounting {
                 synchronized (lock) {
                     if (currentNumber == id) {
                         System.out.println(this.toString());
+                        Thread.yield();
                         currentNumber = (currentNumber + 1) % threadsNumber;
-                        if (currentNumber == 0) {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException i) {
-                                System.out.println("Error : " + i);
-                            }
+                        try {
+                            Thread.sleep(400);
+                        } catch (InterruptedException i) {
+                            System.out.println("Error : " + i);
                         }
+                        lock.notify();
                     } else {
                         lock.notify();
                     }
@@ -50,11 +51,6 @@ public class ThreadsCounting {
             }
         }
     }
-
-    public static void main(String[] args) {
-        ThreadsCounting threadsCounting = new ThreadsCounting(10);
-    }
-
 }
 
 
