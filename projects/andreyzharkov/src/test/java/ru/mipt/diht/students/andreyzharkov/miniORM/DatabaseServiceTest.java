@@ -56,7 +56,7 @@ public class DatabaseServiceTest {
     }
 
     @Test
-    public void testQueryById() throws Exception {
+    public void testQueryById() throws DatabaseServiceException {
         TestedClass elem = dataBaseService.queryById(1);
         assertThat(elem, equalTo(input.get(1)));
     }
@@ -67,26 +67,26 @@ public class DatabaseServiceTest {
     }
 
     @Test
-    public void testQueryForAll() throws Exception {
+    public void testQueryForAll() throws DatabaseServiceException {
         List<TestedClass> newList = dataBaseService.queryForAll();
         assertThat(newList, equalTo(input));
     }
 
     @Test
-    public void testDrop() throws Exception {
+    public void testDrop() throws DatabaseServiceException {
         dataBaseService.dropTable();
         assertThat(dataBaseService.isTableCreated(), is(false));
     }
 
     @Test
-    public void testDelete() throws Exception {
+    public void testDelete() throws DatabaseServiceException {
         dataBaseService.delete(input.get(0));
         List<TestedClass> newList = dataBaseService.queryForAll();
         assertThat(newList, equalTo(input.subList(1, 10)));
     }
 
     @Test
-    public void testInsert() throws Exception {
+    public void testInsert() throws DatabaseServiceException {
         dataBaseService.delete(input.get(0));
         dataBaseService.insert(input.get(0));
         List<TestedClass> newList = dataBaseService.queryForAll();
@@ -94,68 +94,11 @@ public class DatabaseServiceTest {
     }
 
     @Test
-    public void testUpdate() throws Exception {
+    public void testUpdate() throws DatabaseServiceException {
         input.get(0).name = "Test";
         dataBaseService.update(input.get(0));
         List<TestedClass> newList = dataBaseService.queryForAll();
         assertThat(newList, equalTo(input));
-    }
-
-    @Table
-    public static class Student {
-        @PrimaryKey
-        @Column(name = "name")
-        public final String name;
-        @Column(name = "age")
-        public Integer age;
-        @Column(name = "stud_group")
-        public final Integer group;
-
-        public final String getName() {
-            return name;
-        }
-
-        public Student(String name, int age, int group) {
-            this.name = name;
-            this.age = age;
-            this.group = group;
-        }
-
-        public Student() {
-            this.name = "";
-            this.age = 0;
-            this.group = 0;
-        }
-
-        public final int getAge() {
-            return age;
-        }
-
-        public final void setAge(int newAge) {
-            age = newAge;
-        }
-
-        public final int getGroup() {
-            return group;
-        }
-
-        public static Student student(String name, int age, int group) {
-            return new Student(name, age, group);
-        }
-
-        @Override
-        public final String toString() {
-            return "Student{" + name + "|" + age + "|" + group + "}";
-        }
-
-        @Override
-        public final boolean equals(Object obj) {
-            if (!(obj instanceof Student)) {
-                return false;
-            }
-            Student st = (Student) obj;
-            return (st.name.equals(name) && age == st.age && group == st.group);
-        }
     }
 
     @Table
