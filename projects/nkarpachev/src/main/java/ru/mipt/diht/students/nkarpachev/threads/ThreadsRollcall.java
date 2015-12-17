@@ -9,23 +9,23 @@ public class ThreadsRollcall {
     private static CyclicBarrier threadsStarted;
     private static CyclicBarrier threadsCompleted;
     private static volatile boolean allThreadsReady = true;
+    private static final int RANDOM_BORDER = 10;
 
     private static class RollcallRunner extends Thread {
-        Random generator = new Random();
+        private Random generator = new Random();
 
-        RollcallRunner() {}
+        RollcallRunner() { }
 
         @Override
-        public void run() {
+        public final void run() {
             try {
                 while (true) {
                     threadsStarted.await();
-                    int randomSeed = generator.nextInt(10);
+                    int randomSeed = generator.nextInt(RANDOM_BORDER);
                     if (randomSeed <= 1) {
                         allThreadsReady = false;
                         System.out.println("Nope");
-                    }
-                    else {
+                    } else {
                         System.out.println("Yeah");
                     }
                     threadsCompleted.await();

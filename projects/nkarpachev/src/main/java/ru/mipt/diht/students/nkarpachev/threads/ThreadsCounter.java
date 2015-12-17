@@ -14,7 +14,7 @@ public class ThreadsCounter {
         }
 
         @Override
-        public void run() {
+        public final void run() {
             try {
                 while (true) {
                     synchronized (monitor) {

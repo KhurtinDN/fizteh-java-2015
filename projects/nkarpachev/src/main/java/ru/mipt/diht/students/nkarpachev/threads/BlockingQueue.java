@@ -8,9 +8,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * Created by kk on 12/17/15.
- */
 public class BlockingQueue<T> {
     private Queue<T> queue;
     private int capacity;
@@ -24,7 +21,7 @@ public class BlockingQueue<T> {
         capacity = size;
     }
 
-    public void offer(List<T> list) {
+    public final void offer(List<T> list) {
         queueLock.lock();
         try {
             while (queue.size() + list.size() > capacity) {
@@ -40,7 +37,7 @@ public class BlockingQueue<T> {
         queueEmpty.signalAll();
     }
 
-    public List<T> take(int amount) {
+    public final List<T> take(int amount) {
         queueLock.lock();
         List<T> answer = new LinkedList<>();
         try {
@@ -60,7 +57,7 @@ public class BlockingQueue<T> {
         return answer;
     }
 
-    public void offer(List<T> list, long timeout) {
+    public final void offer(List<T> list, long timeout) {
         queueLock.lock();
         try {
             long lastCheckTime = System.currentTimeMillis();
@@ -83,7 +80,7 @@ public class BlockingQueue<T> {
         queueFull.signalAll();
     }
 
-    public List<T> take(int amount, long timeout) {
+    public final List<T> take(int amount, long timeout) {
         queueLock.lock();
         List<T> answer = new LinkedList<>();
         try {
