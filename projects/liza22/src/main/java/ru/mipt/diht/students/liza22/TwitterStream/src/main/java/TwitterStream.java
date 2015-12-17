@@ -72,9 +72,10 @@ public class TwitterStream {
         try {
             byte[] buffer = new byte[LINE_LENGTH];
             try (InputStream input = TwitterStream.class.getClassLoader().getResourceAsStream(Constants.HELP_FILE)) {
-                for (int length; length != -1;) {
-                    length = input.read(buffer);
+                int length = input.read(buffer);
+                while (length != -1) {
                     out.write(buffer, 0, length);
+                    length = input.read(buffer);
                 }
             }
         } catch (IOException e) {
