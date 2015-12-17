@@ -11,7 +11,7 @@ public class Student {
 
     private final String group;
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -21,15 +21,15 @@ public class Student {
         this.group = group;
     }
 
-    public LocalDate getDateOfBith() {
+    public final LocalDate getDateOfBith() {
         return dateOfBith;
     }
 
-    public String getGroup() {
+    public final String getGroup() {
         return group;
     }
 
-    public long age() {
+    public final long age() {
         return ChronoUnit.YEARS.between(getDateOfBith(), LocalDateTime.now());
     }
 
