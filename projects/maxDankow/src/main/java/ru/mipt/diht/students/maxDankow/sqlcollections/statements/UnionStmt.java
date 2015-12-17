@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.maxDankow.sqlcollections.impl;
+package ru.mipt.diht.students.maxDankow.sqlcollections.statements;
 
 public class UnionStmt {
 

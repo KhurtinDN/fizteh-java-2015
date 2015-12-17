@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.maxDankow.sqlcollections.impl;
+package ru.mipt.diht.students.maxDankow.sqlcollections.statements;
 
 import java.util.Comparator;
 import java.util.function.Function;
