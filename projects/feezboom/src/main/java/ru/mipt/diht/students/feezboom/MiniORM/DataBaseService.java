@@ -13,11 +13,14 @@ public class DataBaseService<T> {
     private Class<T> ourTableClass;
     private List<T> columns;
 
+
+
     DataBaseService(Class<T> inputClass) throws Exception {
         tableInit(inputClass);
     }
 
     private void tableInit(Class<T> inputClass) throws Exception {
+        // input class структура таблицы
         ourTableClass = inputClass;
         // Хз чё
         Table tableAnnotation = ourTableClass.getAnnotation(Table.class);
@@ -38,6 +41,10 @@ public class DataBaseService<T> {
         columns = new ArrayList<>();
 
 
+    }
+
+    public void createTable() {
+        String command = "CREATE TABLE IF NOT EXISTS" + "";
     }
 
     //T queryById();
