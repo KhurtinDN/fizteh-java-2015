@@ -16,6 +16,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class BlockingQueue<T> {
     private Queue<T> ourQueue = new LinkedList<>();
     private Lock ourLock = new ReentrantLock();
+    private Lock offerLock = new ReentrantLock();
+
     private int maxQueueSize;
     private int currentQueueSize = 0;
 
@@ -28,18 +30,22 @@ public class BlockingQueue<T> {
 
     void offer(List<T> toInsert) throws InterruptedException {
         try {
-            ourLock.lock();
-            for (T element : toInsert) {
-                if (currentQueueSize + 1 < maxQueueSize) {
+            offerLock.lock();
+            try {
+                ourLock.lock();
+                for (T element : toInsert) {
+                    while (!(currentQueueSize + 1 < maxQueueSize)) {
+                        queueNotFull.await();
+                    }
                     ourQueue.add(element);
                     currentQueueSize++;
                     queueNotEmpty.signalAll();
-                } else {
-                    queueNotFull.await();
                 }
+            } finally {
+                ourLock.unlock();
             }
         } finally {
-            ourLock.unlock();
+            offerLock.unlock();
         }
     }
     List<T> take(int howManyToTake) throws Exception {
