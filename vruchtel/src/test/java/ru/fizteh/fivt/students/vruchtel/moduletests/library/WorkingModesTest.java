@@ -5,7 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Created by Серафима on 01.12.2015.
+ * Created by РЎРµСЂР°С„РёРјР° on 01.12.2015.
  */
 public class WorkingModesTest {
     @BeforeClass
