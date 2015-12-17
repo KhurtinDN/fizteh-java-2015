@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+��
+=======
 # Семинары
 
 ## Семинар 1: Вводный
@@ -81,3 +84,4 @@
     * [mybatis](http://mybatis.org/mybatis-3/)
     * [hibernate](http://hibernate.org)
 * Задание на дом: [MiniORM](/tasks/06-MiniORM.md)
+>>>>>>> 9442e62043b00de1735d94895faa9d06bb6357b2
