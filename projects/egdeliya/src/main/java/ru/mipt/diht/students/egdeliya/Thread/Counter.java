@@ -19,7 +19,7 @@ public class Counter {
         currentThreadId = 0;
         for (int i = 0; i < numberOfThreads; i++) {
             threads[i] = new Thread(new PrintName(i, (i + 1) % numberOfThreads));
-            threads[i].run();
+            threads[i].start();
         }
     }
 
@@ -45,7 +45,6 @@ public class Counter {
                     System.out.println("Thread-" + myThreadId);
                     currentThreadId = nextThreadId;
                     object.notifyAll();
-                    break;
                 }
             }
         }
