@@ -35,7 +35,13 @@ public class DatabaseService<T> {
         String name() default "";
     }
 
-    DatabaseService(Class<T> inputClass) {
+    @Retention(RUNTIME)
+    @Target(FIELD)
+    public @interface PrimaryKey {
+        String name() default "";
+    }
+
+    DatabaseService(Class<T> inputClass) throws DatabaseException {
         Table annotation;
 
         databaseClass = inputClass;
@@ -130,7 +136,7 @@ public class DatabaseService<T> {
         }
     }
 
-    public <K> boolean delete (K key) throws DatabaseException {
+    public <K> boolean delete(K key) throws DatabaseException {
         String name = fieldsNames.get(primaryKeyFieldId);
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -146,24 +152,71 @@ public class DatabaseService<T> {
         }
     }
 
-    public void createTable() {
+    public void createTable() throws DatabaseException {
+        StringBuilder headBuilder = new StringBuilder();
+        for (int i = 0; i < fields.length; i++) {
+            if (i != 0) {
+                headBuilder.append(", ");
+            }
+            String name = fieldsNames.get(i);
+            if (name != null) {
+                headBuilder.append(name).append(" ").append(H2TypeResolver.
+                        resolveType(fields[i].getType()));
+                if (i == primaryKeyFieldId) {
+                    headBuilder.append(" NOT NULL PRIMARY KEY");
+                }
+            }
+        }
+        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
+            connection.createStatement().execute("CREATE TABLE IF NOT EXISTS " + table
+                    + "(" + headBuilder.toString() + ")");
+        } catch (SQLException e) {
+            throw new DatabaseException(e.getMessage());
+        }
+    }
 
+    public void dropTable() throws DatabaseException {
+        try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
+            connection.createStatement().execute("DROP TABLE IF EXISTS " + table);
+        } catch (SQLException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 
     public String toSnakeCase(String input) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < input.length(); i++) {
             stringBuilder.append(input.charAt(i));
-            if (Character.isUpperCase(input.charAt(i + 1))
-                    && i < input.length() - 1) {
+            if ((i < input.length() - 1) &&
+                    Character.isUpperCase(input.charAt(i + 1))) {
                 stringBuilder.append("_");
             }
         }
         return stringBuilder.toString().toLowerCase();
     }
 
-    public void validate() {
-        // validate
+    public void validate() throws DatabaseException {
+        int primaryField = 0;
+        for (int i = 0; i < fields.length; i++) {
+            if (fields[i].getAnnotatedType() != null) {
+                if (fields[i].isAnnotationPresent(PrimaryKey.class)) {
+                    if (!fields[i].isAnnotationPresent(Column.class)) {
+                        throw new DatabaseException("No Column annotation to PrimaryKey field");
+                    }
+                    primaryField++;
+                    primaryKeyFieldId = i;
+                }
+                if (primaryField > 1) {
+                    throw new DatabaseException("More than one PrimaryKey field");
+                }
+                if (H2TypeResolver.resolveType(fields[i].getType()) == null) {
+                    throw new DatabaseException("Type isn\'t supported");
+                }
+            }
+        }
+        if (primaryField == 0) {
+            throw new DatabaseException("No PrimaryKey field");
+        }
     }
 
     public void buildFieldNames() {
@@ -172,8 +225,7 @@ public class DatabaseService<T> {
             Column column = field.getAnnotation(Column.class);
             if (column == null) {
                 fieldsNames.add(null);
-            }
-            else {
+            } else {
                 if (column.name().length() > 0) {
                     fieldsNames.add(column.name());
                 } else {
@@ -202,11 +254,11 @@ public class DatabaseService<T> {
             }
             return result;
         } catch (IllegalAccessException e) {
-            throw new DatabaseException(e.getMessage());
+            throw new DatabaseException("IllegalAccessException");
         } catch (InstantiationException e) {
-            throw new DatabaseException(e.getMessage());
+            throw new DatabaseException("InstantiationException");
         } catch (SQLException e) {
-            throw new DatabaseException(e.getMessage());
+            throw new DatabaseException("SQLException");
         }
     }
 
