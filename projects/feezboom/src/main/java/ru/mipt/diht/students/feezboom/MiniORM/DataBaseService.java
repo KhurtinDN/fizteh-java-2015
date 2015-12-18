@@ -20,6 +20,14 @@ import java.util.List;
  * * Created by avk on 17.12.15.
  **/
 
+    // Сначала добавим в pom.xml
+    // зависимость от сервера баз данных h2:
+    // <dependency>
+    // <groupId>com.h2database</groupId>
+    // <artifactId>h2</artifactId>
+    // <version>1.4.190</version>
+    // </dependency>
+
 @SuppressWarnings("checkstyle:designforextension")
 
 // implements Closable потому что, наверное, нужно закрыть соединие, открытое
