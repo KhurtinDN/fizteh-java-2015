@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class H2TypeResolver {
+public class H2Type {
 
     private static HashMap<Class, String> h2dbTypes;
     private static HashMap<String, String> h2dbPrimeTypes;
@@ -46,10 +46,10 @@ public class H2TypeResolver {
             if (h2dbPrimeTypes.containsKey(type.toString())) {
                 return h2dbPrimeTypes.get(type.toString());
             }
-            //return null;
+            return null;
         } else if (h2dbTypes.containsKey(type)) {
             return h2dbTypes.get(type);
         }
-        return "";
+        return null;
     }
 }

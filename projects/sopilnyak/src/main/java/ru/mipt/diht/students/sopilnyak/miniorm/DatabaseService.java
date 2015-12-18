@@ -38,7 +38,6 @@ public class DatabaseService<T> {
     @Retention(RUNTIME)
     @Target(FIELD)
     public @interface PrimaryKey {
-        String name() default "";
     }
 
     DatabaseService(Class<T> inputClass) throws DatabaseException {
@@ -57,7 +56,7 @@ public class DatabaseService<T> {
         buildFieldNames();
     }
 
-    public <K> List<T> queryById(K key) throws DatabaseException {
+    public final <K> List<T> queryById(K key) throws DatabaseException {
         String name = fieldsNames.get(primaryKeyFieldId);
 
         StringBuilder requestBuilder = new StringBuilder();
@@ -74,7 +73,7 @@ public class DatabaseService<T> {
         }
     }
 
-    public List<T> queryForAll() throws DatabaseException {
+    public final List<T> queryForAll() throws DatabaseException {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("SELECT * FROM ").append(table);
         try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
@@ -86,7 +85,7 @@ public class DatabaseService<T> {
         }
     }
 
-    public void insert(T entry) throws DatabaseException {
+    public final void insert(T entry) throws DatabaseException {
         if (entry.getClass() != databaseClass) {
             throw new DatabaseException("Type of object is wrong");
         }
@@ -126,7 +125,7 @@ public class DatabaseService<T> {
         }
     }
 
-    public void update(T entry) throws DatabaseException {
+    public final void update(T entry) throws DatabaseException {
         try {
             if (delete(fields[primaryKeyFieldId].get(entry))) {
                 insert(entry);
@@ -136,7 +135,7 @@ public class DatabaseService<T> {
         }
     }
 
-    public <K> boolean delete(K key) throws DatabaseException {
+    public final <K> boolean delete(K key) throws DatabaseException {
         String name = fieldsNames.get(primaryKeyFieldId);
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -152,7 +151,7 @@ public class DatabaseService<T> {
         }
     }
 
-    public void createTable() throws DatabaseException {
+    public final void createTable() throws DatabaseException {
         StringBuilder headBuilder = new StringBuilder();
         for (int i = 0; i < fields.length; i++) {
             if (i != 0) {
@@ -160,7 +159,7 @@ public class DatabaseService<T> {
             }
             String name = fieldsNames.get(i);
             if (name != null) {
-                headBuilder.append(name).append(" ").append(H2TypeResolver.
+                headBuilder.append(name).append(" ").append(H2Type.
                         resolveType(fields[i].getType()));
                 if (i == primaryKeyFieldId) {
                     headBuilder.append(" NOT NULL PRIMARY KEY");
@@ -175,7 +174,7 @@ public class DatabaseService<T> {
         }
     }
 
-    public void dropTable() throws DatabaseException {
+    public final void dropTable() throws DatabaseException {
         try (Connection connection = DriverManager.getConnection(DATABASE_PATH)) {
             connection.createStatement().execute("DROP TABLE IF EXISTS " + table);
         } catch (SQLException e) {
@@ -183,19 +182,19 @@ public class DatabaseService<T> {
         }
     }
 
-    public String toSnakeCase(String input) {
+    public final String toSnakeCase(String input) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < input.length(); i++) {
             stringBuilder.append(input.charAt(i));
-            if ((i < input.length() - 1) &&
-                    Character.isUpperCase(input.charAt(i + 1))) {
+            if ((i < input.length() - 1)
+                    && Character.isUpperCase(input.charAt(i + 1))) {
                 stringBuilder.append("_");
             }
         }
         return stringBuilder.toString().toLowerCase();
     }
 
-    public void validate() throws DatabaseException {
+    public final void validate() throws DatabaseException {
         int primaryField = 0;
         for (int i = 0; i < fields.length; i++) {
             if (fields[i].getAnnotatedType() != null) {
@@ -209,7 +208,7 @@ public class DatabaseService<T> {
                 if (primaryField > 1) {
                     throw new DatabaseException("More than one PrimaryKey field");
                 }
-                if (H2TypeResolver.resolveType(fields[i].getType()) == null) {
+                if (H2Type.resolveType(fields[i].getType()) == null) {
                     throw new DatabaseException("Type isn\'t supported");
                 }
             }
@@ -219,7 +218,7 @@ public class DatabaseService<T> {
         }
     }
 
-    public void buildFieldNames() {
+    public final void buildFieldNames() {
         fieldsNames = new ArrayList<>();
         for (Field field : fields) {
             Column column = field.getAnnotation(Column.class);
@@ -235,7 +234,7 @@ public class DatabaseService<T> {
         }
     }
 
-    public List<T> buildRequestAnswer(ResultSet resultSet) throws DatabaseException {
+    public final List<T> buildRequestAnswer(ResultSet resultSet) throws DatabaseException {
         try {
 
             List<T> result = new LinkedList<>();
