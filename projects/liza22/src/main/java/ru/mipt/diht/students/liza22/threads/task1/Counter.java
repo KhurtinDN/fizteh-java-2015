@@ -1,4 +1,4 @@
-package task1;
+package threads.task1;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,12 @@ public class Counter {
     private static final int DEFAULT_COUNT_OF_THREADS = 5;
 
     public static void main(String[] args) throws InterruptedException {
-        final int countOfThreads = (args.length == 0) ? DEFAULT_COUNT_OF_THREADS : Integer.parseInt(args[0]);
+        final int countOfThreads;
+        if (args.length == 0) {
+            countOfThreads = DEFAULT_COUNT_OF_THREADS
+        } else {
+            countOfThreads = Integer.parseInt(args[0]);
+        }
         if (countOfThreads <= 1) {
             throw new IllegalArgumentException("Count of threads must be > 1");
         }
@@ -38,7 +43,12 @@ public class Counter {
 
             final Condition myCondition = conditions.get(i);
 
-            final Condition nextCondition = (i == countOfThreads) ? conditions.get(1) : conditions.get(i+1);
+            final Condition nextCondition;
+            if (i == countOfThreads) {
+                nextCondition = conditions.get(1)
+            } else {
+                nextCondition = conditions.get(i + 1);
+            }
             executorService.execute(new Runnable() {
                 @Override
                 public void run() {

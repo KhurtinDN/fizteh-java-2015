@@ -1,4 +1,4 @@
-package task3;
+package threads.task3;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class BlockingQueue<T> {
+public final class BlockingQueue<T> {
     private int maxElements;
 
     private List<T> queue;
@@ -51,7 +51,7 @@ public class BlockingQueue<T> {
     public List<T> take(int countOfElements) {
         lock.lock();
         try {
-            while(!checkFullEnough(countOfElements)) {
+            while (!checkFullEnough(countOfElements)) {
                 notEmpty.await();
             }
             int lastElementIndex = queue.size();

@@ -1,4 +1,4 @@
-package task3;
+package threads.task3;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,6 +9,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class BlockingQueueMain {
+    public static final int COUNT = 10;
+    public static final int N1 = 1;
+    public static final int N2 = 2;
+    public static final int N3 = 3;
+    public static final int N4 = 4;
+    public static final int N5 = 5;
+    public static final int N6 = 6;
+    public static final int N7 = 7;
+    public static final int N8 = 8;
+    public static final int N9 = 9;
+    public static final int N10 = 10;
+
     public static void main(String[] args) throws InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(2);
 
@@ -32,7 +44,7 @@ public class BlockingQueueMain {
                         System.out.println("PROVIDER: sleep 3 seconds before offering elements to queue...");
                         TimeUnit.SECONDS.sleep(3);
                         System.out.println("PROVIDER: offer 5 elements to queue...");
-                        blockingQueue1.offer(Arrays.asList(1, 2, 3, 4, 5));
+                        blockingQueue1.offer(Arrays.asList(N1, N2, N3, N4, N5));
                         firstCaseInitTracker.countDown();
                     } catch (InterruptedException e) {
                         // ignore
@@ -48,10 +60,10 @@ public class BlockingQueueMain {
                 @Override
                 public void run() {
                     System.out.println("PROVIDER: offer 1-5 elements to queue...");
-                    blockingQueue2.offer(Arrays.asList(1, 2, 3, 4, 5));
+                    blockingQueue2.offer(Arrays.asList(N1, N2, N3, N4, N5));
                     System.out.println("PROVIDER: 1-5 element offered!");
                     System.out.println("PROVIDER: offer 5-10 elements to queue...");
-                    blockingQueue2.offer(Arrays.asList(6, 7, 8, 9, 10));
+                    blockingQueue2.offer(Arrays.asList(N6, N7, N8, N9, N10));
                     System.out.println("PROVIDER: 5-10 element offered!");
                     secondCaseInitTracker.countDown();
                 }
@@ -72,14 +84,15 @@ public class BlockingQueueMain {
             });
             secondCaseInitTracker.await();
 
-            System.out.println("\nThird case - provider blocked while consumer will take extra elements from queue one by one");
+            System.out.println("\nThird case - " +
+                    "provider blocked while consumer will take extra elements from queue one by one");
             final BlockingQueue<Integer> blockingQueue3 = new BlockingQueue<>(3);
             final CountDownLatch thirdCaseInitTracker = new CountDownLatch(2);
             executorService.execute(new Runnable() {
                 @Override
                 public void run() {
                     System.out.println("PROVIDER: offer 10 elements to queue one by one...");
-                    for (int i = 1; i <= 10; i++) {
+                    for (int i = 1; i <= COUNT; i++) {
                         System.out.println("PROVIDER: offer [" + i + "] element to queue...");
                         blockingQueue3.offer(Collections.singletonList(i));
                     }
@@ -91,7 +104,7 @@ public class BlockingQueueMain {
                 @Override
                 public void run() {
                     System.out.println("CONSUMER: take 10 elements from queue one by one...");
-                    for (int i = 1; i <= 10; i++) {
+                    for (int i = 1; i <= COUNT; i++) {
                         System.out.println("CONSUMER: taken " +  blockingQueue3.take(1) + " element from queue...");
                         // sleep 1 second before next taking...
                         try {
