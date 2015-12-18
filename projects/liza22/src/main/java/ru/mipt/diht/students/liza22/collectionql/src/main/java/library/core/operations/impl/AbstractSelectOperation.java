@@ -32,7 +32,7 @@ public abstract class AbstractSelectOperation implements QueryOperation {
         }
     }
 
-    protected  <S, R> List<R> doSelect(List<S> sourceElements, QueryContext<R, S> queryContext)
+    protected  final <S, R> List<R> doSelect(List<S> sourceElements, QueryContext<R, S> queryContext)
             throws IncorrectQueryException {
         List<SelectArgument<S>> selectArguments = queryContext.getSelectArguments();
         List<SelectArgument<S>> notAggregateArgs = selectArguments.stream().
@@ -80,7 +80,7 @@ public abstract class AbstractSelectOperation implements QueryOperation {
         }
     }
 
-    protected  <S> void calculateNotAggregateArguments(List<S> sourceElements,
+    protected final  <S> void calculateNotAggregateArguments(List<S> sourceElements,
                                                        List<SelectArgument<S>> selectArguments) {
         for (SelectArgument<S> selectArgument : selectArguments) {
             // apply function for each element of source and store to map [element <-> value]
@@ -96,7 +96,7 @@ public abstract class AbstractSelectOperation implements QueryOperation {
         }
     }
 
-    protected  <S> void calculateAggregateArguments(List<S> sourceElements, List<SelectArgument<S>> selectArguments) {
+    protected  final <S> void calculateAggregateArguments(List<S> sourceElements, List<SelectArgument<S>> selectArguments) {
         for (SelectArgument<S> selectArgument : selectArguments) {
             AggregateFunction<S, Object, Object> aggregateFunction = selectArgument.getAggregateFunction();
             Object aggregateValue = aggregateFunction.apply(sourceElements);
@@ -105,7 +105,7 @@ public abstract class AbstractSelectOperation implements QueryOperation {
         }
     }
 
-    protected <R, S> List<R> calculateResult(List<S> sourceElements, Constructor<R> resultClassConstructor,
+    protected final <R, S> List<R> calculateResult(List<S> sourceElements, Constructor<R> resultClassConstructor,
                                              List<SelectArgument<S>> selectArguments) throws IncorrectQueryException {
         try {
             List<R> results = new ArrayList<>(sourceElements.size());
@@ -119,7 +119,7 @@ public abstract class AbstractSelectOperation implements QueryOperation {
         }
     }
 
-    protected <R, S> R calculateOnlyAggregatedResult(Constructor<R> resultClassConstructor,
+    protected final <R, S> R calculateOnlyAggregatedResult(Constructor<R> resultClassConstructor,
                                                      List<SelectArgument<S>> selectArguments)
             throws IncorrectQueryException {
         try {
@@ -129,7 +129,7 @@ public abstract class AbstractSelectOperation implements QueryOperation {
         }
     }
 
-    protected  <R, S> R calculateMixedResult(S sourceElement, Constructor<R> resultClassConstructor,
+    protected final <R, S> R calculateMixedResult(S sourceElement, Constructor<R> resultClassConstructor,
                                              List<SelectArgument<S>> selectArguments) throws IncorrectQueryException {
         try {
             return convertToResultObject(resultClassConstructor, sourceElement, selectArguments);
@@ -153,9 +153,11 @@ public abstract class AbstractSelectOperation implements QueryOperation {
         Object[] constructorArguments = new Object[selectArguments.size()];
         for (int i = 0; i < selectArguments.size(); i++) {
             SelectArgument<S> selectArgument = selectArguments.get(i);
-            Object value = (selectArgument.isAggregate())
-                    ? selectArgument.getAggregatedValue()
-                    : selectArgument.getValues().get(source);
+            if (selectArgument.isAggregate()) {
+                Object value = selectArgument.getAggregatedValue();
+            } else {
+                Object value = selectArgument.getValues().get(source);
+            }
             constructorArguments[i] = value;
         }
         return resultConstructor.newInstance(constructorArguments);

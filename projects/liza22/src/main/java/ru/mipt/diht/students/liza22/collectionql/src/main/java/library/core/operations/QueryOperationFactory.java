@@ -9,17 +9,17 @@ import java.util.Map;
  * Factory for QueryOperation instances.
  */
 public class QueryOperationFactory {
-    private static final Map<OperationType, QueryOperation> operationInstances;
+    private static final Map<OperationType, QueryOperation> OperationInstances;
     static {
-        operationInstances = new HashMap<>();
-        operationInstances.put(OperationType.WHERE_OP, new WhereOperation());
-        operationInstances.put(OperationType.SIMPLE_SELECT_OP, new SimpleSelectOperation());
-        operationInstances.put(OperationType.GROUPING_SELECT_OP, new GroupingSelectOperation());
-        operationInstances.put(OperationType.HAVING_OP, new HavingOperation());
-        operationInstances.put(OperationType.ORDER_BY_OP, new OrderByOperation());
-        operationInstances.put(OperationType.LIMIT_OP, new LimitOperation());
-        operationInstances.put(OperationType.DISTINCT_OP, new DistinctOperation());
-        operationInstances.put(OperationType.UNION_OP, new UnionOperation());
+        OperationInstances = new HashMap<>();
+        OperationInstances.put(OperationType.WHERE_OP, new WhereOperation());
+        OperationInstances.put(OperationType.SIMPLE_SELECT_OP, new SimpleSelectOperation());
+        OperationInstances.put(OperationType.GROUPING_SELECT_OP, new GroupingSelectOperation());
+        OperationInstances.put(OperationType.HAVING_OP, new HavingOperation());
+        OperationInstances.put(OperationType.ORDER_BY_OP, new OrderByOperation());
+        OperationInstances.put(OperationType.LIMIT_OP, new LimitOperation());
+        OperationInstances.put(OperationType.DISTINCT_OP, new DistinctOperation());
+        OperationInstances.put(OperationType.UNION_OP, new UnionOperation());
     }
 
     /**
@@ -27,6 +27,6 @@ public class QueryOperationFactory {
      * @return query operation instance by requested type
      */
     public static QueryOperation getOperationByType(OperationType type) {
-        return operationInstances.get(type);
+        return OperationInstances.get(type);
     }
 }

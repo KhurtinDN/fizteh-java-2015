@@ -24,8 +24,8 @@ import static library.api.Sources.list;
  * or NullPointerException in case when required argument is null.
  */
 public final class IncorrectQueryTest {
-    public final static int AGE = 10;
-    public final static int LIMIT = 100;
+    public static final int AGE = 10;
+    public static final int LIMIT = 100;
 
     @Test(expected = IllegalArgumentException.class)
     public void testEmptySourceQuery() throws IncorrectQueryException {

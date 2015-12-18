@@ -27,13 +27,21 @@ public class Statistics {
 
     @Override
     public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Statistics that = (Statistics) o;
 
-        if (!group.equals(that.group)) return false;
-        if (!count.equals(that.count)) return false;
+        if (!group.equals(that.group)) {
+            return false;
+        }
+        if (!count.equals(that.count)) {
+            return false;
+        }
         return age.equals(that.age);
 
     }

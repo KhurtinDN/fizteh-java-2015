@@ -2,7 +2,6 @@ package library;
 
 import client.Statistics;
 import client.Student;
-import library.api.Conditions;
 import library.core.exceptions.IncorrectQueryException;
 import org.junit.Test;
 
@@ -241,7 +240,8 @@ public final class CorrectQueryTest {
                                         student("sidorov", LocalDate.parse("1986-08-06"), "495"),
                                         student("smith", LocalDate.parse("1946-08-06"), "495"),
                                         student("petrov", LocalDate.parse("1996-08-06"), "494")))
-                                        .select(Statistics.class, constant("average"), constant(NUM1), avg(Student::age))
+                                        .select(Statistics.class, constant("average"),
+                                                constant(NUM1), avg(Student::age))
                         )
                         .execute();
 

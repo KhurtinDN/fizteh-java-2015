@@ -25,13 +25,21 @@ public class StudentInfo {
 
         @Override
         public final boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
 
             StudentInfo that = (StudentInfo) o;
 
-            if (age != that.age) return false;
-            if (!name.equals(that.name)) return false;
+            if (age != that.age) {
+                return false;
+            }
+            if (!name.equals(that.name)) {
+                return false;
+            }
             return group.equals(that.group);
 
         }
