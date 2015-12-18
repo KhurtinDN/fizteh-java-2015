@@ -40,7 +40,13 @@ public class FromStmt<T> {
         try {
             return new SelectStmt<>((Iterable<R>) previousQuery, data, clazz, false, s);
         } catch (ClassCastException ex) {
-            throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+            try {
+                List<R> newIterable = new ArrayList<>();
+                previousQuery.forEach(el -> newIterable.add((R) el));
+                return new SelectStmt<>(newIterable, data, clazz, false, s);
+            } catch (ClassCastException exeption) {
+                throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+            }
         }
     }
 
@@ -55,7 +61,13 @@ public class FromStmt<T> {
         try {
             return new SelectStmt<>((Iterable<R>) previousQuery, data, false, s);
         } catch (ClassCastException ex) {
-            throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+            try {
+                List<R> newIterable = new ArrayList<>();
+                previousQuery.forEach(el -> newIterable.add((R) el));
+                return new SelectStmt<>(newIterable, data, false, s);
+            } catch (ClassCastException exception) {
+                throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+            }
         }
     }
 
@@ -73,7 +85,13 @@ public class FromStmt<T> {
         try {
             return new SelectStmt<>((Iterable<Tuple<F, S>>) previousQuery, data, false, first, second);
         } catch (ClassCastException ex) {
-            throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+            try {
+                List<Tuple<F, S>> newIterable = new ArrayList<>();
+                previousQuery.forEach(el -> newIterable.add((Tuple<F, S>) el));
+                return new SelectStmt<>(newIterable, data, false, first, second);
+            } catch (ClassCastException exception) {
+                throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+            }
         }
     }
 
@@ -83,7 +101,13 @@ public class FromStmt<T> {
         try {
             return new SelectStmt<>((Iterable<R>) previousQuery, data, clazz, true, s);
         } catch (ClassCastException ex) {
-            throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+            try {
+                List<R> newIterable = new ArrayList<>();
+                previousQuery.forEach(el -> newIterable.add((R) el));
+                return new SelectStmt<>(newIterable, data, clazz, false, s);
+            } catch (ClassCastException exception) {
+                throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+            }
         }
     }
 
@@ -98,7 +122,28 @@ public class FromStmt<T> {
         try {
             return new SelectStmt<>((Iterable<R>) previousQuery, data, false, s);
         } catch (ClassCastException ex) {
-            throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+            try {
+                List<R> newIterable = new ArrayList<>();
+                previousQuery.forEach(el -> newIterable.add((R) el));
+                return new SelectStmt<>(newIterable, data, false, s);
+            } catch (ClassCastException exception) {
+                throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+            }
+        }
+    }
+
+    public final <F, S> SelectStmt<T, Tuple<F, S>> selectDistinct(Function<T, F> first, Function<T, S> second)
+            throws UnequalUnionClassesException {
+        try {
+            return new SelectStmt<>((Iterable<Tuple<F, S>>) previousQuery, data, false, first, second);
+        } catch (ClassCastException ex) {
+            try {
+                List<Tuple<F, S>> newIterable = new ArrayList<>();
+                previousQuery.forEach(el -> newIterable.add((Tuple<F, S>) el));
+                return new SelectStmt<>(newIterable, data, false, first, second);
+            } catch (ClassCastException exception) {
+                throw new UnequalUnionClassesException("Uncasted classes can't be union.", ex);
+            }
         }
     }
 

@@ -38,7 +38,11 @@ public class WhereStmt<T, R> implements Query<R> {
         this.isDistinct = isDistnct;
         this.isTupleR = isTuplR;
         groupingCondition = null;
-        example = iterable.iterator().next();
+        if (iterable.iterator().hasNext()) {
+            example = iterable.iterator().next();
+        } else {
+            example = null;
+        }
     }
 
     @SafeVarargs
@@ -77,7 +81,11 @@ public class WhereStmt<T, R> implements Query<R> {
     public final Stream<R> stream() throws QueryExecuteException, EmptyCollectionException {
         constructorArguments = new Object[convertFunctions.length];
         resultClasses = new Class[convertFunctions.length];
-        //
+
+        if (example == null) {
+            return (new ArrayList<R>()).stream();
+        }
+
         for (int i = 0; i < convertFunctions.length; i++) {
             resultClasses[i] = convertFunctions[i].apply(example).getClass();
         }
@@ -128,10 +136,10 @@ public class WhereStmt<T, R> implements Query<R> {
                 }
             }
         } else {
-            //лямбда исключение не прокидывает
             if (resultComparator != null) {
                 stream.sorted(resultComparator);
             }
+            //лямбда исключение не прокидывает
             for (T element : stream.collect(Collectors.toList())) {
                 addToList(result, element);
             }

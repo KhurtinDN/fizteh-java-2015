@@ -90,9 +90,9 @@ public class CollectionQueryTest extends TestCase {
                         .toString(),
                 "[491, 493, 495, 496, 497]");
     }
-/*
+
     @Test
-    public final void testUnion() throws Exception {
+    public final void testJoin() throws Exception {
         Iterable<Statistics> statistics = from(list(
                 student("ivanov", LocalDate.parse("1986-08-06"), "496"),
                 student("petroff", LocalDate.parse("1999-05-08"), "497"),
@@ -102,17 +102,136 @@ public class CollectionQueryTest extends TestCase {
                 student("nobody", LocalDate.parse("1979-05-05"), "497"),
                 student("testman", LocalDate.parse("1987-04-06"), "494"),
                 student("someone", LocalDate.parse("1989-05-06"), "493")))
-                .join(list(new Group("493", "Master3d"), new Group("497", "Master7th")))
-                .on(sg -> sg.getName(), sg -> sg.getGroup())
+                .join(list(new Group("493", "Master"), new Group("497", "Flomaster")))
+                .on(sg -> sg.getGroup(), sg -> sg.getGroup())
                 .select(Statistics.class, sg -> sg.getFirst().getGroup(), count(sg -> sg.getFirst().getGroup()),
-                        min(sg -> sg.getFirst().age()), sg -> sg.getSecond().getMentor())
-                .where(sg -> sg.getFirst().age() > 0)
-                .groupBy(sg -> sg.getFirst().getGroup())
-                .having(s -> s.getCount() > 1)
+                        min(sg -> sg.getFirst().age()))
+                .where(sg -> sg.getFirst().age() > 20)
                 .execute();
-        System.out.println(statistics);
+        assertEquals("[Statistics{group='493', count=1, age=27}]", statistics.toString());
     }
-*/
+
+    @Test
+    public final void testGroupBy() throws Exception {
+        Iterable<Statistics> statistics =
+                from(list(
+                        student("ivanov", LocalDate.parse("1985-08-06"), "491"),
+                        student("pejes", LocalDate.parse("1981-08-06"), "493"),
+                        student("kokoko", LocalDate.parse("1996-08-06"), "495"),
+                        student("petya", LocalDate.parse("1997-08-06"), "496"),
+                        student("sidorov", LocalDate.parse("1999-08-06"), "496"),
+                        student("petrovich", LocalDate.parse("1911-08-06"), "497"),
+                        student("zhdan", LocalDate.parse("1999-08-06"), "497"),
+                        student("pustik", LocalDate.parse("1980-08-06"), "497")))
+                        .select(Statistics.class, Student::getGroup, count(Student::getGroup), avg(Student::age))
+                        .where(rlike(Student::getName, ".*v*").and(s -> s.age() > 25))
+                        .groupBy(Student::getGroup)
+                        .having(s -> s.getCount() > 0)
+                        .orderBy(asc(Student::getGroup), desc(count(Student::getGroup)))
+                        .limit(100)
+                        .union()
+                        .from(list(student("ivanov", LocalDate.parse("1985-08-06"), "494")))
+                        .selectDistinct(Statistics.class, Student::getGroup, count(s -> 1), avg(Student::age))
+                        .execute();
+        assertEquals("[Statistics{group='494', count=1, age=30}, Statistics{group='491', count=1, age=30}, "
+                        + "Statistics{group='493', count=1, age=34}, Statistics{group='497', count=2, age=69}]",
+                statistics.toString());
+
+        Iterable<Statistics> statistics2 =
+                from(list(
+                        student("ivanov", LocalDate.parse("1986-08-06"), "496"),
+                        student("petroff", LocalDate.parse("1999-05-08"), "497"),
+                        student("testoff", LocalDate.parse("1987-05-08"), "497"),
+                        student("sidorov", LocalDate.parse("1991-08-06"), "494"),
+                        student("ivanov", LocalDate.parse("1988-08-06"), "493"),
+                        student("nobody", LocalDate.parse("1979-05-05"), "497"),
+                        student("testman", LocalDate.parse("1987-04-06"), "494"),
+                        student("someone", LocalDate.parse("1989-05-06"), "493")))
+                        .select(Statistics.class, Student::getGroup, count(Student::getGroup), avg(Student::age))
+                        .where(rlike(Student::getName, ".*v*").and(s -> s.age() > 30))
+                        .groupBy(Student::getGroup)
+                        .having(s -> s.getCount() > 0)
+                        .orderBy(asc(Student::getGroup), desc(count(Student::getGroup)))
+                        .limit(100)
+                        .union()
+                        .from(list(student("ivanov", LocalDate.parse("1985-08-06"), "494")))
+                        .selectDistinct(Statistics.class, Student::getGroup, count(s -> 1), avg(Student::age))
+                        .execute();
+        assertEquals("[Statistics{group='494', count=1, age=30}, Statistics{group='497', count=1, age=36}]",
+                statistics2.toString());
+    }
+
+    @Test
+    public final void testUnion() throws Exception {
+        Iterable<Student> students =
+                from(list(
+                        student("ivanov", LocalDate.parse("1986-08-06"), "496"),
+                        student("petroff", LocalDate.parse("1999-05-08"), "497"),
+                        student("testoff", LocalDate.parse("1987-05-08"), "497"),
+                        student("sidorov", LocalDate.parse("1991-08-06"), "494"),
+                        student("ivanov", LocalDate.parse("1988-08-06"), "493"),
+                        student("nobody", LocalDate.parse("1979-05-05"), "497"),
+                        student("testman", LocalDate.parse("1987-04-06"), "494"),
+                        student("someone", LocalDate.parse("1989-05-06"), "493")))
+                        .select(Student.class, Student::getName, Student::getDateOfBith, Student::getGroup)
+                        .where(rlike(Student::getName, ".*o*").and(s -> s.age() > 25))
+                        .limit(3)
+                        .union()
+                        .from(list(student("ivanov", LocalDate.parse("1985-08-06"), "491"),
+                                student("pejes", LocalDate.parse("1981-08-06"), "493"),
+                                student("kokoko", LocalDate.parse("1996-08-06"), "495"),
+                                student("petya", LocalDate.parse("1997-08-06"), "496"),
+                                student("sidorov", LocalDate.parse("1999-08-06"), "496"),
+                                student("petrovich", LocalDate.parse("1911-08-06"), "497"),
+                                student("zhdan", LocalDate.parse("1999-08-06"), "497"),
+                                student("pustik", LocalDate.parse("1980-08-06"), "497")))
+                        .select(Student.class, Student::getName, Student::getDateOfBith, Student::getGroup)
+                        .where(rlike(Student::getName, "zhdan"))
+                        .limit(5)
+                        .execute();
+        assertEquals("[zhdan 497, ivanov 496, testoff 497, ivanov 493]", students.toString());
+
+        Iterable<Student> students2 =
+                from(list(
+                        student("petroff", LocalDate.parse("1999-05-08"), "497"),
+                        student("testoff", LocalDate.parse("1987-05-08"), "497")))
+                        .select(Student.class, Student::getName, Student::getDateOfBith, Student::getGroup)
+                        .where(rlike(Student::getName, ".*o*").and(s -> s.age() > 25))
+                        .limit(3)
+                        .union()
+                        .from(list(student("pejes", LocalDate.parse("1981-08-06"), "493"),
+                                student("kokoko", LocalDate.parse("1996-08-06"), "495")))
+                        .select(Student.class, Student::getName, Student::getDateOfBith, Student::getGroup)
+                        .where(rlike(Student::getName, "pejes"))
+                        .union()
+                        .from(list(student("petrovich", LocalDate.parse("1911-08-06"), "497"),
+                                student("zhdan", LocalDate.parse("1999-08-06"), "494"),
+                                student("pustik", LocalDate.parse("1980-08-06"), "494")))
+                        .select(Student.class, Student::getName, Student::getDateOfBith, Student::getGroup)
+                        .where(rlike(Student::getGroup, "494"))
+                        .union()
+                        .from(list(student("ibrogimovich", LocalDate.parse("1911-08-06"), "497"),
+                                student("zhirkov", LocalDate.parse("1999-08-06"), "495"),
+                                student("gauss", LocalDate.parse("1980-08-06"), "496")))
+                        .select(Student.class, Student::getName, Student::getDateOfBith, Student::getGroup)
+                        .where(rlike(Student::getName, "no"))
+                        .union()
+                        .from(list(student("matan", LocalDate.parse("1911-08-06"), "491"),
+                                student("algebra", LocalDate.parse("1999-08-06"), "492"),
+                                student("geometry", LocalDate.parse("1980-08-06"), "493")))
+                        .select(Student.class, Student::getName, Student::getDateOfBith, Student::getGroup)
+                        .where(rlike(Student::getName, "zhdan"))
+                        .union()
+                        .from(list(student("musatov", LocalDate.parse("1911-08-06"), "498"),
+                                student("raigor", LocalDate.parse("1999-08-06"), "499"),
+                                student("chernov", LocalDate.parse("1980-08-06"), "498")))
+                        .select(Student.class, Student::getName, Student::getDateOfBith, Student::getGroup)
+                        .where(rlike(Student::getGroup, "499"))
+                        .execute();
+
+        assertEquals("[raigor 499, zhdan 494, pustik 494, pejes 493, testoff 497]", students2.toString());
+    }
+
     public static class Student {
         private final String name;
 
