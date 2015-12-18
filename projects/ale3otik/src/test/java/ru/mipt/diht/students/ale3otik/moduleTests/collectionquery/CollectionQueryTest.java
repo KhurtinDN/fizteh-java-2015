@@ -5,7 +5,6 @@ import org.junit.Test;
 import ru.mipt.diht.students.ale3otik.collectionquery.impl.CqlException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 import static ru.mipt.diht.students.ale3otik.collectionquery.Aggregates.avg;
@@ -50,6 +49,10 @@ public class CollectionQueryTest extends TestCase {
 
 
     public static class Student {
+        private static LocalDate baseDateTime;
+        static {
+            baseDateTime = LocalDate.parse("2000-08-06");
+        }
         private final String name;
 
         private final LocalDate dateOfBith;
@@ -75,11 +78,11 @@ public class CollectionQueryTest extends TestCase {
         }
 
         public long age() {
-            return ChronoUnit.YEARS.between(getDateOfBith(), LocalDateTime.now());
+            return ChronoUnit.YEARS.between(getDateOfBith(), baseDateTime);
         }
 
         public double aged() {
-            return new Long(ChronoUnit.YEARS.between(getDateOfBith(), LocalDateTime.now())).doubleValue();
+            return new Long(age()).doubleValue();
         }
 
         public static Student student(String name, LocalDate dateOfBith, String group) {
