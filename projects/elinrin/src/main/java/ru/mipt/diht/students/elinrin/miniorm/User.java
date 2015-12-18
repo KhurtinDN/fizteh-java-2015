@@ -1,5 +1,6 @@
 package ru.mipt.diht.students.elinrin.miniorm;
 
+/*
 import ru.mipt.diht.students.elinrin.miniorm.annotations.Column;
 import ru.mipt.diht.students.elinrin.miniorm.annotations.PrimaryKey;
 import ru.mipt.diht.students.elinrin.miniorm.annotations.Table;
@@ -9,10 +10,11 @@ import javax.management.OperationsException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
+*/
 
 
 public class User {
-    @Table(name = "TESTTABLE")
+    /*@Table(name = "TESTTABLE")
     static class Tab {
         @PrimaryKey
         @Column(name = "ID")
@@ -74,5 +76,5 @@ public class User {
         } finally {
             bd.dropTable();
         }
-    }
+    }*/
 }
