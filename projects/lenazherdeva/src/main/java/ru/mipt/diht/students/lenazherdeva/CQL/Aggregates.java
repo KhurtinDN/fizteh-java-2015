@@ -1,5 +1,5 @@
 package ru.mipt.diht.students.lenazherdeva.CQL;
-/*
+
 import ru.mipt.diht.students.lenazherdeva.CQL.impl.aggregators.AvgFunction;
 import ru.mipt.diht.students.lenazherdeva.CQL.impl.aggregators.CountFunction;
 import ru.mipt.diht.students.lenazherdeva.CQL.impl.aggregators.MinFunction;
@@ -7,8 +7,8 @@ import ru.mipt.diht.students.lenazherdeva.CQL.impl.aggregators.MinFunction;
 import java.util.function.Function;
 
 /**
- * Created by admin on 17.12.2015.
-
+ * Created by admin on 17.11.2015.
+**/
 public class Aggregates {
 
     public static <C, T extends Comparable<T>> Function<C, T> max(Function<C, T> expression) {
@@ -32,4 +32,3 @@ public class Aggregates {
 
 }
 
-*/

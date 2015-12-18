@@ -1,5 +1,5 @@
 package ru.mipt.diht.students.lenazherdeva.CQL;
-/*
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -13,8 +13,9 @@ import static ru.mipt.diht.students.lenazherdeva.CQL.impl.FromStmt.*;
 
 /**
  * Created by admin on 16.11.2015.
-*
+**/
 public class CQL {
+    @SuppressWarnings("checkstyle:magicnumber")
 
     public static void main(String[] args) throws Exception {
         Iterable<Statistics> statistics =
@@ -29,9 +30,6 @@ public class CQL {
                         .having(s -> s.getCount() > 0)
                         .orderBy(asc(Statistics::getGroup), desc(Statistics::getCount))
                         .limit(100)
-                        .union()
-                        .from(list(student("ivanov", LocalDate.parse("1985-08-06"), "494")))
-                        .selectDistinct(Statistics.class, s -> "all", count(s -> 1), avg(Student::age))
                         .execute();
         System.out.println(statistics);
 
@@ -42,26 +40,32 @@ public class CQL {
         private final LocalDate dateOfBirth;
         private final String group;
 
-        public String getName() {
+        public final String getName() {
             return name;
         }
 
-        public Student(String name, LocalDate dateOfBith, String group) {
-            this.name = name;
+        public Student(String inpName, LocalDate dateOfBith, String inpGroup) {
+            this.name = inpName;
             this.dateOfBirth = dateOfBith;
-            this.group = group;
+            this.group = inpGroup;
         }
 
-        public LocalDate getDateOfBirth() {
+        public Student(String namee, String groupp) {
+            this.name = namee;
+            this.dateOfBirth = null;
+            this.group = groupp;
+        }
+
+        public  final LocalDate getDateOfBirth() {
             return dateOfBirth;
         }
 
-        public String getGroup() {
+        public final String getGroup() {
             return group;
         }
 
-        public long age() {
-            return ChronoUnit.YEARS.between(getDateOfBirth(), LocalDateTime.now());
+        public final Double age() {
+            return (double) ChronoUnit.YEARS.between(getDateOfBirth(), LocalDateTime.now());
         }
 
         public static Student student(String name, LocalDate dateOfBirth, String group) {
@@ -73,16 +77,16 @@ public class CQL {
         private final String group;
         private final String mentor;
 
-        public Group(String group, String mentor) {
-            this.group = group;
-            this.mentor = mentor;
+        public Group(String groupp, String mentorr) {
+            this.group = groupp;
+            this.mentor = mentorr;
         }
 
-        public String getGroup() {
+        public final String getGroup() {
             return group;
         }
 
-        public String getMentor() {
+        public final String getMentor() {
             return mentor;
         }
     }
@@ -94,26 +98,23 @@ public class CQL {
         private final Integer count;
         private final Double age;
 
-        public String getGroup() {
+        public final String getGroup() {
             return group;
         }
 
-        public Integer getCount() {
+        public final Integer getCount() {
             return count;
         }
 
-        public Double getAge() {
-            return age;
-        }
 
-        public Statistics(String group, Integer count, Double age) {
-            this.group = group;
-            this.count = count;
-            this.age = age;
+        public Statistics(String inpGroup, Integer inpCount, Double inpAge) {
+            this.group = inpGroup;
+            this.count = inpCount;
+            this.age = inpAge;
         }
 
         @Override
-        public String toString() {
+        public final  String toString() {
             return "Statistics{"
                     + "group='" + group + '\''
                     + ", count=" + count
@@ -122,4 +123,3 @@ public class CQL {
         }
     }
 }
-*/

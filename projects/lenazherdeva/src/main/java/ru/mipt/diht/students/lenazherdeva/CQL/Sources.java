@@ -1,14 +1,11 @@
 package ru.mipt.diht.students.lenazherdeva.CQL;
-/*
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
+
 
 /**
- * Created by admin on 17.12.2015.
-
+ * Created by admin on 17.11.2015.
+*/
 
 
 public class Sources {
@@ -18,4 +15,4 @@ public class Sources {
     }
 
 }
-*/
+
