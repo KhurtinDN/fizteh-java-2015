@@ -1,25 +1,29 @@
 package ru.mipt.diht.students.ale3otik.collectionquery.impl;
 
-import java.util.List;
+import java.util.LinkedList;
 import java.util.stream.Stream;
 
-public class UnionStmt<T, R> {
+public class UnionStmt<R> {
 
-    private SelectStmt<T, R> parent;
+    private SelectStmt<?, R> parent;
 
-    public UnionStmt(SelectStmt<T, R> rcvParent) {
+    public UnionStmt(SelectStmt<?, R> rcvParent) {
         this.parent = rcvParent;
     }
 
-    public final FromStmt<T> from(Iterable<T> list) {
-        return new FromStmt<>(list, this);
+    public final <T> FromStmt<T> from(Iterable<T> list) {
+        return new FromStmt<T>(list, this);
     }
 
-    public final FromStmt<T> from(Stream<T> list) {
-        return new FromStmt<>(list, this);
+    public final <T> FromStmt<T> from(Stream<T> list) {
+        return new FromStmt<T>(list, this);
     }
 
-    public final List<R> execute() throws CqlException {
-        return parent.executeGetList();
+    public final <T> FromStmt<T> from(Query query) {
+        return new FromStmt<T>(query, this);
+    }
+
+    public final LinkedList<R> execute() throws CqlException {
+        return parent.executeGetLinkedList();
     }
 }

@@ -8,9 +8,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class SelectStmt<T, R> {
-
+public class SelectStmt<T, R> implements Query {
     private List<T> data;
+    private Query<T> query;
     private boolean isDistinct;
     private Class<?> returnedClass;
     private Function<T, ?>[] functions;
@@ -19,14 +19,28 @@ public class SelectStmt<T, R> {
     private Comparator<R> orderByComparator;
     private Predicate<R> havingCondition;
     private int limitRows = -1;
-    private UnionStmt<T, R> parentUnion;
+    private UnionStmt<?> parentUnion;
+    private JoinClause<?, ?> joinClause;
+
 
     @SafeVarargs
-    public SelectStmt(List<T> rcvData, Class<R> rcvReturnedClass, boolean rcvIsDistinct,
-                      UnionStmt<T, R> rcvParentUnion, Function<T, ?>... rcvFunctions) {
+    public SelectStmt(List<T> rcvData,
+                      Query<T> rcvQuery,
+                      Class<R> rcvReturnedClass,
+                      boolean rcvIsDistinct,
+                      UnionStmt<?> rcvParentUnion,
+                      Function<T, ?>... rcvFunctions) {
         this.data = rcvData;
         this.isDistinct = rcvIsDistinct;
         this.returnedClass = rcvReturnedClass;
+        this.parentUnion = rcvParentUnion;
+        this.functions = rcvFunctions;
+        this.query = rcvQuery;
+    }
+
+    public <F, S> SelectStmt(JoinClause<?, ?> rcvJoinClause,
+                             UnionStmt<?> rcvParentUnion, Function<T, ?>... rcvFunctions) {
+        this.joinClause = rcvJoinClause;
         this.parentUnion = rcvParentUnion;
         this.functions = rcvFunctions;
     }
@@ -36,8 +50,9 @@ public class SelectStmt<T, R> {
         return this;
     }
 
+    @Override
     public final Iterable<R> execute() throws CqlException {
-        return executeGetList();
+        return executeGetLinkedList();
     }
 
     private List<T> applyWhere(List<T> source) {
@@ -110,6 +125,7 @@ public class SelectStmt<T, R> {
     @SuppressWarnings("checkstyle:avoidinlineconditionals")
     private List<R> getResultList(List<List<T>> buckets) throws CqlException {
         List<R> result = new ArrayList<>();
+
         Class[] resultClasses = new Class[functions.length];
         Object[] args = new Object[functions.length];
         try {
@@ -120,7 +136,16 @@ public class SelectStmt<T, R> {
                     resultClasses[i] = args[i].getClass();
                 }
 
-                R record = (R) returnedClass.getConstructor(resultClasses).newInstance(args);
+                R record;
+                if (joinClause != null) {
+                    record = (R) (new Tuple<>(args[0], args[1]));
+                } else {
+                    if (returnedClass == null) {
+                        record = (R) args[0];
+                    } else {
+                        record = (R) returnedClass.getConstructor(resultClasses).newInstance(args);
+                    }
+                }
                 result.add(record);
             }
         } catch (NoSuchMethodException | IllegalAccessException
@@ -131,6 +156,15 @@ public class SelectStmt<T, R> {
     }
 
     private List<R> buildResultList() throws CqlException {
+        if (data == null) {
+            if (joinClause != null) {
+                data = (List<T>) joinClause.excuteGetTupleList();
+            } else {
+                data = new ArrayList<>();
+                Iterable<T> res = this.query.execute();
+                res.forEach(e -> data.add(e));
+            }
+        }
         data = applyWhere(data);
         List<List<T>> grouped = buildGroups(data);
         List<R> result = getResultList(grouped);
@@ -142,15 +176,16 @@ public class SelectStmt<T, R> {
         return result;
     }
 
-    public final List<R> executeGetList() throws CqlException {
-        List<R> previous;
+    public final LinkedList<R> executeGetLinkedList() throws CqlException {
+        LinkedList<R> previous;
         List<R> current = buildResultList();
+        LinkedList<R> currentLinkedList = new LinkedList<>(current);
         if (parentUnion != null) {
-            previous = parentUnion.execute();
-            previous.addAll(current);
-            current = previous;
+            previous = (LinkedList<R>) parentUnion.execute();
+            previous.addAll(currentLinkedList);
+            currentLinkedList = previous;
         }
-        return current;
+        return currentLinkedList;
     }
 
     @SafeVarargs
@@ -189,7 +224,7 @@ public class SelectStmt<T, R> {
         return this;
     }
 
-    public final UnionStmt<T, R> union() {
+    public final UnionStmt<R> union() {
         return new UnionStmt<>(this);
     }
 }

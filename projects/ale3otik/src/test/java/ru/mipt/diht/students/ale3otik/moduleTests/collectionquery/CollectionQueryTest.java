@@ -3,6 +3,7 @@ package ru.mipt.diht.students.ale3otik.moduletests.collectionquery;
 import junit.framework.TestCase;
 import org.junit.Test;
 import ru.mipt.diht.students.ale3otik.collectionquery.impl.CqlException;
+import ru.mipt.diht.students.ale3otik.collectionquery.impl.Tuple;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -40,21 +41,31 @@ public class CollectionQueryTest extends TestCase {
         assertEquals(
                 statistics.toString(),
                 "[Statistics{group='494', count=2, age=14.0}, Statistics{group='all', count=1, age=15.0}]");
-//        Iterable<Tuple<String, String>> mentorsByStudent =
-//                from(list(student("ivanov", LocalDate.parse("1985-08-06"), "494")))
-//                        .join(list(new Group("494", "mr.sidorov")))
-//                        .on((s, g) -> Objects.equals(s.getGroup(), g.getGroup()))
-//                        .select(sg -> sg.getFirst().getName(), sg -> sg.getSecond().getMentor())
-//                        .execute();
-//        System.out.println(mentorsByStudent);
+//
+        Iterable<Tuple<String, String>> mentorsByStudent =
+                from(list(student("ivanov", LocalDate.parse("1985-08-06"), "494")))
+                        .join(list(new Group("494", "mr.sidorov")))
+                        .on((s, g) -> Objects.equals(s.getGroup(), g.getGroup()))
+                        .select(sg -> sg.getFirst().getName(), sg -> sg.getSecond().getMentor())
+                        .execute();
+        Iterable<Tuple<String, String>> mentorsByStudent2 =
+                from(list(student("ivanov", LocalDate.parse("1985-08-06"), "494")))
+                        .join(list(new Group("494", "mr.sidorov")))
+                        .on(s -> s.getGroup(), g -> g.getGroup())
+                        .select(sg -> sg.getFirst().getName(), sg -> sg.getSecond().getMentor())
+                        .execute();
+        assertEquals(mentorsByStudent.toString(), "[Tuple{first=ivanov, second=mr.sidorov}]");
+        assertEquals(mentorsByStudent2.toString(), "[Tuple{first=ivanov, second=mr.sidorov}]");
     }
 
 
     public static class Student {
         private static LocalDate baseDateTime;
+
         static {
             baseDateTime = LocalDate.parse("2000-08-06");
         }
+
         private final String name;
 
         private final LocalDate dateOfBith;
@@ -94,14 +105,14 @@ public class CollectionQueryTest extends TestCase {
 
         @Override
         public boolean equals(Object obj) {
-            if(obj == null) {
+            if (obj == null) {
                 return false;
             }
 
-            if(!(obj instanceof Student)) {
+            if (!(obj instanceof Student)) {
                 return false;
             }
-            return Objects.equals(this.toString(),obj.toString());
+            return Objects.equals(this.toString(), obj.toString());
         }
     }
 
