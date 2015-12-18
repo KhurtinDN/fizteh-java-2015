@@ -54,7 +54,7 @@ public class RollCall {
                                     // ignore exception
                                 }
                             } else {
-                                System.out.println("Thread#" + (currentNum+1) + ": No");
+                                System.out.println("Thread#" + (currentNum + 1) + ": No");
                                 initTracker.countDown();
                             }
                         }
