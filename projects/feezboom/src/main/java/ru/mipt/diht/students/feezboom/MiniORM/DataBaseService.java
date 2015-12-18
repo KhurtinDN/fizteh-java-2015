@@ -206,16 +206,31 @@ public class DataBaseService<T> implements Closeable {
                 // Отправление на исполнение.
                 statement.execute();
             } catch (SQLException ex) {
-                System.err.println("Возника ошибка SQL(запрос вставки).");
+                System.err.println("Возника ошибка SQL(запрос обновления).");
             } catch (IllegalAccessException ex) {
-                System.err.println("Возникла ошибка неправомерного доступа.(запрос вставки)");
+                System.err.println("Возникла ошибка неправомерного доступа.(запрос обновления)");
             }
         }
 
     }
 
     public void delete(T elementToDelete) {
-
+        // Формируем SQL запрос на удаление элемента
+        String deleteSQLQuery = "DELETE FROM " + tableName + " WHERE "
+                + primaryKeyFieldName + " = ?";
+        // Далее просто подставляем вместо вопросиков то, что нужно, и отправляем на исполнение
+        try {
+            Connection connect = connectionTool.getConnection();
+            PreparedStatement statement = connect.prepareStatement(deleteSQLQuery);
+            // Подстановка вместо вопросика нужного нам поля
+            statement.setObject(1, fields[primaryKeyFieldNumber].get(elementToDelete));
+            // Отправка на исполнение.
+            statement.execute();
+        } catch (SQLException ex) {
+            System.err.println("Возника ошибка SQL(запрос удаления).");
+        } catch (IllegalAccessException ex) {
+            System.err.println("Возникла ошибка неправомерного доступа(запрос удаления).");
+        }
     }
 
     public void sendQuery(String querySQL) {
@@ -225,6 +240,10 @@ public class DataBaseService<T> implements Closeable {
         } catch (SQLException exception) {
             System.err.println("Ошибка соединения SQL(отправка запроса).");
         }
+    }
+
+    public List<T> queryForAll() throws SQLException, IllegalAccessException, InstantiationException {
+
     }
 
     @Override
