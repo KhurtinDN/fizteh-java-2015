@@ -16,7 +16,7 @@ public class Counter {
     public static void main(String[] args) throws InterruptedException {
         final int countOfThreads;
         if (args.length == 0) {
-            countOfThreads = DEFAULT_COUNT_OF_THREADS
+            countOfThreads = DEFAULT_COUNT_OF_THREADS;
         } else {
             countOfThreads = Integer.parseInt(args[0]);
         }
@@ -45,7 +45,7 @@ public class Counter {
 
             final Condition nextCondition;
             if (i == countOfThreads) {
-                nextCondition = conditions.get(1)
+                nextCondition = conditions.get(1);
             } else {
                 nextCondition = conditions.get(i + 1);
             }
