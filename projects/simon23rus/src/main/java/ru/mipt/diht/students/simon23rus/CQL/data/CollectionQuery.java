@@ -15,17 +15,17 @@ import java.util.Objects;
 public class CollectionQuery {
 
 
-
-    public static void main(String[] args) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-
-        Iterable<Tuple<String, String>> mentorsByStudent =
-                FromStmt.from(list(Student.student("ivanov", LocalDate.parse("1985-08-06"), "494")))
-                        .join(list(new Group("494", "mr.sidorov")))
-                        .on((s, g) -> Objects.equals(s.getGroup(), g.getGroup()))
-                        .select(sg -> sg.getFirst().getName(), sg -> sg.getSecond().getMentor())
-                        .execute();
-        System.out.println(mentorsByStudent);
-    }
+//
+//    public static void main(String[] args) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+//
+////        Iterable<Tuple<String, String>> mentorsByStudent =
+////                FromStmt.from(list(Student.student("ivanov", LocalDate.parse("1985-08-06"), "494")))
+////                        .join(list(new Group("494", "mr.sidorov")))
+////                        .on((s, g) -> Objects.equals(s.getGroup(), g.getGroup()))
+////                        .select(sg -> sg.getFirst().getName(), sg -> sg.getSecond().getMentor())
+////                        .execute();
+////        System.out.println(mentorsByStudent);
+//    }
 
 
     public static class Student {

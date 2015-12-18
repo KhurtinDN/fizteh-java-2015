@@ -47,15 +47,26 @@ public class TwitterPrinterTest extends TestCase {
     public void printStringWithFormatTest() {
         //testing tweet
         Status tweet = mock(Status.class);
+        Status secondTweet = mock(Status.class);
+        Status retweet = mock(Status.class);
         User user = mock(User.class);
         when(tweet.getCreatedAt()).thenReturn(new GregorianCalendar(2007, Calendar.SEPTEMBER, 7).getTime());
         when(tweet.isRetweet()).thenReturn(false);
         when(tweet.getText()).thenReturn("p^k ili logarithm");
         when(tweet.getRetweetCount()).thenReturn(497);
         when(tweet.getUser()).thenReturn(user);
+        when(secondTweet.getCreatedAt()).thenReturn(new GregorianCalendar(2007, Calendar.SEPTEMBER, 7).getTime());
+        when(secondTweet.isRetweet()).thenReturn(true);
+        when(secondTweet.getText()).thenReturn("p^k ili logarithm");
+        when(secondTweet.getRetweetCount()).thenReturn(497);
+        when(secondTweet.getRetweetedStatus()).thenReturn(retweet);
+        when(secondTweet.getUser()).thenReturn(user);
+        when(retweet.getUser()).thenReturn(user);
         when(user.getScreenName()).thenReturn("sobaka");
+
         Date currentTime = new GregorianCalendar(2007, Calendar.OCTOBER, 22).getTime();
         assertEquals("\u001B[35;1;4m[<45 дней назад>] \u001B[34;1m@sobaka\u001B[0m:p^k ili logarithm\u001B[42m(<497> Ретвитов)\u001B[0m", TwitterPrinter.printStringWithFormat(currentTime, tweet, true));
+        assertEquals("\u001B[35;1;4m[<45 дней назад>] \u001B[34;1m@sobaka:\u001B[33;4m ретвитнул \u001B[31;1m@sobaka\u001B[0m:p^k ili logarithm", TwitterPrinter.printStringWithFormat(currentTime, secondTweet, true));
         assertEquals("\u001B[34;1m@sobaka\u001B[0m:p^k ili logarithm\u001B[42m(<497> Ретвитов)\u001B[0m", TwitterPrinter.printStringWithFormat(currentTime, tweet, false));
     }
 

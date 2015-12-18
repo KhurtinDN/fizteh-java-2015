@@ -25,6 +25,7 @@ public class GeoCodeConverterTest extends TestCase {
         citys.add("Сочи");
         citys.add("Barcelona");
         citys.add("Deerfield_Beach");
+        citys.add("lkjasdwoqeo");
         List<Double[]> coordinates = new ArrayList<Double[]>();
         coordinates.add(new Double[]{45.03926740000001, 38.987221});
         coordinates.add(new Double[]{43.60280789999999, 39.7341543});
@@ -39,6 +40,7 @@ public class GeoCodeConverterTest extends TestCase {
         assertEquals(locations.get(1), GeoCodeConverter.getCoordinates(citys.get(1)));
         assertEquals(locations.get(2), GeoCodeConverter.getCoordinates(citys.get(2)));
         assertEquals(locations.get(3), GeoCodeConverter.getCoordinates(citys.get(3)));
+        assertEquals(new GeoLocation((double)-5, (double)-5), GeoCodeConverter.getCoordinates(citys.get(4)));
     }
 
     @Test
