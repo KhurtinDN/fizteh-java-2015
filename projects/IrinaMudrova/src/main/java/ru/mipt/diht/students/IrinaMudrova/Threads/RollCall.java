@@ -18,10 +18,10 @@ public class RollCall {
     private static CountDownLatch countDownLatch;
     private static Thread[] threads;
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
 
         class OurTask implements Runnable {
-            final Integer id;
+            private final Integer id;
 
             OurTask(Integer id) {
                 this.id = id;
@@ -41,13 +41,13 @@ public class RollCall {
                                 return;
                             }
                         }
-                        if (rand.nextInt() % 10 == 0) {
+                        final int num = 10;
+                        if (rand.nextInt() % num == 0) {
                             synchronized (System.out) {
                                 System.out.print("No ");
                                 currentAnswer = false;
                             }
-                        }
-                        else {
+                        } else {
                             synchronized (System.out) {
                                 System.out.print("Yes ");
                             }

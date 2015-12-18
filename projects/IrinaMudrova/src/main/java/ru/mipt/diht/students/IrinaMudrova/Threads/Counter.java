@@ -1,6 +1,5 @@
 package main.java.ru.mipt.diht.students.IrinaMudrova.Threads;
 
-import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -19,7 +18,7 @@ public class Counter {
     public static void main(String[] args) throws Exception {
 
         class OurTask implements Runnable {
-            final Integer id;
+            private final Integer id;
 
             OurTask(Integer id) {
                 this.id = id;
@@ -42,8 +41,10 @@ public class Counter {
                         iteration++;
                         currentId = (currentId + 1) % quantity;
                         needWrite.signalAll();
-                        if (iteration > 5)
+                        final int number = 5;
+                        if (iteration > number) {
                             return;
+                        }
                     } catch (InterruptedException e) {
                       //  System.err.println("Interrupting thread #" + id);
                         return;
