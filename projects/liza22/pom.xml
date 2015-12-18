@@ -34,7 +34,7 @@
         </dependency>
 	<dependency>
 
-            <groupId>org.junit</groupId>
+            <groupId>junit</groupId>
 
             <artifactId>junit</artifactId>
 
