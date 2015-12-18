@@ -57,11 +57,11 @@ public final class GroupingSelectOperation extends AbstractSelectOperation {
         }
     }
 
-    private <S> Map<String, List<S>> groupElementsByConditions(List<S> sourceElements, List<GroupingCondition<S>> conditions) {
+    private <S> Map<String, List<S>> groupElementsByConditions(List<S> Elements, List<GroupingCondition<S>> condition) {
         // for each source element the groupKey is calculated
         Map<String, List<S>> groups = new HashMap<>();
-        for (S element : sourceElements) {
-            String groupKey = calculateGroupKeyOfElement(element, conditions);
+        for (S element : Elements) {
+            String groupKey = calculateGroupKeyOfElement(element, condition);
             List<S> groupElements = groups.get(groupKey);
             if (groupElements == null) {
                 groupElements = new ArrayList<>();
@@ -87,8 +87,8 @@ public final class GroupingSelectOperation extends AbstractSelectOperation {
         StringBuilder groupKeyBuilder = new StringBuilder();
         boolean first = true;
         for (GroupingCondition<S> condition : conditions) {
-            if (!first) groupKeyBuilder.append("-");
-            else first = false;
+            if (!first) { groupKeyBuilder.append("-"); }
+            else { first = false; }
 
             Map<S, Object> values = condition.getGroupedValues();
             Object elValue = values.get(element);
@@ -97,10 +97,10 @@ public final class GroupingSelectOperation extends AbstractSelectOperation {
         return groupKeyBuilder.toString();
     }
 
-    private <S> void calculateGroupingConditionValues(List<S> sourceElements, List<GroupingCondition<S>> groupingConditions) {
+    private <S> void calculateGroupingConditionValues(List<S> Elements, List<GroupingCondition<S>> groupingConditions) {
         for (GroupingCondition<S> condition : groupingConditions) {
-            Map<S, Object> elementValues = new HashMap<>(sourceElements.size());
-            for (S element : sourceElements) {
+            Map<S, Object> elementValues = new HashMap<>(Elements.size());
+            for (S element : Elements) {
                 Object groupedValue = condition.getFunction().apply(element);
                 elementValues.put(element, groupedValue);
             }

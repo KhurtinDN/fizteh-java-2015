@@ -23,7 +23,9 @@ import static library.api.Sources.list;
  * in other cases library generates IllegalArgumentException
  * or NullPointerException in case when required argument is null.
  */
-public class IncorrectQueryTest {
+public final class IncorrectQueryTest {
+    public final static int AGE = 10;
+    public final static int LIMIT = 100;
 
     @Test(expected = IllegalArgumentException.class)
     public void testEmptySourceQuery() throws IncorrectQueryException {
@@ -58,7 +60,7 @@ public class IncorrectQueryTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test_EmptyOrderByStatement() throws IncorrectQueryException {
+    public void testEmptyOrderByStatement() throws IncorrectQueryException {
         from(list(new Object())).select(Object.class, o -> 1).orderBy().execute();
     }
 
@@ -82,11 +84,11 @@ public class IncorrectQueryTest {
                         student("smith", LocalDate.parse("1986-08-06"), "495"),
                         student("petrov", LocalDate.parse("1996-08-06"), "494")))
                         .select(Statistics.class, Student::getGroup, count(Student::getGroup))
-                        .where(Conditions.like(Student::getName, ".*ov").and(s -> s.age() > 10))
+                        .where(Conditions.like(Student::getName, ".*ov").and(s -> s.age() > AGE))
                         .groupBy(Student::getGroup)
                         .having(s -> s.getCount() > 0)
                         .orderBy(asc(Statistics::getGroup), desc(Statistics::getCount))
-                        .limit(100)
+                        .limit(LIMIT)
                         .execute();
     }
 
@@ -101,9 +103,9 @@ public class IncorrectQueryTest {
                         student("smith", LocalDate.parse("1986-08-06"), "495"),
                         student("petrov", LocalDate.parse("1996-08-06"), "494")))
                         .select(Statistics.class, Student::getGroup, count(Student::getGroup), avg(Student::age))
-                        .where(Conditions.like(Student::getName, ".*ov").and(s -> s.age() > 10))
+                        .where(Conditions.like(Student::getName, ".*ov").and(s -> s.age() > AGE))
                         .orderBy(asc(Statistics::getGroup), desc(Statistics::getCount))
-                        .limit(100)
+                        .limit(LIMIT)
                         .execute();
     }
 }
