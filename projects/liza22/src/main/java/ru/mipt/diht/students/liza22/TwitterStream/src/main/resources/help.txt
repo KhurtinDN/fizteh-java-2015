@@ -1,0 +1,11 @@
+TwitterStream - it's a console application to print the stream of tweets onto the screen
+according to the specified conditions.
+
+Command usage:
+java TwitterStream \
+    [--query|-q <query or keywords for stream>] \
+    [--place|-p <location|'nearby'>] \
+    [--stream|-s] \
+    [--hideRetweets] \
+    [--limit|-l <tweets>] \
+    [--help|-h]
