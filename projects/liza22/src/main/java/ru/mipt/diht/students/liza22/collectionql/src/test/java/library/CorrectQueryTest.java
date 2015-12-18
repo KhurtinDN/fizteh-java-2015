@@ -2,8 +2,8 @@ package library;
 
 import client.Statistics;
 import client.Student;
+import library.api.Conditions;
 import library.core.exceptions.IncorrectQueryException;
-import library.core.operations.impl.*;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -12,7 +12,6 @@ import java.util.Iterator;
 import static client.Student.student;
 import static library.api.Aggregates.*;
 import static library.api.Conditions.not;
-import static library.api.Conditions.like;
 import static library.api.OrderByConditions.asc;
 import static library.api.OrderByConditions.desc;
 import static library.api.Sources.from;
