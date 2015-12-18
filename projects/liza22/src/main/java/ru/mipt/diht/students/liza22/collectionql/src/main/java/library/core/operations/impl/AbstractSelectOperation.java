@@ -20,16 +20,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractSelectOperation implements QueryOperation {
 
     @Override
-    public  <R, S> void validate(QueryContext<R, S> queryContext) throws IncorrectQueryException {
-        List<SelectArgument<S>> selectArguments = queryContext.getSelectArguments();
-        if (selectArguments == null || selectArguments.isEmpty()) {
-            throw new IncorrectQueryException("Select statement must have arguments");
-        }
-        for (SelectArgument argument : selectArguments) {
-            if (argument.getFunction() == null) {
-                throw new IncorrectQueryException("Select arguments are incorrect");
-            }
-        }
+    abstract public  <R, S> void validate(QueryContext<R, S> queryContext) throws IncorrectQueryException {
     }
 
     protected  final <S, R> List<R> doSelect(List<S> sourceElements, QueryContext<R, S> queryContext)
@@ -96,7 +87,8 @@ public abstract class AbstractSelectOperation implements QueryOperation {
         }
     }
 
-    protected  final <S> void calculateAggregateArguments(List<S> sourceElements, List<SelectArgument<S>> selectArguments) {
+    protected  final <S> void calculateAggregateArguments(List<S> sourceElements,
+                                                          List<SelectArgument<S>> selectArguments) {
         for (SelectArgument<S> selectArgument : selectArguments) {
             AggregateFunction<S, Object, Object> aggregateFunction = selectArgument.getAggregateFunction();
             Object aggregateValue = aggregateFunction.apply(sourceElements);

@@ -22,7 +22,16 @@ public final class GroupingSelectOperation extends AbstractSelectOperation {
 
     @Override
     public <R, S> void validate(QueryContext<R, S> queryContext) throws IncorrectQueryException {
-        super.validate(queryContext);
+        //check QueryContext
+        List<SelectArgument<S>> selectArguments = queryContext.getSelectArguments();
+        if (selectArguments == null || selectArguments.isEmpty()) {
+            throw new IncorrectQueryException("Select statement must have arguments");
+        }
+        for (SelectArgument argument : selectArguments) {
+            if (argument.getFunction() == null) {
+                throw new IncorrectQueryException("Select arguments are incorrect");
+            }
+        }
         // check that select arguments consist of aggregate functions or grouping conditions only
         List<SelectArgument<S>> selectArguments = queryContext.getSelectArguments();
         List<GroupingCondition<S>> groupingConditions = queryContext.getGroupingConditions();

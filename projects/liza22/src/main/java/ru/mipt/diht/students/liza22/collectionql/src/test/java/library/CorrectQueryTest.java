@@ -10,7 +10,6 @@ import java.util.Iterator;
 
 import static client.Student.student;
 import static library.api.Aggregates.*;
-import static library.api.Conditions.like;
 import static library.api.Conditions.not;
 import static library.api.OrderByConditions.asc;
 import static library.api.OrderByConditions.desc;

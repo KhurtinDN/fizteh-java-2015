@@ -19,7 +19,16 @@ public class SimpleSelectOperation extends AbstractSelectOperation {
 
     @Override
     public final  <R, S> void validate(QueryContext<R, S> queryContext) throws IncorrectQueryException {
-        super.validate(queryContext);
+        //check QueryContext
+        List<SelectArgument<S>> selectArguments = queryContext.getSelectArguments();
+        if (selectArguments == null || selectArguments.isEmpty()) {
+            throw new IncorrectQueryException("Select statement must have arguments");
+        }
+        for (SelectArgument argument : selectArguments) {
+            if (argument.getFunction() == null) {
+                throw new IncorrectQueryException("Select arguments are incorrect");
+            }
+        }
         // check that there is not aggregate functions at all in "select" statement
         // or if exists, then all arguments must be aggregate functions
         // because this type of query doesn't have GroupBy condition and
