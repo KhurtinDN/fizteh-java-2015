@@ -98,4 +98,85 @@ public class BlockingQueueTest extends TestCase {
         System.out.println(myBlockingQueue.getData());
 
     }
+
+    @Test
+    public void timedAdditionTest() {
+        myBlockingQueue = new BlockingQueue<Integer>(5);
+        List<Integer> toAdd = Arrays.asList(1, 8, 9, 9);
+        myBlockingQueue.offer(toAdd, 500L);
+        List<Integer> myQueueElements = myBlockingQueue.getData();
+        assertEquals(toAdd.size(), myQueueElements.size());
+        for(int i = 0; i < myQueueElements.size(); ++i) {
+            assertEquals(toAdd.get(i), myQueueElements.get(i));
+        }
+    }
+
+    @Test
+    public void timedDeletionTest() {
+        myBlockingQueue = new BlockingQueue<Integer>(5);
+        List<Integer> toAdd = Arrays.asList(1, 8, 9, 9, 1);
+        myBlockingQueue.offer(toAdd, 500L);
+        List<Integer> yearOfFoundationFCB = myBlockingQueue.take(4);
+        List<Integer> myQueueElements = myBlockingQueue.getData();
+        assertEquals(toAdd.size(), myQueueElements.size() + 4);
+        List<Integer> toCheck = Arrays.asList(1, 8, 9, 9);
+        assertEquals(toCheck.size(), yearOfFoundationFCB.size());
+        for(int i = 0; i < toCheck.size(); ++i) {
+            assertEquals(toCheck.get(i), yearOfFoundationFCB.get(i));
+        }
+    }
+
+    @Test
+    public void timedTLNotFullLockTest() throws InterruptedException {
+        myBlockingQueue = new BlockingQueue<Integer>(5);
+        List<Integer> toAdd = Arrays.asList(1, 8, 9, 9, 1, -1);
+        Thread adder = new Thread(() -> myBlockingQueue.offer(toAdd, 500L));
+        adder.start();
+        adder.join(800);
+        if(adder.isAlive()) {
+            //znachit vse horosho, on poluchil TL';
+            assert(false);
+        }
+        else
+            assert(true);
+    }
+
+
+
+    @Test
+    public void timedTLNotEmptyLockTest() throws InterruptedException {
+        myBlockingQueue = new BlockingQueue<Integer>(5);
+        Thread adder = new Thread(() -> myBlockingQueue.take(3, 500L));
+        adder.start();
+        adder.join(1000);
+        if(adder.isAlive()) {
+            //znachit vse horosho, on poluchil TL';
+            assert(false);
+        }
+        else
+            assert(true);
+    }
+
+    @Test
+    public void timedHardUsageTest() throws InterruptedException {
+        myBlockingQueue = new BlockingQueue<Integer>(5);
+        List<Integer> toAdd = Arrays.asList(1, 8, 9, 9);
+        Integer numberForDeletion = 2;
+        List<Integer> deletionResult = new ArrayList<Integer>();
+        Thread deleter = new Thread(() -> {deletionResult.addAll(myBlockingQueue.take(numberForDeletion, 500L));});
+        Thread adder = new Thread(() -> myBlockingQueue.offer(toAdd, 500L));
+        deleter.start(); adder.start();
+        adder.join();
+        deleter.join();
+        assertEquals(2, deletionResult.size());
+        for(int i = 0; i < 2; ++i) {
+            assertEquals(toAdd.get(i), deletionResult.get(i));
+        }
+        assertEquals(2, myBlockingQueue.getData().size());
+        for(int i = 0; i < 2; ++i) {
+            assertEquals(toAdd.get(i + numberForDeletion), myBlockingQueue.getData().get(i));
+        }
+        System.out.println(myBlockingQueue.getData());
+
+    }
 }

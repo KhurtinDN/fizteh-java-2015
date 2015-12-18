@@ -25,7 +25,8 @@ public class TwitterPrinter {
             tweetToShow += ":" + (char)27 + "[33;4m" + " ретвитнул ";
             tweetToShow += (char)27 + "[31;1m@" + tweet.getRetweetedStatus().getUser().getScreenName();
             tweetToShow += (char)27 + "[0m" + ":";
-            tweetToShow += tweet.getText().substring(5 + tweet.getRetweetedStatus().getUser().getScreenName().length());
+            tweetToShow += tweet.getText();
+//            tweetToShow += tweet.getText().substring(5 + tweet.getRetweetedStatus().getUser().getScreenName().length());
         }
         else {
             tweetToShow += (char)27 + "[0m" + ":" + tweet.getText();

@@ -7,7 +7,7 @@ import java.util.List;
  * Created by semenfedotov on 13.12.15.
  */
 public class BlockingQueueRunner {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         BlockingQueue forExample = new BlockingQueue(3);
         List myList = new ArrayList<Integer>();
         myList.add(1); myList.add(2); myList.add(3);

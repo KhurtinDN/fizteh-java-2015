@@ -177,15 +177,17 @@ public class DatabaseServiceTest extends TestCase {
         Statement selectZvezdochka = myFourthConnection.createStatement();
         System.out.println("We R Here");
         ResultSet selectResult = selectZvezdochka.executeQuery("SELECT * FROM player");
+
         List<Player> answer = new ArrayList<>();
-        while (selectResult.next()) {
-            answer.add((new Player(
-                    selectResult.getString(1),
-                    selectResult.getString(2),
-                    selectResult.getString(3),
-                    selectResult.getString(4))
-            ));
-        }
+        answer = myFourthService.queryForAll();
+//        while (selectResult.next()) {
+//            answer.add((new Player(
+//                    selectResult.getString(1),
+//                    selectResult.getString(2),
+//                    selectResult.getString(3),
+//                    selectResult.getString(4))
+//            ));
+//        }
         List<Player> team = new ArrayList<>();
         team.add(new Player(2, "Douglas", 35000L, "FCB"));
         team.add(new Player(3, "Pique", 130000L,"FCB"));

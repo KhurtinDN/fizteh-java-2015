@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -38,28 +40,52 @@ public class BlockingQueue<T> {
 
     //dobavit' v konec
      void offer(List<T> toAdd) {
-        try {
-            insertLocker.lock();
-            for(int i = 0; i < toAdd.size(); ++i) {
-                try {
-                    footLocker.lock();
-                    while (myBlockingQueue.size() == elementsBound) {
-                        nonFull.await();
-                    }
-                    myBlockingQueue.add(toAdd.get(i));
-                    nonEmpty.signalAll();
-                } catch (InterruptedException e) {
+         footLocker.lock();
+         try {
+             while (myBlockingQueue.size() + toAdd.size() > elementsBound) {
+                 try {
+                     nonFull.await();
+                 } catch (InterruptedException e) {
+                     System.out.println("Interrupted");
+                 }
+             }
+             myBlockingQueue.addAll(toAdd);
+             nonEmpty.signal();
+         } finally {
+             footLocker.unlock();
+         }
+    }
 
+
+    void offer(List<T> toAdd, long timeout) {
+        try {
+            long currentTime = System.currentTimeMillis();
+            if (footLocker.tryLock(timeout, TimeUnit.MILLISECONDS)) {
+                try {
+                    while (myBlockingQueue.size() + toAdd.size() > elementsBound) {
+                        timeout -= System.currentTimeMillis() - currentTime;
+                        currentTime = System.currentTimeMillis();
+                        if (nonFull.await(timeout, TimeUnit.MILLISECONDS) == false) {
+                            throw new TimeoutException();
+                        }
+                    }
+                    myBlockingQueue.addAll(toAdd);
+                    nonEmpty.signal();
                 } finally {
                     footLocker.unlock();
                 }
+            } else {
+                throw new TimeoutException();
             }
+        } catch (TimeoutException e) {
+            System.out.println("Time limit exceeded");
+            return;
+        } catch (InterruptedException e) {
+            System.out.println("InterruptedException");
         }
-        finally {
-            insertLocker.unlock();
-        }
-    }
+        return;
 
+    }
 
     //vzyat iz nachala
     List<T> take(int numberOfElements) {
@@ -73,7 +99,7 @@ public class BlockingQueue<T> {
                         nonEmpty.await();
                     }
                     takenElements.add(myBlockingQueue.poll());
-                    nonFull.signalAll();
+                    nonFull.signal();
                 } catch (InterruptedException e) {
                 }
                 finally {
@@ -86,4 +112,40 @@ public class BlockingQueue<T> {
             return takenElements;
         }
     }
+
+    public List<T> take(int numberOfElements, long timeout) {
+        try {
+            List<T> taken = new ArrayList<>();
+            long currentTime = System.currentTimeMillis();
+            if (footLocker.tryLock(timeout, TimeUnit.MILLISECONDS)) {
+                try {
+                    while (myBlockingQueue.size() < numberOfElements) {
+                        timeout -= (System.currentTimeMillis() - currentTime);
+                        currentTime = System.currentTimeMillis();
+                        if (!nonEmpty.await(timeout, TimeUnit.MILLISECONDS)) {
+                            throw new TimeoutException();
+                        }
+                    }
+                    for (int i = 0; i < numberOfElements; ++i) {
+                        taken.add(myBlockingQueue.poll());
+                    }
+                    nonFull.signal();
+                    return taken;
+                } catch (InterruptedException e) {
+                    System.out.println("Interrupted");
+                } finally {
+                    footLocker.unlock();
+                }
+            } else {
+                throw new TimeoutException();
+            }
+
+        } catch (TimeoutException e) {
+            return null;
+        } catch (InterruptedException e) {
+            System.out.println("Interrupted");
+        }
+        return null;
+    }
+
 }

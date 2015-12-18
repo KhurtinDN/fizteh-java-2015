@@ -36,8 +36,7 @@ public class GeoCodeConverter {
             JSONException {
         //if (place != "Moscow") System.out.println(place);
         if (place.equals("nearby")) {
-//            place = webSource();
-            place = "Долгопрудный";
+            place = webSource();
         }
         URL getTheLL = new URL("https://maps.googleapis.com/maps/api/geocode/json?address=" + place + "&apikey="
                 + "AIzaSyCSLjuyawVt4lZAlb8t0EwuxKQWvRCaqsY");
@@ -56,10 +55,9 @@ public class GeoCodeConverter {
                 System.out.println(parseDouble(location.getString("lng")));
                 return new GeoLocation(parseDouble(location.getString("lat")), parseDouble(location.getString("lng")));
             } else {
-                System.out.println("bu");
+                return new GeoLocation((double) -5, (double) -5);
             }
         }
-        return new GeoLocation((double) 0, (double) 0);
     }
 
 
@@ -77,7 +75,6 @@ public class GeoCodeConverter {
 
         double distance = 2 * Math.asin(Math.sqrt(sqr(Math.sin(deltaPhi / 2))
                 + Math.cos(firstLatitude) * Math.cos(secondLatitude) * sqr(Math.sin(deltaLambda / 2)))) * EARTH_DIAMETER_POPOLAM;
-        //System.out.println(distance);
         return distance < radius;
     }
 }
