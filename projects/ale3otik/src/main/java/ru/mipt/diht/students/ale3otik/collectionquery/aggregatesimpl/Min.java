@@ -18,9 +18,15 @@ public class Min<T, R extends Comparable<R>> implements Aggregator<T, R> {
         if (elements.size() == 0) {
             return null;
         }
+        R curMin = null;
 
-        R curMin = function.apply(elements.get(0));
         for (T elem : elements) {
+            if (elem == null || function.apply(elem) == null) {
+                continue;
+            }
+            if (curMin == null) {
+                curMin = function.apply(elem);
+            }
             if (curMin.compareTo(function.apply(elem)) > 0) {
                 curMin = function.apply(elem);
             }

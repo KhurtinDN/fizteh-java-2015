@@ -19,12 +19,17 @@ public class Max<T, R extends Comparable<R>> implements Aggregator<T, R> {
             return null;
         }
 
-        R curMax = function.apply(elements.get(0));
+        R curMax = null;
         for (T elem : elements) {
+            if (elem == null || function.apply(elem) == null) {
+                continue;
+            }
+            if (curMax == null) {
+                curMax = function.apply(elem);
+            }
             if (curMax.compareTo(function.apply(elem)) < 0) {
                 curMax = function.apply(elem);
             }
-
         }
         return curMax;
     }

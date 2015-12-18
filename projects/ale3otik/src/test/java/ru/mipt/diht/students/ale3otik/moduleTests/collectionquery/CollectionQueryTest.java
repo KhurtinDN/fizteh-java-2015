@@ -4,27 +4,18 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import ru.mipt.diht.students.ale3otik.collectionquery.impl.CqlException;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Objects;
-import java.util.function.Function;
 
 import static ru.mipt.diht.students.ale3otik.collectionquery.Aggregates.avg;
 import static ru.mipt.diht.students.ale3otik.collectionquery.Aggregates.count;
-import static ru.mipt.diht.students.ale3otik.moduletests.collectionquery.CollectionQueryTest.Student.*;
-import static ru.mipt.diht.students.ale3otik.moduletests.collectionquery.CollectionQueryTest.Statistics.*;
-//import static ru.mipt.diht.students.ale3otik.moduletests.collectionquery.CollectionQueryTest.Statistics.*;
 import static ru.mipt.diht.students.ale3otik.collectionquery.Conditions.rlike;
 import static ru.mipt.diht.students.ale3otik.collectionquery.OrderByConditions.asc;
 import static ru.mipt.diht.students.ale3otik.collectionquery.OrderByConditions.desc;
 import static ru.mipt.diht.students.ale3otik.collectionquery.Sources.list;
 import static ru.mipt.diht.students.ale3otik.collectionquery.impl.FromStmt.from;
+import static ru.mipt.diht.students.ale3otik.moduletests.collectionquery.CollectionQueryTest.Student.student;
 
 public class CollectionQueryTest extends TestCase {
 
@@ -85,6 +76,10 @@ public class CollectionQueryTest extends TestCase {
 
         public long age() {
             return ChronoUnit.YEARS.between(getDateOfBith(), LocalDateTime.now());
+        }
+
+        public double aged() {
+            return new Long(ChronoUnit.YEARS.between(getDateOfBith(), LocalDateTime.now())).doubleValue();
         }
 
         public static Student student(String name, LocalDate dateOfBith, String group) {

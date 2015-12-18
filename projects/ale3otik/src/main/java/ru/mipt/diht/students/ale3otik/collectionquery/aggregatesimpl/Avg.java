@@ -15,6 +15,9 @@ public class Avg<T> implements Aggregator<T, Double> {
 
     @Override
     public final Double apply(List<T> elements) {
+        if (elements.size() == 0) {
+            return 0D;
+        }
         Double result = 0D;
         for (T elem : elements) {
             result += function.apply(elem).doubleValue();
