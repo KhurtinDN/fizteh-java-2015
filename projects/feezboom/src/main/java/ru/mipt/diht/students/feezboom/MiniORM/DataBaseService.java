@@ -242,8 +242,9 @@ public class DataBaseService<T> implements Closeable {
         }
     }
 
-    public List<T> queryForAll() throws SQLException, IllegalAccessException, InstantiationException {
-
+    public List<T> queryForAll() {
+        //todo
+        return new ArrayList<>();
     }
 
     @Override
