@@ -80,7 +80,7 @@ public class SelectStatement<T, R> {
         return this;
     }
 
-    public SelectStatement<T, R> having(Predicate<R> condition) {
+    public final SelectStatement<T, R> having(Predicate<R> condition) {
         havingCondition = condition;
         return this;
     }
@@ -90,7 +90,9 @@ public class SelectStatement<T, R> {
         return this;
     }
 
-    public final UnionStatement union() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public final UnionStatement union() throws InvocationTargetException,
+            NoSuchMethodException,
+            InstantiationException, IllegalAccessException {
         List<R> result = (List<R>) this.execute();
         return new UnionStatement(result);
     }
@@ -108,7 +110,8 @@ public class SelectStatement<T, R> {
         return this;
     }
 
-    public final Iterable<R> execute() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public final Iterable<R> execute() throws NoSuchMethodException,
+            IllegalAccessException, InvocationTargetException, InstantiationException {
         List<R> result = new ArrayList<>();
         Object[] constructorArgs = new Object[constructorExpressions.length];
         Class[] returnClasses = new Class[constructorExpressions.length];
