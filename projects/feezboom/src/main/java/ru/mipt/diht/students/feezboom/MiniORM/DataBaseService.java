@@ -119,23 +119,34 @@ public class DataBaseService<T> implements Closeable {
             columnsNamesList.add(currentColumnName); // Засунем имя столбца в список
             i++; // Считаем количество полей(столбцов) строк таблицы
         }
+
         // Запомним эти названия столбцов(поле класса)
+        namesOfColumns = new String[columnsNamesList.size()];
         namesOfColumns = columnsNamesList.toArray(namesOfColumns);
 
         // Ну и последнне, что стоит сделать в инициализации -
         // это установить соединение с сервером, с которым
         // мы будем работать
 
-        connectionTool = JdbcConnectionPool.create("connection_name",  "username", "password");
+        try {
+            Class.forName("org.h2.Driver");
+        } catch (ClassNotFoundException ex) {
+            System.out.println(ex);
+        }
+
+        connectionTool = JdbcConnectionPool.create("jdbc:h2:~/test",  "test", "test");
         //Инициализация - всё.
     }
 
     public void createTable() {
-        // Здесь мы должны сконструировать запрос вида CREATE TABLE ...
+        // Здесь мы должны сконструировать запрос вида CREATE TABLE IF NOT EXISTS Parking(ID INTEGER PRIMARY KEY,
+        // BRAND VARCHAR(255), OWNER VARCHAR(255))
         // Имя таблицы: tableName
         String ourSQLQuery = "CREATE TABLE IF NOT EXISTS " + tableName;
         ourSQLQuery += "(";
         for (int i = 0; i < fields.length; i++) {
+            // Приписываем имя колонки
+            ourSQLQuery += namesOfColumns[i] + " ";
             // Приписываем тип(преобразовывая в SQL синтаксис)
             ourSQLQuery += new FromJavaToSQLType(fields[i].getType());
             // Приписываем PRIMARY KEY, если нужен
@@ -163,7 +174,7 @@ public class DataBaseService<T> implements Closeable {
 
     public void insert(T elementToInsert) {
         // Сформируем запрос для вставки:
-        String insertSQLQuery = "INSERT INTO TABLE " + tableName + "VALUES";
+        String insertSQLQuery = "INSERT INTO " + tableName + " VALUES";
         insertSQLQuery += "(";
         // Нужно вставить все поля.
         for (int i = 0; i < fields.length; i++) {
@@ -172,7 +183,7 @@ public class DataBaseService<T> implements Closeable {
             // заменим на нужные нам выражения(с помощью класса java.sql.PreparedStatement)
             insertSQLQuery += "?";
             if (i != fields.length - 1) {
-                insertSQLQuery += ",";
+                insertSQLQuery += ", ";
             }
         }
         insertSQLQuery += ")";
@@ -192,7 +203,7 @@ public class DataBaseService<T> implements Closeable {
             // И теперь просто исполняем запрос(посылаем на сервер).
             statement.execute();
         } catch (SQLException ex) {
-            System.err.println("Возника ошибка SQL(запрос вставки).");
+            System.err.println("Возника ошибка SQL(запрос вставки).\n" + ex);
         } catch (IllegalAccessException ex) {
             System.err.println("Возникла ошибка неправомерного доступа.(запрос вставки)");
         }
@@ -202,10 +213,15 @@ public class DataBaseService<T> implements Closeable {
     public void update(T elementToUpdate) {
         // Здесь пробежимся по всем столбцам.
         for (int i = 0; i < namesOfColumns.length; i++) {
+            if (i == primaryKeyFieldNumber) {
+                // Мы не должны обновлять primary key
+                continue;
+            }
             String currentColumnName = namesOfColumns[i];
             // Формируем SQL запрос для обновления одного единственного поля(и так будет для каждого, по очереди)
-            String updateSQLQuery = "UPDATE " + tableName + " SET"
-                    + currentColumnName + " = ? WHERE " + primaryKeyFieldName + "= ?";
+            String updateSQLQuery = "UPDATE " + tableName + " SET "
+                    + currentColumnName + " = ? WHERE " + primaryKeyFieldName + " = ?";
+            System.out.println(updateSQLQuery);
             // Подставим значения вместо вопросиков, точно так же как в insert()
             // и отправим запрос на выполнение
             try {
@@ -276,97 +292,63 @@ public class DataBaseService<T> implements Closeable {
                 for (int i = 0; i < fields.length; i++) {
                     // Из baseResult данные мы можем вытаскивать только по имени столбца
                     // либо по номеру столбца, мы знаем имя(у нас есть массив имён полей),
-                    // и, к тому же, мы должны заранее знать тип вытаскиваемых данных.
-                    // Скажем, если класс fields[i] может быть присвоен Number'у, то вытащим его как Long
-                    if (fields[i].getClass().isAssignableFrom(Number.class)) {
-                        // Имя текущей колонки - fields[i]
-                        String currentColumnName = namesOfColumns[i];
-                        // Текущее значение, которое мы вытаскиваем из столбца с именем currentColumnName
-                        Long currentValue = baseResult.getLong(currentColumnName);
-                        // i-му полю нашего элемента присвоим вытащенное значение из ResultSet
-                        fields[i].set(ourTakenElement, currentValue);
-                    } else if (fields[i].getClass().isAssignableFrom(String.class)) {
-                        // Аналогично поступим со String
-                        String currentColumnName = namesOfColumns[i];
-                        String currentValue = baseResult.getString(currentColumnName);
-                        fields[i].set(ourTakenElement, currentValue);
-                    } else if (fields[i].getClass().isAssignableFrom(Object.class)) {
-                        // И аналогично поступим для Objects
-                        String currentColumnName = namesOfColumns[i];
-                        Object currentObject = baseResult.getObject(currentColumnName);
-                        fields[i].set(ourTakenElement, currentObject);
-                    }
+                    // Будем вытаскивать все поля как Object
+                    String currentColumnName = namesOfColumns[i];
+                    // Вытаскиваем объект, соответствующий колонке
+                    Object currentObject = baseResult.getObject(currentColumnName);
+                    // Устанавливаем новое значение в наш инстанциированный объект (ourTakenElement),
+                    // который будет добавлен в ответ
+                    fields[i].set(ourTakenElement, currentObject);
+
                 }
                 answerList.add(ourTakenElement);
             }
 
         } catch (SQLException ex) {
-            System.out.println("Словили исключение SQL (queryForAll) :" + ex);
+            System.err.println("Словили исключение SQL (queryForAll) :" + ex);
         } catch (IllegalAccessException ex) {
-            System.out.println("Ошибка неправомерного доступа (queryForAll): " + ex);
+            System.err.println("Ошибка неправомерного доступа (queryForAll): " + ex);
         } catch (InstantiationException ex) {
-            System.out.println("Ошибка создания экземпляра класса (queryForAll) : " + ex);
+            System.err.println("Ошибка создания экземпляра класса (queryForAll) : " + ex);
         }
 
         return answerList;
     }
 
-    public <K> T queryById(K primaryKey) throws Exception {
+    public <K> T queryById(K primaryKey) throws SQLException, InstantiationException, IllegalAccessException {
         // Уникальные ключи элементов базы данных могут быть любого типа, поэтому мы делаем ещё один шаблон
         // Запрос SELECT * FROM tableName WHERE ID = primaryKey
         // Делается практически также так и queryForAll
-        String ourSQLQuery = "SELECT * FROM " + tableName + "WHERE " + primaryKeyFieldName + " = " + primaryKey;
+        String ourSQLQuery = "SELECT * FROM " + tableName + " WHERE " + primaryKeyFieldName + " = " + primaryKey;
         // Здесь мы запрашиваем ровно один элемент из таблицы, по его уникальному ключу, поэтому
         // тут не будет обработки результата в цикле, а просто единственный if
-        try {
-            // Устанавливаем соединение с сервером базы данных.
-            Connection connection = connectionTool.getConnection();
-            // Исполняем запрос. Получаем ответ.
-            // Получаем ответ на наш запрос в виде класса ResultSet
-            // Здесь он будет содержать единственный элемент, потому что мы запрашиваем
-            // по уникальному ключу, соответствующему единственному элементу
-            ResultSet baseResult = connection.createStatement().executeQuery(ourSQLQuery);
+        System.out.println(ourSQLQuery);
+        // Создадим элемент, в который будем сувать данные
 
-            // Теперь нужно вытащить данные из ResultSet:
-            if (baseResult.next()) { // Пока есть что вытаскивать вытаскиваем.
-                // Создадим элемент, в который будем сувать данные
-                T ourTakenElement = ourTableClass.newInstance();
-                for (int i = 0; i < fields.length; i++) {
-                    // Из baseResult данные мы можем вытаскивать только по имени столбца
-                    // либо по номеру столбца, мы знаем имя.
-                    // и, к тому же, мы должны заранее знать тип вытаскиваемых данных
-                    // Скажем, что если класс fields[i] может быть присвоен Number'у, то вытащим его как Long
-                    if (fields[i].getClass().isAssignableFrom(Number.class)) {
-                        // Имя текущей колонки - fields[i]
-                        String currentColumnName = namesOfColumns[i];
-                        // Текущее значение, которое мы вытаскиваем из столбца с именем currentColumnName
-                        Long currentValue = baseResult.getLong(currentColumnName);
-                        // i-му полю нашего элемента присвоим вытащенное значение из ResultSet
-                        fields[i].set(ourTakenElement, currentValue);
-                    } else if (fields[i].getClass().isAssignableFrom(String.class)) {
-                        // Аналогично поступим со String
-                        String currentColumnName = namesOfColumns[i];
-                        String currentValue = baseResult.getString(currentColumnName);
-                        fields[i].set(ourTakenElement, currentValue);
-                    } else if (fields[i].getClass().isAssignableFrom(Object.class)) {
-                        // И аналогично поступим для Objects
-                        String currentColumnName = namesOfColumns[i];
-                        Object currentObject = baseResult.getObject(currentColumnName);
-                        fields[i].set(ourTakenElement, currentObject);
-                    }
-                }
-                // Вернём полученный результат
-                return ourTakenElement;
+        T ourTakenElement = ourTableClass.newInstance();
+
+        // Устанавливаем соединение с сервером базы данных.
+        Connection connection = connectionTool.getConnection();
+        // Исполняем запрос. Получаем ответ.
+        // Получаем ответ на наш запрос в виде класса ResultSet
+        // Здесь он будет содержать единственный элемент, потому что мы запрашиваем
+        // по уникальному ключу, соответствующему единственному элементу
+        ResultSet baseResult = connection.createStatement().executeQuery(ourSQLQuery);
+
+        // Теперь нужно вытащить данные из ResultSet:
+        if (baseResult.next()) { // Пока есть что вытаскивать вытаскиваем.
+            for (int i = 0; i < fields.length; i++) {
+                // Абсолютно идентичный код тому, что есть в queryForAll
+                // Имя текущей колонки
+                String currentColumnName = namesOfColumns[i];
+                // Объект, который вытаскиваем из результата
+                Object currentObject = baseResult.getObject(currentColumnName);
+                // Устанавливаем вытащенное значение в поле возвращаемого элемента.
+                fields[i].set(ourTakenElement, currentObject);
             }
-
-        } catch (SQLException ex) {
-            System.out.println("Словили исключение SQL (queryById) :" + ex);
-        } catch (IllegalAccessException ex) {
-            System.out.println("Ошибка неправомерного доступа (queryById): " + ex);
-        } catch (InstantiationException ex) {
-            System.out.println("Ошибка создания экземпляра класса (queryById) : " + ex);
         }
-        throw new Exception("Запрос по Id провалился (queryById).");
+        System.out.println(ourTakenElement);
+        return ourTakenElement;
     }
 
     /* *******МЕТОДЫ******* */
