@@ -101,9 +101,13 @@ public class TwitterAPI extends App {
                     }
 
                 } else {
+                    TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
+                    twitterStream.addListener(listener);
 
-                    QueryResult result = twitter.search(query);
-                    getResultsStreamEnabled(result, query);
+                    FilterQuery filterQuery = new FilterQuery();
+                    filterQuery.track(new String[]{getQueryString()});
+
+                    twitterStream.filter(filterQuery);
                 }
 
                 break; // no need to try again
@@ -154,33 +158,42 @@ public class TwitterAPI extends App {
         }
     }
 
-    protected static void getResultsStreamEnabled(QueryResult result, Query query) throws TwitterException {
-        while (true) {
-            for (Status status : result.getTweets()) {
-                if (!status.isRetweet() || !getHideRetweets()) {
-                    // hide retweets
+    static StatusListener listener = new StatusListener() {
+        @Override
+        public void onException(Exception e) {
+        }
 
-                    System.out.println("@" + BLUE
-                            + status.getUser().getScreenName()
-                            + RESET + getRetweetSource(status)
-                            + ": " + status.getText()
-                            + retweetCount(status));
-
-                    try {
-                        Thread.sleep(SLEEP_TIME);
-                        // sleep for 1 second
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                }
-            }
-
-            if (!result.getTweets().isEmpty()) {
-                Status status = result.getTweets().get(0);
-                query.setSinceId(status.getId());
+        @Override
+        public void onStatus(Status status) {
+            if (!status.isRetweet() || !getHideRetweets()) {
+                System.out.println("@" + BLUE
+                        + status.getUser().getScreenName()
+                        + RESET + getRetweetSource(status)
+                        + ": " + status.getText()
+                        + retweetCount(status));
             }
         }
-    }
+
+        @Override
+        public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
+
+        }
+
+        @Override
+        public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
+            System.err.println("Track limitation" + numberOfLimitedStatuses);
+        }
+
+        @Override
+        public void onScrubGeo(long l, long l1) {
+
+        }
+
+        @Override
+        public void onStallWarning(StallWarning stallWarning) {
+
+        }
+    };
 
     protected static String getDate(Date date) {
 
