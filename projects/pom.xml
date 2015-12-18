@@ -28,6 +28,9 @@
 
     <modules>
         <module>dkhurtin</module>
+
+        <module>lenazherdeva</module>
+        <!--Add you module here-->
         <module>ale3otik</module>
         <module>Pitovsky</module>
     </modules>
