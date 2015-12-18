@@ -26,34 +26,34 @@ import static library.api.Sources.list;
 public class IncorrectQueryTest {
 
     @Test(expected = IllegalArgumentException.class)
-    public void test_EmptySourceQuery() throws IncorrectQueryException {
+    public void testEmptySourceQuery() throws IncorrectQueryException {
         from(list(/* empty */))
                 .select(Statistics.class)
                 .execute();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test_EmptyListOfSelectArgs() throws IncorrectQueryException {
+    public void testEmptyListOfSelectArgs() throws IncorrectQueryException {
         from(list(new Object())).select(Object.class).execute();
     }
 
     @Test(expected = NullPointerException.class)
-    public void test_NullResultClass() throws IncorrectQueryException {
+    public void testNullResultClass() throws IncorrectQueryException {
         from(list(new Object())).select(null).execute();
     }
 
     @Test(expected = NullPointerException.class)
-    public void test_NullWhereStatement() throws IncorrectQueryException {
+    public void testNullWhereStatement() throws IncorrectQueryException {
         from(list(new Object())).select(Object.class, o -> 1).where(null).execute();
     }
 
     @Test(expected = NullPointerException.class)
-    public void test_NullOrderByStatement() throws IncorrectQueryException {
+    public void testNullOrderByStatement() throws IncorrectQueryException {
         from(list(new Object())).select(Object.class, o -> 1).orderBy(null).execute();
     }
 
     @Test(expected = NullPointerException.class)
-    public void test_NullGroupByStatement() throws IncorrectQueryException {
+    public void testNullGroupByStatement() throws IncorrectQueryException {
         from(list(new Object())).select(Object.class, o -> 1).groupBy(null).execute();
     }
 
@@ -63,17 +63,17 @@ public class IncorrectQueryTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test_EmptyGroupByStatement() throws IncorrectQueryException {
+    public void testEmptyGroupByStatement() throws IncorrectQueryException {
         from(list(new Object())).select(Object.class, o -> 1).groupBy().execute();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test_IncorrectLimitStatement() throws IncorrectQueryException {
+    public void testIncorrectLimitStatement() throws IncorrectQueryException {
         from(list(new Object())).select(Object.class, o -> 1).limit(0).execute();
     }
 
     @Test(expected = IncorrectQueryException.class)
-    public void test_IncorrectSelectArguments() throws IncorrectQueryException {
+    public void testIncorrectSelectArguments() throws IncorrectQueryException {
         // class Statistics doesn't have constructor with 2 arguments
         Iterable<Statistics> statistics =
                 from(list(
@@ -91,7 +91,7 @@ public class IncorrectQueryTest {
     }
 
     @Test(expected = IncorrectQueryException.class)
-    public void test_AggregateAndNotAggregateFunctions_InNotGroupingQuery() throws IncorrectQueryException {
+    public void testAggregateAndNotAggregateFunctionsInNotGroupingQuery() throws IncorrectQueryException {
         // select statement contains Student::getGroup but there is no such grouping function
         // in such case the only aggregate functions or constant() are permitted
         Iterable<Statistics> statistics =
