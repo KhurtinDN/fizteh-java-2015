@@ -14,15 +14,8 @@ public class BlockingQueueMain {
         toPut.add(3);
         toPut.add(4);
         BlockingQueue<Integer> q = new BlockingQueue<>(5);
-        try {
-            q.offer(toPut);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        try {
-            q.take(2);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        q.offer(toPut);
+        q.take(2);
+
     }
 }

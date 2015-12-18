@@ -22,53 +22,57 @@ public class BlockingQueue<T> {
 
     private int maxSize;
 
-    public final List<T> take(int n) throws InterruptedException, IllegalArgumentException {
+    public final List<T> take(int n) throws IllegalArgumentException {
         if (n < 0) {
-            throw new IllegalArgumentException("There should be positive number as command line argument");
+            throw new IllegalArgumentException("Argument was negative number");
         }
-        if (n == 0) {
-            return new ArrayList<T>();
-        }
-        readingLock.lockInterruptibly();
         try {
-            lockOfAccess.lockInterruptibly();
-            try {
-                List<T> answer = new ArrayList<>();
-                while (queue.size() < n) {
-                    notEmptyQueue.await();
-                }
-                for (int i = 0; i < queue.size(); ++i) {
+            readingLock.lock();
+            List<T> answer = new ArrayList<>();
+            for (int i = 0; i < n; ++i) {
+                try {
+                    lockOfAccess.lock();
+                    while (queue.size() == 0) {
+                        try {
+                            notEmptyQueue.await();
+                        } catch (InterruptedException e) {
+                        }
+                    }
                     answer.add(queue.poll());
+                    notFullQueue.signalAll();
+                } finally {
+                    lockOfAccess.unlock();
                 }
-                notFullQueue.signalAll(); //теперь очередь не заполнена
-                return answer;
-            } finally {
-                lockOfAccess.unlock();
             }
+            return answer;
         } finally {
-         readingLock.unlock();
+            readingLock.unlock();
         }
     }
 
-    public final <E extends T> boolean offer(List<E> list) throws InterruptedException {
-        addingLock.lockInterruptibly();
+
+    public final  <E extends T> void offer(List<E> list) {
         try {
-            lockOfAccess.lockInterruptibly();
-            try {
-                while (queue.size() + list.size() > maxSize) {
-                    notFullQueue.await();
+            addingLock.lock();
+            for (E element : list) {
+                try {
+                    lockOfAccess.lock();
+                    while (queue.size() == maxSize) {
+                        try {
+                            notFullQueue.await();
+                        } catch (InterruptedException e) {
+                        }
+                    }
+                    queue.add(element);
+                    notEmptyQueue.signal();
+                } finally {
+                    lockOfAccess.unlock();
                 }
-                queue.addAll(list);
-                notEmptyQueue.signal();
-            } finally {
-                lockOfAccess.unlock();
             }
         } finally {
             addingLock.unlock();
         }
-        return true;
     }
-
     public BlockingQueue(int inpMaxSize) {
         this.maxSize = inpMaxSize;
     }
