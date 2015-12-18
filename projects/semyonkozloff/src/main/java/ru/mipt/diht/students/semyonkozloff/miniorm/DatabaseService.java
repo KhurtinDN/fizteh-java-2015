@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class DatabaseService<K, V> {
+public final class DatabaseService<K, V> {
 
     private Map<K, V> database;
 
