@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractSelectOperation implements QueryOperation {
 
     @Override
-    abstract public  <R, S> void validate(QueryContext<R, S> queryContext) throws IncorrectQueryException {
+    public abstract <R, S> void validate(QueryContext<R, S> queryContext) throws IncorrectQueryException {
     }
 
     protected  final <S, R> List<R> doSelect(List<S> sourceElements, QueryContext<R, S> queryContext)
