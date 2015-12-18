@@ -32,7 +32,7 @@ public class BlockingQueueMain {
                 @Override
                 public void run() {
                     System.out.println("CONSUMER: try to take 5 elements from queue...");
-                    List<Integer> elements = blockingQueue1.take(5);
+                    List<Integer> elements = blockingQueue1.take(N5);
                     System.out.println("CONSUMER: elements taken: " + elements);
                     firstCaseInitTracker.countDown();
                 }
@@ -42,7 +42,7 @@ public class BlockingQueueMain {
                 public void run() {
                     try {
                         System.out.println("PROVIDER: sleep 3 seconds before offering elements to queue...");
-                        TimeUnit.SECONDS.sleep(3);
+                        TimeUnit.SECONDS.sleep(N3);
                         System.out.println("PROVIDER: offer 5 elements to queue...");
                         blockingQueue1.offer(Arrays.asList(N1, N2, N3, N4, N5));
                         firstCaseInitTracker.countDown();
@@ -73,19 +73,19 @@ public class BlockingQueueMain {
                 public void run() {
                     System.out.println("CONSUMER: sleep 3 seconds before take elements from queue...");
                     try {
-                        TimeUnit.SECONDS.sleep(3);
+                        TimeUnit.SECONDS.sleep(N3);
                     } catch (InterruptedException e) {
                         // ignore
                     }
                     System.out.println("CONSUMER: take 5 elements from queue...");
-                    System.out.println("CONSUMER: Taken elements: " + blockingQueue2.take(5));
+                    System.out.println("CONSUMER: Taken elements: " + blockingQueue2.take(N5));
                     secondCaseInitTracker.countDown();
                 }
             });
             secondCaseInitTracker.await();
 
-            System.out.println("\nThird case - " +
-                    "provider blocked while consumer will take extra elements from queue one by one");
+            System.out.println("\nThird case - "
+                    + "provider blocked while consumer will take extra elements from queue one by one");
             final BlockingQueue<Integer> blockingQueue3 = new BlockingQueue<>(3);
             final CountDownLatch thirdCaseInitTracker = new CountDownLatch(2);
             executorService.execute(new Runnable() {
