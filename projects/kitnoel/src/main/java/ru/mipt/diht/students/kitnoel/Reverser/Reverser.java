@@ -1,9 +1,9 @@
+/**
+ * Created by kitnoel.
+ */
 package ru.mipt.diht.students.kitnoel.Reverser;
 
-/**
- * Created by kitnoel
- */
-class Reverser {
+public class Reverser {
     public static void main(final String[] args) {
         for (int i = args.length - 1; i >= 0; i--) {
             String[] res = args[i].split("\\s");
