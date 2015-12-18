@@ -3,9 +3,11 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>CollectionsQL</groupId>
-    <artifactId>ru.fizteh.fivt.students.popova.CollectionsQL</artifactId>
+
+    <groupId>CollectionQL2</groupId>
+    <artifactId>Collection</artifactId>
     <version>1.0-SNAPSHOT</version>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -13,5 +15,6 @@
             <version>3.4</version>
         </dependency>
     </dependencies>
+
 
 </project>
