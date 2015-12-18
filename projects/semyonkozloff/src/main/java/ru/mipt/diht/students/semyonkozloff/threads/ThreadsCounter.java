@@ -33,7 +33,7 @@ public class ThreadsCounter {
                             try {
                                 monitor.wait();
                             } catch (InterruptedException exception) {
-                                System.err.println("Thread were interrupted");
+                                System.err.println("Thread was interrupted");
                                 exception.printStackTrace();
                                 System.exit(1);
                             }
