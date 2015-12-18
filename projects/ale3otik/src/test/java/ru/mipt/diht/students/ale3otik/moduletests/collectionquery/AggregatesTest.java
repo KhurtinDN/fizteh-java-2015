@@ -3,11 +3,10 @@ package ru.mipt.diht.students.ale3otik.moduletests.collectionquery;
 /**
  * Created by alex on 18.12.15.
  */
+
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 import ru.mipt.diht.students.ale3otik.collectionquery.Aggregates;
 import ru.mipt.diht.students.ale3otik.collectionquery.aggregatesimpl.Aggregator;
 
@@ -18,9 +17,7 @@ import java.util.function.Function;
 
 import static ru.mipt.diht.students.ale3otik.moduletests.collectionquery.CollectionQueryTest.Student;
 
-@RunWith(MockitoJUnitRunner.class)
 public class AggregatesTest extends TestCase {
-
     private List<Student> correct, emptylist;
     private Function<Student, Long> functionAge;
     private Function<Student, String> functionName, functionGroup;
@@ -40,6 +37,7 @@ public class AggregatesTest extends TestCase {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testMax() throws Exception {
 //        System.out.println(((Aggregator)Aggregates.max(functionGroup)).apply(correct));
 
@@ -47,7 +45,7 @@ public class AggregatesTest extends TestCase {
         assertEquals(((Aggregator) Aggregates.max(functionName)).apply(correct), "stepanov");
         assertEquals(((Aggregator) Aggregates.max(functionAge)).apply(correct), 3L);
 
-//        assertEquals(((Aggregator) Aggregates.max(functionAge)).apply(emptylist), null);
+        assertEquals(((Aggregator) Aggregates.max(functionAge)).apply(emptylist), null);
     }
 
     @Test

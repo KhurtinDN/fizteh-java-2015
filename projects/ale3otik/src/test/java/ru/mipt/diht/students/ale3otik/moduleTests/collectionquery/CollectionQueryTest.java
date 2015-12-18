@@ -6,6 +6,7 @@ import ru.mipt.diht.students.ale3otik.collectionquery.impl.CqlException;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 import static ru.mipt.diht.students.ale3otik.collectionquery.Aggregates.avg;
 import static ru.mipt.diht.students.ale3otik.collectionquery.Aggregates.count;
@@ -27,7 +28,7 @@ public class CollectionQueryTest extends TestCase {
                         student("smith", LocalDate.parse("1986-08-06"), "495"),
                         student("petrov", LocalDate.parse("2006-08-06"), "494")))
                         .select(Statistics.class, Student::getGroup, count(Student::getGroup), avg(Student::age))
-                        .where(rlike(Student::getName, ".*ov").and(s -> s.age() > 20))
+                        .where(rlike(Student::getName, ".*ov").and(s -> s.age() > 12))
                         .groupBy(Student::getGroup)
                         .having(s -> s.getCount() > 0)
                         .orderBy(asc(Statistics::getGroup), desc(Statistics::getCount))
@@ -36,8 +37,9 @@ public class CollectionQueryTest extends TestCase {
                         .from(list(student("ivanov", LocalDate.parse("1985-08-06"), "494")))
                         .selectDistinct(Statistics.class, s -> "all", count(s -> 1), avg(Student::age))
                         .execute();
-        System.out.println(statistics);
-
+        assertEquals(
+                statistics.toString(),
+                "[Statistics{group='494', count=2, age=14.0}, Statistics{group='all', count=1, age=15.0}]");
 //        Iterable<Tuple<String, String>> mentorsByStudent =
 //                from(list(student("ivanov", LocalDate.parse("1985-08-06"), "494")))
 //                        .join(list(new Group("494", "mr.sidorov")))
@@ -81,12 +83,25 @@ public class CollectionQueryTest extends TestCase {
             return ChronoUnit.YEARS.between(getDateOfBith(), baseDateTime);
         }
 
-        public double aged() {
-            return new Long(age()).doubleValue();
-        }
-
         public static Student student(String name, LocalDate dateOfBith, String group) {
             return new Student(name, dateOfBith, group);
+        }
+
+        @Override
+        public String toString() {
+            return "{name=" + name + ";date=" + dateOfBith + ";group=" + group + "}";
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if(obj == null) {
+                return false;
+            }
+
+            if(!(obj instanceof Student)) {
+                return false;
+            }
+            return Objects.equals(this.toString(),obj.toString());
         }
     }
 

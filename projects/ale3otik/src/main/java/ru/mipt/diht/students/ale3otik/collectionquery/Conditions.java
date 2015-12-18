@@ -20,16 +20,16 @@ public class Conditions<T> {
         return elem -> expression.apply(elem).matches(regexp);
     }
 
-//    /**
-//     * Matches string result of expression against SQL like pattern.
-//     *
-//     * @param expression expression result to match
-//     * @param pattern    pattern to match to
-//     * @param <T>        source object type
-//     * @return
-//     */
-//    public static <T> Predicate<T> like(Function<T, String> expression, String pattern) {
-//        throw new UnsupportedOperationException();
-//    }
+    /**
+     * Matches string result of expression against SQL like pattern.
+     *
+     * @param expression expression result to match
+     * @param pattern    pattern to match to
+     * @param <T>        source object type
+     * @return
+     */
+    public static <T> Predicate<T> like(Function<T, String> expression, String pattern) {
+        return e-> expression.apply(e).equals(pattern);
+    }
 
 }
