@@ -29,8 +29,8 @@
     <modules>
         <module>dkhurtin</module>
         <module>ale3otik</module>
+    	<module>kitnoel</module>
         <!--Add you module here-->
-    		<module>kitnoel</module>
   	</modules>
 
     <dependencyManagement>
