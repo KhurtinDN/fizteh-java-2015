@@ -17,6 +17,7 @@ public class BlockingQueue<T> {
     private Queue<T> ourQueue = new LinkedList<>();
     private Lock ourLock = new ReentrantLock();
     private Lock offerLock = new ReentrantLock();
+    private Lock takeLock = new ReentrantLock();
 
     private int maxQueueSize;
     private int currentQueueSize = 0;
@@ -51,18 +52,22 @@ public class BlockingQueue<T> {
     List<T> take(int howManyToTake) throws Exception {
         List<T> listToReturn = new ArrayList<>();
         try {
-            ourLock.lock();
-            for (int i = 0; i < howManyToTake; i++) {
-                if (currentQueueSize > 0) {
+            takeLock.lock();
+            try {
+                ourLock.lock();
+                for (int i = 0; i < howManyToTake; i++) {
+                    while ((currentQueueSize == 0)) {
+                        queueNotEmpty.await();
+                    }
                     T element = ourQueue.element();
                     currentQueueSize--;
                     queueNotFull.signalAll();
-                } else {
-                    queueNotEmpty.await();
                 }
+            } finally {
+                ourLock.unlock();
             }
         } finally {
-            ourLock.unlock();
+            takeLock.unlock();
         }
         return listToReturn;
     }
