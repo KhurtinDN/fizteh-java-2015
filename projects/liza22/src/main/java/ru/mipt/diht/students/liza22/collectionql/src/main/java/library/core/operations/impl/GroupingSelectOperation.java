@@ -33,7 +33,6 @@ public final class GroupingSelectOperation extends AbstractSelectOperation {
             }
         }
         // check that select arguments consist of aggregate functions or grouping conditions only
-        List<SelectArgument<S>> selectArguments = queryContext.getSelectArguments();
         List<GroupingCondition<S>> groupingConditions = queryContext.getGroupingConditions();
         long aggregateFunctionsCnt = selectArguments.stream().filter(SelectArgument::isAggregate).count();
         long simpleFunctionsCnt = selectArguments.size() - aggregateFunctionsCnt;

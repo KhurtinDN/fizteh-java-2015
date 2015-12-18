@@ -20,8 +20,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractSelectOperation implements QueryOperation {
 
     @Override
-    public abstract <R, S> void validate(QueryContext<R, S> queryContext) throws IncorrectQueryException {
-    }
+    public abstract <R, S> void validate(QueryContext<R, S> queryContext) throws IncorrectQueryException;
 
     protected  final <S, R> List<R> doSelect(List<S> sourceElements, QueryContext<R, S> queryContext)
             throws IncorrectQueryException {
@@ -145,10 +144,11 @@ public abstract class AbstractSelectOperation implements QueryOperation {
         Object[] constructorArguments = new Object[selectArguments.size()];
         for (int i = 0; i < selectArguments.size(); i++) {
             SelectArgument<S> selectArgument = selectArguments.get(i);
+            Object value;
             if (selectArgument.isAggregate()) {
-                Object value = selectArgument.getAggregatedValue();
+                value = selectArgument.getAggregatedValue();
             } else {
-                Object value = selectArgument.getValues().get(source);
+                value = selectArgument.getValues().get(source);
             }
             constructorArguments[i] = value;
         }

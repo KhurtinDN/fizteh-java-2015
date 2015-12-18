@@ -3,6 +3,7 @@ package library;
 import client.Statistics;
 import client.Student;
 import library.core.exceptions.IncorrectQueryException;
+import library.core.operations.impl.*;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import java.util.Iterator;
 import static client.Student.student;
 import static library.api.Aggregates.*;
 import static library.api.Conditions.not;
+import static library.api.Conditions.like;
 import static library.api.OrderByConditions.asc;
 import static library.api.OrderByConditions.desc;
 import static library.api.Sources.from;
@@ -32,8 +34,8 @@ public final class CorrectQueryTest {
     public static final long NUM69 = 69L;
     public static final long NUM24 = 24L;
     public static final long NUM30 = 30L;
-    public static final long AGE = 10;
-    public static final long LIMIT = 100;
+    public static final int AGE = 10;
+    public static final int LIMIT = 100;
 
     @Test
     public void testTaskSampleQuery() throws IncorrectQueryException {

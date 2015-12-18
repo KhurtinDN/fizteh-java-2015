@@ -33,7 +33,6 @@ public class SimpleSelectOperation extends AbstractSelectOperation {
         // or if exists, then all arguments must be aggregate functions
         // because this type of query doesn't have GroupBy condition and
         // simple expressions are not permitted in "select" statement
-        List<SelectArgument<S>> selectArguments = queryContext.getSelectArguments();
         long aggregateArgsCnt = selectArguments.stream().filter(SelectArgument::isAggregate).count();
         if (aggregateArgsCnt != 0 && aggregateArgsCnt != selectArguments.size()) {
             throw new IncorrectQueryException("The only grouping expressions or aggregate functions "

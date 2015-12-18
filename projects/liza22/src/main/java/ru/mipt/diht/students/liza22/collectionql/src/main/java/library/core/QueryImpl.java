@@ -102,10 +102,11 @@ public final class QueryImpl<R, S> implements Query<R, S> {
         // here will be fun !
 
         // add select operation to chain of query operations
+        QueryOperation selectOperation;
         if (queryContext.isGroupingQuery()) {
-            QueryOperation selectOperation = QueryOperationFactory.getOperationByType(OperationType.GROUPING_SELECT_OP);
+            selectOperation = QueryOperationFactory.getOperationByType(OperationType.GROUPING_SELECT_OP);
         } else {
-            QueryOperation selectOperation = QueryOperationFactory.getOperationByType(OperationType.SIMPLE_SELECT_OP);
+            selectOperation = QueryOperationFactory.getOperationByType(OperationType.SIMPLE_SELECT_OP);
         }
 
         queryOperationsChain.add(selectOperation);
