@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.semyonkozloff.moduletests.library.miniorm;
+package miniorm;
 
 import junit.framework.TestCase;
 import ru.mipt.diht.students.semyonkozloff.miniorm.annotation.Column;
