@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.lenazherdeva.moduleTests;
+package ru.mipt.diht.students.lenazherdeva.moduleTests.twitterStream;
 
 import org.junit.Before;
 import org.junit.Test;

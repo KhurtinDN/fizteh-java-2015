@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.lenazherdeva.moduleTests;
+package ru.mipt.diht.students.lenazherdeva.moduleTests.twitterStream;
 
 import junit.framework.TestCase;
 import org.junit.Test;
