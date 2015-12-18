@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.maxDankow.sqlcollections;
+package ru.mipt.diht.students.maxdankow.sqlcollections;
 
 public class Example {
     private String name;

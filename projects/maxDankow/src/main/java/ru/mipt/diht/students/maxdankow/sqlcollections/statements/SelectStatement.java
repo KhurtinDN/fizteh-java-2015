@@ -1,7 +1,7 @@
-package ru.mipt.diht.students.maxDankow.sqlcollections.statements;
+package ru.mipt.diht.students.maxdankow.sqlcollections.statements;
 
 import javafx.util.Pair;
-import ru.mipt.diht.students.maxDankow.sqlcollections.aggregator.Aggregator;
+import ru.mipt.diht.students.maxdankow.sqlcollections.aggregator.Aggregator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;

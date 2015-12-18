@@ -1,9 +1,9 @@
-package ru.mipt.diht.students.maxDankow.sqlcollections;
+package ru.mipt.diht.students.maxdankow.sqlcollections;
 
-import ru.mipt.diht.students.maxDankow.sqlcollections.aggregator.Average;
-import ru.mipt.diht.students.maxDankow.sqlcollections.aggregator.Count;
-import ru.mipt.diht.students.maxDankow.sqlcollections.aggregator.Max;
-import ru.mipt.diht.students.maxDankow.sqlcollections.aggregator.Min;
+import ru.mipt.diht.students.maxdankow.sqlcollections.aggregator.Average;
+import ru.mipt.diht.students.maxdankow.sqlcollections.aggregator.Count;
+import ru.mipt.diht.students.maxdankow.sqlcollections.aggregator.Max;
+import ru.mipt.diht.students.maxdankow.sqlcollections.aggregator.Min;
 
 import java.util.function.Function;
 

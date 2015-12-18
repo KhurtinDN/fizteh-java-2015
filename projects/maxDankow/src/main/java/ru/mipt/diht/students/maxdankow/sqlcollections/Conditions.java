@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.maxDankow.sqlcollections;
+package ru.mipt.diht.students.maxdankow.sqlcollections;
 
 import java.util.function.Function;
 import java.util.function.Predicate;

@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.maxDankow.sqlcollections;
+package ru.mipt.diht.students.maxdankow.sqlcollections;
 
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
@@ -6,7 +6,7 @@ import com.tngtech.java.junit.dataprovider.UseDataProvider;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import ru.mipt.diht.students.maxDankow.sqlcollections.aggregator.Aggregator;
+import ru.mipt.diht.students.maxdankow.sqlcollections.aggregator.Aggregator;
 
 import java.util.ArrayList;
 import java.util.List;

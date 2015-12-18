@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.maxDankow.sqlcollections.statements;
+package ru.mipt.diht.students.maxdankow.sqlcollections.statements;
 
 import javafx.util.Pair;
 

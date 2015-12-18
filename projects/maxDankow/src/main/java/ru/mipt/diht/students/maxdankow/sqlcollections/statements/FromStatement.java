@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.maxDankow.sqlcollections.statements;
+package ru.mipt.diht.students.maxdankow.sqlcollections.statements;
 
 import java.util.ArrayList;
 import java.util.List;

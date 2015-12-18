@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.maxDankow.sqlcollections.aggregator;
+package ru.mipt.diht.students.maxdankow.sqlcollections.aggregator;
 
 import java.util.List;
 import java.util.function.Function;
