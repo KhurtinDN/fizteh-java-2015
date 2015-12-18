@@ -7,12 +7,16 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import ru.mipt.diht.students.simon23rus.CQL.data.CollectionQuery;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import static ru.mipt.diht.students.simon23rus.CQL.data.CollectionQuery.Student.student;
+import static ru.mipt.diht.students.simon23rus.CQL.data.Sources.list;
+import static ru.mipt.diht.students.simon23rus.CQL.impl.FromStmt.from;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FromStmtTest extends TestCase {
@@ -39,7 +43,7 @@ public class FromStmtTest extends TestCase {
 
     @Test
     public void testFrom() throws Exception {
-        FromStmt<CollectionQuery.Student> fromStmt = FromStmt.from(toTest);
+        FromStmt<CollectionQuery.Student> fromStmt = from(toTest);
         assertEquals(fromStmt.getData().size(), toTest.size());
         for (int i = 0; i < toTest.size(); i++) {
             assertEquals(toTest.get(i),fromStmt.getData().get(i));
@@ -48,8 +52,8 @@ public class FromStmtTest extends TestCase {
 
     @Test
     public void testSelect() throws Exception {
-        SelectStmt<CollectionQuery.Student, CollectionQuery.Student> select = FromStmt
-                .from(toTest)
+        SelectStmt<CollectionQuery.Student, CollectionQuery.Student> select =
+                from(toTest)
                 .select(CollectionQuery.Student.class, CollectionQuery.Student::age);
         assertEquals(-1, select.getMaxRawsNeeded());
         assertEquals(CollectionQuery.Student.class, select.getToReturn());
@@ -69,8 +73,24 @@ public class FromStmtTest extends TestCase {
     }
 
     @Test
+    public void joinTest() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        Iterable<Tuple<String, String>> mentorsByStudent =
+                from(list(student("kagawa", LocalDate.parse("1985-08-06"), "123"),
+                        student("sobaka", LocalDate.parse("2000-08-06"), "123")))
+                        .join(list(new CollectionQuery.Group("123", "mr.proper"),
+                                new CollectionQuery.Group("123", "mr.test")))
+                        .on((s, g) -> Objects.equals(s.getGroup(), g.getGroup()))
+                        .select(sg -> sg.getFirst().getName(), sg -> sg.getSecond().getMentor())
+                        .execute();
+
+//        System.out.println(mentorsByStudent);
+        assertEquals("[Tuple{first=kagawa, second=mr.proper}, Tuple{first=kagawa, second=mr.test}, Tuple{first=sobaka, second=mr.proper}, Tuple{first=sobaka, second=mr.test}]",
+                mentorsByStudent.toString());
+    }
+
+    @Test
     public void testSelectDistinct() throws Exception {
-        SelectStmt<CollectionQuery.Student, CollectionQuery.Student> select = FromStmt.from(toTest)
+        SelectStmt<CollectionQuery.Student, CollectionQuery.Student> select = from(toTest)
                 .selectDistinct(CollectionQuery.Student.class, CollectionQuery.Student::getName,
                         CollectionQuery.Student::getGroup);
         assertEquals(-1,select.getMaxRawsNeeded());
