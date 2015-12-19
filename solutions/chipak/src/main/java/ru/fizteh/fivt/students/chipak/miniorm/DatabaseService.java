@@ -20,7 +20,7 @@ public class DatabaseService<T> {
     private List<TypedColumn> columns;
     private TypedColumn primaryKeyColumn;
 
-    private static final String STANDARD_DATABASE_PATH = "./mamaevadb";
+    private static final String STANDARD_DATABASE_PATH = "./chipakdb";
 
     private enum DataType {
         INTEGER("INT", Boolean.class, Byte.class, Short.class, Integer.class, Long.class),
