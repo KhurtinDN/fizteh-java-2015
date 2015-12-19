@@ -3,36 +3,106 @@ package ru.mipt.diht.students.kitnoel.treads;
 /**
  * Created by leonk on 19.12.15.
  */
-import java.util.LinkedList;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-class BlockingQueue<T> {
-    private int maxQueueSize;
+public class BlockingQueue<T> {
+
     private Queue<T> queue;
-    BlockingQueue(int maxSize) {
-        maxQueueSize = maxSize;
-        queue = new LinkedList<>();
+    private int maxSize;
+    private final Lock lock = new ReentrantLock();
+    private final Condition notEnoughSpace = lock.newCondition();
+    private final Condition notEnoughElements = lock.newCondition();
+    private final Object offerSynchronizer = new Object();
+    private final Object takeSynchronizer = new Object();
+
+    BlockingQueue(int size) {
+        queue = new ArrayDeque<T>();
+        maxSize = size;
     }
-    public synchronized void offer(List<T> L) throws InterruptedException {
-        while (queue.size() + L.size() > maxQueueSize) {
-            wait();
-            Thread.sleep(100);
+
+    void offer(List<T> toAdd) throws InterruptedException {
+        synchronized (offerSynchronizer) {
+            lock.lock();
+            try {
+                while ((queue.size() + toAdd.size()) > maxSize) {
+                    notEnoughSpace.await();
+                }
+                queue.addAll(toAdd);
+                notEnoughElements.signalAll();
+            } finally {
+                lock.unlock();
+            }
         }
-        for (int i = 0; i < L.size(); ++i) {
-            queue.add(L.get(i));
-        }
-        notifyAll();
     }
-    public synchronized List<T> take(int n) throws InterruptedException {
-        while (queue.size() < n) {
-            wait();
-            Thread.sleep(100);
+
+    List<T> take(int n) throws InterruptedException {
+        synchronized (takeSynchronizer) {
+            lock.lock();
+            List<T> ans = new ArrayList<T>();
+            try {
+
+                while (queue.size() < n) {
+                    notEnoughElements.await();
+                }
+                for (int i = 0; i < n; ++i) {
+                    ans.add(queue.remove());
+                }
+                notEnoughElements.signalAll();
+            } finally {
+                lock.unlock();
+                return ans;
+            }
         }
-        List<T> ans = new LinkedList<>();
-        for (int i = 0; i < n; ++i) {
-            ans.add(queue.remove());
-        }
-        notifyAll();
-        return ans;
     }
+
+    void offer(List<T> toAdd, long timeout) throws  InterruptedException {
+        synchronized (offerSynchronizer) {
+            lock.lock();
+            long waitingTime = timeout;
+            final long startTime = System.currentTimeMillis();
+            try {
+                while (queue.size() + toAdd.size() > maxSize && waitingTime > 0) {
+                    notEnoughElements.await(waitingTime, TimeUnit.MILLISECONDS);
+                    waitingTime = timeout - (System.currentTimeMillis() - startTime);
+                }
+                if (queue.size() + toAdd.size() <= maxSize) {
+                    queue.addAll(toAdd);
+                    notEnoughElements.notifyAll();
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
+    List<T> take(int n, long timeout) throws InterruptedException {
+        synchronized (takeSynchronizer) {
+            lock.lock();
+            List<T> ans = new ArrayList<T>();
+            long waitingTime = timeout;
+            final long startTime = System.currentTimeMillis();
+            try {
+                while (queue.size() < n && waitingTime > 0) {
+                    notEnoughElements.await(waitingTime, TimeUnit.MILLISECONDS);
+                    waitingTime = timeout - (System.currentTimeMillis() - startTime);
+                }
+                if (queue.size() >= n) {
+                    for (int i = 0; i < n; ++i) {
+                        ans.add(queue.remove());
+                    }
+                    notEnoughElements.notifyAll();
+                }
+            } finally {
+                lock.unlock();
+                return ans;
+            }
+        }
+    }
+}
