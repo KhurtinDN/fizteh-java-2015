@@ -17,4 +17,3 @@ public class mainclass
     }
     System.out.println();
 }
-
