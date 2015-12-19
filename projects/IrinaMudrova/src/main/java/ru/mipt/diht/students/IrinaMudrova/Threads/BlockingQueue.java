@@ -2,90 +2,113 @@
 package ru.mipt.diht.students.IrinaMudrova.Threads;
 
 import java.util.*;
-import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * Created by Ирина on 15.12.2015.
- */
-
 public class BlockingQueue<T> {
+
+    public static class Query implements Comparable<Query> {
+        private ReentrantLock lock = new ReentrantLock();
+        private Condition cond = lock.newCondition();
+        private Integer count;
+        private Boolean ready = false;
+        public void setReady() {
+            lock.lock();
+            ready = true;
+            cond.signal();
+            lock.unlock();
+        }
+        public Query(int n) {
+            count = n;
+        }
+
+        @Override
+        public int compareTo(Query o) {
+            if (!count.equals(o.count)) {
+                return count.compareTo(o.count);
+            }
+            return ((Integer) cond.hashCode()).compareTo(o.cond.hashCode());
+        }
+    }
+
+
     private int maxQueueSize;
-    private Queue<T> queue;
-    private Lock queueLock = new ReentrantLock();
-    private Lock offerLock = new ReentrantLock();
-    private Lock takeLock = new ReentrantLock();
-    private Object pushWait = new Object();
-    private Object popWait = new Object();
+    private ArrayDeque<T> data;
+    private SortedSet<Query> takeQueries, offerQueries;
 
     public void offer(List<T> list) {
-        offerLock.lock();
-        try {
-            Integer last = 0;
-            while (last != list.size()) {
-                synchronized (popWait) {
-                    while (queue.size() == maxQueueSize) {
-                        try {
-                            popWait.wait();
-                        } catch (InterruptedException e) {
-                            System.err.println(e.getMessage());
-                            System.exit(1);
-                        }
+        long startTime = System.currentTimeMillis();
+        Query query = new Query(list.size());
+        while (true) {
+            synchronized (this) {
+                if (data.size() + list.size() <= maxQueueSize) {
+                    for (T item : list) {
+                        data.add(item);
                     }
-                    try {
-                        queueLock.lock();
-                        while (last < Integer.min(last + maxQueueSize - queue.size(), list.size())) {
-                            queue.add(list.get(last));
-                            last++;
-                        }
-                    } finally {
-                        queueLock.unlock();
+                    while (!takeQueries.isEmpty()
+                            && takeQueries.first().count <= data.size()) {
+                        Query takeQuery = takeQueries.first();
+                        takeQueries.remove(takeQuery);
+                        takeQuery.setReady();
                     }
+                    return;
+                } else {
+                    offerQueries.add(query);
                 }
             }
-        } finally {
-            synchronized (pushWait) {
-                pushWait.notifyAll();
+            query.lock.lock();
+            try {
+                while (!query.ready) {
+                        query.cond.await();
+                }
+                query.ready = false;
+            } catch (InterruptedException e) {
+                System.out.println("Sad but interrupted =(");
+            } finally {
+                query.lock.unlock();
             }
-            offerLock.unlock();
         }
+
     }
 
-    public List<Object> take(int n) {
-        takeLock.lock();
-        try {
-            List<Object> ans = new ArrayList<>();
-            while (ans.size() != n) {
-                synchronized (pushWait) {
-                    while (queue.size() == 0) {
-                        try {
-                            pushWait.wait();
-                        } catch (InterruptedException e) {
-                            System.err.println(e.getMessage());
-                            System.exit(1);
-                        }
+    public List<T> take(int n) {
+        long startTime = System.currentTimeMillis();
+        Query query = new Query(n);
+        while (true) {
+            synchronized (this) {
+                if (n <= data.size()) {
+                    List<T> result = new ArrayList<T>();
+                    for (int i = 0; i < n; i++) {
+                        result.add(data.poll());
                     }
-                    try {
-                        queueLock.lock();
-                        while (queue.size() > 0 && ans.size() != n) {
-                            ans.add(queue.poll());
-                        }
-                    } finally {
-                        queueLock.unlock();
+                    while (!offerQueries.isEmpty()
+                            && data.size() + offerQueries.first().count <= maxQueueSize) {
+                        Query offerQuery = offerQueries.first();
+                        offerQueries.remove(offerQuery);
+                        offerQuery.setReady();
                     }
+                    return result;
+                } else {
+                    takeQueries.add(query);
                 }
             }
-            return ans;
-        } finally {
-            synchronized (popWait) {
-                popWait.notifyAll();
+            query.lock.lock();
+            try {
+                while (!query.ready) {
+                        query.cond.await();
+                }
+                query.ready = false;
+            } catch (InterruptedException e) {
+                System.out.println("Sad but interrupted =(");
+            } finally {
+                query.lock.unlock();
             }
-            takeLock.unlock();
         }
     }
-
-    public BlockingQueue(int maxSize) {
-        maxQueueSize = maxSize;
-        queue = new ArrayDeque<T>();
+    public BlockingQueue(int maxQueueSizeArg) {
+        maxQueueSize = maxQueueSizeArg;
+        data = new ArrayDeque<T>();
+        takeQueries = new TreeSet<Query>();
+        offerQueries = new TreeSet<Query>();
     }
 }
