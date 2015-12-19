@@ -114,12 +114,12 @@ class TwitterStreamer {
         }
     }
 
-    private void printTweetTime(Status tweet) {
+    public void printTweetTime(Status tweet) {
         String timeToPrint = getTimeFormattedTimeString(tweet.getCreatedAt());
         System.out.print("[" + timeToPrint + "]");
     }
 
-    private void printTweet(Status tweet,
+    public void printTweet(Status tweet,
                             boolean hideRetweets,
                             boolean isStream) {
         System.out.println("-----------------------------------------");
@@ -145,7 +145,7 @@ class TwitterStreamer {
         }
     }
 
-    private void printRetweets(Status tweet, boolean isStream) {
+    public void printRetweets(Status tweet, boolean isStream) {
         Status retweet = tweet.getRetweetedStatus();
         if (retweet == null) {
             return;
@@ -163,7 +163,7 @@ class TwitterStreamer {
         System.out.println(retweet.getText());
     }
 
-    private String getTweetWord(int tweetsNumber) {
+    public String getTweetWord(int tweetsNumber) {
         final byte
                 ten = 10,
                 exceptStart = 11,
@@ -185,7 +185,7 @@ class TwitterStreamer {
     }
 
     @SuppressWarnings("checkstyle:magicnumber")
-    private String getTimeFormattedTimeString(Date createdAt) {
+    public String getTimeFormattedTimeString(Date createdAt) {
         //Times
         final long sec = 1000;
         final long min = sec * 60;
