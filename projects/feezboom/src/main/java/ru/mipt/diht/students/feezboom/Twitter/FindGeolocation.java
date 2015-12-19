@@ -13,7 +13,7 @@ import java.util.Vector;
 
 class FindGeolocation {
 
-    private static String getExternalIP() throws Exception {
+    public static String getExternalIP() throws Exception {
         URL url = new URL("http://myexternalip.com/raw");
         URLConnection urlConnection = url.openConnection();
         Scanner in = new Scanner(urlConnection.getInputStream());

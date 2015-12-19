@@ -3,6 +3,7 @@ package ru.mipt.diht.students.feezboom.StringUtils;
 /**
  ** Created by avk on 10.10.15.
  **/
+@SuppressWarnings("SameParameterValue")
 public class StringUtils {
 
     public enum Color {
@@ -50,7 +51,8 @@ public class StringUtils {
         public static final String ANSI_RESET = "\u001B[0m";
     }
 
-    public static String getPainted(String string, String color)   {
+    @SuppressWarnings("SameParameterValue")
+    public static String getPainted(String string, @SuppressWarnings("SameParameterValue") String color)   {
         String answer;
         switch (color.toLowerCase()) {
             case "black" :
