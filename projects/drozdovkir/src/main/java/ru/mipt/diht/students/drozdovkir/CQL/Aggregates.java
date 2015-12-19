@@ -1,4 +1,4 @@
-import ru.fizteh.fivt.students.drozdovkir.collectionquery.EmptyCollectionException;
+import ru.mipt.diht.students.drozdovkir.CQL.EmptyCollectionException;
 
 import java.util.Collection;
 import java.util.Collections;

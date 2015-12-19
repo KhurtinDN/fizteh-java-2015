@@ -1,5 +1,5 @@
 import javafx.util.Pair;
-import ru.fizteh.fivt.students.drozdovkir.collectionquery.Aggregates;
+import ru.mipt.diht.students.drozdovkir.CQL.Aggregates;
 
 import java.util.*;
 import java.util.function.Function;
