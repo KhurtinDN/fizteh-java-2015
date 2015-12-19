@@ -7,7 +7,9 @@ import mini.orm.model.IncorrectEntityWithoutPrimaryKeyAnn;
 import mini.orm.model.IncorrectEntityWithoutTableAnn;
 import mini.orm.core.JdbcDatabaseService;
 import org.h2.tools.Server;
-import org.junit.*;
+import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
 
 import java.sql.SQLException;
 import java.text.ParseException;
