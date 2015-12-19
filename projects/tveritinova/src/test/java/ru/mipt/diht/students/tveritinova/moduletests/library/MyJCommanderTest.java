@@ -11,12 +11,13 @@ public class MyJCommanderTest {
 
     @Test
     public void test() {
-        args = new String[]{"--help"
-                , "-s"
-                , "-q", "abc"
-                , "-p", "Moscow"
-                , "--hideRetweets"
-                , "-l", "20"};
+        args = new String[]{"--help",
+                "-s",
+                "-q",
+                "abc",
+                "-p", "Moscow",
+                "--hideRetweets",
+                "-l", "20"};
         new JCommander(mjc, args);
         Assert.assertTrue(mjc.getIsHelp());
         Assert.assertTrue(mjc.getIsStream());
