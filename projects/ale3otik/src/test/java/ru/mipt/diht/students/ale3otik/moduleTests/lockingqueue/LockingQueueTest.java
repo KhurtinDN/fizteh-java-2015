@@ -42,7 +42,7 @@ public class LockingQueueTest {
         public void run() {
             try {
                 answer = queue.take(4, 300);
-            }  catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 System.err.println(e.getMessage());
                 assert true;
             }
@@ -69,24 +69,24 @@ public class LockingQueueTest {
         }
     }
 
-    @Test(timeout = 800)
+    @Test(timeout = 1000)
     public void testSimpleRequestQueue() throws Exception {
         queue.offer(baseList);
         assertThat(queue.take(baseList.size()), equalTo(baseList));
     }
 
-    @Test(timeout = 800)
+    @Test(timeout = 1000)
     public void testTakeDelay() throws Exception {
         queue.offer(Arrays.asList(0, 0));
         ThreadTaker taker = new ThreadTaker(queue);
         taker.start();
         queue.offer(baseList);
         Thread.sleep(100);
-        assertThat(taker.answer,  equalTo(Arrays.asList(0, 0, 0, 1)));
+        assertThat(taker.answer, equalTo(Arrays.asList(0, 0, 0, 1)));
         assertThat(queue.take(1), equalTo(Arrays.asList(2)));
     }
 
-    @Test(timeout = 800)
+    @Test(timeout = 1000)
     public void testTakeDelaySkip() throws Exception {
         queue.offer(Arrays.asList(0, 1));
         List<Integer> answer = queue.take(4, 200);
@@ -94,7 +94,7 @@ public class LockingQueueTest {
         assertThat(answer, nullValue());
     }
 
-    @Test(timeout = 2000)
+    @Test(timeout = 1000)
     public void testOfferDelay() throws Exception {
         queue.offer(baseList);
         ThreadOffer offer = new ThreadOffer(queue, baseList);
@@ -105,7 +105,7 @@ public class LockingQueueTest {
         assertThat(queue.take(20), equalTo(baseList));
     }
 
-    @Test(timeout = 800)
+    @Test(timeout = 1000)
     public void testOfferDelaySkip() throws Exception {
         queue.offer(baseList);
         queue.offer(baseList, 200);

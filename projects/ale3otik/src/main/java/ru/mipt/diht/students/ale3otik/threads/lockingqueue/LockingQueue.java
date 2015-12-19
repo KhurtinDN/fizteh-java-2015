@@ -19,6 +19,7 @@ public class LockingQueue<E> {
     private volatile int maxQueueSize;
     private volatile List<E> queue;
 
+    @SuppressWarnings("checkstyle:avoidinlineconditionals")
     private void addTheList(List<E> listToAdd, long timeout) throws InterruptedException {
         long endTime = System.currentTimeMillis() + timeout;
         boolean isTimeoutBreakSet = timeout > 0 ? true : false;
@@ -60,7 +61,7 @@ public class LockingQueue<E> {
             synchronizer.notifyAll();
         }
     }
-
+    @SuppressWarnings("checkstyle:avoidinlineconditionals")
     private List<E> getTheList(int lengthToTake, long timeout) throws InterruptedException {
         long endTime = System.currentTimeMillis() + timeout;
 
@@ -118,18 +119,18 @@ public class LockingQueue<E> {
         addTheList(toAdd, -1);
     }
 
-    public final void offer(List<E> toAdd, long timeout) throws InterruptedException{
+    public final void offer(List<E> toAdd, long timeout) throws InterruptedException {
         addTheList(toAdd, timeout);
     }
 
-    public final List<E> take(int n) throws InterruptedException{
+    public final List<E> take(int n) throws InterruptedException {
         if (n == 0) {
             return new LinkedList<>();
         }
         return getTheList(n, -1);
     }
 
-    public final List<E> take(int n, long timeout) throws InterruptedException{
+    public final List<E> take(int n, long timeout) throws InterruptedException {
         if (n == 0) {
             return new LinkedList<>();
         }
