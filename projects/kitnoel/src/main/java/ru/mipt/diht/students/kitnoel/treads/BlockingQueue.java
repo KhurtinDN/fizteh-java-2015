@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class BlockingQueue<T> {
+class BlockingQueue<T> {
     private int maxQueueSize;
     private Queue<T> queue;
     BlockingQueue(int maxSize) {
@@ -36,4 +36,3 @@ public class BlockingQueue<T> {
         notifyAll();
         return ans;
     }
-}
