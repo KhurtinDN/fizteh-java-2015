@@ -15,10 +15,7 @@ public class Min<T, R extends Comparable<R>> implements Aggregator<T, R> {
         return elements
                 .stream()
                 .map(function)
-/*
-                .min(R::compareTo)
-                .get();
-*/
+                
                 .reduce(null, (a, b) -> {
                     if (a == null) {
                         return b;
