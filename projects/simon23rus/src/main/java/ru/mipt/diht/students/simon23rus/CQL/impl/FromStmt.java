@@ -1,7 +1,6 @@
 package ru.mipt.diht.students.simon23rus.CQL.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -53,11 +52,11 @@ public class FromStmt<T> {
 
     public class JoinClause<S, J> {
 
-        private List<S> firstElements = new ArrayList<>();
+        private List<T> firstElements = new ArrayList<>();
         private List<J> secondElements = new ArrayList<>();
-        private List<Tuple<S, J>> joinedElements = new ArrayList<>();
+        private List<Tuple<T, J>> joinedElements = new ArrayList<>();
 
-        public JoinClause(List<S> firstElements, Iterable<J> secondElements) {
+        public JoinClause(List<T> firstElements, Iterable<J> secondElements) {
             this.firstElements
                     .addAll(firstElements.stream()
                     .collect(Collectors.toList()));
@@ -66,7 +65,7 @@ public class FromStmt<T> {
             }
         }
 
-        public FromStmt<Tuple<S, J>> on(BiPredicate<S, J> condition) {
+        public FromStmt<Tuple<T, J>> on(BiPredicate<T, J> condition) {
             firstElements.forEach(first ->
                     secondElements.forEach(second -> {
                         if (condition.test(first, second)) {
@@ -76,10 +75,17 @@ public class FromStmt<T> {
             return new FromStmt<>(joinedElements);
         }
 
-        public <K extends Comparable<?>> FromStmt<Tuple<S, J>> on(
-                Function<S, K> leftKey,
+        public <K extends Comparable<?>> FromStmt<Tuple<T, J>> on(
+                Function<T, K> leftKey,
                 Function<J, K> rightKey) {
-            throw new UnsupportedOperationException();
+            Map<K, List<T>> leftMap = firstElements.stream().collect(Collectors.groupingBy(leftKey));
+            Map<K, List<J>> rightMap = secondElements.stream().collect(Collectors.groupingBy(rightKey));
+            leftMap.forEach((key, value) -> {
+                if (rightMap.containsKey(key)) {
+                    value.forEach(fst -> rightMap.get(key).forEach(snd -> joinedElements.add(new Tuple(fst, snd))));
+                }
+            });
+            return new FromStmt<>(joinedElements);
         }
     }
 

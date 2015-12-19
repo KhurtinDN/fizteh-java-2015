@@ -84,6 +84,8 @@ public class TwitterStreamer {
             Query query = new Query(jct.query);
             QueryResult result;
             query.setCount(jct.tweetsByQuery);
+            System.out.println("bu");
+
 //            query.setGeoCode(myOwnConverter.getCoordinates(jct.place), 400, Query.Unit.km);
             GeoLocation queryLocation = myOwnConverter.getCoordinates(jct.place);
             int counter = 0;
@@ -96,17 +98,16 @@ public class TwitterStreamer {
                         tweetLocation = new GeoLocation(tweet.getGeoLocation().getLatitude(), tweet.getGeoLocation().getLongitude());
                     }
                     else {
-                        tweetLocation = myOwnConverter.getCoordinates("nearby");
+                        continue;
                     }
                     if(queryLocation == null) {
-                        System.out.println("bububuqueryloc");
+                        System.out.println("Can't resolve your Location");
                         return;
                     }
                     if(myOwnConverter.near(queryLocation, tweetLocation, 40)) {
                         Date currentDate = Calendar.getInstance().getTime();
                         myOwnPrinter.printStringWithFormat(currentDate, tweet, true);
 
-//                        System.out.println(tweet.getPlace());
                         ++counter;
                         if (counter == jct.tweetsByQuery) {
                             return;

@@ -104,23 +104,7 @@ public class TimeTransformer {
            isItYesterday = false;
            return false;
        }
-//       System.out.println(result + "STOL'KO");
-//
-//       String currentHour = new SimpleDateFormat("HH").format(currentDate1);
-//       String currentMinute = new SimpleDateFormat("mm").format(currentDate1);
-//       String currentSecond = new SimpleDateFormat("ss").format(currentDate1);
-//
-//       int todaySeconds = Integer.valueOf(currentSecond) + Integer.valueOf(currentMinute) * SECONDS_IN_MINUTE + Integer.valueOf(currentHour) * SECONDS_IN_HOUR;
-//       System.out.println(todaySeconds);
-//       if(delta < SECONDS_IN_DAY + todaySeconds  && delta > todaySeconds) {
-//           isItYesterday = true;
-//           return true;
-//       }
-//
-//       else {
-//           isItYesterday = false;
-//           return false;
-//       }
+
 
    }
 
