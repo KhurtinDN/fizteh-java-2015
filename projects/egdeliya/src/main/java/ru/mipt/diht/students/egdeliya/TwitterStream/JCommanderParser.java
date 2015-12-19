@@ -12,11 +12,11 @@ public class JCommanderParser {
     private List<String> parameters = new ArrayList<>();
 
     @Parameter(names = {"--query", "-q"}, description = "Ключевые слова")
-    private List<String> query = new ArrayList<>();
+    private String query = "";
 
     @Parameter(names = {"--place", "-p"}, arity = 1, description = "Твиты по заданному региону")
     //место поиска по умолчанию
-    private String place = "nearby";
+    private String place = "";
 
     @Parameter(names = {"--stream", "-s"}, description = "Печать твитов")
     private boolean stream = false;
@@ -50,7 +50,7 @@ public class JCommanderParser {
         return help;
     }
 
-    public List<String> getQuery() {
+    public String getUsersQuery() {
         return query;
     }
 }
