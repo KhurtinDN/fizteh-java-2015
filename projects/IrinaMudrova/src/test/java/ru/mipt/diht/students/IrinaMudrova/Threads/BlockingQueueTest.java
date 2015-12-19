@@ -1,4 +1,3 @@
-
 package ru.mipt.diht.students.IrinaMudrova.Threads;
 
 import org.junit.Test;
@@ -7,7 +6,6 @@ import java.util.Arrays;
 
 import static junit.framework.Assert.assertTrue;
 
-@SuppressWarnings("checkstyle:magicnumber")
 public class BlockingQueueTest {
     @Test
     public void testOneThread() {
@@ -21,7 +19,6 @@ public class BlockingQueueTest {
         assertTrue(queue.take(3).get(1) == 2);
     }
 
-    @SuppressWarnings("checkstyle:magicnumber")
     @Test(timeout = 150)
     public void testTwoThreads() {
         BlockingQueue<Integer> queue = new BlockingQueue<Integer>(3);
@@ -34,6 +31,7 @@ public class BlockingQueueTest {
                 } catch (InterruptedException e) {
                     queue.offer(Arrays.asList());
                 }
+                queue.offer(Arrays.asList(2, 3));
             }
         }).start();
         queue.take(2);
@@ -46,9 +44,19 @@ public class BlockingQueueTest {
                 } catch (InterruptedException e) {
                     queue.offer(Arrays.asList());
                 }
+                queue.offer(Arrays.asList(4, 5));
                 queue.take(3);
             }
         }).start();
         queue.offer(Arrays.asList(7, 7, 7));
     }
+
+    @Test(timeout = 50)
+    public void testTimeout() {
+        BlockingQueue<Integer> queue = new BlockingQueue<Integer>(3);
+        queue.offer(Arrays.asList(7, 7, 7, 7), 10);
+        queue.take(4, 10);
+    }
+
+
 }

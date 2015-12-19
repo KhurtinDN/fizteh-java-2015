@@ -112,8 +112,8 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>ru.fizteh.fivt.students.IrinaMudrova.Threads.Couter</mainClass>
-              <packageName>ru.fizteh.fivt.students.IrinaMudrova.Threads</packageName>
+              <mainClass>ru.mipt.diht.students.IrinaMudrova.Threads.Couter</mainClass>
+              <packageName>ru.mipt.diht.students..IrinaMudrova.Threads</packageName>
               <addClasspath>true</addClasspath>
               <classpathPrefix>lib/</classpathPrefix>
             </manifest>

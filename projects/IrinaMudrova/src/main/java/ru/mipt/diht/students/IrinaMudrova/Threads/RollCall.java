@@ -1,4 +1,4 @@
-package main.java.ru.mipt.diht.students.IrinaMudrova.Threads;
+package ru.mipt.diht.students.IrinaMudrova.Threads;
 
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
