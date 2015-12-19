@@ -9,8 +9,6 @@ import java.util.List;
 public class LockingQueue<E> {
     private final Object synchronizer = new Object();
     private final Object queueAccesSynchronizer = new Object();
-    private final Object offerCounterSync = new Object();
-    private final Object takeCounterSync = new Object();
 
     private volatile long currentOfferNumber;
     private volatile long currentTakeNumber;
@@ -25,13 +23,11 @@ public class LockingQueue<E> {
         boolean isTimeoutBreakSet = timeout > 0 ? true : false;
         synchronized (synchronizer) {
             long myActNum;
-            synchronized (offerCounterSync) {
                 myActNum = nextOfferNumber;
                 ++nextOfferNumber;
                 if (nextOfferNumber == Long.MAX_VALUE) {
                     nextOfferNumber = 0;
                 }
-            }
 
             while (true) {
                 synchronized (queueAccesSynchronizer) {
@@ -69,13 +65,11 @@ public class LockingQueue<E> {
         List<E> answer = null;
         synchronized (synchronizer) {
             long myActNum;
-            synchronized (takeCounterSync) {
                 myActNum = nextTakeNumber;
                 ++nextTakeNumber;
                 if (nextTakeNumber == Long.MAX_VALUE) {
                     nextTakeNumber = 0;
                 }
-            }
             while (true) {
                 synchronized (queueAccesSynchronizer) {
                     if (myActNum == currentTakeNumber && lengthToTake <= queue.size()) {
