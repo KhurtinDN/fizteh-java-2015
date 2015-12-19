@@ -27,8 +27,8 @@ public class BlockingQueue<T> {
 
     synchronized void offer(List<T> e, long timeout) throws InterruptedException{
         timeout += System.currentTimeMillis();
-        while ((data.size() + e.size() > maxQueueSize) && (timeout -= System.currentTimeMillis()) > 0) {
-            wait(timeout);
+        while ((data.size() + e.size() > maxQueueSize) && (timeout - System.currentTimeMillis()) > 0) {
+            wait(timeout - System.currentTimeMillis());
         }
         if (timeout > 0) {
             data.addAll(e);
@@ -49,8 +49,8 @@ public class BlockingQueue<T> {
 
     synchronized List<T> take(int n, long timeout) throws InterruptedException{
         timeout += System.currentTimeMillis();
-        while ((data.size() < n) && (timeout -= System.currentTimeMillis()) > 0) {
-            wait(timeout);
+        while ((data.size() < n) && (timeout - System.currentTimeMillis()) > 0) {
+            wait(timeout - System.currentTimeMillis());
         }
         if (timeout > 0) {
             List<T> answer = new ArrayList<T>();
