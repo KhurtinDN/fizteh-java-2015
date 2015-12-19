@@ -57,6 +57,7 @@ public class DatabaseServiceTest {
         service.dropTable();
         service.createTable();
         service.dropTable();
+        service.close();
     }
 
     @Test
@@ -82,5 +83,6 @@ public class DatabaseServiceTest {
         assertThat(service.queryById("Peter").toString(),
                 equalTo("User{name='Peter',age=20,birthday=1973-07-11}"));
         service.dropTable();
+        service.close();
     }
 }

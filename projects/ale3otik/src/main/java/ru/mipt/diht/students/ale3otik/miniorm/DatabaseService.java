@@ -272,8 +272,7 @@ public class DatabaseService<T> {
         }
     }
 
-    @Override
-    protected final void finalize() throws DatabaseServiceException {
+    public final void close() throws DatabaseServiceException {
         try {
             if (connection.isClosed()) {
                 return;
