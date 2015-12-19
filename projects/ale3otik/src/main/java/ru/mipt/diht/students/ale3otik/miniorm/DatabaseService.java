@@ -120,7 +120,6 @@ public class DatabaseService<T> {
     //    - возвращает запись по первичному ключу
     private <T> List<T> buildObjects(ResultSet rs) throws DatabaseServiceException {
         List<T> result = new LinkedList<>();
-
         try {
             while (rs.next()) {
                 T instance = (T) aClass.newInstance();
@@ -130,7 +129,6 @@ public class DatabaseService<T> {
                     if (name == null) {
                         continue;
                     }
-
                     fields[i].set(instance, rs.getObject(name));
                 }
                 result.add(instance);
@@ -140,6 +138,35 @@ public class DatabaseService<T> {
             throw new DatabaseServiceException(e.getClass().toString() + " : " + e.getMessage());
         }
 
+    }
+
+    private List<String> getColumns(T entity) {
+        List<String> columns = new ArrayList<>();
+        for (int i = 0; i < fields.length; ++i) {
+            fields[i].setAccessible(true);
+            String name = fieldNames.get(i);
+            if (name != null) {
+                columns.add(name);
+            }
+        }
+        return columns;
+    }
+
+    private String buildColumnsPattern(T entity) throws IllegalAccessException {
+        List<String> columns = getColumns(entity);
+        return columns.stream().collect(joining(", "));
+    }
+
+    private List<Object> getValues(T entity) throws IllegalAccessException {
+        List<Object> values = new ArrayList<>();
+        for (int i = 0; i < fields.length; ++i) {
+            fields[i].setAccessible(true);
+            String name = fieldNames.get(i);
+            if (name != null) {
+                values.add(fields[i].get(entity));
+            }
+        }
+        return values;
     }
 
     public final <K> T queryById(K key) throws DatabaseServiceException {
@@ -170,22 +197,12 @@ public class DatabaseService<T> {
             throw new DatabaseServiceException(e.getClass().toString() + " : " + e.getMessage());
         }
     }
+
     //- добавляет запись
     public final void insert(T entity) throws DatabaseServiceException {
-        List<String> columns = new ArrayList<>();
-        ArrayList<Object> values = new ArrayList<>();
-
         try {
-            for (int i = 0; i < fields.length; ++i) {
-                fields[i].setAccessible(true);
-                String name = fieldNames.get(i);
-                if (name != null) {
-                    columns.add(name);
-                    values.add(fields[i].get(entity));
-                }
-            }
-
-            String columnsLine = columns.stream().collect(joining(", "));
+            String columnsLine = buildColumnsPattern(entity);
+            List<Object> values = getValues(entity);
             String valuesLine = values.stream()
                     .map(x -> " ? ")
                     .collect(joining(", "));
@@ -204,15 +221,29 @@ public class DatabaseService<T> {
         } catch (SQLException | IllegalAccessException e) {
             throw new DatabaseServiceException(e.getMessage());
         }
+
     }
 
     // - редактирует запись по первичному ключу
-    public final void update(T newRecord) throws DatabaseServiceException {
+    public final void update(T entity) throws DatabaseServiceException {
+        String columnName = fieldNames.get(primaryKeyFieldId);
         try {
-            if (deleteById(fields[primaryKeyFieldId].get(newRecord))) {
-                insert(newRecord);
+
+            List<String> columns = getColumns(entity);
+            String columnsLine = columns.stream().map(x -> x + "= ? ").collect(joining(", "));
+            List<Object> values = getValues(entity);
+
+            PreparedStatement updateStatement =
+                    connection.prepareStatement("UPDATE " + table
+                            + " SET " + columnsLine
+                            + " WHERE " + columnName + "= ?");
+
+            for (int i = 0; i < values.size(); ++i) {
+                updateStatement.setObject(i + 1, values.get(i));
             }
-        } catch (IllegalAccessException e) {
+            updateStatement.setObject(values.size() + 1, fields[primaryKeyFieldId].get(entity));
+            updateStatement.executeUpdate();
+        } catch (IllegalAccessException | SQLException e) {
             throw new DatabaseServiceException(e.getMessage());
         }
     }
