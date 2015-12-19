@@ -80,19 +80,33 @@ public final class CarEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (o == null || getClass() != o.getClass()) { return false; }
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         CarEntity carEntity = (CarEntity) o;
 
-        if (id != carEntity.id) { return false; }
-        if (countOfDoors != carEntity.countOfDoors) { return false; }
-        if (truck != carEntity.truck) { return false; }
-        if (name != null && !name.equals(carEntity.name) || name == null && carEntity.name != null) { return false; }
-        if (color != null && !color.equals(carEntity.color) ||
-                color == null && carEntity.color != null) { return false; }
-        return !(releaseDate != null && !releaseDate.equals(carEntity.releaseDate) ||
-                releaseDate == null && carEntity.releaseDate != null);
+        if (id != carEntity.id) {
+            return false;
+        }
+        if (countOfDoors != carEntity.countOfDoors) {
+            return false;
+        }
+        if (truck != carEntity.truck) {
+            return false;
+        }
+        if (name != null && !name.equals(carEntity.name) || name == null && carEntity.name != null) {
+            return false;
+        }
+        if (color != null && !color.equals(carEntity.color)
+                || color == null && carEntity.color != null) {
+            return false;
+        }
+        return !(releaseDate != null && !releaseDate.equals(carEntity.releaseDate)
+                || releaseDate == null && carEntity.releaseDate != null);
 
     }
 
@@ -100,14 +114,22 @@ public final class CarEntity {
     public int hashCode() {
         int result = id;
         result = CONST31 * result;
-        if (name != null) { result = result + name.hashCode(); }
+        if (name != null) {
+            result = result + name.hashCode();
+        }
         result = CONST31 * result;
-        if (color != null) { result = result + color.hashCode(); }
+        if (color != null) {
+            result = result + color.hashCode();
+        }
         result = CONST31 * result + countOfDoors;
         result = CONST31 * result;
-        if (truck != 0) { result = result + 1; }
+        if (truck != 0) {
+            result = result + 1;
+        }
         result = CONST31 * result;
-        if (releaseDate != null) { result = result + releaseDate.hashCode(); }
+        if (releaseDate != null) {
+            result = result + releaseDate.hashCode();
+        }
         return result;
     }
 
