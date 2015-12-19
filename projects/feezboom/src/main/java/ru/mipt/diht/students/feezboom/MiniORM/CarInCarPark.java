@@ -12,6 +12,8 @@ import ru.mipt.diht.students.feezboom.MiniORM.Annotations.Table;
 // Говорим, что у нас есть табличка, в которой строки будут элементами класса ниже.
 // Соответственно каждой машине в таблице(на парковке) соответствует строка.
 // В таблице колонки будут называться именно так, как указано в классе ниже.
+
+@SuppressWarnings("checkstyle:visibilitymodifier")
 @Table(name = "Parking")
 public class CarInCarPark {
     @PrimaryKey
@@ -34,9 +36,14 @@ public class CarInCarPark {
         this.owner = owner;
     }
 
-    CarInCarPark() {}
+    CarInCarPark() {
+        this.id = 0;
+        this.brand = "brand";
+        this.owner = "owner";
+    }
 
     @Override
+    @SuppressWarnings("checkstyle:designforextension")
     public String toString() {
         return "Car :\n"
                 + "ID = " + id + "\n"

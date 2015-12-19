@@ -56,9 +56,13 @@ public class DataBaseService<T> implements Closeable {
     /* *****ПОЛЯ***** */
 
     /* *******МЕТОДЫ******* */
-    DataBaseService(Class<T> inputClass) throws Exception {
+    DataBaseService(Class<T> inputClass) {
         // Это конструктор. Он вызывает инициализацию таблицы.
-        tableInit(inputClass);
+        try {
+            tableInit(inputClass);
+        } catch (Exception ex) {
+            System.err.println("Ошбика инициализации базы данных : " + ex.getMessage());
+        }
     }
 
     private void tableInit(Class<T> inputClass) throws Exception {

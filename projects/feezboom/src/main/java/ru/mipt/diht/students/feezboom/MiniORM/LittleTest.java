@@ -5,6 +5,7 @@ import java.util.List;
 /**
  * * Created by avk on 18.12.15.
  **/
+@SuppressWarnings("checkstyle:magicnumber")
 public class LittleTest {
     // Для тестиков
     public static void main(String[] args) throws Exception {
@@ -15,7 +16,7 @@ public class LittleTest {
         dataBaseService.insert(new CarInCarPark(2, "Ford", "Alexander"));
         dataBaseService.insert(new CarInCarPark(3, "Nissan", "Alexey"));
 
-        dataBaseService.update(new CarInCarPark(1, "BMW", "Andrew"));
+//        dataBaseService.update(new CarInCarPark(1, "BMW", "Andrew"));
         dataBaseService.delete(new CarInCarPark(1, "BMW", "Andrew"));
         List<CarInCarPark> answer =  dataBaseService.queryForAll();
         for (CarInCarPark car : answer) {
