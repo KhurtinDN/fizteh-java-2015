@@ -24,9 +24,9 @@ public class ConditionsTest extends TestCase {
         exampleList.add(student("petrov", LocalDate.parse("1986-08-06"), "495"));
         exampleList.add(student("mogilev", LocalDate.parse("1986-08-06"), "495"));
 
-        assertEquals(rlike(function, ".*ov").test(exampleList.get(0)), false);
-        assertEquals(rlike(function, ".*ov").test(exampleList.get(1)), false);
-        assertEquals(rlike(function, ".*ov").test(exampleList.get(2)), true);
+        assertEquals(rlike(function, ".*ev").test(exampleList.get(0)), false);
+        assertEquals(rlike(function, ".*ev").test(exampleList.get(1)), false);
+        assertEquals(rlike(function, ".*ev").test(exampleList.get(2)), true);
     }
 
     @Test(expected = UnsupportedOperationException.class)

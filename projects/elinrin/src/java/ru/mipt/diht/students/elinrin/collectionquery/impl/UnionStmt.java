@@ -31,7 +31,7 @@ public class UnionStmt<T, R> {
         if (isTuple) {
             return new FromClause<>(pastElements, elements);
         } else {
-            return new FromClause<>(pastElements, /*(Iterable<T>)*/ elements);
+            return new FromClause<>(pastElements, elements);
         }
     }
 

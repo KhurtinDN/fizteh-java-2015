@@ -47,34 +47,6 @@ public class CollectionQuery {
                         .execute();
         statistics.forEach(System.out::print);
 
-        /*List<Student> ex = new ArrayList<>();
-        ex.add(student("ivanov", LocalDate.parse("1986-08-06"), "496"));
-        ex.add(student("petrov", LocalDate.parse("1986-08-06"), "495"));
-        ex.add(student("sidorov", LocalDate.parse("1986-08-06"), "495"));
-        ex.add(student("ivanov", LocalDate.parse("1986-08-06"), "495"));
-        ex.sort(asc(Student::getGroup));
-        System.out.println(ex);*/
-
-        /*Iterable<Student> statistics =
-                from(list(
-                        student("ivanov", LocalDate.parse("1986-08-06"), "494"),
-                        student("zvereva", LocalDate.parse("1986-08-06"), "494"),
-                        student("zuev", LocalDate.parse("1976-08-06"), "494"),
-                        student("petrov", LocalDate.parse("1986-08-06"), "495"),
-                        student("sidorov", LocalDate.parse("1986-08-06"), "495"),
-                        student("petrov", LocalDate.parse("1986-08-06"), "495"),
-                        student("garkavyy", LocalDate.parse("1986-08-06"), "495"),
-                        student("ivanov", LocalDate.parse("1989-08-06"), "494")))
-                        .select(Student.class, Student::getName, Student::getGroup)
-                        .union()
-                        .from(list(student("ivanov", LocalDate.parse("1986-08-06"), "494"),
-                                student("zvereva", LocalDate.parse("1986-08-06"), "494"),
-                                student("ivanov", LocalDate.parse("1986-08-06"), "494")))
-                                .select(Student.class, Student::getName, Student::getGroup)
-                                .execute();*/
-        //Tuple a = new Tuple("1", "2");
-        //System.out.println(a.getFirst().getClass());
-        //System.out.println(a.getClass());
 
         Iterable<Tuple<String, String>> mentorsByStudent =
                 from(list(student("ivanov", LocalDate.parse("1985-08-06"), "496"),
@@ -107,12 +79,6 @@ public class CollectionQuery {
         public final String getName() {
             return name;
         }
-
-        /*public Student(String group) {
-            this.name = null;
-            this.dateOfBith = null;
-            this.group = group;
-        }*/
 
         public Student(final String gottenName, final LocalDate gottenDateOfBith, final String gottenGroup) {
             name = gottenName;
