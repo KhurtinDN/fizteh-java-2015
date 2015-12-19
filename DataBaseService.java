@@ -1,9 +1,9 @@
 
 import com.google.common.base.CaseFormat;
 import com.tngtech.java.junit.dataprovider.internal.DataConverter;
-import ru.fizteh.fivt.students.roller145.MiniORM.Annotations.Column;
-import ru.fizteh.fivt.students.roller145.MiniORM.Annotations.PrimaryKey;
-import ru.fizteh.fivt.students.roller145.MiniORM.Annotations.Table;
+import ru.fizteh.fivt.students.krakhmalev.MiniORM.Annotations.Column;
+import ru.fizteh.fivt.students.krakhmalev.MiniORM.Annotations.PrimaryKey;
+import ru.fizteh.fivt.students.krakhmalev.MiniORM.Annotations.Table;
 
 import javax.management.OperationsException;
 import java.lang.reflect.AnnotatedElement;
