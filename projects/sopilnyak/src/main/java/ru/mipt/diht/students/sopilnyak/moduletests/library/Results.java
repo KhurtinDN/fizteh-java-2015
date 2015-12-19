@@ -5,6 +5,7 @@ import twitter4j.*;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class Results {
 
@@ -12,9 +13,13 @@ public class Results {
     public static final int RADIUS = 10;
     public static final int ATTEMPTS = 20;
     public static final int SLEEP_TIME = 1000;
+    public static final int QUEUE_SIZE = 1000;
+    public static final double RADIUS_COORDINATES = 0.1;
 
     private static GeoQuery geoQuery;
     private static Query query;
+    private static ArrayBlockingQueue<Status> tweetsQueue;
+    private static double[][] boundingBox = null;
 
     public static void sendQuery(String queryString) throws UnknownHostException {
         query = new Query(queryString);
@@ -32,7 +37,7 @@ public class Results {
         geoQuery.setQuery(qeoQueryString);
     }
 
-    public static ArrayList<String> printResults() throws UnknownLocationException, TwitterException {
+    public static ArrayList<String> printResults(String queryString) throws UnknownLocationException, TwitterException {
         Twitter twitter = TwitterFactory.getSingleton();
         int attempts = 0;
         ArrayList<String> tweetsList = new ArrayList<>(); // result list
@@ -54,21 +59,30 @@ public class Results {
                     }
 
                 } else {
+                    TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
+                    tweetsQueue = new ArrayBlockingQueue<>(QUEUE_SIZE);
+                    twitterStream.addListener(listener);
+
+                    FilterQuery filterQuery = new FilterQuery();
+                    if (queryString != null) {
+                        filterQuery.track(new String[]{queryString});
+                    } else {
+                        filterQuery.track(new String[]{""}); // empty query
+                    }
+                    if (boundingBox != null) {
+                        filterQuery.locations(boundingBox);
+                    }
+
+                    twitterStream.filter(filterQuery);
                     while (true) {
-                        QueryResult result = twitter.search(query);
-                        for (Status status : result.getTweets()) {
-                            if (!Format.getResultsStreamNotEnabled(status).isEmpty()) {
-                                tweetsList.add(Format.getResultsStreamEnabled(status));
-                            }
-                            try {
-                                Thread.sleep(SLEEP_TIME); // sleep for 1 second
-                            } catch (InterruptedException e) {
-                                Thread.currentThread().interrupt();
-                            }
+                        while (!tweetsQueue.isEmpty()) {
+                            Status status = tweetsQueue.poll();
+                            Format.getResultsStreamEnabled(status);
                         }
-                        if (!result.getTweets().isEmpty()) {
-                            Status status = result.getTweets().get(0);
-                            query.setSinceId(status.getId());
+                        try {
+                            Thread.sleep(SLEEP_TIME);
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt();
                         }
                     }
                 }
@@ -93,6 +107,13 @@ public class Results {
         return tweetsList;
     }
 
+    private static StatusListener listener = new StatusAdapter() {
+        @Override
+        public void onStatus(Status status) {
+            tweetsQueue.add(status);
+        }
+    };
+
     public static boolean locationHandler(Twitter twitter) throws TwitterException, UnknownLocationException {
         if (geoQuery.getQuery() != null) {
             ResponseList<Place> places =
@@ -107,6 +128,12 @@ public class Results {
                 query.setGeoCode(place.
                                 getBoundingBoxCoordinates()[0][0],
                         RADIUS, Query.KILOMETERS);
+
+                boundingBox = new double[2][2];
+                boundingBox[0][0] = place.getBoundingBoxCoordinates()[0][0].getLatitude() - RADIUS_COORDINATES;
+                boundingBox[0][1] = place.getBoundingBoxCoordinates()[0][0].getLongitude() - RADIUS_COORDINATES;
+                boundingBox[1][0] = place.getBoundingBoxCoordinates()[0][0].getLatitude() + RADIUS_COORDINATES;
+                boundingBox[1][1] = place.getBoundingBoxCoordinates()[0][0].getLongitude() + RADIUS_COORDINATES;
             }
         }
         return true;

@@ -26,7 +26,7 @@ public class ResultsTest {
         }
         Results.sendGeoQuery("somerandomlocation12");
         try {
-            ArrayList<String> result = Results.printResults();
+            ArrayList<String> result = Results.printResults("");
             for (String tweet : result) {
                 System.out.println(tweet);
             }
@@ -44,7 +44,7 @@ public class ResultsTest {
             System.err.println("Unknown host");
         }
         try {
-            ArrayList<String> result = Results.printResults();
+            ArrayList<String> result = Results.printResults("");
             for (String tweet : result) {
                 System.out.println(tweet);
             }

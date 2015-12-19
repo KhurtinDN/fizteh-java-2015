@@ -45,7 +45,7 @@ public class Main {
         System.out.println(":");
 
         try {
-            ArrayList<String> result = Results.printResults();
+            ArrayList<String> result = Results.printResults(Arguments.getQueryString());
             for (String tweet : result) {
                 System.out.println(tweet);
             }
