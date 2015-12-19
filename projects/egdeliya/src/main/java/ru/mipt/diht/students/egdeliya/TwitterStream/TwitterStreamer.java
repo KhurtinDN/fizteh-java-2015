@@ -36,7 +36,7 @@ public class TwitterStreamer {
         Query twitterQuery = new Query(usersQuery);
 
         //если установлено место
-        if (jCommander.getLocation() != "") {
+        if (!jCommander.getLocation().equals("")) {
             twitterQuery = place(twitterQuery);
         }
 

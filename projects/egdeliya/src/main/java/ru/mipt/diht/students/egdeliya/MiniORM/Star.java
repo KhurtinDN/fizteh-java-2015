@@ -1,9 +1,6 @@
 package ru.mipt.diht.students.egdeliya.MiniORM;
 
-import com.sun.nio.sctp.IllegalReceiveException;
-
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

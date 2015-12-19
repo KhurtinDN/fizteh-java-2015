@@ -46,7 +46,7 @@ public class DatabaseService<T> implements Closeable {
 
     private void setTableName() {
         tableName = tableAnnotation.name();
-        if (tableName == "") {
+        if (tableName.equals("")) {
             tableName = "DefaultTableName";
         }
     }
@@ -64,7 +64,7 @@ public class DatabaseService<T> implements Closeable {
 
             //узнаем имя поля через аннотацию
             String currentColumnName = column.getAnnotation(Column.class).name();
-            if (currentColumnName == "") {
+            if (currentColumnName.equals("")) {
                 currentColumnName = "DefaultColumnName";
             }
 
