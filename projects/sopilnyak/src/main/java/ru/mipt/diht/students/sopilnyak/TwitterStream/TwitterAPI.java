@@ -134,7 +134,7 @@ public class TwitterAPI extends App {
                                         + status.getUser().getScreenName()
                                         + RESET + getRetweetSource(status)
                                         + ": " + status.getText()
-                                        + retweetCount(status) + status.getGeoLocation().toString());
+                                        + retweetCount(status));
                             }
                         }
                         try {
