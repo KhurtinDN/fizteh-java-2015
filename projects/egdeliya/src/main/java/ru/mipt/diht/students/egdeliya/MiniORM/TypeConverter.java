@@ -16,7 +16,6 @@ public class TypeConverter {
             sqlType = "VARCHAR(255)";
         }
     }
-    //@Override
     public final String toSqlType() {
         return sqlType;
     }

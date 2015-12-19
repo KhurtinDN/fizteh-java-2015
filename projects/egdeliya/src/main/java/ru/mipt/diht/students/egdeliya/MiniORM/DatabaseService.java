@@ -5,6 +5,8 @@ package ru.mipt.diht.students.egdeliya.MiniORM;
 //import java.util.ArrayList;
 import org.h2.jdbcx.JdbcConnectionPool;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,17 +18,17 @@ import java.util.List;
 /**
  * Created by Эгделия on 19.12.2015.
  */
-public class DatabaseService<T> {
+public class DatabaseService<T> implements Closeable {
 
     private Class<T> tableClass;
     private String tableName;
     private Field[] fields;
     private Table tableAnnotation;
-    private List<String> columnsNames;
+    private List<String> columnsNames = new ArrayList<>();
 
     //столбец, который является primary key
     private int primaryKeyPosition;
-    private String primaryKeycolumnsName = "";
+    private String primaryKeyColumnsName = "";
 
     //соединенеи с сервером
     private JdbcConnectionPool connection;
@@ -35,10 +37,11 @@ public class DatabaseService<T> {
 
         //нам нужны аннотации, чтобы распознать,
         //где какие поля у класса
-        if (!tableClass.isAnnotation()) {
+        tableAnnotation = tableClass.getAnnotation(Table.class);
+        if (tableAnnotation == null) {
             System.err.println("There is no @Table annotation");
         }
-        tableAnnotation = tableClass.getAnnotation(Table.class);
+
     }
 
     private void setTableName() {
@@ -53,6 +56,7 @@ public class DatabaseService<T> {
         //массив полей
         fields = tableClass.getDeclaredFields();
         boolean thereIsPrimaryKye = false;
+        int fieldsCounter = 0;
         for (Field column: fields) {
             if (!column.isAnnotationPresent(Column.class)) {
                 System.err.println("There is incorrect @Column annotation");
@@ -68,13 +72,14 @@ public class DatabaseService<T> {
             if (column.isAnnotationPresent(PrimaryKey.class)) {
                 if (!thereIsPrimaryKye) {
                     thereIsPrimaryKye = true;
-                    primaryKeyPosition = columnsNames.size();
-                    primaryKeycolumnsName = currentColumnName;
+                    primaryKeyPosition = fieldsCounter;
+                    primaryKeyColumnsName = currentColumnName;
                 } else {
                     System.err.println("There is too many primary keys");
                 }
             }
 
+            ++fieldsCounter;
             columnsNames.add(currentColumnName);
         }
     }
@@ -86,12 +91,12 @@ public class DatabaseService<T> {
         query += "(";
         for (int i = 0; i < fields.length; i++) {
             query += columnsNames.get(i) + " ";
-            query += new TypeConverter(fields[i].getType());
+            query += new TypeConverter(fields[i].getType()).toSqlType();
             if (fields[i].isAnnotationPresent(PrimaryKey.class)) {
-                query += "PRIMARY KEY";
+                query += " PRIMARY KEY";
             }
             if (i != fields.length - 1) {
-                query += ",";
+                query += ", ";
             }
         }
         query += ")";
@@ -102,13 +107,14 @@ public class DatabaseService<T> {
             connect.createStatement().execute(query);
         } catch (SQLException sql) {
             System.err.println(sql.getMessage());
+            System.out.println("SQLException in createTable");
         }
 
     }
 
     public final void insert(T element) {
         //конструируем запрос
-        String insertQuery = "INSERT INTO" + tableName + "VALUES";
+        String insertQuery = "INSERT INTO " + tableName + " VALUES";
         insertQuery += "(";
 
         for (int i = 0; i < fields.length; ++i) {
@@ -119,14 +125,19 @@ public class DatabaseService<T> {
         }
         insertQuery += ")";
 
+        //System.out.println(insertQuery);
+
         //подстановка нужных значений для вопросов
+
         try {
             Connection connect = connection.getConnection();
             PreparedStatement statement = connect.prepareStatement(insertQuery);
+
+            //нужно так делать, потому что мы не знаем тип SQL
+            //Prepare приводит наш запрос к нужному виду
             for (int i = 0; i < fields.length; i++) {
                 Field currentField = fields[i];
 
-                //todo
                 //значение этого поля при подстановке
                 Object elementObject = currentField.get(element);
 
@@ -136,8 +147,10 @@ public class DatabaseService<T> {
             statement.execute();
         } catch (SQLException sql) {
             System.err.println(sql.getMessage());
+            System.out.println("SQLException in insert");
         } catch (IllegalAccessException access) {
             System.err.println(access.getMessage());
+            System.out.println("IllegalAccessException in insert");
         }
     }
 
@@ -146,23 +159,25 @@ public class DatabaseService<T> {
         //составляем запрос и отправляем
         try {
             Connection connect = connection.getConnection();
-        connect.createStatement().execute("DROP TABLE IF NOT EXISTS" + tableName);
+        connect.createStatement().execute("DROP TABLE IF EXISTS " + tableName);
         } catch (SQLException exc) {
             System.err.println(exc.getMessage());
+            System.out.println("SQLException in dropTable");
         }
 
     }
 
     public final void delete(T element) {
         String deleteQuery = "DELETE FROM " + tableName + " WHERE "
-                + primaryKeycolumnsName + " = ?";
+                + primaryKeyColumnsName + " = ?";
 
+        System.out.println(deleteQuery);
         //подставляем под вопросики всё что нужно
         try {
             Connection connect = connection.getConnection();
             PreparedStatement statement = connect.prepareStatement(deleteQuery);
 
-            //todo
+            //подставляем на место первого вопросика
             statement.setObject(1, fields[primaryKeyPosition].get(element));
 
             //отправляем запрос
@@ -170,8 +185,10 @@ public class DatabaseService<T> {
 
         } catch (SQLException s) {
             System.err.println(s.getMessage());
+            System.out.println("SQLException in delete");
         } catch (IllegalAccessException i) {
             System.err.println(i.getMessage());
+            System.out.println("IllegalAccessException in delete");
         }
     }
 
@@ -186,7 +203,7 @@ public class DatabaseService<T> {
             String currentColumn = columnsNames.get(i);
             //sql запрос
             String updateQuery = "UPDATE " + tableName + "SET " + currentColumn
-                    + " = ? WHERE " + primaryKeycolumnsName + " = ?";
+                    + " = ? WHERE " + primaryKeyColumnsName + " = ?";
 
             try {
                 Connection connect = connection.getConnection();
@@ -200,8 +217,10 @@ public class DatabaseService<T> {
                 statement.execute();
             } catch (SQLException s) {
                 System.err.println(s.getMessage());
+                System.out.println("SQLException in updated");
             } catch (IllegalAccessException illegal) {
                 System.err.println(illegal.getMessage());
+                System.out.println("IllegalAccessException in update");
             }
 
         }
@@ -212,11 +231,11 @@ public class DatabaseService<T> {
     public final List<T> queryForAll() {
         String query = "SELECT * FROM " + tableName;
         List<T> tableStrings = new ArrayList<>();
-
         try {
             Connection connect = connection.getConnection();
 
             ResultSet result = connect.createStatement().executeQuery(query);
+
 
             while (result.next()) {
                 T newTableString = tableClass.newInstance();
@@ -224,41 +243,46 @@ public class DatabaseService<T> {
                 for (int i = 0; i < fields.length; i++) {
                     String currentColumn = columnsNames.get(i);
 
-                    //todo
                     Object currentObject = result.getObject(currentColumn);
                     fields[i].set(newTableString, currentObject);
                 }
                 tableStrings.add(newTableString);
             }
-
-
+            return tableStrings;
         } catch (SQLException sql) {
             System.err.println(sql.getMessage());
+            System.out.println("SQLException in SELECT FROM *");
         } catch (InstantiationException ins) {
             System.err.println(ins.getMessage());
+            System.out.println("InstantiationException in SELECT FROM *");
         } catch (IllegalAccessException illeg) {
             System.err.println(illeg.getMessage());
+            System.out.println("IllegalAccessException in SELECT FROM *");
         }
         return tableStrings;
     }
 
-    //два шабона, потому что уникальные ключи могут быть разными типами
+    //два шабона,
+    //потому что уникальные ключи могут быть разными типами
     public final <K> T queryById(K primaryKey) throws SQLException, IllegalAccessException, InstantiationException {
-        String query = "SELECT * FROM " + tableName + " WHERE" + primaryKeycolumnsName
+        String query = "SELECT * FROM " + tableName + " WHERE " + primaryKeyColumnsName
                 + " = "  + primaryKey;
 
         //должен выдать единственную строку
         T  tableString = tableClass.newInstance();
 
         Connection connect = connection.getConnection();
+
+        //ответ базы данных возвращается в виде ResultSet
         ResultSet result = connect.createStatement().executeQuery(query);
 
         if (result.next()) {
             for (int i = 0; i < fields.length; i++) {
-                String currentString = columnsNames.get(i);
+                String currentColumn = columnsNames.get(i);
 
-                //todo
-                Object currentObject = result.getObject(currentString);
+                //по иени колонки возвращает значение поля
+                //в текущей строке
+                Object currentObject = result.getObject(currentColumn);
                 fields[i].set(tableString, currentObject);
             }
         }
@@ -283,5 +307,12 @@ public class DatabaseService<T> {
         connection = JdbcConnectionPool.create("jdbc:h2:~/test",  "test", "test");
     }
 
+    @SuppressWarnings("checkstyle:designforextension")
+    @Override
+    public void close() throws IOException {
+        if (connection != null) {
+            connection.dispose();
+        }
+    }
 
 }
