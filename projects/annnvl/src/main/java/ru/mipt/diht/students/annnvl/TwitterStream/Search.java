@@ -29,10 +29,10 @@ public class Search {
     public final List<String> searchResult(Parser param) throws Exception {
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(false)
-                .setOAuthConsumerKey("3b3vKQPtk7PoHEOekUedoIQPC")
-                .setOAuthConsumerSecret("ADrGDZORevHvt3iF9Ot3xwfMeufol2lsG58XmAcqyCSsGkQZkR")
-                .setOAuthAccessToken("2783476952-M6Pe8LR4gLYeKKDzdwjVKLkcFwMP38qDE1vgvP2")
-                .setOAuthAccessTokenSecret("mfAU8iq63vU3omwqje8SXRQr0QCfonoK4eSjrpX61gKe8");
+                .setOAuthConsumerKey("qUMuGf1CDg1n8RT1ZKyPxYVxb")
+                .setOAuthConsumerSecret("ROnW8zh225ncTrbW5ZmqBNoCir9ktjgXdyNWvzO1i8RPMAmkrf")
+                .setOAuthAccessToken("3782742196-MgaebvnRBwHYk1LhONdOAK14zOIyE9XBLvTdpFh")
+                .setOAuthAccessTokenSecret("4Tz6FYRCGkEJzZGqFC5eX1jljlNOdbhDjZnkYT41gV8Wg");
         Twitter twitter = new TwitterFactory(cb.build()).getInstance();
         Query query = setQuery(param);
         QueryResult result;
