@@ -123,7 +123,7 @@ public final class CarEntity {
         }
         result = CONST31 * result + countOfDoors;
         result = CONST31 * result;
-        if (truck != 0) {
+        if (truck) {
             result = result + 1;
         }
         result = CONST31 * result;
