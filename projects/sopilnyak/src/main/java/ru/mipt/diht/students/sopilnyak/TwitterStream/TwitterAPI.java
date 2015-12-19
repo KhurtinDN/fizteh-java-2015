@@ -6,6 +6,7 @@ import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class TwitterAPI extends App {
@@ -14,9 +15,13 @@ public class TwitterAPI extends App {
     public static final int RADIUS = 10;
     public static final int SLEEP_TIME = 1000;
     public static final int ATTEMPTS = 20;
+    public static final int QUEUE_SIZE = 1000;
+    public static final double RADIUS_COORDINATES = 0.1;
 
     public static final String BLUE = "\u001B[34m";
     public static final String RESET = "\u001B[0m";
+
+    private static ArrayBlockingQueue<Status> tweetsQueue;
 
     protected static void addQuery() {
 
@@ -67,7 +72,7 @@ public class TwitterAPI extends App {
 
         // print the results of the query
         while (true) {
-
+            double[][] boundingBox = null;
             try {
 
                 if (getLocationString() != null) {
@@ -83,9 +88,14 @@ public class TwitterAPI extends App {
                     } else {
                         Place place = places.get(0); // get first place
                         // search in radius by coordinates
-                        query.setGeoCode(place.
-                                        getBoundingBoxCoordinates()[0][0],
+                        query.setGeoCode(place.getBoundingBoxCoordinates()[0][0],
                                 RADIUS, Query.KILOMETERS);
+
+                        boundingBox = new double[2][2];
+                        boundingBox[0][0] = place.getBoundingBoxCoordinates()[0][0].getLatitude() - RADIUS_COORDINATES;
+                        boundingBox[0][1] = place.getBoundingBoxCoordinates()[0][0].getLongitude() - RADIUS_COORDINATES;
+                        boundingBox[1][0] = place.getBoundingBoxCoordinates()[0][0].getLatitude() + RADIUS_COORDINATES;
+                        boundingBox[1][1] = place.getBoundingBoxCoordinates()[0][0].getLongitude() + RADIUS_COORDINATES;
                     }
                 }
 
@@ -102,14 +112,38 @@ public class TwitterAPI extends App {
 
                 } else {
                     TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
+                    tweetsQueue = new ArrayBlockingQueue<>(QUEUE_SIZE);
                     twitterStream.addListener(listener);
 
                     FilterQuery filterQuery = new FilterQuery();
-                    filterQuery.track(new String[]{getQueryString()});
+                    if (getQueryString() != null) {
+                        filterQuery.track(new String[]{getQueryString()});
+                    } else {
+                        filterQuery.track(new String[]{""}); // empty query
+                    }
+                    if (boundingBox != null) {
+                        filterQuery.locations(boundingBox);
+                    }
 
                     twitterStream.filter(filterQuery);
+                    while (true) {
+                        while (!tweetsQueue.isEmpty()) {
+                            Status status = tweetsQueue.poll();
+                            if (!status.isRetweet() || !getHideRetweets()) {
+                                System.out.println("@" + BLUE
+                                        + status.getUser().getScreenName()
+                                        + RESET + getRetweetSource(status)
+                                        + ": " + status.getText()
+                                        + retweetCount(status) + status.getGeoLocation().toString());
+                            }
+                        }
+                        try {
+                            Thread.sleep(SLEEP_TIME);
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
                 }
-
                 break; // no need to try again
 
             } catch (TwitterException e) {
@@ -158,40 +192,15 @@ public class TwitterAPI extends App {
         }
     }
 
-    static StatusListener listener = new StatusListener() {
-        @Override
-        public void onException(Exception e) {
-        }
-
+    private static StatusListener listener = new StatusAdapter() {
         @Override
         public void onStatus(Status status) {
-            if (!status.isRetweet() || !getHideRetweets()) {
-                System.out.println("@" + BLUE
-                        + status.getUser().getScreenName()
-                        + RESET + getRetweetSource(status)
-                        + ": " + status.getText()
-                        + retweetCount(status));
-            }
-        }
-
-        @Override
-        public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-
+            tweetsQueue.add(status);
         }
 
         @Override
         public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-            System.err.println("Track limitation" + numberOfLimitedStatuses);
-        }
-
-        @Override
-        public void onScrubGeo(long l, long l1) {
-
-        }
-
-        @Override
-        public void onStallWarning(StallWarning stallWarning) {
-
+            System.err.println("Track limitation: " + numberOfLimitedStatuses);
         }
     };
 
