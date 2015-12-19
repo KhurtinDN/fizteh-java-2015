@@ -52,34 +52,34 @@ public class SelectStmt<T, R> {
     private boolean isJoin;
 
     @SafeVarargs
-    public SelectStmt(final List<T> gottenElements, final Class<R> gottenReturnClass, final boolean isDistinct,
-                      final Function<T, ?>... functions) {
-        this.elements = new ArrayList<>();
+    public SelectStmt(final List<T> gottenElements, final Class<R> gottenReturnClass, final boolean gottenIsDistinct,
+                      final Function<T, ?>... gottenFunctions) {
+        elements = new ArrayList<>();
         for (T element : gottenElements) {
             //System.out.println(element.toString());
             elements.add(element);
         }
         returnClass = gottenReturnClass;
-        this.isDistinct = isDistinct;
-        this.functions = functions;
-        this.numberOfObjects = -1;
-        this.isUnion = false;
-        this.isJoin = false;
+        isDistinct = gottenIsDistinct;
+        functions = gottenFunctions;
+        numberOfObjects = -1;
+        isUnion = false;
+        isJoin = false;
     }
 
-    public SelectStmt(final List<T> elements, final boolean isDistinct, final Function<T, ?> first,
+    public SelectStmt(final List<T> gottenElements, final boolean gottenIsDistinct, final Function<T, ?> first,
                       final Function<T, ?> second) {
-        this.elements = new ArrayList<>();
-        for (T element : elements) {
-            //System.out.println(element.toString());
-            this.elements.add(element);
+        elements = new ArrayList<>();
+        for (T element : gottenElements) {
+            //System.out.println(gottenElement.toString());
+            elements.add(element);
         }
-        this.returnClass = elements.get(0).getClass();
-        this.isDistinct = isDistinct;
-        this.functions = new Function[]{first, second};
-        this.numberOfObjects = -1;
-        this.isUnion = false;
-        this.isJoin = true;
+        returnClass = gottenElements.get(0).getClass();
+        isDistinct = gottenIsDistinct;
+        functions = new Function[]{first, second};
+        numberOfObjects = -1;
+        isUnion = false;
+        isJoin = true;
     }
 
     @SafeVarargs
@@ -97,14 +97,14 @@ public class SelectStmt<T, R> {
         pastElements = gottenPastElements;
     }
 
-    public SelectStmt(final List<R> gottenPastElements, final List<T> elements, final boolean gottenIsDistinct,
+    public SelectStmt(final List<R> gottenPastElements, final List<T> gottenElements, final boolean gottenIsDistinct,
                       final Function<T, ?> first, final Function<T, ?> second) {
-        this.elements = new ArrayList<>();
-        for (T element : elements) {
+        elements = new ArrayList<>();
+        for (T element : gottenElements) {
             //System.out.println(element.toString());
-            this.elements.add(element);
+            elements.add(element);
         }
-        this.returnClass = elements.get(0).getClass();
+        returnClass = gottenElements.get(0).getClass();
         isDistinct = gottenIsDistinct;
         functions = new Function[]{first, second};
         numberOfObjects = -1;
@@ -266,8 +266,8 @@ public class SelectStmt<T, R> {
     public class CQLComparator<K> implements Comparator<K> {
         private Comparator<K>[] comparators;
         @SafeVarargs
-        public CQLComparator(final Comparator<K>... comparators) {
-            this.comparators = comparators;
+        public CQLComparator(final Comparator<K>... gottenComparators) {
+            comparators = gottenComparators;
         }
 
         @Override

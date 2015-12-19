@@ -50,10 +50,10 @@ public class FromStmt<T> {
         private List<J> secondElements = new ArrayList<>();
         private List<Tuple<S, J>> elements = new ArrayList<>();
 
-        public JoinClause(final List<S> firstElements, final Iterable<J> secondElements) {
-            this.firstElements.addAll(firstElements.stream().collect(Collectors.toList()));
-            for (J curr : secondElements) {
-                this.secondElements.add(curr);
+        public JoinClause(final List<S> gottenFirstElements, final Iterable<J> gottenSecondElements) {
+            firstElements.addAll(gottenFirstElements.stream().collect(Collectors.toList()));
+            for (J curr : gottenSecondElements) {
+                secondElements.add(curr);
             }
         }
 
