@@ -4,10 +4,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * Created by Ирина on 15.12.2015.
- */
-
 public class Counter {
     private static Integer quantity;
     private static Integer currentId;

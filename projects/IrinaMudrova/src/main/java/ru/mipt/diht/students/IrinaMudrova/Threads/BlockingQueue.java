@@ -37,7 +37,6 @@ public class BlockingQueue<T> {
     private SortedSet<Query> takeQueries, offerQueries;
 
     public void offer(List<T> list) {
-        long startTime = System.currentTimeMillis();
         Query query = new Query(list.size());
         while (true) {
             synchronized (this) {
@@ -72,7 +71,6 @@ public class BlockingQueue<T> {
     }
 
     public List<T> take(int n) {
-        long startTime = System.currentTimeMillis();
         Query query = new Query(n);
         while (true) {
             synchronized (this) {

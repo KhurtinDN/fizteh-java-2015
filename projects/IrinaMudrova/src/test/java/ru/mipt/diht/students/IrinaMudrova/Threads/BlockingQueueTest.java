@@ -21,6 +21,7 @@ public class BlockingQueueTest {
         assertTrue(queue.take(3).get(1) == 2);
     }
 
+    @SuppressWarnings("checkstyle:magicnumber")
     @Test(timeout = 150)
     public void testTwoThreads() {
         BlockingQueue<Integer> queue = new BlockingQueue<Integer>(3);
