@@ -19,109 +19,83 @@ public class LockingQueue<E> {
     private volatile int maxQueueSize;
     private volatile List<E> queue;
 
-    private class TimeInterrupter extends Thread {
-        private long timeout;
-        private Thread pthread;
-
-        TimeInterrupter(long rcvTimeout, Thread threadToWakeUp) {
-            this.timeout = rcvTimeout;
-            this.pthread = threadToWakeUp;
-        }
-
-        @Override
-        public void run() {
-            try {
-                Thread.sleep(timeout);
-                synchronized (this) {
-                    this.pthread.interrupt();
-                }
-            } catch (InterruptedException e) {
-            }
-        }
-    }
-
-    private void addTheList(List<E> listToAdd, long timeout) {
-        TimeInterrupter interrupter = new TimeInterrupter(timeout, Thread.currentThread());
+    private void addTheList(List<E> listToAdd, long timeout) throws InterruptedException {
+        long endTime = System.currentTimeMillis() + timeout;
+        boolean isTimeoutBreakSet = timeout > 0 ? true : false;
         synchronized (synchronizer) {
-            try {
-                if (timeout >= 0) {
-                    interrupter.start();
+            long myActNum;
+            synchronized (offerCounterSync) {
+                myActNum = nextOfferNumber;
+                ++nextOfferNumber;
+                if (nextOfferNumber == Long.MAX_VALUE) {
+                    nextOfferNumber = 0;
                 }
-
-                long myActNum;
-                synchronized (offerCounterSync) {
-                    myActNum = nextOfferNumber;
-                    ++nextOfferNumber;
-                    if (nextOfferNumber == Long.MAX_VALUE) {
-                        nextOfferNumber = 0;
-                    }
-                }
-
-                while (true) {
-                    synchronized (queueAccesSynchronizer) {
-                        if (myActNum == currentOfferNumber
-                                && queue.size() + listToAdd.size() <= maxQueueSize) {
-                            break;
-                        }
-                    }
-                    synchronizer.wait();
-                }
-
-                synchronized (interrupter) {
-                    synchronized (queueAccesSynchronizer) {
-                        queue.addAll(new LinkedList(listToAdd));
-                    }
-                }
-                if (interrupter != null) {
-                    interrupter.interrupt();
-                }
-
-            } catch (InterruptedException e) {
             }
+
+            while (true) {
+                synchronized (queueAccesSynchronizer) {
+                    if (myActNum == currentOfferNumber
+                            && queue.size() + listToAdd.size() <= maxQueueSize) {
+                        break;
+                    }
+                }
+
+                long time = endTime - System.currentTimeMillis();
+                if (!isTimeoutBreakSet) {
+                    synchronizer.wait();
+                } else if (time > 0) {
+                    synchronizer.wait(time);
+                } else {
+                    ++currentOfferNumber;
+                    synchronizer.notifyAll();
+                    return;
+                }
+            }
+
+            synchronized (queueAccesSynchronizer) {
+                queue.addAll(listToAdd);
+            }
+
             ++currentOfferNumber;
             synchronizer.notifyAll();
         }
     }
 
-    private List<E> getTheList(int lengthToTake, long timeout) {
-        TimeInterrupter interrupter = new TimeInterrupter(timeout, Thread.currentThread());
+    private List<E> getTheList(int lengthToTake, long timeout) throws InterruptedException {
+        long endTime = System.currentTimeMillis() + timeout;
 
+        boolean isTimeoutBreakSet = timeout > 0 ? true : false;
         List<E> answer = null;
         synchronized (synchronizer) {
-            try {
-                if (timeout >= 0) {
-                    interrupter.start();
+            long myActNum;
+            synchronized (takeCounterSync) {
+                myActNum = nextTakeNumber;
+                ++nextTakeNumber;
+                if (nextTakeNumber == Long.MAX_VALUE) {
+                    nextTakeNumber = 0;
                 }
-
-                long myActNum;
-                synchronized (takeCounterSync) {
-                    myActNum = nextTakeNumber;
-                    ++nextTakeNumber;
-                    if (nextTakeNumber == Long.MAX_VALUE) {
-                        nextTakeNumber = 0;
+            }
+            while (true) {
+                synchronized (queueAccesSynchronizer) {
+                    if (myActNum == currentTakeNumber && lengthToTake <= queue.size()) {
+                        break;
                     }
                 }
-                while (true) {
-                    synchronized (queueAccesSynchronizer) {
-                        if (myActNum == currentTakeNumber && lengthToTake <= queue.size()) {
-                            break;
-                        }
-                    }
+                long time = endTime - System.currentTimeMillis();
+                if (!isTimeoutBreakSet) {
                     synchronizer.wait();
+                } else if (time > 0) {
+                    synchronizer.wait(time);
+                } else {
+                    ++currentTakeNumber;
+                    synchronizer.notifyAll();
+                    return null;
                 }
+            }
 
-                synchronized (interrupter) {
-                    synchronized (queueAccesSynchronizer) {
-                        answer = new LinkedList<E>(queue.subList(0, lengthToTake));
-                        queue.subList(0, lengthToTake).clear();
-                    }
-                }
-
-                if (interrupter != null) {
-                    interrupter.interrupt();
-                }
-
-            } catch (InterruptedException e) {
+            synchronized (queueAccesSynchronizer) {
+                answer = new LinkedList<E>(queue.subList(0, lengthToTake));
+                queue.subList(0, lengthToTake).clear();
             }
 
             ++currentTakeNumber;
@@ -140,22 +114,22 @@ public class LockingQueue<E> {
         nextTakeNumber = 0;
     }
 
-    public final void offer(List<E> toAdd) {
+    public final void offer(List<E> toAdd) throws InterruptedException {
         addTheList(toAdd, -1);
     }
 
-    public final void offer(List<E> toAdd, long timeout) {
+    public final void offer(List<E> toAdd, long timeout) throws InterruptedException{
         addTheList(toAdd, timeout);
     }
 
-    public final List<E> take(int n) {
+    public final List<E> take(int n) throws InterruptedException{
         if (n == 0) {
             return new LinkedList<>();
         }
         return getTheList(n, -1);
     }
 
-    public final List<E> take(int n, long timeout) {
+    public final List<E> take(int n, long timeout) throws InterruptedException{
         if (n == 0) {
             return new LinkedList<>();
         }

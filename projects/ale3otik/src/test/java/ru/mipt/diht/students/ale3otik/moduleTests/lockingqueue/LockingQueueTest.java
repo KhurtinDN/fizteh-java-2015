@@ -16,7 +16,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Created by alex on 06.12.15.
  */
 public class LockingQueueTest {
-
     private static int MAX_QUEUE_SIZE = 30;
     private List<Integer> baseList;
     private LockingQueue<Integer> queue;
@@ -41,7 +40,12 @@ public class LockingQueueTest {
 
         @Override
         public void run() {
-            answer = queue.take(4, 300);
+            try {
+                answer = queue.take(4, 300);
+            }  catch (InterruptedException e) {
+                System.err.println(e.getMessage());
+                assert true;
+            }
         }
     }
 
@@ -56,17 +60,22 @@ public class LockingQueueTest {
 
         @Override
         public void run() {
-            queue.offer(toAdd, 300);
+            try {
+                queue.offer(toAdd, 300);
+            } catch (InterruptedException e) {
+                System.err.println(e.getMessage());
+                assert true;
+            }
         }
     }
 
-    @Test
+    @Test(timeout = 800)
     public void testSimpleRequestQueue() throws Exception {
         queue.offer(baseList);
         assertThat(queue.take(baseList.size()), equalTo(baseList));
     }
 
-    @Test
+    @Test(timeout = 800)
     public void testTakeDelay() throws Exception {
         queue.offer(Arrays.asList(0, 0));
         ThreadTaker taker = new ThreadTaker(queue);
@@ -77,7 +86,7 @@ public class LockingQueueTest {
         assertThat(queue.take(1), equalTo(Arrays.asList(2)));
     }
 
-    @Test
+    @Test(timeout = 800)
     public void testTakeDelaySkip() throws Exception {
         queue.offer(Arrays.asList(0, 1));
         List<Integer> answer = queue.take(4, 200);
@@ -85,7 +94,7 @@ public class LockingQueueTest {
         assertThat(answer, nullValue());
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testOfferDelay() throws Exception {
         queue.offer(baseList);
         ThreadOffer offer = new ThreadOffer(queue, baseList);
@@ -96,7 +105,7 @@ public class LockingQueueTest {
         assertThat(queue.take(20), equalTo(baseList));
     }
 
-    @Test
+    @Test(timeout = 800)
     public void testOfferDelaySkip() throws Exception {
         queue.offer(baseList);
         queue.offer(baseList, 200);
