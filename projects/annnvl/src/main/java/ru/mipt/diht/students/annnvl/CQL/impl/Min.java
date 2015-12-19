@@ -15,7 +15,7 @@ public class Min<T, R extends Comparable<R>> implements Aggregator<T, R> {
         return elements
                 .stream()
                 .map(function)
-                
+
                 .reduce(null, (a, b) -> {
                     if (a == null) {
                         return b;
