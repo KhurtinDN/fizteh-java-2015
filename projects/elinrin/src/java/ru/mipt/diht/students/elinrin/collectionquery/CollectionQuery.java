@@ -17,6 +17,8 @@ import static ru.mipt.diht.students.elinrin.collectionquery.OrderByConditions.de
 import static ru.mipt.diht.students.elinrin.collectionquery.Sources.list;
 import static ru.mipt.diht.students.elinrin.collectionquery.impl.FromStmt.from;
 
+/*nnn*/
+
 public class CollectionQuery {
     static final int TWENTY = 20;
     static final int HUNDRED = 100;
