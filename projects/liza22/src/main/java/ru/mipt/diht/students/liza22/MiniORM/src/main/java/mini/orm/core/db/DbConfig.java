@@ -97,8 +97,8 @@ public class DbConfig {
 
     @Override
     public final String toString() {
-        return "DbConfig{" 
-		+ "jdbcDriver='" + jdbcDriver + '\''
+        return "DbConfig{"
+                + "jdbcDriver='" + jdbcDriver + '\''
                 + ", url='" + url + '\''
                 + ", username='" + username + '\''
                 + ", password='" + password + '\''

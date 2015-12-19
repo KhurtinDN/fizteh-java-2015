@@ -2,7 +2,7 @@ package mini.orm.core.utils;
 
 import java.text.MessageFormat;
 
-/**
+/*
  * this class contains SQL queries teplates.
  */
 public class QueryStorage {
@@ -51,10 +51,9 @@ public class QueryStorage {
         return MessageFormat.format(DELETE_BY_PK_QUERY, tableName, pkColumnName);
     }
 
-    private static final String CREATE_TABLE_QUERY =
-            "CREATE TABLE {0} ({1} PRIMARY KEY ( {2} ))";
-    public static String getCreateTableQuery(String tableName, String[] columnNames, 
-		String[] columnTypes, String pkColumnName) {
+    private static final String CREATE_TABLE_QUERY = "CREATE TABLE {0} ({1} PRIMARY KEY ( {2} ))";
+    public static String getCreateTableQuery(String tableName, String[] columnNames,
+                                             String[] columnTypes, String pkColumnName) {
         StringBuilder columnsInfo = new StringBuilder();
         for (int i = 0; i < columnNames.length; i++) {
             String columnName = columnNames[i];

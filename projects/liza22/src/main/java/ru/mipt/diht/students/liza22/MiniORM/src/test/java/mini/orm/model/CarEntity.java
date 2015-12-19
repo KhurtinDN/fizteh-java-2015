@@ -7,7 +7,10 @@ import mini.orm.api.Table;
 import java.util.Date;
 
 @Table(name = "cars")
-public class CarEntity {
+public final class CarEntity {
+
+    private static final int CONST31 = 31;
+
     @PrimaryKey
     @Column(name = "car_id")
     private int id;
@@ -31,86 +34,94 @@ public class CarEntity {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(int carid) {
+        this.id = carid;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String carname) {
+        this.name = carname;
     }
 
     public String getColor() {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void setColor(String carcolor) {
+        this.color = carcolor;
     }
 
     public int getCountOfDoors() {
         return countOfDoors;
     }
 
-    public void setCountOfDoors(int countOfDoors) {
-        this.countOfDoors = countOfDoors;
+    public void setCountOfDoors(int carcountOfDoors) {
+        this.countOfDoors = carcountOfDoors;
     }
 
     public boolean isTruck() {
         return truck;
     }
 
-    public void setTruck(boolean truck) {
-        this.truck = truck;
+    public void setTruck(boolean cartruck) {
+        this.truck = cartruck;
     }
 
     public Date getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = releaseDate;
+    public void setReleaseDate(Date carreleaseDate) {
+        this.releaseDate = carreleaseDate;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
 
         CarEntity carEntity = (CarEntity) o;
 
-        if (id != carEntity.id) return false;
-        if (countOfDoors != carEntity.countOfDoors) return false;
-        if (truck != carEntity.truck) return false;
-        if (name != null ? !name.equals(carEntity.name) : carEntity.name != null) return false;
-        if (color != null ? !color.equals(carEntity.color) : carEntity.color != null) return false;
-        return !(releaseDate != null ? !releaseDate.equals(carEntity.releaseDate) : carEntity.releaseDate != null);
+        if (id != carEntity.id) { return false; }
+        if (countOfDoors != carEntity.countOfDoors) { return false; }
+        if (truck != carEntity.truck) { return false; }
+        if (name != null && !name.equals(carEntity.name) || name == null && carEntity.name != null) { return false; }
+        if (color != null && !color.equals(carEntity.color) ||
+                color == null && carEntity.color != null) { return false; }
+        return !(releaseDate != null && !releaseDate.equals(carEntity.releaseDate) ||
+                releaseDate == null && carEntity.releaseDate != null);
 
     }
 
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (color != null ? color.hashCode() : 0);
-        result = 31 * result + countOfDoors;
-        result = 31 * result + (truck ? 1 : 0);
-        result = 31 * result + (releaseDate != null ? releaseDate.hashCode() : 0);
+        result = CONST31 * result;
+        if (name != null) { result = result + name.hashCode(); }
+        result = CONST31 * result;
+        if (color != null) { result = result + color.hashCode(); }
+        result = CONST31 * result + countOfDoors;
+        result = CONST31 * result;
+        if (truck != 0) { result = result + 1; }
+        result = CONST31 * result;
+        if (releaseDate != null) { result = result + releaseDate.hashCode(); }
         return result;
     }
 
     @Override
     public String toString() {
-        return "CarEntity{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", color='" + color + '\'' +
-                ", countOfDoors=" + countOfDoors +
-                ", truck=" + truck +
-                ", releaseDate=" + releaseDate +
-                '}';
+        return "CarEntity{"
+                + "id=" + id
+                + ", name='" + name
+                + '\''
+                + ", color='" + color
+                + '\''
+                + ", countOfDoors=" + countOfDoors
+                + ", truck=" + truck
+                + ", releaseDate=" + releaseDate
+                + '}';
     }
 }

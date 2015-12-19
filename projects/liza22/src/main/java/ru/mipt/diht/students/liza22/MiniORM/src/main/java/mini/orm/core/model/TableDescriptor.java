@@ -50,8 +50,8 @@ public final class TableDescriptor {
 
     public static TableDescriptor fromEntityClass(Class<?> entityClass) {
         if (!entityClass.isAnnotationPresent(Table.class)) {
-            throw new IllegalArgumentException("Class = " + entityClass.getSimpleName() 
-		+ " is not annotated by @Table");
+            throw new IllegalArgumentException("Class = " + entityClass.getSimpleName()
+                    + " is not annotated by @Table");
         }
         String tableName = entityClass.getAnnotation(Table.class).name();
         if (tableName.isEmpty()) {
@@ -70,8 +70,8 @@ public final class TableDescriptor {
             }
         }
         if (!primaryKeyExists) {
-            throw new IllegalArgumentException("Entity class = " + entityClass.getSimpleName() 
-		+ " does not have @PrimaryKey field");
+            throw new IllegalArgumentException("Entity class = " + entityClass.getSimpleName()
+                    + " does not have @PrimaryKey field");
         }
 
         return tableDescriptor;
