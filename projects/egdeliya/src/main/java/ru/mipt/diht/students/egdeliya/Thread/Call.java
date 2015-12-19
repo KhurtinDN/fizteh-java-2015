@@ -20,8 +20,7 @@ public class Call {
     public final void threadsCall(String arg) {
         numberOfThreads = Integer.parseInt(arg);
         threads = new Thread[numberOfThreads];
-        for (int i = 0; i < numberOfThreads; ++i)
-        {
+        for (int i = 0; i < numberOfThreads; ++i) {
             threads[i] = new Thread(new Reply());
         }
 

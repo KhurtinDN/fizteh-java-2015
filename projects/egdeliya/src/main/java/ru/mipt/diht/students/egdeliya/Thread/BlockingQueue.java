@@ -68,7 +68,9 @@ public class BlockingQueue<T> {
             List<T> answer = new ArrayList<>();
             while (answer.size() != numberOfElements) {
                 synchronized (offerWait) {
-                    //пока количество элементов в очереди меньше, чем numberOfElements
+
+                    //пока количество элементов в очереди меньше,
+                    // чем numberOfElements
                     while (queue.size() < numberOfElements - answer.size()) {
                         try {
                             offerWait.wait();
