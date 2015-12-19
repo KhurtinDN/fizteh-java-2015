@@ -1,0 +1,8 @@
+package ru.mipt.diht.students.kitnoel.treads;
+
+/**
+ * Created by leonk on 19.12.15.
+ */
+public class Counter {
+    
+}
