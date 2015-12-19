@@ -62,10 +62,6 @@
             <groupId>org.twitter4j</groupId>
             <artifactId>twitter4j-stream</artifactId>
             <version>[4.0,)</version>
-        <dependency>
-            <groupId>org.twitter4j</groupId>
-            <artifactId>twitter4j-stream</artifactId>
-            <version>[4.0,)</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
