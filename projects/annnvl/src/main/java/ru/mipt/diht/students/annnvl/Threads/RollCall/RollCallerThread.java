@@ -55,10 +55,10 @@ public class RollCallerThread extends Thread {
                 }
                 timesNum++;
                 if (rand.nextDouble() < LOWERBOUND) {
-                    System.out.println("No\n");
+                    System.out.println("No");
                     everybodyOk = false;
                 } else {
-                    System.out.println("Yes\n");
+                    System.out.println("Yes");
                 }
                 asked++;
             }

@@ -19,7 +19,7 @@ public class CountedThread extends Thread {
             while (myNumber != currentThread) {
                 Thread.yield();
             }
-            System.out.println("Thread-" + (myNumber + 1) + "\n");
+            System.out.println("Thread-" + (myNumber + 1));
             currentThread = (currentThread + 1) % numberOfThreads;
         }
     }

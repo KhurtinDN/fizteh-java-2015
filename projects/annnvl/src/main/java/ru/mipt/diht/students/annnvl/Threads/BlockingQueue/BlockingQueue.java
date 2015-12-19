@@ -25,14 +25,15 @@ public class BlockingQueue<T> {
         data.addAll(e);
     }
 
-    synchronized void offer(List<T> e, long timeout) {
+    synchronized void offer(List<T> e, long timeout) throws InterruptedException{
         timeout += System.currentTimeMillis();
-        while ((data.size() + e.size() > maxQueueSize) && (timeout - System.currentTimeMillis()) > 0) {
-            Thread.yield();
+        while ((data.size() + e.size() > maxQueueSize) && (timeout -= System.currentTimeMillis()) > 0) {
+            wait(timeout);
         }
         if (timeout > 0) {
             data.addAll(e);
         }
+        notifyAll();
     }
 
     synchronized List<T> take(int n) {
@@ -46,18 +47,20 @@ public class BlockingQueue<T> {
         return answer;
     }
 
-    synchronized List<T> take(int n, long timeout) {
+    synchronized List<T> take(int n, long timeout) throws InterruptedException{
         timeout += System.currentTimeMillis();
-        while ((data.size() < n) && (timeout - System.currentTimeMillis()) > 0) {
-            Thread.yield();
+        while ((data.size() < n) && (timeout -= System.currentTimeMillis()) > 0) {
+            wait(timeout);
         }
         if (timeout > 0) {
             List<T> answer = new ArrayList<T>();
             for (int i = 0; i < n; i++) {
                 answer.add(data.remove());
             }
+            notifyAll();
             return answer;
         }
+        notifyAll();
         return null;
     }
 }

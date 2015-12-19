@@ -12,7 +12,7 @@ public class RollCall {
         }
         while (true) {
             RollCallerThread.makeEverybodyOk();
-            System.out.println("Are you ready?\n");
+            System.out.println("Are you ready?");
             RollCallerThread.nextRollCall();
             while (!RollCallerThread.everybodyasked()) {
                 Thread.yield();
