@@ -43,7 +43,7 @@ public class AggregatesTest extends TestCase {
 
         assertEquals(((Aggregator) Aggregates.max(functionGroup)).apply(correct), "495");
         assertEquals(((Aggregator) Aggregates.max(functionName)).apply(correct), "stepanov");
-        assertEquals(((Aggregator) Aggregates.max(functionAge)).apply(correct), 3L);
+        assertEquals(((Aggregator) Aggregates.max(functionAge)).apply(correct), 18L);
 
         assertEquals(((Aggregator) Aggregates.max(functionAge)).apply(emptylist), null);
     }
@@ -52,7 +52,7 @@ public class AggregatesTest extends TestCase {
     public void testMin() throws Exception {
         assertEquals(((Aggregator) Aggregates.min(functionGroup)).apply(correct), "494");
         assertEquals(((Aggregator) Aggregates.min(functionName)).apply(correct), "ivanov");
-        assertEquals(((Aggregator) Aggregates.min(functionAge)).apply(correct), 3L);
+        assertEquals(((Aggregator) Aggregates.min(functionAge)).apply(correct), 18L);
     }
 
     @Test
@@ -64,6 +64,6 @@ public class AggregatesTest extends TestCase {
 
     @Test
     public void testAvg() throws Exception {
-        assertEquals((Double) ((Aggregator) Aggregates.avg(functionAge)).apply(correct), 3.0, 0.1);
+        assertEquals((Double) ((Aggregator) Aggregates.avg(functionAge)).apply(correct), 18.0, 0.1);
     }
 }

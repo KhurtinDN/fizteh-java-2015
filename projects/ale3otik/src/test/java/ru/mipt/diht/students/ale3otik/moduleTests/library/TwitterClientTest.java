@@ -1,7 +1,6 @@
 package ru.mipt.diht.students.ale3otik.moduletests.library;
 
 import com.beust.jcommander.JCommander;
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,14 +28,14 @@ import static org.mockito.Mockito.*;
         TwitterClient.class,
         TwitterClientArguments.class,
 })
-public class TwitterClientTest extends TestCase {
 
-    private static String helloString = "\nTwitter 0.1 ::: welcome \n";
-    private static TwitterClientArguments arguments;
+public class TwitterClientTest {
+    private static final String helloString = "\nTwitter 0.1 ::: welcome \n";
 
-    private static TwitterSingleQuery mockedTwitterSingle;
-    private static TwitterStreamLauncher mockedStreamLauncher;
-    private static StringBuilder helpExpected;
+    private TwitterClientArguments arguments;
+    private TwitterSingleQuery mockedTwitterSingle;
+    private TwitterStreamLauncher mockedStreamLauncher;
+    private StringBuilder helpExpected;
 
     @Before
     public void setUp() throws Exception {
@@ -50,7 +49,8 @@ public class TwitterClientTest extends TestCase {
         mockedTwitterSingle = PowerMockito.mock(TwitterSingleQuery.class);
 
         PowerMockito.mockStatic(ConsoleUtil.class);
-        PowerMockito.whenNew(TwitterStreamLauncher.class).withAnyArguments().thenReturn(mockedStreamLauncher);
+        PowerMockito.whenNew(TwitterStreamLauncher.class)
+                .withAnyArguments().thenReturn(mockedStreamLauncher);
     }
 
     private void createArguments(String... args) {

@@ -94,12 +94,12 @@ public class SelectStmt<T, R> implements Query {
     private List<List<T>> buildGroups(List<T> source) {
         List<List<T>> grouped = new ArrayList<>();
         if (groupByExpressions != null) {
-            Map<Object, Integer> buckets = new HashMap<>();
-            Object[] results = new String[groupByExpressions.length];
+            Map<List<Object>, Integer> buckets = new HashMap<>();
+            List<Object> results = new ArrayList<>();
             source.stream().forEach(
                     element -> {
                         for (int i = 0; i < groupByExpressions.length; ++i) {
-                            results[i] = groupByExpressions[i].apply(element);
+                            results.add(groupByExpressions[i].apply(element));
                         }
                         if (!buckets.containsKey(results)) {
                             int ind = buckets.size();

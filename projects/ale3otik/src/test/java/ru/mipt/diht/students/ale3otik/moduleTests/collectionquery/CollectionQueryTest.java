@@ -29,7 +29,7 @@ public class CollectionQueryTest extends TestCase {
                         student("smith", LocalDate.parse("1986-08-06"), "495"),
                         student("petrov", LocalDate.parse("2006-08-06"), "494")))
                         .select(Statistics.class, Student::getGroup, count(Student::getGroup), avg(Student::age))
-                        .where(rlike(Student::getName, ".*ov").and(s -> s.age() > 12))
+                        .where(rlike(Student::getName, ".*ov").and(s -> s.age() > 20))
                         .groupBy(Student::getGroup)
                         .having(s -> s.getCount() > 0)
                         .orderBy(asc(Statistics::getGroup), desc(Statistics::getCount))
@@ -40,7 +40,7 @@ public class CollectionQueryTest extends TestCase {
                         .execute();
         assertEquals(
                 statistics.toString(),
-                "[Statistics{group='494', count=2, age=14.0}, Statistics{group='all', count=1, age=15.0}]");
+                "[Statistics{group='494', count=1, age=29.0}, Statistics{group='495', count=1, age=29.0}, Statistics{group='all', count=1, age=30.0}]");
 //
         Iterable<Tuple<String, String>> mentorsByStudent =
                 from(list(student("ivanov", LocalDate.parse("1985-08-06"), "494")))
@@ -63,7 +63,7 @@ public class CollectionQueryTest extends TestCase {
         private static LocalDate baseDateTime;
 
         static {
-            baseDateTime = LocalDate.parse("2000-08-06");
+            baseDateTime = LocalDate.parse("2015-12-19");
         }
 
         private final String name;

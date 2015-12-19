@@ -1,6 +1,5 @@
 package ru.mipt.diht.students.ale3otik.moduletests.miniorm;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 import ru.mipt.diht.students.ale3otik.miniorm.DatabaseService;
 import ru.mipt.diht.students.ale3otik.miniorm.DatabaseService.Column;
@@ -9,14 +8,20 @@ import ru.mipt.diht.students.ale3otik.miniorm.DatabaseService.Table;
 
 import java.util.Date;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * Created by alex on 15.12.15.
  */
-public class DatabaseServiceTest extends TestCase {
+public class DatabaseServiceTest {
 
     @Table
     public static class SimpleStudent {
-        public SimpleStudent() {}
+        public SimpleStudent() {
+        }
+
         public SimpleStudent(String newName, int newAge, Date newBirthDate) {
             userName = newName;
             userAge = newAge;
@@ -47,44 +52,35 @@ public class DatabaseServiceTest extends TestCase {
     }
 
     @Test
-    public void testCreation() {
-        try {
-            DatabaseService<SimpleStudent> service = new DatabaseService<>(SimpleStudent.class);
-            service.dropTable();
-            service.createTable();
-            service.dropTable();
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("failed: " + e.getMessage());
-        }
+    public void testCreation() throws Exception {
+        DatabaseService<SimpleStudent> service = new DatabaseService<>(SimpleStudent.class);
+        service.dropTable();
+        service.createTable();
+        service.dropTable();
     }
 
     @Test
-    public void testOperetions() {
-        try {
-            DatabaseService<SimpleStudent> service = new DatabaseService<>(SimpleStudent.class);
-            service.dropTable();
-            service.createTable();
-            service.insert(new SimpleStudent("Alexey", 18, new Date(1345633237L)));
-            service.insert(new SimpleStudent("Semyon", 18, new Date(1345332323L)));
-            service.insert(new SimpleStudent("Peter", 17, new Date(13323237L)));
-            service.update(new SimpleStudent("Alexander", 20, new Date(144255427L)));
-            service.deleteById("Sergey");
-            service.delete(new SimpleStudent("Other", 20, new Date(144255427L)));
-            service.delete(new SimpleStudent("Semyon", 20, new Date(144255427L)));
+    public void testOperetions() throws Exception {
+        DatabaseService<SimpleStudent> service = new DatabaseService<>(SimpleStudent.class);
+        service.dropTable();
+        service.createTable();
+        service.insert(new SimpleStudent("Alexey", 18, new Date(1345633237L)));
+        service.insert(new SimpleStudent("Semyon", 18, new Date(1345332323L)));
+        service.insert(new SimpleStudent("Peter", 17, new Date(13323237L)));
+        service.update(new SimpleStudent("Alexander", 20, new Date(144255427L)));
+        service.deleteById("Sergey");
+        service.delete(new SimpleStudent("Other", 20, new Date(144255427L)));
+        service.delete(new SimpleStudent("Semyon", 20, new Date(144255427L)));
 
-            assertNull(service.queryById("Semyon"));
-            assertNull(service.queryById("Sergey"));
-            assertEquals("[User{name='Alexey',age=18,birthday=1970-01-16},"
-                            + " User{name='Peter',age=17,birthday=1970-01-01}]",
-                    service.queryForAll().toString());
+        assertThat(service.queryById("Semyon"), nullValue());
+        assertThat(service.queryById("Sergey"), nullValue());
+        assertThat(service.queryForAll().toString(),
+                equalTo("[User{name='Alexey',age=18,birthday=1970-01-16},"
+                        + " User{name='Peter',age=17,birthday=1970-01-01}]"));
 
-            service.update(new SimpleStudent("Peter", 20, new Date(111222311122L)));
-            assertEquals(service.queryById("Peter").toString(), "User{name='Peter',age=20,birthday=1973-07-11}");
-            service.dropTable();
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("failed: " + e.getMessage());
-        }
+        service.update(new SimpleStudent("Peter", 20, new Date(111222311122L)));
+        assertThat(service.queryById("Peter").toString(),
+                equalTo("User{name='Peter',age=20,birthday=1973-07-11}"));
+        service.dropTable();
     }
 }

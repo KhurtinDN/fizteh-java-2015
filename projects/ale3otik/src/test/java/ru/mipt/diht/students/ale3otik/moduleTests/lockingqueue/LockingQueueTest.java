@@ -1,6 +1,5 @@
 package ru.mipt.diht.students.ale3otik.moduletests.lockingqueue;
 
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import ru.mipt.diht.students.ale3otik.threads.lockingqueue.LockingQueue;
@@ -9,11 +8,14 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by alex on 06.12.15.
  */
-public class LockingQueueTest extends TestCase {
+public class LockingQueueTest {
 
     private static int MAX_QUEUE_SIZE = 30;
     private List<Integer> baseList;
@@ -61,7 +63,7 @@ public class LockingQueueTest extends TestCase {
     @Test
     public void testSimpleRequestQueue() throws Exception {
         queue.offer(baseList);
-        assertEquals(queue.take(baseList.size()), baseList);
+        assertThat(queue.take(baseList.size()), equalTo(baseList));
     }
 
     @Test
@@ -71,17 +73,16 @@ public class LockingQueueTest extends TestCase {
         taker.start();
         queue.offer(baseList);
         Thread.sleep(100);
-        assertEquals(taker.answer, Arrays.asList(0, 0, 0, 1));
-        assertEquals(queue.take(1), Arrays.asList(2));
-
+        assertThat(taker.answer,  equalTo(Arrays.asList(0, 0, 0, 1)));
+        assertThat(queue.take(1), equalTo(Arrays.asList(2)));
     }
 
     @Test
     public void testTakeDelaySkip() throws Exception {
         queue.offer(Arrays.asList(0, 1));
         List<Integer> answer = queue.take(4, 200);
-        assertEquals(queue.take(2), Arrays.asList(0, 1));
-        assertEquals(answer, null);
+        assertThat(queue.take(2), equalTo(Arrays.asList(0, 1)));
+        assertThat(answer, nullValue());
     }
 
     @Test
@@ -92,7 +93,7 @@ public class LockingQueueTest extends TestCase {
 
         queue.take(20);
         Thread.sleep(100);
-        assertEquals(queue.take(20), baseList);
+        assertThat(queue.take(20), equalTo(baseList));
     }
 
     @Test
@@ -100,8 +101,8 @@ public class LockingQueueTest extends TestCase {
         queue.offer(baseList);
         queue.offer(baseList, 200);
         queue.offer(Arrays.asList(0, 1));
-        assertEquals(queue.take(20), baseList);
-        assertEquals(queue.take(2), Arrays.asList(0, 1));
+        assertThat(queue.take(20), equalTo(baseList));
+        assertThat(queue.take(2), equalTo(Arrays.asList(0, 1)));
     }
 }
 

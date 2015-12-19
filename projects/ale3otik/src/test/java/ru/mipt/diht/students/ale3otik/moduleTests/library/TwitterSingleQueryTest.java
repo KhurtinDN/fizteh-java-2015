@@ -1,7 +1,6 @@
 package ru.mipt.diht.students.ale3otik.moduletests.library;
 
 import com.beust.jcommander.JCommander;
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,23 +24,22 @@ import static org.mockito.Mockito.verify;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({TwitterUtils.class, TwitterClientArguments.class})
-public class TwitterSingleQueryTest extends TestCase {
-    private TwitterClientArguments arguments;
-    private JCommander jcm;
-    private static final double LondonLatitude = 51.5073509;
-    private static final double LondonLongitude = -0.1277583;
-    private static final double LondonRadius = 23.539304731202712;
-
-    private static GeoLocationInfo londonGeoLocationInfo;
-    private static java.util.List<Status> statuses;
+public class TwitterSingleQueryTest {
     private static final String NON_RETWEET = "!@#Catched non-retweet code#@!";
     private static final String RETWEET = "#$%$@Catched retweet code@#$!";
+    private static final GeoLocationInfo londonGeoLocationInfo =
+            new GeoLocationInfo(new GeoLocation(51.5073509, -0.1277583), 23.539304731202712);
 
-    private static Status retweetStatus;
-    private static Status notRetweetStatus;
-    private static StringBuilder infoMessage;
+    private TwitterClientArguments arguments;
+    private JCommander jcm;
 
+    private java.util.List<Status> statuses;
+
+    private Status retweetStatus;
+    private Status notRetweetStatus;
+    private StringBuilder infoMessage;
     private TwitterSingleQuery twitterSingleQuery;
+
     @Mock
     Twitter mockedTwitter;
     @Mock
@@ -52,15 +50,13 @@ public class TwitterSingleQueryTest extends TestCase {
 
     @Mock
     TwitterException mockedTwitterException;
+
     private Query myQuery;
     private Query myLocationQuery;
 
     @Before
     public void setUp() throws Exception {
         infoMessage = new StringBuilder();
-
-        londonGeoLocationInfo = new GeoLocationInfo(new GeoLocation(LondonLatitude, LondonLongitude), LondonRadius);
-
         myQuery = new Query("some query");
 
         myLocationQuery = new Query("location test");
@@ -68,9 +64,6 @@ public class TwitterSingleQueryTest extends TestCase {
                 londonGeoLocationInfo.getRadius(), "km");
 
         statuses = Twitter4jTestUtils.tweetsFromJson("/MIPT.json");
-
-//        PowerMockito.mockStatic(Query.class);
-//        PowerMockito.whenNew(Query.class).withArguments("some query").thenReturn(myQuery);
 
         PowerMockito.mockStatic(TwitterUtils.class);
         Mockito.when(mockedResult.getTweets()).thenReturn(statuses);

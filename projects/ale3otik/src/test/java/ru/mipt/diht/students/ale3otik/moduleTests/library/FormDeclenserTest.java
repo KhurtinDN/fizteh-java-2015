@@ -1,71 +1,72 @@
 package ru.mipt.diht.students.ale3otik.moduletests.library;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 import ru.mipt.diht.students.ale3otik.twitter.FormDeclenser;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by alex on 28.10.15.
  */
 
-public class FormDeclenserTest extends TestCase {
+public class FormDeclenserTest {
     @Test
     public void testGetTweetsDeclensionForm() {
-
-        assertEquals(FormDeclenser.getTweetsDeclension(1), "ретвит");
-        assertEquals(FormDeclenser.getTweetsDeclension(2), "ретвита");
-        assertEquals(FormDeclenser.getTweetsDeclension(4), "ретвита");
-        assertEquals(FormDeclenser.getTweetsDeclension(5), "ретвитов");
-        assertEquals(FormDeclenser.getTweetsDeclension(9), "ретвитов");
-        assertEquals(FormDeclenser.getTweetsDeclension(10), "ретвитов");
-        assertEquals(FormDeclenser.getTweetsDeclension(11), "ретвитов");
-        assertEquals(FormDeclenser.getTweetsDeclension(13), "ретвитов");
-        assertEquals(FormDeclenser.getTweetsDeclension(21), "ретвит");
-        assertEquals(FormDeclenser.getTweetsDeclension(22), "ретвита");
-        assertEquals(FormDeclenser.getTweetsDeclension(104), "ретвита");
-        assertEquals(FormDeclenser.getTweetsDeclension(200101), "ретвит");
+        assertThat(FormDeclenser.getTweetsDeclension(1), equalTo("ретвит"));
+        assertThat(FormDeclenser.getTweetsDeclension(2), equalTo("ретвита"));
+        assertThat(FormDeclenser.getTweetsDeclension(4), equalTo("ретвита"));
+        assertThat(FormDeclenser.getTweetsDeclension(5), equalTo("ретвитов"));
+        assertThat(FormDeclenser.getTweetsDeclension(9), equalTo("ретвитов"));
+        assertThat(FormDeclenser.getTweetsDeclension(10), equalTo("ретвитов"));
+        assertThat(FormDeclenser.getTweetsDeclension(11), equalTo("ретвитов"));
+        assertThat(FormDeclenser.getTweetsDeclension(13), equalTo("ретвитов"));
+        assertThat(FormDeclenser.getTweetsDeclension(21), equalTo("ретвит"));
+        assertThat(FormDeclenser.getTweetsDeclension(22), equalTo("ретвита"));
+        assertThat(FormDeclenser.getTweetsDeclension(104), equalTo("ретвита"));
+        assertThat(FormDeclenser.getTweetsDeclension(200101), equalTo("ретвит"));
     }
 
     @Test
     public void testGetHoursDeclensionForm() {
-        assertEquals(FormDeclenser.getHoursDeclension(1), "час");
-        assertEquals(FormDeclenser.getHoursDeclension(2), "часа");
-        assertEquals(FormDeclenser.getHoursDeclension(3), "часа");
-        assertEquals(FormDeclenser.getHoursDeclension(5), "часов");
-        assertEquals(FormDeclenser.getHoursDeclension(19), "часов");
-        assertEquals(FormDeclenser.getHoursDeclension(21), "час");
-        assertEquals(FormDeclenser.getHoursDeclension(22), "часа");
-        assertEquals(FormDeclenser.getHoursDeclension(24), "часа");
-        assertEquals(FormDeclenser.getHoursDeclension(25), "часов");
-        assertEquals(FormDeclenser.getHoursDeclension(100), "часов");
-        assertEquals(FormDeclenser.getHoursDeclension(200101), "час");
+        assertThat(FormDeclenser.getHoursDeclension(1), equalTo("час"));
+        assertThat(FormDeclenser.getHoursDeclension(2), equalTo("часа"));
+        assertThat(FormDeclenser.getHoursDeclension(3), equalTo("часа"));
+        assertThat(FormDeclenser.getHoursDeclension(5), equalTo("часов"));
+        assertThat(FormDeclenser.getHoursDeclension(19), equalTo("часов"));
+        assertThat(FormDeclenser.getHoursDeclension(21), equalTo("час"));
+        assertThat(FormDeclenser.getHoursDeclension(22), equalTo("часа"));
+        assertThat(FormDeclenser.getHoursDeclension(24), equalTo("часа"));
+        assertThat(FormDeclenser.getHoursDeclension(25), equalTo("часов"));
+        assertThat(FormDeclenser.getHoursDeclension(100), equalTo("часов"));
+        assertThat(FormDeclenser.getHoursDeclension(200101), equalTo("час"));
     }
 
     @Test
     public void testGetDaysDeclensionForm() {
-        assertEquals(FormDeclenser.getDaysDeclension(1), "день");
-        assertEquals(FormDeclenser.getDaysDeclension(2), "дня");
-        assertEquals(FormDeclenser.getDaysDeclension(5), "дней");
-        assertEquals(FormDeclenser.getDaysDeclension(7), "дней");
-        assertEquals(FormDeclenser.getDaysDeclension(10), "дней");
-        assertEquals(FormDeclenser.getDaysDeclension(13), "дней");
-        assertEquals(FormDeclenser.getDaysDeclension(21), "день");
-        assertEquals(FormDeclenser.getDaysDeclension(25), "дней");
-        assertEquals(FormDeclenser.getDaysDeclension(121), "день");
+        assertThat(FormDeclenser.getDaysDeclension(1), equalTo("день"));
+        assertThat(FormDeclenser.getDaysDeclension(2), equalTo("дня"));
+        assertThat(FormDeclenser.getDaysDeclension(5), equalTo("дней"));
+        assertThat(FormDeclenser.getDaysDeclension(7), equalTo("дней"));
+        assertThat(FormDeclenser.getDaysDeclension(10), equalTo("дней"));
+        assertThat(FormDeclenser.getDaysDeclension(13), equalTo("дней"));
+        assertThat(FormDeclenser.getDaysDeclension(21), equalTo("день"));
+        assertThat(FormDeclenser.getDaysDeclension(25), equalTo("дней"));
+        assertThat(FormDeclenser.getDaysDeclension(121), equalTo("день"));
     }
 
     @Test
     public void testGetMinutesDeclensionForm() {
-        assertEquals(FormDeclenser.getMinutesDeclension(1), "минута");
-        assertEquals(FormDeclenser.getMinutesDeclension(2), "минуты");
-        assertEquals(FormDeclenser.getMinutesDeclension(5), "минут");
-        assertEquals(FormDeclenser.getMinutesDeclension(110), "минут");
-        assertEquals(FormDeclenser.getMinutesDeclension(21), "минута");
-        assertEquals(FormDeclenser.getMinutesDeclension(27), "минут");
-        assertEquals(FormDeclenser.getMinutesDeclension(23), "минуты");
-        assertEquals(FormDeclenser.getMinutesDeclension(100), "минут");
-        assertEquals(FormDeclenser.getMinutesDeclension(20500), "минут");
-        assertEquals(FormDeclenser.getMinutesDeclension(100501), "минута");
-        assertEquals(FormDeclenser.getMinutesDeclension(1256), "минут");
+        assertThat(FormDeclenser.getMinutesDeclension(1), equalTo("минута"));
+        assertThat(FormDeclenser.getMinutesDeclension(2), equalTo("минуты"));
+        assertThat(FormDeclenser.getMinutesDeclension(5), equalTo("минут"));
+        assertThat(FormDeclenser.getMinutesDeclension(110), equalTo("минут"));
+        assertThat(FormDeclenser.getMinutesDeclension(21), equalTo("минута"));
+        assertThat(FormDeclenser.getMinutesDeclension(27), equalTo("минут"));
+        assertThat(FormDeclenser.getMinutesDeclension(23), equalTo("минуты"));
+        assertThat(FormDeclenser.getMinutesDeclension(100), equalTo("минут"));
+        assertThat(FormDeclenser.getMinutesDeclension(20500), equalTo("минут"));
+        assertThat(FormDeclenser.getMinutesDeclension(100501), equalTo("минута"));
+        assertThat(FormDeclenser.getMinutesDeclension(1256), equalTo("минут"));
     }
 }

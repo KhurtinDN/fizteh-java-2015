@@ -1,6 +1,5 @@
 package ru.mipt.diht.students.ale3otik.moduletests.library;
 
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,12 +13,15 @@ import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 import java.io.InputStream;
 import java.net.URL;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * Created by alex on 04.11.15.
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({URL.class, GeoLocationResolver.class})
-public class GeoLocationResolverTest extends TestCase {
+public class GeoLocationResolverTest {
     private static final String URLIPinfoAdress = "http://ipinfo.io/json";
     private static final String URLGoogleAPIAdress = "http://maps.googleapis.com/maps/api/geocode/json";
 
@@ -55,7 +57,7 @@ public class GeoLocationResolverTest extends TestCase {
         InputStream inputStream = GeoLocationResolverTest.class.getResourceAsStream(DOLGOPRUDNYY_JSON);
         PowerMockito.when(dummyNearbyLocationURL.openStream()).thenReturn(inputStream);
         String location = GeoLocationResolver.getNameOfCurrentLocation();
-        assertEquals(DOLGOPRUDNYY, location);
+        assertThat(DOLGOPRUDNYY, equalTo(location));
     }
 
     @Test(expected = LocationException.class)
@@ -71,9 +73,9 @@ public class GeoLocationResolverTest extends TestCase {
         PowerMockito.when(dummyGeoDataURL.openStream()).thenReturn(inputStream);
         GeoLocationInfo location = GeoLocationResolver.getGeoLocation(LONDON);
 
-        assertEquals(LondonLatitude, location.getLocation().getLatitude());
-        assertEquals(LondonLongitude, location.getLocation().getLongitude());
-        assertEquals(LondonRadius, location.getRadius());
+        assertThat(LondonLatitude, equalTo(location.getLocation().getLatitude()));
+        assertThat(LondonLongitude, equalTo(location.getLocation().getLongitude()));
+        assertThat(LondonRadius, equalTo(location.getRadius()));
     }
 
     @Test(expected = LocationException.class)

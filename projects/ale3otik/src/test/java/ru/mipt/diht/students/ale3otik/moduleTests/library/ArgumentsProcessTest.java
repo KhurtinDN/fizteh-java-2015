@@ -1,18 +1,20 @@
 package ru.mipt.diht.students.ale3otik.moduletests.library;
 
 import com.beust.jcommander.JCommander;
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import ru.mipt.diht.students.ale3otik.twitter.TwitterClientArguments;
 import ru.mipt.diht.students.ale3otik.twitter.GeoLocationResolver;
+import ru.mipt.diht.students.ale3otik.twitter.TwitterClientArguments;
 import ru.mipt.diht.students.ale3otik.twitter.exceptions.LocationException;
 import ru.mipt.diht.students.ale3otik.twitter.structs.GeoLocationInfo;
 import twitter4j.GeoLocation;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by alex on 08.11.15.
@@ -20,7 +22,7 @@ import twitter4j.GeoLocation;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({GeoLocationResolver.class})
-public class ArgumentsProcessTest extends TestCase {
+public class ArgumentsProcessTest {
     private TwitterClientArguments arguments;
     private JCommander jcm;
     private String[] args;
@@ -31,22 +33,11 @@ public class ArgumentsProcessTest extends TestCase {
     private static final double MoscowLatitude = 55.755826;
     private static final double MoscowLongitude = 37.6173;
     private static final double MoscowRadius = 34.914661819343884;
-    private static GeoLocationInfo moscowInfo;
-    private static GeoLocationInfo londonInfo;
+    private GeoLocationInfo moscowInfo;
+    private GeoLocationInfo londonInfo;
 
     @Before
     public void setUp() throws Exception {
-        args = new String[9];
-        args[0] = "-q";
-        args[1] = "body";
-        args[2] = "-l";
-        args[3] = "1000";
-        args[4] = "-p";
-        args[5] = "London";
-        args[6] = "--hideRetweets";
-        args[7] = "-s";
-        args[8] = "-h";
-
         moscowInfo = new GeoLocationInfo(
                 new GeoLocation(MoscowLatitude, MoscowLongitude), MoscowRadius);
         londonInfo = new GeoLocationInfo(
@@ -67,16 +58,17 @@ public class ArgumentsProcessTest extends TestCase {
 
     @Test
     public void testParser() throws Exception {
+        args = new String[]{"-q", "body", "-l", "1000", "-p", "London", "--hideRetweets", "-s", "-h"};
         arguments = new TwitterClientArguments();
         jcm = new JCommander(arguments);
         jcm.parse(args);
 
-        assertEquals(arguments.getLimit(), 1000);
-        assertEquals(arguments.getQuery(), "body");
-        assertEquals(arguments.getLocation(), "London");
-        assertEquals(arguments.isHideRetweets(), true);
-        assertEquals(arguments.isStream(), true);
-        assertEquals(arguments.isHelp(), true);
+        assertThat(arguments.getLimit(), equalTo(1000));
+        assertThat(arguments.getQuery(), equalTo("body"));
+        assertThat(arguments.getLocation(), equalTo("London"));
+        assertThat(arguments.isHideRetweets(), equalTo(true));
+        assertThat(arguments.isStream(), equalTo(true));
+        assertThat(arguments.isHelp(), equalTo(true));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -86,7 +78,6 @@ public class ArgumentsProcessTest extends TestCase {
         jcm.parse();
         arguments.validate();
     }
-
 
     @Test
     public void testLegalEmptyQueryValidation() {
@@ -102,9 +93,9 @@ public class ArgumentsProcessTest extends TestCase {
         jcm = new JCommander(arguments);
         jcm.parse("-s", "-p", "nearby");
         arguments.validate();
-        assertEquals(arguments.getCurLocationName(), "Moscow");
-        assertEquals(arguments.getGeoLocationInfo(), moscowInfo);
-        assertEquals(arguments.getDetectionLocationMessage(), "");
+        assertThat(arguments.getCurLocationName(), equalTo("Moscow"));
+        assertThat(arguments.getGeoLocationInfo(), equalTo(moscowInfo));
+        assertThat(arguments.getDetectionLocationMessage(), equalTo(""));
     }
 
     @Test
@@ -113,9 +104,9 @@ public class ArgumentsProcessTest extends TestCase {
         jcm = new JCommander(arguments);
         jcm.parse("-s", "-p", "London");
         arguments.validate();
-        assertEquals(arguments.getCurLocationName(), "London");
-        assertEquals(arguments.getGeoLocationInfo(), londonInfo);
-        assertEquals(arguments.getDetectionLocationMessage(), "");
+        assertThat(arguments.getCurLocationName(), equalTo("London"));
+        assertThat(arguments.getGeoLocationInfo(), equalTo(londonInfo));
+        assertThat(arguments.getDetectionLocationMessage(), equalTo(""));
     }
 
     @Test
@@ -124,9 +115,9 @@ public class ArgumentsProcessTest extends TestCase {
         jcm = new JCommander(arguments);
         jcm.parse("-s", "-p", "InvalidLocation");
         arguments.validate();
-        assertEquals(arguments.getCurLocationName(), "World");
-        assertEquals(arguments.getGeoLocationInfo(), null);
-        assertEquals(arguments.getDetectionLocationMessage(),
-                "Невозможно определить запрашиваемое местоположение\n");
+        assertThat(arguments.getCurLocationName(), equalTo("World"));
+        assertThat(arguments.getGeoLocationInfo(), equalTo(null));
+        assertThat(arguments.getDetectionLocationMessage(),
+                equalTo("Невозможно определить запрашиваемое местоположение\n"));
     }
 }

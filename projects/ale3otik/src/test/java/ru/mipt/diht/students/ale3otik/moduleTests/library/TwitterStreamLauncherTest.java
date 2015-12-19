@@ -2,6 +2,7 @@ package ru.mipt.diht.students.ale3otik.moduletests.library;
 
 import com.beust.jcommander.JCommander;
 import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Thread.class, TwitterUtils.class,TwitterClientArguments.class})
-public class TwitterStreamLauncherTest extends TestCase {
+public class TwitterStreamLauncherTest {
     private static final double LondonLatitude = 51.5073509;
     private static final double LondonLongitude = -0.1277583;
     private static final double LondonRadius = 23.539304731202712;
@@ -47,6 +48,7 @@ public class TwitterStreamLauncherTest extends TestCase {
     @Mock
     private TwitterStream mockedTwitterStreamClient;
 
+    @Before
     public void setUp() {
         Mockito.when(mockedStatus.getGeoLocation()).thenReturn(null);
         Mockito.when(mockedStatus.getText()).thenReturn("alex: some message");
@@ -55,68 +57,61 @@ public class TwitterStreamLauncherTest extends TestCase {
 
         londonGeoLocationInfo = new GeoLocationInfo(new GeoLocation(LondonLatitude,LondonLongitude),LondonRadius);
         moscowGeoLocationInfo = new GeoLocationInfo(new GeoLocation(MoscowLatitude,MoscowLongitude),MoscowRadius);
-    }
 
-    private void createLauncherWithArguments(boolean isGeolocationNeeded,long sleepTime,String... args) {
         arguments = PowerMockito.mock(TwitterClientArguments.class);
         TwitterClientArguments myArgs = new TwitterClientArguments();
         jcm = new JCommander(myArgs);
-        jcm.parse(args);
+        jcm.parse(new String[]{"-q", "some query", "-s"});
 
-        if (isGeolocationNeeded) {
-            Mockito.when(arguments.getGeoLocationInfo()).thenReturn(londonGeoLocationInfo);
-        } else {
-            Mockito.when(arguments.getGeoLocationInfo()).thenReturn(null);
-        }
+        Mockito.when(arguments.getGeoLocationInfo()).thenReturn(null);
+
         Mockito.when(arguments.isStream()).thenReturn(myArgs.isStream());
         Mockito.when(arguments.isHideRetweets()).thenReturn(myArgs.isHideRetweets());
         Mockito.when(arguments.getQuery()).thenReturn(myArgs.getQuery());
         Mockito.when(arguments.isHelp()).thenReturn(myArgs.isHelp());
         Mockito.when(arguments.getLimit()).thenReturn(myArgs.getLimit());
 
-        twitterStreamLauncher = new TwitterStreamLauncher(mockedTwitterStreamClient, mockedConsumer, arguments,sleepTime);
-    }
-
-    private void mockTwitterUtils(){
         String text = mockedStatus.getText();
         PowerMockito.when(TwitterUtils
-                .getFormattedTweetToPrint(mockedStatus,arguments))
-                .thenReturn(text);
+                    .getFormattedTweetToPrint(mockedStatus,arguments))
+                    .thenReturn(text);
+
+        twitterStreamLauncher =
+                new TwitterStreamLauncher(mockedTwitterStreamClient, mockedConsumer, arguments,1);
     }
 
+
     @Test
-    public void testStatusListenerNotRetweetNullLocation() throws Exception {
+    public void testStatusListenerNotRetweetNullLocationHideRetweets() throws Exception {
         Mockito.when(mockedStatus.isRetweet()).thenReturn(false);
+        Mockito.when(arguments.isHideRetweets()).thenReturn(true);
 
-        createLauncherWithArguments(false,1,"-q", "some query", "-s", "--hideRetweets");
         statusAdapter = twitterStreamLauncher.createStatusAdapter();
-        mockTwitterUtils();
-
         statusAdapter.onStatus(mockedStatus);
         Mockito.verify(mockedConsumer).accept(mockedStatus.getText());
 
-        createLauncherWithArguments(false,1,"-q", "some query", "-s");
+    }
+    @Test
+    public void testStatusListenerNotRetweetNullLocation() throws Exception {
         statusAdapter = twitterStreamLauncher.createStatusAdapter();
-        mockTwitterUtils();
 
         statusAdapter.onStatus(mockedStatus);
-        Mockito.verify(mockedConsumer, times(2)).accept(mockedStatus.getText());
+        Mockito.verify(mockedConsumer, times(1)).accept(mockedStatus.getText());
     }
 
     @Test
     public void testStatusListenerRetweetNullLocation() throws Exception {
         Mockito.when(mockedStatus.isRetweet()).thenReturn(true);
 
-        createLauncherWithArguments(false,1,"-q", "some query", "-s");
         statusAdapter = twitterStreamLauncher.createStatusAdapter();
-        mockTwitterUtils();
 
         statusAdapter.onStatus(mockedStatus);
-        Mockito.verify(mockedConsumer,times(1)).accept(mockedStatus.getText());
-
-        createLauncherWithArguments(false,1,"-q", "some query", "-s", "--hideRetweets");
+        Mockito.verify(mockedConsumer, times(1)).accept(mockedStatus.getText());
+    }
+    @Test
+    public void testStatusListenerRetweetNullLocationHideRetweets() throws Exception {
+        Mockito.when(arguments.isHideRetweets()).thenReturn(true);
         statusAdapter = twitterStreamLauncher.createStatusAdapter();
-        mockTwitterUtils();
 
         statusAdapter.onStatus(mockedStatus);
         Mockito.verify(mockedConsumer,times(1)).accept(anyString());
@@ -126,10 +121,9 @@ public class TwitterStreamLauncherTest extends TestCase {
     public void testStatusListenerNullFailedLocation() throws Exception {
         Mockito.when(mockedStatus.isRetweet()).thenReturn(false);
         Mockito.when(mockedStatus.getGeoLocation()).thenReturn(null);
+        Mockito.when(arguments.getGeoLocationInfo()).thenReturn(londonGeoLocationInfo);
 
-        createLauncherWithArguments(true,1, "-q", "some query", "-s");
         statusAdapter = twitterStreamLauncher.createStatusAdapter();
-        mockTwitterUtils();
 
         statusAdapter.onStatus(mockedStatus);
         Mockito.verifyZeroInteractions(mockedConsumer);
@@ -140,9 +134,8 @@ public class TwitterStreamLauncherTest extends TestCase {
         Mockito.when(mockedStatus.isRetweet()).thenReturn(false);
         Mockito.when(mockedStatus.getGeoLocation()).thenReturn(moscowGeoLocationInfo.getLocation());
 
-        createLauncherWithArguments(true,1, "-q", "some query", "-s");
+        Mockito.when(arguments.getGeoLocationInfo()).thenReturn(londonGeoLocationInfo);
         statusAdapter = twitterStreamLauncher.createStatusAdapter();
-        mockTwitterUtils();
 
         statusAdapter.onStatus(mockedStatus);
         Mockito.verifyZeroInteractions(mockedConsumer);
@@ -153,22 +146,27 @@ public class TwitterStreamLauncherTest extends TestCase {
         Mockito.when(mockedStatus.isRetweet()).thenReturn(false);
         Mockito.when(mockedStatus.getGeoLocation()).thenReturn(londonGeoLocationInfo.getLocation());
 
-        createLauncherWithArguments(true,1, "-q", "some query", "-s");
+        Mockito.when(arguments.getGeoLocationInfo()).thenReturn(londonGeoLocationInfo);
         statusAdapter = twitterStreamLauncher.createStatusAdapter();
-        mockTwitterUtils();
 
         statusAdapter.onStatus(mockedStatus);
         Mockito.verify(mockedConsumer,times(1)).accept(anyString());
     }
 
-
     @Test
-    public void testStreamStart() throws Exception {
-        createLauncherWithArguments(false,0,"-q", "some query", "-s");
+    public void testStreamStartFilter() throws Exception {
+        twitterStreamLauncher =
+                new TwitterStreamLauncher(mockedTwitterStreamClient, mockedConsumer, arguments, 0);
         twitterStreamLauncher.streamStart(new StringBuilder());
         Mockito.verify(mockedTwitterStreamClient).filter(any(FilterQuery.class));
+    }
 
-        createLauncherWithArguments(false,0,"-s");
+    @Test
+    public void testStreamStartSample() throws Exception {
+        Mockito.when(arguments.getQuery()).thenReturn("");
+        twitterStreamLauncher =
+                new TwitterStreamLauncher(mockedTwitterStreamClient, mockedConsumer, arguments, 0);
+
 
         twitterStreamLauncher.streamStart(new StringBuilder());
         Mockito.verify(mockedTwitterStreamClient).sample();
