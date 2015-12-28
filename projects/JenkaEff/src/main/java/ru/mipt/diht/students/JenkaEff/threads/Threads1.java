@@ -2,21 +2,18 @@ package projects.JenkaEff.src.main.java.ru.mipt.diht.students.JenkaEff.threads;
 
 public class Threads1 {
 
-    final static int THREADS_NUM = 5;
+    private static int THREADS_NUM = 5;
 
     private static Object[] cvs = new Integer[THREADS_NUM];
-
-    private static int curNum;
 
     static class Child implements Runnable {
 
         private int number;
         private int nextNumber;
 
-        Child(int _number) {
-            number = _number;
-            nextNumber = (number + 1) % THREADS_NUM;
-            
+        Child(int num) {
+            number = num;
+            nextNumber = (number + 1) % THREADS_NUM;            
         }
 
         @Override
@@ -29,9 +26,6 @@ public class Threads1 {
                         e.printStackTrace();
                     }
                     System.out.println("Thread-" + number);
-                    synchronized (cvs[curNum]) {
-                        
-                    }
                     synchronized (cvs[nextNumber]) {
                         cvs[nextNumber].notify();
                     }                    
@@ -52,5 +46,4 @@ public class Threads1 {
             cvs[0].notify();
         }        
     }
-
 }

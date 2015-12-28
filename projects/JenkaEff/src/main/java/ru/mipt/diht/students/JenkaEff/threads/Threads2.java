@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Threads2 {
 
-    private final static int THREADS_NUM = 10;
+    private static int THREADS_NUM = 10;
     private final static double PROB = 0.9;
     private final static String NEGATIVE_RESPONSE = "No";
     private final static String POSITIVE_RESPONSE = "Yes";
