@@ -7,27 +7,14 @@ import com.beust.jcommander.ParameterException;
 /**
  * Created by mikhail on 16.12.15.
  */
-class ArgumentParser {
-    static ArgumentInfo parse(String[] args) {
-        ArgumentInfo argumentInfo = new ArgumentInfo();
-        try {
-            new JCommander(argumentInfo, args);
-        } catch (ParameterException e) {
-            System.err.println("Wrong parameter: " + e.getMessage());
-            System.exit(0);
-        }
 
-        return argumentInfo;
-    }
-}
-
-class ArgumentInfo {
+public class ArgumentInfo {
     public static final int NO_LIMIT = -1;
 
     @Parameter (names = {"--query", "-q"})
-    private String query;
+    private String query = "";
     @Parameter (names = {"--place", "-p"})
-    private String place;
+    private String place = "";
     @Parameter (names = {"--stream", "-s"})
     private boolean stream;
     @Parameter (names = "--hideRetweets")
@@ -35,18 +22,17 @@ class ArgumentInfo {
     @Parameter (names = {"--help", "-h"})
     private boolean help;
     @Parameter (names = {"--limit", "-l"})
-    private int limit;
+    private int limit = NO_LIMIT;
     @Parameter (names = {"--nearby", "-n"})
     private boolean nearby;
 
-    ArgumentInfo() {
-        query = "";
-        place = "";
-        stream = false;
-        hideRetweets = false;
-        help = false;
-        nearby = false;
-        limit = NO_LIMIT;
+    public ArgumentInfo(String[] args) {
+        try {
+            new JCommander(this, args);
+        } catch (ParameterException e) {
+            System.err.println("Wrong parameter: " + e.getMessage());
+            System.exit(0);
+        }
     }
 
     public int getLimit() {

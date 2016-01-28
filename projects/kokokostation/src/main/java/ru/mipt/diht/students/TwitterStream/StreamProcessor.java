@@ -7,12 +7,20 @@ import java.util.Vector;
 /**
  * Created by mikhail on 22.01.16.
  */
-class StreamProcessor {
+public class StreamProcessor implements Processor {
     private static final long SLEEP_TIME = 1000;
-    private Vector<BoxLocation> boxLocations;
+    private final OutputManager outputManager;
+    private final ArgumentInfo argumentInfo;
 
-    StreamProcessor(OutputManager outputManager, ArgumentInfo argumentInfo) {
-        boxLocations = LocationGetter.getLocations(new BoxLocationFactory(), argumentInfo.getPlace(), argumentInfo.isNearby());
+    public StreamProcessor(OutputManager outputManager, ArgumentInfo argumentInfo) {
+        this.outputManager = outputManager;
+        this.argumentInfo = argumentInfo;
+    }
+
+    @Override
+    public void process() {
+        Vector<BoxLocation> boxLocations = LocationGetter.getLocations(new BoxLocationLocationFactoryFactory().get(),
+                argumentInfo.getPlace(), argumentInfo.isNearby());
 
         twitter4j.TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
 
@@ -21,7 +29,7 @@ class StreamProcessor {
             //необходимо AND. Самое простое решение - место вручную отфильтровать, что я и сделаю.
             @Override
             public void onStatus(Status status) {
-                if (!fits(status)) {
+                if (!fits(status, boxLocations)) {
                     return;
                 }
 
@@ -69,8 +77,8 @@ class StreamProcessor {
         twitterStream.filter(filterQuery);
     }
 
-    private boolean fits(Status status) {
-        if (boxLocations.size() == 0) {
+    private boolean fits(Status status, Vector<BoxLocation> boxLocations) {
+        if (boxLocations.size() == 0 || status.isRetweet()) {
             return true;
         }
 

@@ -14,10 +14,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by mikhail on 16.12.15.
  */
-class OutputManager {
+public class OutputManager {
     private static final String TWITTER_STREAM_HELP = "twitterStream.help";
-    private ArgumentInfo argumentInfo;
-    private Writer writer;
+    private final ArgumentInfo argumentInfo;
+    private final Writer writer;
 
     OutputManager(ArgumentInfo argumentInfo, Writer writer) {
         this.argumentInfo = argumentInfo;
@@ -68,7 +68,7 @@ class OutputManager {
         return output;
     }
 
-    void write(String message) {
+    public void write(String message) {
         try {
             writer.write(message + System.lineSeparator());
             writer.flush();
@@ -77,7 +77,7 @@ class OutputManager {
         }
     }
 
-    boolean writeTweet(Status tweet) {
+    public boolean writeTweet(Status tweet) {
         if (tweet.isRetweet() && argumentInfo.isHideRetweets()) {
             return false;
         } else {
@@ -86,7 +86,7 @@ class OutputManager {
         }
     }
 
-    void writeHelp() {
+    public void writeHelp() {
         try {
             write(new String(Files.readAllBytes(Paths.get(TWITTER_STREAM_HELP)), StandardCharsets.UTF_8));
         } catch (IOException e) {

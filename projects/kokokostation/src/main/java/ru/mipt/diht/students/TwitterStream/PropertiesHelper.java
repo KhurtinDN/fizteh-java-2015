@@ -7,7 +7,7 @@ import java.util.Properties;
 /**
  * Created by mikhail on 19.12.15.
  */
-class PropertiesHelper {
+public class PropertiesHelper {
     public static String getProperty(String file, String field) {
         Properties properties = new Properties();
         try {

@@ -8,18 +8,21 @@ import java.util.Vector;
 /**
  * Created by mikhail on 16.12.15.
  */
-class QueryProcessor {
+public class QueryProcessor implements Processor {
     private static final int MAX_ATTEMPTS = 5,
             ATTEMPT_WAIT = 1000;
+    private final ArgumentInfo argumentInfo;
+    private final OutputManager outputManager;
+    private final Twitter twitter = TwitterFactory.getSingleton();
     private int tweetsCount = 0;
-    private ArgumentInfo argumentInfo;
-    private OutputManager outputManager;
-    private Twitter twitter = TwitterFactory.getSingleton();
 
     QueryProcessor(OutputManager outputManager, ArgumentInfo argumentInfo) {
         this.argumentInfo = argumentInfo;
         this.outputManager = outputManager;
+    }
 
+    @Override
+    public void process() {
         Query[] queries = composeQueries();
 
         for (Query q : queries) {
@@ -72,7 +75,8 @@ class QueryProcessor {
             return result;
         }
 
-        Vector<CircleLocation> locationsFound = LocationGetter.getLocations(new CircleLocationFactory(),
+        Vector<CircleLocation> locationsFound = LocationGetter.getLocations(
+                new CircleLocationLocationFactoryFactory().get(),
                 argumentInfo.getPlace(), argumentInfo.isNearby());
 
         Query[] result = new Query[locationsFound.size()];
