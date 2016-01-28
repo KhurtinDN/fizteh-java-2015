@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.TwitterStream;
+package ru.mipt.diht.students.twitterstream;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;

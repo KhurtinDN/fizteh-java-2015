@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.TwitterStream;
+package ru.mipt.diht.students.twitterstream;
 
 import com.google.maps.model.Bounds;
 import com.google.maps.model.GeocodingResult;
@@ -34,18 +34,13 @@ public class BoxLocation implements Location {
     }
 
     @Override
-    public void nearby(Pair<Double, Double> center) {
-        if (center == null) {
-            box = null;
-        } else {
+    public void nearby(GeoLocation center) {
+        box = new double[2][2];
 
-            box = new double[2][2];
-
-            box[0][0] = center.getKey() - BOX_RADIUS;
-            box[0][1] = center.getValue() - BOX_RADIUS;
-            box[1][0] = center.getKey() + BOX_RADIUS;
-            box[1][1] = center.getValue() + BOX_RADIUS;
-        }
+        box[0][0] = center.getLatitude() - BOX_RADIUS;
+        box[0][1] = center.getLongitude() - BOX_RADIUS;
+        box[1][0] = center.getLatitude() + BOX_RADIUS;
+        box[1][1] = center.getLongitude() + BOX_RADIUS;
     }
 
     @Override
@@ -53,7 +48,7 @@ public class BoxLocation implements Location {
         return box != null;
     }
 
-    boolean contains(GeoLocation geoLocation) {
+    public boolean contains(GeoLocation geoLocation) {
         if (!checkIfValid()) {
             return false;
         }

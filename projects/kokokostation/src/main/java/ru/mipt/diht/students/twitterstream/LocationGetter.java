@@ -1,7 +1,8 @@
-package ru.mipt.diht.students.TwitterStream;
+package ru.mipt.diht.students.twitterstream;
 
 import com.google.maps.model.GeocodingResult;
 import javafx.util.Pair;
+import twitter4j.GeoLocation;
 import twitter4j.JSONException;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ class LocationFactory<T extends Location> {
         return location;
     }
 
-    T nearby(Pair<Double, Double> center) {
+    T nearby(GeoLocation center) {
         T location = null;
         try {
             location = type.newInstance();

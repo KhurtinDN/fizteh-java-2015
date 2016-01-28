@@ -1,6 +1,7 @@
-package ru.mipt.diht.students.TwitterStream;
+package ru.mipt.diht.students.twitterstream;
 
 import javafx.util.Pair;
+import twitter4j.GeoLocation;
 import twitter4j.JSONException;
 import twitter4j.JSONObject;
 
@@ -19,7 +20,7 @@ public class Nearby {
             LATITUDE_KEY = "lat",
             LONGITUDE_KEY = "lon";
 
-    static Pair<Double, Double> nearby() throws IOException, JSONException {
+    public static GeoLocation nearby() throws IOException, JSONException {
         try (InputStream inputStream = new URL(QUERY).openStream()) {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,
                     Charset.forName("UTF-8")));
@@ -32,7 +33,7 @@ public class Nearby {
 
             JSONObject jsonObject = new JSONObject(stringBuilder.toString());
 
-            return new Pair<>(Double.parseDouble(jsonObject.getString(LATITUDE_KEY)),
+            return new GeoLocation(Double.parseDouble(jsonObject.getString(LATITUDE_KEY)),
                     Double.parseDouble(jsonObject.getString(LONGITUDE_KEY)));
         }
     }

@@ -1,7 +1,7 @@
-package ru.mipt.diht.students.TwitterStream;
+package ru.mipt.diht.students.twitterstream;
 
 import com.google.maps.model.GeocodingResult;
-import javafx.util.Pair;
+import twitter4j.GeoLocation;
 
 /**
  * Created by mikhail on 28.01.16.
@@ -9,7 +9,7 @@ import javafx.util.Pair;
 public interface Location {
     void fromGeocodingResult(GeocodingResult gcr);
 
-    void nearby(Pair<Double, Double> center);
+    void nearby(GeoLocation center);
 
     boolean checkIfValid();
 }

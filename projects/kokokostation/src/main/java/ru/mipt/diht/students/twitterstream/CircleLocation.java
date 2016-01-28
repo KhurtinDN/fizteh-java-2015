@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.TwitterStream;
+package ru.mipt.diht.students.twitterstream;
 
 import com.google.maps.model.GeocodingResult;
 import javafx.util.Pair;
@@ -22,10 +22,7 @@ public class CircleLocation implements Location {
     }
 
     private void fromBox(double[][] box) {
-        if (box == null) {
-            geoLocation = null;
-            radius = 0;
-        } else {
+        if (box != null) {
             double nla = box[1][0],
                     nln = box[1][1],
                     sla = box[0][0],
@@ -48,7 +45,7 @@ public class CircleLocation implements Location {
     }
 
     @Override
-    public void nearby(Pair<Double, Double> center) {
+    public void nearby(GeoLocation center) {
         fromBox(new BoxLocationLocationFactoryFactory().get().nearby(center).getBox());
     }
 

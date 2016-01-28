@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.TwitterStream;
+package ru.mipt.diht.students.twitterstream;
 
 import java.io.Writer;
 

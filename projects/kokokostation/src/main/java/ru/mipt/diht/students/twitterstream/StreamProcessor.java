@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.TwitterStream;
+package ru.mipt.diht.students.twitterstream;
 
 import twitter4j.*;
 
@@ -25,7 +25,7 @@ public class StreamProcessor implements Processor {
         twitter4j.TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
 
         StatusListener listener = new StatusListener() {
-            //filter twitter4j'a для TwitterStream ставит OR между всеми условиями, которые в него пихают, нам же
+            //filter twitter4j'a для twitterstream ставит OR между всеми условиями, которые в него пихают, нам же
             //необходимо AND. Самое простое решение - место вручную отфильтровать, что я и сделаю.
             @Override
             public void onStatus(Status status) {
@@ -64,8 +64,7 @@ public class StreamProcessor implements Processor {
 
             @Override
             public void onException(Exception e) {
-                System.err.println("Something went wrong with twitter4j.TwitterStream: " + e.getMessage());
-                System.exit(1);
+                System.err.println("Something went wrong with twitter4j.twitterstream: " + e.getMessage());
             }
         };
 

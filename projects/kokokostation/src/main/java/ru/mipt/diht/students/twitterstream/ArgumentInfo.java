@@ -1,4 +1,4 @@
-package ru.mipt.diht.students.TwitterStream;
+package ru.mipt.diht.students.twitterstream;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -26,12 +26,12 @@ public class ArgumentInfo {
     @Parameter (names = {"--nearby", "-n"})
     private boolean nearby;
 
-    public ArgumentInfo(String[] args) {
+    public ArgumentInfo(String[] args) throws ParameterException {
         try {
             new JCommander(this, args);
         } catch (ParameterException e) {
             System.err.println("Wrong parameter: " + e.getMessage());
-            System.exit(0);
+            throw e;
         }
     }
 
