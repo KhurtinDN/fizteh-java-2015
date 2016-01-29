@@ -82,18 +82,10 @@ public class DatabaseServiceAnnotations {
             }
         }
 
+        if (primaryKey == null) {
+            throw new DatabaseServiceException("PrimaryKey isn't set: " + type.getName());
+        }
+
         return new Pair<>(columns, primaryKey);
-    }
-}
-
-class StringProcessor {
-    public static String fromCamelCaseToLowerUnderscore(String string) {
-        final String regex = "([a-z])([A-Z]+)";
-        final String replacement = "$1_$2";
-        return string.replaceAll(regex, replacement).toLowerCase();
-    }
-
-    public static void erase2LastLetters(String string) {
-        string = string.substring(0, string.length() - 2);
     }
 }
