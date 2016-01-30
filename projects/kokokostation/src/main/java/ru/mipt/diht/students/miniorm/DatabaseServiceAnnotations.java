@@ -44,11 +44,7 @@ public class DatabaseServiceAnnotations {
             throw new DatabaseServiceException("No @Table annotation: " + type.getName());
 
         Table typeAnnotation = (Table) type.getAnnotation(Table.class);
-        if(Objects.equals(typeAnnotation.name(), NO_NAME)) {
-            return StringProcessor.fromCamelCaseToLowerUnderscore(type.getName());
-        } else {
-            return typeAnnotation.name();
-        }
+        return getName(typeAnnotation.name(), type.getName());
     }
 
     public String getFieldName(Field field) throws DatabaseServiceException {
@@ -56,10 +52,14 @@ public class DatabaseServiceAnnotations {
             throw new DatabaseServiceException("No @Field annotation: " + type.getName() + "." + field.getName());
 
         Column fieldAnnotation = (Column) field.getAnnotation(Column.class);
-        if(Objects.equals(fieldAnnotation.name(), NO_NAME)) {
-            return StringProcessor.fromCamelCaseToLowerUnderscore(field.getName());
+        return getName(fieldAnnotation.name(), field.getName());
+    }
+
+    private String getName(String annotationName, String name) {
+        if(Objects.equals(annotationName, NO_NAME)) {
+            return StringProcessor.fromCamelCaseToLowerUnderscore(name);
         } else {
-            return fieldAnnotation.name();
+            return annotationName;
         }
     }
 
