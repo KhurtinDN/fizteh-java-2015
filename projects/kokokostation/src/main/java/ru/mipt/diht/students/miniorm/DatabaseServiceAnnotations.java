@@ -35,11 +35,11 @@ public class DatabaseServiceAnnotations {
 
     private final Class<?> type;
 
-    public DatabaseServiceAnnotations(Class type) {
+    DatabaseServiceAnnotations(Class type) {
         this.type = type;
     }
 
-    public String getTableName() throws DatabaseServiceException {
+    String getTableName() throws DatabaseServiceException {
         if(!type.isAnnotationPresent(Table.class))
             throw new DatabaseServiceException("No @Table annotation: " + type.getName());
 
@@ -47,7 +47,7 @@ public class DatabaseServiceAnnotations {
         return getName(typeAnnotation.name(), type.getName());
     }
 
-    public String getFieldName(Field field) throws DatabaseServiceException {
+    String getFieldName(Field field) throws DatabaseServiceException {
         if(!field.isAnnotationPresent(Column.class))
             throw new DatabaseServiceException("No @Field annotation: " + type.getName() + "." + field.getName());
 
@@ -63,7 +63,7 @@ public class DatabaseServiceAnnotations {
         }
     }
 
-    public Pair<List<ru.mipt.diht.students.miniorm.Column>, ru.mipt.diht.students.miniorm.Column> parseType()
+    Pair<List<ru.mipt.diht.students.miniorm.Column>, ru.mipt.diht.students.miniorm.Column> parseType()
             throws DatabaseServiceException {
         ru.mipt.diht.students.miniorm.Column primaryKey = null;
         LinkedList<ru.mipt.diht.students.miniorm.Column> columns = new LinkedList<>();
