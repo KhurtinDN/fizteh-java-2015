@@ -28,4 +28,11 @@ public class Utils {
 
         return result;
     }
+
+    public static <T> ArrayList<T> arrayListFromElement(T item) {
+        ArrayList<T> newList = new ArrayList<>();
+        newList.add(item);
+
+        return newList;
+    }
 }

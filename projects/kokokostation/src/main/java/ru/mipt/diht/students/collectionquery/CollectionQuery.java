@@ -1,21 +1,12 @@
 package ru.mipt.diht.students.collectionquery;
 
 import javafx.util.Pair;
-import ru.mipt.diht.students.collectionquery.impl.FromStmt;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
 
 import static ru.mipt.diht.students.collectionquery.Aggregates.avg;
 import static ru.mipt.diht.students.collectionquery.Aggregates.count;
@@ -24,7 +15,7 @@ import static ru.mipt.diht.students.collectionquery.Conditions.rlike;
 import static ru.mipt.diht.students.collectionquery.OrderByConditions.asc;
 import static ru.mipt.diht.students.collectionquery.OrderByConditions.desc;
 import static ru.mipt.diht.students.collectionquery.Sources.list;
-import static ru.mipt.diht.students.collectionquery.impl.FromStmtInit.from;
+import static ru.mipt.diht.students.collectionquery.impl.FromStmt.from;
 
 public class CollectionQuery {
 
@@ -117,7 +108,7 @@ public class CollectionQuery {
 
         private final String group;
         private final Long count;
-        private final Long age;
+        private final Double age;
 
         public String getGroup() {
             return group;
@@ -127,11 +118,11 @@ public class CollectionQuery {
             return count;
         }
 
-        public Long getAge() {
+        public Double getAge() {
             return age;
         }
 
-        public Statistics(String group, Long count, Long age) {
+        public Statistics(String group, Long count, Double age) {
             this.group = group;
             this.count = count;
             this.age = age;

@@ -29,7 +29,28 @@ public class Conditions<T> {
      * @return
      */
     public static <T> Predicate<T> like(Function<T, String> expression, String pattern) {
-        throw new UnsupportedOperationException();
-    }
+        String regexp = "";
+        boolean inQuotes = false;
 
+        for (int i = 0; i < pattern.length(); i++) {
+            char c = pattern.charAt(i);
+
+            if (c == '%' || c == '_') {
+                String replace = c == '%' ? "*" : ".";
+                regexp += inQuotes ? "\\E" + replace : replace + "\\Q";
+                inQuotes = !inQuotes;
+            } else if (i == 0) {
+                regexp += "\\Q" + c;
+                inQuotes = !inQuotes;
+            } else if (i == pattern.length() - 1) {
+                regexp += c + "\\E";
+            } else {
+                regexp += c;
+            }
+        }
+
+        regexp = regexp.toLowerCase();
+
+        return rlike(t -> expression.apply(t).toLowerCase(), regexp);
+    }
 }

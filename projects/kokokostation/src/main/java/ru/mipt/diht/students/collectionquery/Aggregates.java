@@ -144,11 +144,24 @@ class Wrapper<T> {
     }
 }
 
-class CompareCollector<C, T extends  Comparable<T>> implements Collector<C, Wrapper<T>, T> {
+class CompareCollector<C, T extends Comparable<T>> implements Collector<C, Wrapper<T>, T> {
     private final BiFunction<T, T, T> comparator;
     private final Function<C, T> expression;
 
-    private T compareToNull(T a, T b) {
+    CompareCollector(BiFunction<T, T, T> comparator, Function<C, T> expression) {
+        this.comparator = comparator;
+        this.expression = expression;
+    }
+
+    static <T extends Comparable<T>> T max(T a, T b) {
+        return a.compareTo(b) < 0 ? b : a;
+    }
+
+    static <T extends Comparable<T>> T min(T a, T b) {
+        return a.compareTo(b) < 0 ? a : b;
+    }
+
+    private T compare(T a, T b) {
         if (a == null) {
             return b;
         } else if (b == null) {
@@ -158,19 +171,6 @@ class CompareCollector<C, T extends  Comparable<T>> implements Collector<C, Wrap
         }
     }
 
-    public static <T extends Comparable<T>> T max(T a, T b) {
-        return a.compareTo(b) < 0 ? b : a;
-    }
-
-    public static <T extends Comparable<T>> T min(T a, T b) {
-        return a.compareTo(b) < 0 ? a : b;
-    }
-
-    CompareCollector(BiFunction<T, T, T> comparator, Function<C, T> expression) {
-        this.comparator = comparator;
-        this.expression = expression;
-    }
-
     @Override
     public Supplier<Wrapper<T>> supplier() {
         return () -> new Wrapper<>(null);
@@ -178,12 +178,12 @@ class CompareCollector<C, T extends  Comparable<T>> implements Collector<C, Wrap
 
     @Override
     public BiConsumer<Wrapper<T>, C> accumulator() {
-        return (accumulator, obj) -> accumulator.set(compareToNull(accumulator.get(), expression.apply(obj)));
+        return (accumulator, obj) -> accumulator.set(compare(accumulator.get(), expression.apply(obj)));
     }
 
     @Override
     public BinaryOperator<Wrapper<T>> combiner() {
-        return (a, b) -> new Wrapper<>(compareToNull(a.get(), b.get()));
+        return (a, b) -> new Wrapper<>(compare(a.get(), b.get()));
     }
 
     @Override

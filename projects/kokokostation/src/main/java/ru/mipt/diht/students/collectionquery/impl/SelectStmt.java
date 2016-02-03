@@ -13,20 +13,21 @@ import java.util.stream.Stream;
 public class SelectStmt<T, R> {
     private final static long UNLIMITED = -1;
 
-    UnionStmt<R> context;
-    Class<R> clazz;
-    Stream<T> data;
+    private Context<R> context;
+    private final Class<R> clazz;
+    private Stream<T> data;
 
-    Function<T, ?>[] selectors;
-    boolean isDistinct;
-    Predicate<T> wherePredicate;
-    Function<T, ?>[] groupByExpressions;
-    Predicate<R> havingPredicate;
-    Comparator<List<T>> orderByComparator;
-    long limit = UNLIMITED;
+    private final Function<T, ?>[] selectors;
+    private final boolean isDistinct;
+
+    private Predicate<T> wherePredicate;
+    private Function<T, ?>[] groupByExpressions;
+    private Predicate<R> havingPredicate;
+    private Comparator<List<T>> orderByComparator;
+    private long limit = UNLIMITED;
 
     @SafeVarargs
-    SelectStmt(Class<R> clazz, Stream<T> data, boolean isDistinct, UnionStmt<R> context, Function<T, ?>... selectors) {
+    SelectStmt(Class<R> clazz, Stream<T> data, boolean isDistinct, Context<R> context, Function<T, ?>... selectors) {
         this.isDistinct = isDistinct;
         this.data = data;
         this.clazz = clazz;
@@ -104,7 +105,7 @@ public class SelectStmt<T, R> {
                     if (!hashMap.containsKey(key)) {
                         hashMap.put(key, newGroups.size());
 
-                        newGroups.add(Arrays.asList(item));
+                        newGroups.add(Utils.arrayListFromElement(item));
                     } else {
                         newGroups.get(hashMap.get(key)).add(item);
                     }
@@ -154,18 +155,17 @@ public class SelectStmt<T, R> {
         return clazz.getConstructor(argumentsClasses).newInstance(arguments);
     }
 
-    @SuppressWarnings("unchecked")
-    private R getObject(List<T> item)
-    {
+    @SuppressWarnings ("unchecked")
+    private R getObject(List<T> item) {
         return (R) applySelector(selectors[0], item);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings ("unchecked")
     private R getPair(List<T> item) {
         return (R) new Pair<>(applySelector(selectors[0], item), applySelector(selectors[1], item));
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings ("unchecked")
     private Object applySelector(Function<T, ?> selector, List<T> item) {
         if (selector.getClass() == AggregateFunctionImplementation.class) {
             return ((AggregateFunction<T, ?>) selector).apply(item);
@@ -210,11 +210,11 @@ public class SelectStmt<T, R> {
 
     public UnionStmt<R> union() {
         if (context == null) {
-            context = new UnionStmt<>();
+            context = new Context<>();
         }
 
         context.add(this);
 
-        return context;
+        return new UnionStmt<>(context);
     }
 }
