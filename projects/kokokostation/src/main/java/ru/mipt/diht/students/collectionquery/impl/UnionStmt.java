@@ -1,9 +1,9 @@
 package ru.mipt.diht.students.collectionquery.impl;
 
 public class UnionStmt<R> {
-    Context<R> context;
+    private final Context<R> context;
 
-    public UnionStmt(Context<R> context) {
+    UnionStmt(Context<R> context) {
         this.context = context;
     }
 

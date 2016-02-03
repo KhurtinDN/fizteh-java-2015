@@ -2,7 +2,6 @@ package ru.mipt.diht.students.collectionquery;
 
 import java.util.List;
 import java.util.stream.Collector;
-import java.util.stream.Stream;
 
 /**
  * Created by mikhail on 01.02.16.

@@ -11,15 +11,12 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class SelectStmt<T, R> {
-    private final static long UNLIMITED = -1;
-
-    private Context<R> context;
+    private static final long UNLIMITED = -1;
     private final Class<R> clazz;
-    private Stream<T> data;
-
     private final Function<T, ?>[] selectors;
     private final boolean isDistinct;
-
+    private Context<R> context;
+    private Stream<T> data;
     private Predicate<T> wherePredicate;
     private Function<T, ?>[] groupByExpressions;
     private Predicate<R> havingPredicate;

@@ -6,8 +6,8 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class FromStmtHelper<T, R> extends CommonJoiner<T>{
-    Context<R> context;
+public class FromStmtHelper<T, R> extends CommonJoiner<T> {
+    private final Context<R> context;
 
     FromStmtHelper(Stream<T> data, Context<R> context) {
         super(data);

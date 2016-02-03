@@ -58,14 +58,18 @@ public class CollectionQuery {
 
         private final String group;
 
-        public String getName() {
-            return name;
-        }
-
         public Student(String name, LocalDate dateOfBith, String group) {
             this.name = name;
             this.dateOfBith = dateOfBith;
             this.group = group;
+        }
+
+        public static Student student(String name, LocalDate dateOfBith, String group) {
+            return new Student(name, dateOfBith, group);
+        }
+
+        public String getName() {
+            return name;
         }
 
         public LocalDate getDateOfBith() {
@@ -78,10 +82,6 @@ public class CollectionQuery {
 
         public long age() {
             return ChronoUnit.YEARS.between(getDateOfBith(), LocalDateTime.now());
-        }
-
-        public static Student student(String name, LocalDate dateOfBith, String group) {
-            return new Student(name, dateOfBith, group);
         }
     }
 
@@ -110,6 +110,12 @@ public class CollectionQuery {
         private final Long count;
         private final Double age;
 
+        public Statistics(String group, Long count, Double age) {
+            this.group = group;
+            this.count = count;
+            this.age = age;
+        }
+
         public String getGroup() {
             return group;
         }
@@ -120,12 +126,6 @@ public class CollectionQuery {
 
         public Double getAge() {
             return age;
-        }
-
-        public Statistics(String group, Long count, Double age) {
-            this.group = group;
-            this.count = count;
-            this.age = age;
         }
 
         @Override

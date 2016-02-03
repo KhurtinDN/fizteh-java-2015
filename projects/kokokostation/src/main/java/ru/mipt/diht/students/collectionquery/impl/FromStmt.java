@@ -80,7 +80,7 @@ public class FromStmt<T> extends CommonJoiner<T> {
     }
 
     public class FromStmtJoinClause<I, J> extends CommonJoinClause<I, J>
-            implements JoinClause<FromStmt<Pair<I, J>>, I, J>{
+            implements JoinClause<FromStmt<Pair<I, J>>, I, J> {
         FromStmtJoinClause(CommonJoinClause<I, J> common) {
             super(common);
         }

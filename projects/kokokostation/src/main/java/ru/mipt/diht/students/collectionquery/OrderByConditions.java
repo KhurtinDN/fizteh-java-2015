@@ -3,7 +3,6 @@ package ru.mipt.diht.students.collectionquery;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 /**
  * OrderBy sort order helper methods.
@@ -14,7 +13,7 @@ public class OrderByConditions {
      * Ascending comparator.
      *
      * @param expression
-     * @param <T> - changed
+     * @param <T>        - changed
      * @param <R>
      * @return
      */
@@ -30,7 +29,7 @@ public class OrderByConditions {
      * Descending comparator.
      *
      * @param expression
-     * @param <T> - changed
+     * @param <T>        - changed
      * @param <R>
      * @return
      */

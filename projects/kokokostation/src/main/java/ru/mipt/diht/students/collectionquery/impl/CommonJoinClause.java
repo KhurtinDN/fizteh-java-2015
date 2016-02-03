@@ -2,7 +2,10 @@ package ru.mipt.diht.students.collectionquery.impl;
 
 import javafx.util.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -10,20 +13,20 @@ import java.util.stream.Stream;
 /**
  * Created by mikhail on 02.02.16.
  */
-public class CommonJoinClause<I, J> {
-    List<I> left;
-    List<J> right;
+class CommonJoinClause<I, J> {
+    private List<I> left;
+    private List<J> right;
 
-    public CommonJoinClause(List<I> left, List<J> right) {
+    CommonJoinClause(List<I> left, List<J> right) {
         this.left = left;
         this.right = right;
     }
 
-    public CommonJoinClause(CommonJoinClause<I, J> common) {
+    CommonJoinClause(CommonJoinClause<I, J> common) {
         this(common.left, common.right);
     }
 
-    public final Stream<Pair<I, J>> onImpl(BiPredicate<I, J> condition) {
+    Stream<Pair<I, J>> onImpl(BiPredicate<I, J> condition) {
         List<Pair<I, J>> result = new ArrayList<>();
 
         for (I tItem : left) {
@@ -37,7 +40,7 @@ public class CommonJoinClause<I, J> {
         return result.stream();
     }
 
-    public final <K extends Comparable<?>> Stream<Pair<I, J>> onImpl(
+    <K extends Comparable<?>> Stream<Pair<I, J>> onImpl(
             Function<I, K> leftKey,
             Function<J, K> rightKey) {
         List<Pair<I, J>> result = new ArrayList<>();

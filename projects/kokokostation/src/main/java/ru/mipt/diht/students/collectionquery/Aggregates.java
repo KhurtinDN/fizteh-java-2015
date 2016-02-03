@@ -3,7 +3,6 @@ package ru.mipt.diht.students.collectionquery;
 import javafx.util.Pair;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.*;
 import java.util.stream.Collector;
@@ -45,8 +44,7 @@ public class Aggregates {
      * Number of items in source collection that turns this expression into not null.
      *
      * @param expression
-     * @param <C>
-     * //@param <T>
+     * @param <C>        //@param <T>
      * @return
      */
     public static <C> AggregateFunction<C, Long> count(Function<C, ?> expression) {
@@ -59,10 +57,10 @@ public class Aggregates {
             @Override
             public BiConsumer<Wrapper<Long>, C> accumulator() {
                 return (accumulator, obj) -> {
-                        if (expression.apply(obj) != null) {
-                            accumulator.set(accumulator.get() + 1);
-                        }
-                    };
+                    if (expression.apply(obj) != null) {
+                        accumulator.set(accumulator.get() + 1);
+                    }
+                };
             }
 
             @Override
@@ -95,39 +93,40 @@ public class Aggregates {
     public static <C, T extends Number> AggregateFunction<C, Double> avg(Function<C, T> expression) {
         Collector<C, Wrapper<Pair<Double, Long>>, Double> collector =
                 new Collector<C, Wrapper<Pair<Double, Long>>, Double>() {
-            @Override
-            public Supplier<Wrapper<Pair<Double, Long>>> supplier() {
-                return () -> new Wrapper<>(new Pair<>(0.0, 0L));
-            }
+                    @Override
+                    public Supplier<Wrapper<Pair<Double, Long>>> supplier() {
+                        return () -> new Wrapper<>(new Pair<>(0.0, 0L));
+                    }
 
-            @Override
-            public BiConsumer<Wrapper<Pair<Double, Long>>, C> accumulator() {
-                return (accumulator, obj) -> accumulator.set(
-                        new Pair<>(accumulator.get().getKey() + expression.apply(obj).doubleValue(),
-                        accumulator.get().getValue() + 1));
-            }
+                    @Override
+                    public BiConsumer<Wrapper<Pair<Double, Long>>, C> accumulator() {
+                        return (accumulator, obj) -> accumulator.set(
+                                new Pair<>(accumulator.get().getKey() + expression.apply(obj).doubleValue(),
+                                        accumulator.get().getValue() + 1));
+                    }
 
-            @Override
-            public BinaryOperator<Wrapper<Pair<Double, Long>>> combiner() {
-                return (accumulator1, accumulator2) -> new Wrapper<>(new Pair<>(
-                        accumulator1.get().getKey() + accumulator2.get().getKey(),
-                        accumulator1.get().getValue() + accumulator2.get().getValue()));
-            }
+                    @Override
+                    public BinaryOperator<Wrapper<Pair<Double, Long>>> combiner() {
+                        return (accumulator1, accumulator2) -> new Wrapper<>(new Pair<>(
+                                accumulator1.get().getKey() + accumulator2.get().getKey(),
+                                accumulator1.get().getValue() + accumulator2.get().getValue()));
+                    }
 
-            @Override
-            public Function<Wrapper<Pair<Double, Long>>, Double> finisher() {
-                return pair -> pair.get().getKey() / pair.get().getValue();
-            }
+                    @Override
+                    public Function<Wrapper<Pair<Double, Long>>, Double> finisher() {
+                        return pair -> pair.get().getKey() / pair.get().getValue();
+                    }
 
-            @Override
-            public Set<Characteristics> characteristics() {
-                return new HashSet<>();
-            }
-        };
+                    @Override
+                    public Set<Characteristics> characteristics() {
+                        return new HashSet<>();
+                    }
+                };
 
         return new AggregateFunctionImplementation<>(collector);
     }
 }
+
 class Wrapper<T> {
     private T obj;
 

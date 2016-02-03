@@ -1,19 +1,14 @@
 package ru.mipt.diht.students.collectionquery.impl;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiPredicate;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
  * Created by mikhail on 02.02.16.
  */
-public class CommonJoiner<T> {
+class CommonJoiner<T> {
     protected final Stream<T> data;
 
-    public CommonJoiner(Stream<T> data) {
+    CommonJoiner(Stream<T> data) {
         this.data = data;
     }
 
