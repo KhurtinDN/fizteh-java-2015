@@ -11,6 +11,8 @@ import ru.mipt.diht.students.twitterstream.BoxLocation;
 import ru.mipt.diht.students.twitterstream.CircleLocation;
 import twitter4j.GeoLocation;
 
+import static org.junit.Assert.*;
+
 /**
  * Created by mikhail on 28.01.16.
  */
@@ -27,14 +29,14 @@ public class CircleLocationTest {
         BoxLocation boxLocation = new BoxLocation();
         boxLocation.fromGeocodingResult(gcr);
 
-        Assert.assertEquals(false, circleLocation.checkIfValid());
+        assertEquals(false, circleLocation.checkIfValid());
 
         circleLocation.fromGeocodingResult(gcr);
-        Assert.assertEquals(true, circleLocation.checkIfValid());
-        Assert.assertEquals(true, boxLocation.contains(circleLocation.getGeoLocation()));
+        assertEquals(true, circleLocation.checkIfValid());
+        assertEquals(true, boxLocation.contains(circleLocation.getGeoLocation()));
 
         circleLocation.nearby(new GeoLocation(0.0, 0.0));
-        Assert.assertEquals(true, circleLocation.checkIfValid());
+        assertEquals(true, circleLocation.checkIfValid());
     }
 
     @Test
@@ -43,10 +45,10 @@ public class CircleLocationTest {
         gcr.geometry = new Geometry();
 
         CircleLocation circleLocation = new CircleLocation();
-        Assert.assertEquals(false, circleLocation.checkIfValid());
+        assertEquals(false, circleLocation.checkIfValid());
 
         circleLocation.fromGeocodingResult(gcr);
 
-        Assert.assertEquals(false, circleLocation.checkIfValid());
+        assertEquals(false, circleLocation.checkIfValid());
     }
 }

@@ -10,6 +10,8 @@ import org.junit.Test;
 import ru.mipt.diht.students.twitterstream.BoxLocation;
 import twitter4j.GeoLocation;
 
+import static org.junit.Assert.*;
+
 /**
  * Created by mikhail on 28.01.16.
  */
@@ -24,22 +26,22 @@ public class BoxLocationTest {
 
         BoxLocation boxLocation = new BoxLocation();
 
-        Assert.assertEquals(false, boxLocation.checkIfValid());
+        assertEquals(false, boxLocation.checkIfValid());
 
         boxLocation.fromGeocodingResult(gcr);
-        Assert.assertEquals(true, boxLocation.checkIfValid());
+        assertEquals(true, boxLocation.checkIfValid());
         double[][] box = boxLocation.getBox();
-        Assert.assertArrayEquals(new double[]{-1, -2, 3, 4},
+        assertArrayEquals(new double[]{-1, -2, 3, 4},
                 new double[]{box[0][0], box[0][1], box[1][0], box[1][1]}, 0);
 
-        Assert.assertEquals(true, boxLocation.contains(new GeoLocation(0, 0)));
-        Assert.assertEquals(false, boxLocation.contains(new GeoLocation(4, 0)));
+        assertEquals(true, boxLocation.contains(new GeoLocation(0, 0)));
+        assertEquals(false, boxLocation.contains(new GeoLocation(4, 0)));
 
         boxLocation.nearby(new GeoLocation(0.0, 0.0));
-        Assert.assertEquals(true, boxLocation.checkIfValid());
+        assertEquals(true, boxLocation.checkIfValid());
 
-        Assert.assertEquals(true, boxLocation.contains(new GeoLocation(0, 1)));
-        Assert.assertEquals(false, boxLocation.contains(new GeoLocation(2.1, 0)));
+        assertEquals(true, boxLocation.contains(new GeoLocation(0, 1)));
+        assertEquals(false, boxLocation.contains(new GeoLocation(2.1, 0)));
     }
 
     @Test
@@ -49,12 +51,12 @@ public class BoxLocationTest {
 
         BoxLocation boxLocation = new BoxLocation();
 
-        Assert.assertEquals(false, boxLocation.checkIfValid());
+        assertEquals(false, boxLocation.checkIfValid());
 
         boxLocation.fromGeocodingResult(gcr);
 
-        Assert.assertEquals(false, boxLocation.checkIfValid());
+        assertEquals(false, boxLocation.checkIfValid());
 
-        Assert.assertEquals(false, boxLocation.contains(new GeoLocation(0.0, 0.0)));
+        assertEquals(false, boxLocation.contains(new GeoLocation(0.0, 0.0)));
     }
 }

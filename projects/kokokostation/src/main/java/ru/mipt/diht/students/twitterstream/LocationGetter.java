@@ -6,6 +6,8 @@ import twitter4j.GeoLocation;
 import twitter4j.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 interface LocationFactoryFactory<T extends Location> {
@@ -62,9 +64,9 @@ class CircleLocationLocationFactoryFactory implements LocationFactoryFactory<Cir
 }
 
 public class LocationGetter {
-    public static <T extends Location> Vector<T> getLocations(LocationFactory<T> factory, String location,
-                                                              boolean nearby) {
-        Vector<T> result = new Vector<>();
+    public static <T extends Location> List<T> getLocations(LocationFactory<T> factory, String location,
+                                                            boolean nearby) {
+        List<T> result = new ArrayList<>();
 
         try {
             GeocodingResult[] results = GoogleGeocoding.getGeocodingResult(location);

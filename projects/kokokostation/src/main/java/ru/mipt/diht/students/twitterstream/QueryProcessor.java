@@ -75,14 +75,14 @@ public class QueryProcessor implements Processor {
             return result;
         }
 
-        Vector<CircleLocation> locationsFound = LocationGetter.getLocations(
+        List<CircleLocation> circleLocations = LocationGetter.getLocations(
                 new CircleLocationLocationFactoryFactory().get(),
                 argumentInfo.getPlace(), argumentInfo.isNearby());
 
-        Query[] result = new Query[locationsFound.size()];
-        for (int i = 0; i < result.length; ++i) {
-            result[i] = q.geoCode(locationsFound.get(i).getGeoLocation(),
-                    locationsFound.get(i).getRadius(), String.valueOf(Query.KILOMETERS));
+        Query[] result = new Query[circleLocations.size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = q.geoCode(circleLocations.get(i).getGeoLocation(),
+                    circleLocations.get(i).getRadius(), String.valueOf(Query.KILOMETERS));
         }
 
         return result;

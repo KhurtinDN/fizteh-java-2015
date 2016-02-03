@@ -19,7 +19,7 @@ public class OutputManager {
     private final ArgumentInfo argumentInfo;
     private final Writer writer;
 
-    OutputManager(ArgumentInfo argumentInfo, Writer writer) {
+    public OutputManager(ArgumentInfo argumentInfo, Writer writer) {
         this.argumentInfo = argumentInfo;
         this.writer = writer;
     }
@@ -40,7 +40,11 @@ public class OutputManager {
         output += tweet.getText();
 
         if (!tweet.isRetweet()) {
-            output += " (" + showChunks(tweet.getRetweetCount(), "ретвит", "ов", "а", "") + ")";
+            int retweetsNum = tweet.getRetweetCount();
+
+            if (retweetsNum != 0) {
+                output += " (" + showChunks(retweetsNum, "ретвит", "ов", "а", "") + ")";
+            }
         }
 
         return output;

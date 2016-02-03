@@ -2,6 +2,7 @@ package ru.mipt.diht.students.twitterstream;
 
 import twitter4j.*;
 
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -19,7 +20,7 @@ public class StreamProcessor implements Processor {
 
     @Override
     public void process() {
-        Vector<BoxLocation> boxLocations = LocationGetter.getLocations(new BoxLocationLocationFactoryFactory().get(),
+        List<BoxLocation> boxLocations = LocationGetter.getLocations(new BoxLocationLocationFactoryFactory().get(),
                 argumentInfo.getPlace(), argumentInfo.isNearby());
 
         twitter4j.TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
@@ -76,7 +77,7 @@ public class StreamProcessor implements Processor {
         twitterStream.filter(filterQuery);
     }
 
-    private boolean fits(Status status, Vector<BoxLocation> boxLocations) {
+    private boolean fits(Status status, List<BoxLocation> boxLocations) {
         if (boxLocations.size() == 0 || status.isRetweet()) {
             return true;
         }
