@@ -28,14 +28,30 @@ public class CircleLocation implements Location {
                     sla = box[0][0],
                     sln = box[0][1];
 
-            double latitude = (nla + sla) / 2,
-                    longitude = (nln + sln) / 2,
-                    longitudeRadius = (Math.toRadians(nln - sln)
+            double latitude = middle(sla, nla),
+                    longitude = middle(sla, nla),
+                    longitudeRadius = (Math.toRadians(distance(sln, nln))
                             * (EARTH_RADIUS * Math.cos(Math.toRadians(latitude)))) / 2,
-                    latitudeRadius = Math.toRadians(nla - sla) * EARTH_RADIUS / 2;
+                    latitudeRadius = Math.toRadians(distance(sla, nla)) * EARTH_RADIUS / 2;
 
             geoLocation = new GeoLocation(latitude, longitude);
             radius = (longitudeRadius + latitudeRadius) / 2;
+        }
+    }
+
+    private double middle(double left, double right) {
+        if (left <= right) {
+            return (left + right) / 2;
+        } else {
+            return ((left + 360 + right) / 2) % 360;
+        }
+    }
+
+    private double distance(double left, double right) {
+        if (left <= right) {
+            return right - left;
+        } else {
+            return right + (360 - left);
         }
     }
 

@@ -1,9 +1,12 @@
 package ru.mipt.diht.students.twitterstream;
 
+import com.google.maps.model.GeocodingResult;
 import twitter4j.*;
 
 import java.util.List;
 import java.util.Vector;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Created by mikhail on 16.12.15.
@@ -11,14 +14,21 @@ import java.util.Vector;
 public class QueryProcessor implements Processor {
     private static final int MAX_ATTEMPTS = 5,
             ATTEMPT_WAIT = 1000;
-    private final ArgumentInfo argumentInfo;
+
     private final OutputManager outputManager;
-    private final Twitter twitter = TwitterFactory.getSingleton();
+    private final ArgumentInfo argumentInfo;
+    private final Twitter twitter;
+    private final Function<String, GeocodingResult[]> geocodingResultProducer;
+    private final Supplier<GeoLocation> nearby;
     private int tweetsCount = 0;
 
-    QueryProcessor(OutputManager outputManager, ArgumentInfo argumentInfo) {
-        this.argumentInfo = argumentInfo;
+    public QueryProcessor(OutputManager outputManager, ArgumentInfo argumentInfo, Twitter twitter,
+                          Function<String, GeocodingResult[]> geocodingResultProducer, Supplier<GeoLocation> nearby) {
         this.outputManager = outputManager;
+        this.argumentInfo = argumentInfo;
+        this.twitter = twitter;
+        this.geocodingResultProducer = geocodingResultProducer;
+        this.nearby = nearby;
     }
 
     @Override
@@ -67,21 +77,20 @@ public class QueryProcessor implements Processor {
     }
 
     private Query[] composeQueries() {
-        Query q = new Query(argumentInfo.getQuery());
-
         if (argumentInfo.getPlace().isEmpty() && !argumentInfo.isNearby()) {
             Query[] result = new Query[1];
-            result[0] = q;
+            result[0] = new Query(argumentInfo.getQuery());
             return result;
         }
 
         List<CircleLocation> circleLocations = LocationGetter.getLocations(
                 new CircleLocationLocationFactoryFactory().get(),
-                argumentInfo.getPlace(), argumentInfo.isNearby());
+                argumentInfo.getPlace(), geocodingResultProducer,
+                argumentInfo.isNearby() ? nearby : null);
 
         Query[] result = new Query[circleLocations.size()];
         for (int i = 0; i < result.length; i++) {
-            result[i] = q.geoCode(circleLocations.get(i).getGeoLocation(),
+            result[i] = new Query(argumentInfo.getQuery()).geoCode(circleLocations.get(i).getGeoLocation(),
                     circleLocations.get(i).getRadius(), String.valueOf(Query.KILOMETERS));
         }
 

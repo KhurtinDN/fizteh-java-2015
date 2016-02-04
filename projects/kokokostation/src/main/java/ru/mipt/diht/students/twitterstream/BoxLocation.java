@@ -9,7 +9,7 @@ import twitter4j.GeoLocation;
  * Created by mikhail on 28.01.16.
  */
 public class BoxLocation implements Location {
-    private static final double BOX_RADIUS = 2; //половина стороны квадратика в градусах
+    private static final double BOX_RADIUS = 0.5; //половина стороны квадратика в градусах
 
     private double[][] box;
 
@@ -19,6 +19,10 @@ public class BoxLocation implements Location {
 
     @Override
     public void fromGeocodingResult(GeocodingResult gcr) {
+        if (gcr == null) {
+            return;
+        }
+
         Bounds bounds = gcr.geometry.bounds;
 
         if (bounds == null) {
@@ -41,6 +45,12 @@ public class BoxLocation implements Location {
         box[0][1] = center.getLongitude() - BOX_RADIUS;
         box[1][0] = center.getLatitude() + BOX_RADIUS;
         box[1][1] = center.getLongitude() + BOX_RADIUS;
+
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 2; j++) {
+                box[i][j] = (box[i][j] % 360) + (box[i][j] < 0 ? 360 : 0);
+            }
+        }
     }
 
     @Override
@@ -55,6 +65,14 @@ public class BoxLocation implements Location {
 
         double lat = geoLocation.getLatitude(),
                 lng = geoLocation.getLongitude();
-        return box[0][0] <= lat && lat <= box[1][0] && box[0][1] <= lng && lng <= box[1][1];
+        return between(box[0][0], box[1][0], lat) && between(box[0][1], box[1][1], lng);
+    }
+
+    private boolean between(double left, double right, double dot) {
+        if (left <= right) {
+            return left <= dot && dot <= right;
+        } else {
+            return left <= dot || dot <= right;
+        }
     }
 }

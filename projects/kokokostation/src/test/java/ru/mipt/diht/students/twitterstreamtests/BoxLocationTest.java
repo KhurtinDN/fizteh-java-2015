@@ -21,7 +21,7 @@ public class BoxLocationTest {
         GeocodingResult gcr = new GeocodingResult();
         gcr.geometry = new Geometry();
         gcr.geometry.bounds = new Bounds();
-        gcr.geometry.bounds.southwest = new LatLng(-1, -2);
+        gcr.geometry.bounds.southwest = new LatLng(359, 358);
         gcr.geometry.bounds.northeast = new LatLng(3, 4);
 
         BoxLocation boxLocation = new BoxLocation();
@@ -30,8 +30,9 @@ public class BoxLocationTest {
 
         boxLocation.fromGeocodingResult(gcr);
         assertEquals(true, boxLocation.checkIfValid());
+
         double[][] box = boxLocation.getBox();
-        assertArrayEquals(new double[]{-1, -2, 3, 4},
+        assertArrayEquals(new double[]{359, 358, 3, 4},
                 new double[]{box[0][0], box[0][1], box[1][0], box[1][1]}, 0);
 
         assertEquals(true, boxLocation.contains(new GeoLocation(0, 0)));
@@ -40,8 +41,8 @@ public class BoxLocationTest {
         boxLocation.nearby(new GeoLocation(0.0, 0.0));
         assertEquals(true, boxLocation.checkIfValid());
 
-        assertEquals(true, boxLocation.contains(new GeoLocation(0, 1)));
-        assertEquals(false, boxLocation.contains(new GeoLocation(2.1, 0)));
+        assertEquals(true, boxLocation.contains(new GeoLocation(0, 0.3)));
+        assertEquals(false, boxLocation.contains(new GeoLocation(0.6, 0)));
     }
 
     @Test

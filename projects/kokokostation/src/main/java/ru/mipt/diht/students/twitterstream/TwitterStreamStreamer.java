@@ -1,5 +1,8 @@
 package ru.mipt.diht.students.twitterstream;
 
+import twitter4j.TwitterFactory;
+import twitter4j.TwitterStreamFactory;
+
 import java.io.Writer;
 
 /**
@@ -20,9 +23,11 @@ public class TwitterStreamStreamer {
             Processor processor;
 
             if (!argumentInfo.isStream()) {
-                processor = new QueryProcessor(outputManager, argumentInfo);
+                processor = new QueryProcessor(outputManager, argumentInfo, TwitterFactory.getSingleton(),
+                        GoogleGeocoding::getGeocodingResult, Nearby::nearby);
             } else {
-                processor = new StreamProcessor(outputManager, argumentInfo);
+                processor = new StreamProcessor(outputManager, argumentInfo, TwitterStreamFactory.getSingleton(),
+                        GoogleGeocoding::getGeocodingResult, Nearby::nearby);
             }
 
             processor.process();

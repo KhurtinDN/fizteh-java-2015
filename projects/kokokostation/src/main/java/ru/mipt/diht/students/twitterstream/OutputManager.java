@@ -56,17 +56,14 @@ public class OutputManager {
 
     private static String showChunks(long chunksNum, String root, String ending1, String ending2, String ending3) {
         String output = chunksNum + " " + root;
+        chunksNum %= 100;
 
         if (chunksNum % 10 == 0 || (5 <= chunksNum && chunksNum <= 19)) {
             output += ending1;
-        } else {
-            if (2 <= chunksNum % 10 && chunksNum % 10 <= 4) {
-                output += ending2;
-            } else {
-                if (chunksNum % 10 == 1) {
-                    output += ending3;
-                }
-            }
+        } else if (2 <= chunksNum % 10 && chunksNum % 10 <= 4) {
+            output += ending2;
+        } else if (chunksNum % 10 == 1) {
+            output += ending3;
         }
 
         return output;
@@ -107,20 +104,14 @@ public class OutputManager {
 
             if (time.after(produceCurrentAdd(Calendar.MINUTE, -2))) {
                 output = "Только что";
+            } else if (time.after(produceCurrentAdd(Calendar.HOUR, -1))) {
+                output = showChunks(minutesPassed(time), "минут", "", "ы", "а") + " назад";
+            } else if (daysMatch(time, Calendar.getInstance())) {
+                output = showChunks(hoursPassed(time), "час", "ов", "а", "") + " назад";
+            } else if (daysMatch(time, produceCurrentAdd(Calendar.DAY_OF_MONTH, -1))) {
+                output = "Вчера";
             } else {
-                if (time.after(produceCurrentAdd(Calendar.HOUR, -1))) {
-                    output = showChunks(minutesPassed(time), "минут", "", "ы", "а") + " назад";
-                } else {
-                    if (daysMatch(time, Calendar.getInstance())) {
-                        output = showChunks(hoursPassed(time), "час", "ов", "а", "") + " назад";
-                    } else {
-                        if (daysMatch(time, produceCurrentAdd(Calendar.DAY_OF_MONTH, -1))) {
-                            output = "Вчера";
-                        } else {
-                            output = showChunks(daysPassed(time), "д", "ней", "ня", "ень") + " назад";
-                        }
-                    }
-                }
+                output = showChunks(daysPassed(time), "д", "ней", "ня", "ень") + " назад";
             }
 
             return output;

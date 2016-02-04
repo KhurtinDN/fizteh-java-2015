@@ -20,7 +20,7 @@ public class Nearby {
             LATITUDE_KEY = "lat",
             LONGITUDE_KEY = "lon";
 
-    public static GeoLocation nearby() throws IOException, JSONException {
+    public static GeoLocation nearby() {
         try (InputStream inputStream = new URL(QUERY).openStream()) {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,
                     Charset.forName("UTF-8")));
@@ -35,6 +35,10 @@ public class Nearby {
 
             return new GeoLocation(Double.parseDouble(jsonObject.getString(LATITUDE_KEY)),
                     Double.parseDouble(jsonObject.getString(LONGITUDE_KEY)));
+        } catch (JSONException | IOException e) {
+            System.err.println("Nearby can't find your location: " + e.getMessage());
+
+            return null;
         }
     }
 }

@@ -22,7 +22,7 @@ public class CircleLocationTest {
         GeocodingResult gcr = new GeocodingResult();
         gcr.geometry = new Geometry();
         gcr.geometry.bounds = new Bounds();
-        gcr.geometry.bounds.southwest = new LatLng(-1, -1);
+        gcr.geometry.bounds.southwest = new LatLng(359, 359);
         gcr.geometry.bounds.northeast = new LatLng(1, 1);
 
         CircleLocation circleLocation = new CircleLocation();
