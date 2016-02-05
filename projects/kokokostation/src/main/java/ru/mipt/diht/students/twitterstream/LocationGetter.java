@@ -18,15 +18,15 @@ public class LocationGetter {
 
         for (GeocodingResult geocodingResult : results) {
             T newElement = factory.fromGeocodingResult(geocodingResult);
-            if (newElement != null) {
+            if (newElement.checkIfValid()) {
                 result.add(newElement);
             }
         }
 
         if (nearby != null) {
-            GeoLocation newElement = nearby.get();
-            if (newElement != null) {
-                result.add(factory.nearby(newElement));
+            GeoLocation nearbyProduction = nearby.get();
+            if (nearbyProduction != null) {
+                result.add(factory.nearby(nearbyProduction));
             }
         }
 
