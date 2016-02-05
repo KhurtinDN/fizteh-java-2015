@@ -10,7 +10,11 @@ public class StringProcessor {
         return string.replaceAll(regex, replacement).toLowerCase();
     }
 
-    public static void erase2LastLetters(String string) {
-        string = string.substring(0, string.length() - 2);
+    public static String erase2LastLetters(String string) {
+        if (string.length() < 2) {
+            return "";
+        } else {
+            return string.substring(0, string.length() - 2);
+        }
     }
 }

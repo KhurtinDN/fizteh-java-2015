@@ -23,14 +23,15 @@ public class DatabaseService<T> {
     private final DatabaseManager databaseManager;
 
 
-    public DatabaseService(Class<T> type) throws DatabaseServiceException, SQLException {
+    public DatabaseService(Class<T> type, DatabaseManager databaseManager) throws DatabaseServiceException,
+            SQLException {
         this.type = type;
         DatabaseServiceAnnotations databaseServiceAnnotations = new DatabaseServiceAnnotations(type);
         Pair<List<Column>, Column> initData = databaseServiceAnnotations.parseType();
         primaryKey = initData.getValue();
         columns = initData.getKey();
         tableName = databaseServiceAnnotations.getTableName();
-        databaseManager = new DatabaseManager();
+        this.databaseManager = databaseManager;
     }
     public T queryById(Object primaryKey) throws SQLException, InstantiationException, IllegalAccessException, DatabaseServiceException {
         String query = "SELECT * FROM " + tableName + whereForPrimaryKey(primaryKey);
@@ -56,20 +57,20 @@ public class DatabaseService<T> {
         if(primaryKey.getField().get(item) == null)
             throw new DatabaseServiceException("Primary key can't be null.");
 
-        String query = "INSERT INTO " + tableName + "(";
+        String query = "INSERT INTO " + tableName + " (";
 
         for (Column column : columns) {
             query += column.getName() + ", ";
         }
 
-        StringProcessor.erase2LastLetters(query);
-        query += ") VALUES(";
+        query = StringProcessor.erase2LastLetters(query);
+        query += ") VALUES (";
 
         for (Column column : columns) {
             query += column.toSQL(column.getField().get(item)) + ", ";
         }
 
-        StringProcessor.erase2LastLetters(query);
+        query = StringProcessor.erase2LastLetters(query);
         query += ")";
 
         databaseManager.executeQuery(query);
@@ -79,18 +80,19 @@ public class DatabaseService<T> {
         if(primaryKey.getField().get(item) == null)
             throw new DatabaseServiceException("Primary key can't be null.");
 
-        String query = "UPDATE " + tableName + " SET ", tail;
+        String query = "UPDATE " + tableName + " SET ";
 
         for (Column column : columns) {
-            query += column.getName() + " = " + column.toSQL(column.getField().get(item));
+            query += column.getName() + " = " + column.toSQL(column.getField().get(item)) + ", ";
         }
+        query = StringProcessor.erase2LastLetters(query);
+
         query += whereForPrimaryKey(primaryKey.getField().get(item));
 
         databaseManager.executeQuery(query);
     }
 
     public void delete(Object primaryKey) throws DatabaseServiceException, SQLException {
-
         String query = "DELETE FROM " + tableName + whereForPrimaryKey(primaryKey);
 
         databaseManager.executeQuery(query);
@@ -101,7 +103,7 @@ public class DatabaseService<T> {
             throw new DatabaseServiceException("Nothing to store.");
         }
 
-        String query = "CREATE TABLE " + tableName + "(";
+        String query = "CREATE TABLE IF NOT EXISTS " + tableName + " (";
 
         for (Column column : columns) {
             query += column.getName() + " " + column.getType();
@@ -113,7 +115,7 @@ public class DatabaseService<T> {
             query += ", ";
         }
 
-        StringProcessor.erase2LastLetters(query);
+        query = StringProcessor.erase2LastLetters(query);
         query += ")";
 
         databaseManager.executeQuery(query);
@@ -131,13 +133,13 @@ public class DatabaseService<T> {
 
             switch (column.getType()) {
                 case INT:
-                    field.setInt(result, current.getInt(columnName));
+                    field.set(result, current.getInt(columnName));
                     break;
                 case BOOLEAN:
-                    field.setBoolean(result, current.getBoolean(columnName));
+                    field.set(result, current.getBoolean(columnName));
                     break;
                 case DOUBLE:
-                    field.setDouble(result, current.getDouble(columnName));
+                    field.set(result, current.getDouble(columnName));
                     break;
                 case TIME:
                     field.set(result, current.getTime(columnName));

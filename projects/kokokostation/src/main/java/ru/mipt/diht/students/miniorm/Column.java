@@ -13,19 +13,19 @@ public class Column {
     private final Field field;
     private final Type type;
 
-    String getName() {
+    public String getName() {
         return name;
     }
 
-    Type getType() {
+    public Type getType() {
         return type;
     }
 
-    Field getField() {
+    public Field getField() {
         return field;
     }
 
-    Column(String name, Field field) throws DatabaseServiceException {
+    public Column(String name, Field field) throws DatabaseServiceException {
         this.name = name;
         this.field = field;
 

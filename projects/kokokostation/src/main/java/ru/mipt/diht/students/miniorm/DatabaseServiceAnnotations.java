@@ -7,6 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -35,11 +36,11 @@ public class DatabaseServiceAnnotations {
 
     private final Class<?> type;
 
-    DatabaseServiceAnnotations(Class type) {
+    public DatabaseServiceAnnotations(Class type) {
         this.type = type;
     }
 
-    String getTableName() throws DatabaseServiceException {
+    public String getTableName() throws DatabaseServiceException {
         if(!type.isAnnotationPresent(Table.class))
             throw new DatabaseServiceException("No @Table annotation: " + type.getName());
 
@@ -47,7 +48,7 @@ public class DatabaseServiceAnnotations {
         return getName(typeAnnotation.name(), type.getName());
     }
 
-    String getFieldName(Field field) throws DatabaseServiceException {
+    private String getFieldName(Field field) throws DatabaseServiceException {
         if(!field.isAnnotationPresent(Column.class))
             throw new DatabaseServiceException("No @Field annotation: " + type.getName() + "." + field.getName());
 
@@ -63,10 +64,10 @@ public class DatabaseServiceAnnotations {
         }
     }
 
-    Pair<List<ru.mipt.diht.students.miniorm.Column>, ru.mipt.diht.students.miniorm.Column> parseType()
+    public Pair<List<ru.mipt.diht.students.miniorm.Column>, ru.mipt.diht.students.miniorm.Column> parseType()
             throws DatabaseServiceException {
         ru.mipt.diht.students.miniorm.Column primaryKey = null;
-        LinkedList<ru.mipt.diht.students.miniorm.Column> columns = new LinkedList<>();
+        ArrayList<ru.mipt.diht.students.miniorm.Column> columns = new ArrayList<>();
 
         for (Field field : type.getFields()) {
             if (field.isAnnotationPresent(Column.class)) {
@@ -77,7 +78,7 @@ public class DatabaseServiceAnnotations {
                         throw new DatabaseServiceException("Multiple PrimaryKey: " + type.getName());
                     }
 
-                    primaryKey = columns.getLast();
+                    primaryKey = columns.get(columns.size() - 1);
                 }
             }
         }
