@@ -14,14 +14,14 @@ public class BlockingQueue<T> {
     private final LinkedList<T> queue = new LinkedList<>();
     private final int maxQueueSize;
     private final Lock lock = new ReentrantLock();
-    private final Condition isFull = lock.newCondition(),
-        isEmpty = lock.newCondition();
+    private final Condition isFull = lock.newCondition();
+    private final Condition isEmpty = lock.newCondition();
 
-    BlockingQueue(int maxQueueSize) {
+    public BlockingQueue(int maxQueueSize) {
         this.maxQueueSize = maxQueueSize;
     }
 
-    boolean offer(List<T> list, long timeout) throws InterruptedException {
+    public boolean offer(List<T> list, long timeout) throws InterruptedException {
         lock.lock();
         try {
             boolean canAdd = true;
@@ -42,7 +42,7 @@ public class BlockingQueue<T> {
         }
     }
 
-    List<T> take(int elementsNum, long timeout) throws InterruptedException {
+    public List<T> take(int elementsNum, long timeout) throws InterruptedException {
         lock.lock();
         try {
             boolean canTake = true;
