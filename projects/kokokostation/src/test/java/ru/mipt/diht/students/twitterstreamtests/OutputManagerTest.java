@@ -1,19 +1,16 @@
 package ru.mipt.diht.students.twitterstreamtests;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import ru.mipt.diht.students.twitterstream.ArgumentInfo;
 import ru.mipt.diht.students.twitterstream.OutputManager;
-import sun.util.resources.cldr.aa.CalendarData_aa_ER;
 import twitter4j.Status;
 
 import java.io.CharArrayWriter;
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -71,8 +68,8 @@ public class OutputManagerTest {
         }
 
         assertEquals("5 минут назад @\033[34mПетя\033[0m: ретвитнул @Вася: Поел" + System.lineSeparator() +
-                "Вчера @\033[34mПетя\033[0m: Поспал (63 ретвита)" + System.lineSeparator() +
-                "3 дня назад @\033[34mПетя\033[0m: Поел" + System.lineSeparator(),
+                        "Вчера @\033[34mПетя\033[0m: Поспал (63 ретвита)" + System.lineSeparator() +
+                        "3 дня назад @\033[34mПетя\033[0m: Поел" + System.lineSeparator(),
                 writer.toString());
     }
 

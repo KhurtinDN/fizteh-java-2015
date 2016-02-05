@@ -1,6 +1,5 @@
 package ru.mipt.diht.students.twitterstream;
 
-import javafx.util.Pair;
 import twitter4j.GeoLocation;
 import twitter4j.JSONException;
 import twitter4j.JSONObject;

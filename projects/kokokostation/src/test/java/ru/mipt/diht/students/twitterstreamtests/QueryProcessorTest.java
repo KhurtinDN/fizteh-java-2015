@@ -5,12 +5,9 @@ import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.Geometry;
 import com.google.maps.model.LatLng;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import ru.mipt.diht.students.twitterstream.*;
+import ru.mipt.diht.students.twitterstream.ArgumentInfo;
+import ru.mipt.diht.students.twitterstream.OutputManager;
+import ru.mipt.diht.students.twitterstream.QueryProcessor;
 import twitter4j.*;
 
 import java.io.CharArrayWriter;
@@ -22,8 +19,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.hamcrest.object.HasToString.hasToString;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.*;
 
 /**
@@ -31,7 +29,7 @@ import static org.mockito.Mockito.*;
  */
 
 public class QueryProcessorTest {
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings ("unchecked")
     @Test
     public void test() throws TwitterException {
         CharArrayWriter writer = new CharArrayWriter();
@@ -39,9 +37,9 @@ public class QueryProcessorTest {
         OutputManager outputManager = new OutputManager(argumentInfo, writer);
 
         GeocodingResult[] gcr = new GeocodingResult[1];
-            gcr[0] = new GeocodingResult();
-            gcr[0].geometry = new Geometry();
-            gcr[0].geometry.bounds = new Bounds();
+        gcr[0] = new GeocodingResult();
+        gcr[0].geometry = new Geometry();
+        gcr[0].geometry.bounds = new Bounds();
         gcr[0].geometry.bounds.southwest = new LatLng(359, 358);
         gcr[0].geometry.bounds.northeast = new LatLng(3, 4);
 

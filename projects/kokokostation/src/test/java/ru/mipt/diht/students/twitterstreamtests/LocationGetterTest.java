@@ -8,20 +8,19 @@ import org.junit.Test;
 import ru.mipt.diht.students.twitterstream.*;
 import twitter4j.GeoLocation;
 
-import static org.mockito.Mockito.*;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by mikhail on 29.01.16.
  */
 public class LocationGetterTest {
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings ("unchecked")
     @Test
     public void test() {
         GeocodingResult[] gcr = new GeocodingResult[2];

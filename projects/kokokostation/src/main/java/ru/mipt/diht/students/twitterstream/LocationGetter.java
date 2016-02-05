@@ -1,14 +1,10 @@
 package ru.mipt.diht.students.twitterstream;
 
 import com.google.maps.model.GeocodingResult;
-import javafx.util.Pair;
 import twitter4j.GeoLocation;
-import twitter4j.JSONException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.function.Function;
 import java.util.function.Supplier;
 

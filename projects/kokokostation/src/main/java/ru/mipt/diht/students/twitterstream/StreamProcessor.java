@@ -5,7 +5,6 @@ import twitter4j.*;
 import twitter4j.TwitterStream;
 
 import java.util.List;
-import java.util.Vector;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -27,6 +26,25 @@ public class StreamProcessor implements Processor {
         this.twitterStream = twitterStream;
         this.geocodingResultProducer = geocodingResultProducer;
         this.nearby = nearby;
+    }
+
+    public static boolean fits(Status status, List<BoxLocation> boxLocations) {
+        if (boxLocations.size() == 0 || status.isRetweet()) {
+            return true;
+        }
+
+        GeoLocation geoLocation = status.getGeoLocation();
+        if (geoLocation == null) {
+            return false;
+        }
+
+        for (BoxLocation boxLocation : boxLocations) {
+            if (boxLocation.contains(geoLocation)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -86,24 +104,5 @@ public class StreamProcessor implements Processor {
         filterQuery.track(new String[]{argumentInfo.getQuery()});
 
         twitterStream.filter(filterQuery);
-    }
-
-    private boolean fits(Status status, List<BoxLocation> boxLocations) {
-        if (boxLocations.size() == 0 || status.isRetweet()) {
-            return true;
-        }
-
-        GeoLocation geoLocation = status.getGeoLocation();
-        if (geoLocation == null) {
-            return false;
-        }
-
-        for (BoxLocation boxLocation : boxLocations) {
-            if (boxLocation.contains(geoLocation)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

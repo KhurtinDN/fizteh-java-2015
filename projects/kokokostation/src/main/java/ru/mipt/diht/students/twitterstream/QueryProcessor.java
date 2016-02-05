@@ -4,7 +4,6 @@ import com.google.maps.model.GeocodingResult;
 import twitter4j.*;
 
 import java.util.List;
-import java.util.Vector;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -57,7 +56,7 @@ public class QueryProcessor implements Processor {
     }
 
     private QueryResult twitterSearch(Query q) throws TwitterException {
-        for (int i = 0;; ++i) {
+        for (int i = 0; ; ++i) {
             try {
                 return twitter.search(q);
             } catch (TwitterException e) {

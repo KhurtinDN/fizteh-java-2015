@@ -4,7 +4,7 @@ import com.beust.jcommander.ParameterException;
 import org.junit.Test;
 import ru.mipt.diht.students.twitterstream.ArgumentInfo;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by mikhail on 28.01.16.

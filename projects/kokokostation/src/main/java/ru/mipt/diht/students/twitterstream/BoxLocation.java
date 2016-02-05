@@ -2,7 +2,6 @@ package ru.mipt.diht.students.twitterstream;
 
 import com.google.maps.model.Bounds;
 import com.google.maps.model.GeocodingResult;
-import javafx.util.Pair;
 import twitter4j.GeoLocation;
 
 /**
