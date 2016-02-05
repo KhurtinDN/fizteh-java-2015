@@ -15,11 +15,6 @@ public class TwitterStreamStreamer {
         if (argumentInfo.isHelp()) {
             outputManager.writeHelp();
         } else {
-            if (argumentInfo.getQuery().isEmpty()) {
-                System.err.println("Empty query. Not allowed");
-                return;
-            }
-
             Processor processor;
 
             if (!argumentInfo.isStream()) {

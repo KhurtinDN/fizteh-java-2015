@@ -28,7 +28,7 @@ public class CircleLocation implements Location {
                     sln = box[0][1];
 
             double latitude = middle(sla, nla),
-                    longitude = middle(sla, nla),
+                    longitude = middle(sln, nln),
                     longitudeRadius = (Math.toRadians(distance(sln, nln))
                             * (EARTH_RADIUS * Math.cos(Math.toRadians(latitude)))) / 2,
                     latitudeRadius = Math.toRadians(distance(sla, nla)) * EARTH_RADIUS / 2;

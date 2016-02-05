@@ -9,12 +9,12 @@ import java.io.OutputStreamWriter;
  */
 public class TwitterStream {
     public static void main(String[] args) {
-        ArgumentInfo argumentInfo;
+        ArgumentInfo argumentInfo = null;
 
         try {
             argumentInfo = new ArgumentInfo(args);
         } catch (ParameterException e) {
-            return;
+            System.exit(-1);
         }
 
         TwitterStreamStreamer.perform(argumentInfo, new OutputStreamWriter(System.out));

@@ -11,7 +11,7 @@ import com.beust.jcommander.ParameterException;
 public class ArgumentInfo {
     public static final int NO_LIMIT = -1;
 
-    @Parameter (names = {"--query", "-q"})
+    @Parameter (names = {"--query", "-q"}, required = true)
     private String query = "";
     @Parameter (names = {"--place", "-p"})
     private String place = "";
