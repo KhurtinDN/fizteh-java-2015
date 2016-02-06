@@ -8,8 +8,8 @@ import org.junit.Test;
 import ru.mipt.diht.students.twitterstream.BoxLocation;
 import twitter4j.GeoLocation;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Created by mikhail on 28.01.16.
@@ -25,23 +25,22 @@ public class BoxLocationTest {
 
         BoxLocation boxLocation = new BoxLocation();
 
-        assertEquals(false, boxLocation.checkIfValid());
+        assertThat(boxLocation.checkIfValid(), is(false));
 
         boxLocation.fromGeocodingResult(gcr);
-        assertEquals(true, boxLocation.checkIfValid());
+        assertThat(boxLocation.checkIfValid(), is(true));
 
         double[][] box = boxLocation.getBox();
-        assertArrayEquals(new double[]{359, 358, 3, 4},
-                new double[]{box[0][0], box[0][1], box[1][0], box[1][1]}, 0);
+        assertThat(box, arrayContaining(new double[][]{{359, 358}, {3, 4}}));
 
-        assertEquals(true, boxLocation.contains(new GeoLocation(0, 0)));
-        assertEquals(false, boxLocation.contains(new GeoLocation(4, 0)));
+        assertThat(boxLocation.contains(new GeoLocation(0, 0)), is(true));
+        assertThat(boxLocation.contains(new GeoLocation(4, 0)), is(false));
 
         boxLocation.nearby(new GeoLocation(0.0, 0.0));
-        assertEquals(true, boxLocation.checkIfValid());
+        assertThat(boxLocation.checkIfValid(), is(true));
 
-        assertEquals(true, boxLocation.contains(new GeoLocation(0, 0.3)));
-        assertEquals(false, boxLocation.contains(new GeoLocation(0.6, 0)));
+        assertThat(boxLocation.contains(new GeoLocation(0, 0.3)), is(true));
+        assertThat(boxLocation.contains(new GeoLocation(0.6, 0)), is(false));
     }
 
     @Test
@@ -51,12 +50,12 @@ public class BoxLocationTest {
 
         BoxLocation boxLocation = new BoxLocation();
 
-        assertEquals(false, boxLocation.checkIfValid());
+        assertThat(boxLocation.checkIfValid(), is(false));
 
         boxLocation.fromGeocodingResult(gcr);
 
-        assertEquals(false, boxLocation.checkIfValid());
+        assertThat(boxLocation.checkIfValid(), is(false));
 
-        assertEquals(false, boxLocation.contains(new GeoLocation(0.0, 0.0)));
+        assertThat(boxLocation.contains(new GeoLocation(0.0, 0.0)), is(false));
     }
 }

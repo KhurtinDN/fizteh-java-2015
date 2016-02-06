@@ -10,11 +10,11 @@ import java.util.function.Supplier;
 
 public class LocationGetter {
     public static <T extends Location> List<T> getLocations(LocationFactory<T> factory, String location,
-                                                            Function<String, GeocodingResult[]> geocodingResultProducer,
-                                                            Supplier<GeoLocation> nearby) {
+                                                            Geocoding geocodingResultProducer,
+                                                            Nearby nearby) throws Exception {
         List<T> result = new ArrayList<>();
 
-        GeocodingResult[] results = geocodingResultProducer.apply(location);
+        GeocodingResult[] results = geocodingResultProducer.getGeocodingResult(location);
 
         for (GeocodingResult geocodingResult : results) {
             T newElement = factory.fromGeocodingResult(geocodingResult);
@@ -24,7 +24,7 @@ public class LocationGetter {
         }
 
         if (nearby != null) {
-            GeoLocation nearbyProduction = nearby.get();
+            GeoLocation nearbyProduction = nearby.nearby();
             if (nearbyProduction != null) {
                 result.add(factory.nearby(nearbyProduction));
             }

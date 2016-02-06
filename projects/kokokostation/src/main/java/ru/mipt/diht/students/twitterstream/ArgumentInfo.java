@@ -11,28 +11,35 @@ import com.beust.jcommander.ParameterException;
 public class ArgumentInfo {
     public static final int NO_LIMIT = -1;
 
-    @Parameter (names = {"--query", "-q"}, required = true)
-    private String query = "";
-    @Parameter (names = {"--place", "-p"})
+    @Parameter (names = {"--query", "-q"}, required = true, description = "Search keywords")
+    private String query;
+    @Parameter (names = {"--place", "-p"}, description = "Location to search")
     private String place = "";
-    @Parameter (names = {"--stream", "-s"})
+    @Parameter (names = {"--stream", "-s"}, description = "Stream mode")
     private boolean stream;
-    @Parameter (names = "--hideRetweets")
+    @Parameter (names = "--hideRetweets", description = "Set if you want to hide retweets")
     private boolean hideRetweets;
-    @Parameter (names = {"--help", "-h"})
+    @Parameter (names = {"--help", "-h"}, description = "Set if you want to read help", help = true)
     private boolean help;
-    @Parameter (names = {"--limit", "-l"})
+    @Parameter (names = {"--limit", "-l"}, description =
+            "Accepts maximum number of tweets to display; ignored in stream mode")
     private int limit = NO_LIMIT;
-    @Parameter (names = {"--nearby", "-n"})
+    @Parameter (names = {"--nearby", "-n"}, description = "Location for search is set according to your IP")
     private boolean nearby;
 
-    public ArgumentInfo(String[] args) throws ParameterException {
-        try {
-            new JCommander(this, args);
-        } catch (ParameterException e) {
-            System.err.println("Wrong parameter: " + e.getMessage());
-            throw e;
-        }
+    private final JCommander jCommander = new JCommander(this);
+
+    private ArgumentInfo() {}
+
+    public ArgumentInfo(String... args) throws ParameterException {
+        jCommander.parse(args);
+    }
+
+    public static String getHelp() {
+        StringBuilder result = new StringBuilder();
+        new ArgumentInfo().jCommander.usage(result);
+
+        return result.toString();
     }
 
     public int getLimit() {

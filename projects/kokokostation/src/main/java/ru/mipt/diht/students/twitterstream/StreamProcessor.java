@@ -16,11 +16,11 @@ public class StreamProcessor implements Processor {
     private final OutputManager outputManager;
     private final ArgumentInfo argumentInfo;
     private final twitter4j.TwitterStream twitterStream;
-    private final Function<String, GeocodingResult[]> geocodingResultProducer;
-    private final Supplier<GeoLocation> nearby;
+    private final Geocoding geocodingResultProducer;
+    private final Nearby nearby;
 
     public StreamProcessor(OutputManager outputManager, ArgumentInfo argumentInfo, TwitterStream twitterStream,
-                           Function<String, GeocodingResult[]> geocodingResultProducer, Supplier<GeoLocation> nearby) {
+                           Geocoding geocodingResultProducer, Nearby nearby) {
         this.outputManager = outputManager;
         this.argumentInfo = argumentInfo;
         this.twitterStream = twitterStream;
@@ -48,13 +48,13 @@ public class StreamProcessor implements Processor {
     }
 
     @Override
-    public void process() {
+    public void process() throws Exception {
         List<BoxLocation> boxLocations = LocationGetter.getLocations(new BoxLocationLocationFactoryFactory().get(),
                 argumentInfo.getPlace(),
                 geocodingResultProducer,
                 argumentInfo.isNearby() ? nearby : null);
 
-        StatusListener listener = new StatusListener() {
+        StatusListener listener = new StatusAdapter() {
             //filter twitter4j'a для twitterstream ставит OR между всеми условиями, которые в него пихают, нам же
             //необходимо AND. Самое простое решение - место вручную отфильтровать, что я и сделаю.
             @Override
@@ -63,38 +63,13 @@ public class StreamProcessor implements Processor {
                     return;
                 }
 
-                try {
-                    if (outputManager.writeTweet(status)) {
+                if (outputManager.writeTweet(status)) {
+                    try {
                         Thread.sleep(SLEEP_TIME);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                } catch (InterruptedException e) {
-                    System.err.println("Thread can't sleep: " + e.getMessage());
                 }
-            }
-
-            @Override
-            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-
-            }
-
-            @Override
-            public void onTrackLimitationNotice(int i) {
-                System.out.println("Got track limitation notice:" + i);
-            }
-
-            @Override
-            public void onScrubGeo(long l, long l1) {
-
-            }
-
-            @Override
-            public void onStallWarning(StallWarning stallWarning) {
-
-            }
-
-            @Override
-            public void onException(Exception e) {
-                System.err.println("Something went wrong with twitter4j.twitterstream: " + e.getMessage());
             }
         };
 

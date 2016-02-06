@@ -5,9 +5,8 @@ import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.Geometry;
 import com.google.maps.model.LatLng;
 import org.junit.Test;
-import ru.mipt.diht.students.twitterstream.ArgumentInfo;
-import ru.mipt.diht.students.twitterstream.OutputManager;
-import ru.mipt.diht.students.twitterstream.QueryProcessor;
+import org.mockito.Matchers;
+import ru.mipt.diht.students.twitterstream.*;
 import twitter4j.*;
 
 import java.io.CharArrayWriter;
@@ -18,11 +17,9 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static org.hamcrest.object.HasToString.hasToString;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Created by mikhail on 29.01.16.
@@ -31,9 +28,9 @@ import static org.mockito.Mockito.*;
 public class QueryProcessorTest {
     @SuppressWarnings ("unchecked")
     @Test
-    public void test() throws TwitterException {
+    public void test() throws Exception {
         CharArrayWriter writer = new CharArrayWriter();
-        ArgumentInfo argumentInfo = new ArgumentInfo(new String[]{"-q", "test", "-p", "Nowhere", "--nearby"});
+        ArgumentInfo argumentInfo = new ArgumentInfo("-q", "test", "-p", "Nowhere", "--nearby");
         OutputManager outputManager = new OutputManager(argumentInfo, writer);
 
         GeocodingResult[] gcr = new GeocodingResult[1];
@@ -43,12 +40,11 @@ public class QueryProcessorTest {
         gcr[0].geometry.bounds.southwest = new LatLng(359, 358);
         gcr[0].geometry.bounds.northeast = new LatLng(3, 4);
 
-        Function<String, GeocodingResult[]> geocodingResultProducer =
-                (Function<String, GeocodingResult[]>) mock(Function.class);
-        when(geocodingResultProducer.apply("Nowhere")).thenReturn(gcr);
+        Geocoding geocodingResultProducer = mock(Geocoding.class);
+        when(geocodingResultProducer.getGeocodingResult("Nowhere")).thenReturn(gcr);
 
-        Supplier<GeoLocation> nearby = (Supplier<GeoLocation>) mock(Supplier.class);
-        when(nearby.get()).thenReturn(new GeoLocation(0.0, 0.0));
+        Nearby nearby = mock(Nearby.class);
+        when(nearby.nearby()).thenReturn(new GeoLocation(0.0, 0.0));
 
         Status tweet = mock(Status.class, RETURNS_DEEP_STUBS);
         when(tweet.getText()).thenReturn("Поел");
@@ -75,17 +71,17 @@ public class QueryProcessorTest {
         when(queryResult.nextQuery()).thenReturn(query);
 
         Twitter twitter = mock(Twitter.class);
-        when(twitter.search(any(Query.class))).thenReturn(queryResult);
+        when(twitter.search(Matchers.any(Query.class))).thenReturn(queryResult);
 
         QueryProcessor queryProcessor =
                 new QueryProcessor(outputManager, argumentInfo, twitter, geocodingResultProducer, nearby);
 
         queryProcessor.process();
 
-        assertEquals("5 минут назад @\033[34mПетя\033[0m: Поел (63 ретвита)" + System.lineSeparator() +
+        assertThat(writer.toString(),
+                is("5 минут назад @\033[34mПетя\033[0m: Поел (63 ретвита)" + System.lineSeparator() +
                         "5 минут назад @\033[34mДима\033[0m: Поел (63 ретвита)" + System.lineSeparator() +
-                        "5 минут назад @\033[34mКоля\033[0m: Поел (63 ретвита)" + System.lineSeparator(),
-                writer.toString());
+                        "5 минут назад @\033[34mКоля\033[0m: Поел (63 ретвита)" + System.lineSeparator()));
 
         verify(twitter, times(2)).search(argThat(hasToString(query.toString())));
         verify(twitter).search(argThat(hasToString(nearbyQuery.toString())));

@@ -4,7 +4,8 @@ import com.beust.jcommander.ParameterException;
 import org.junit.Test;
 import ru.mipt.diht.students.twitterstream.ArgumentInfo;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Created by mikhail on 28.01.16.
@@ -12,17 +13,17 @@ import static org.junit.Assert.assertEquals;
 public class ArgumentInfoTest {
     @Test
     public void testCorrectParams() {
-        ArgumentInfo argumentInfo = new ArgumentInfo(new String[]{"-q", "test",
-                "--hideRetweets", "-l", "1", "-h"});
-        assertEquals(argumentInfo.getQuery(), "test");
-        assertEquals(argumentInfo.isHideRetweets(), true);
-        assertEquals(argumentInfo.getPlace(), "");
-        assertEquals(argumentInfo.isStream(), false);
+        ArgumentInfo argumentInfo = new ArgumentInfo("-q", "test",
+                "--hideRetweets", "-l", "1", "-h");
+        assertThat(argumentInfo.getQuery(), is("test"));
+        assertThat(argumentInfo.isHideRetweets(), is(true));
+        assertThat(argumentInfo.getPlace(), is(""));
+        assertThat(argumentInfo.isStream(), is(false));
     }
 
     @Test (expected = ParameterException.class)
     public void testBadParams() {
-        ArgumentInfo argumentInfo = new ArgumentInfo(new String[]{"-q", "test",
-                "--hideRetweets", "-l", "1", "--badParameter"});
+        ArgumentInfo argumentInfo = new ArgumentInfo("-q", "test",
+                "--hideRetweets", "-l", "1", "--badParameter");
     }
 }

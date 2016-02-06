@@ -87,12 +87,8 @@ public class OutputManager {
         }
     }
 
-    public void writeHelp() {
-        try {
-            write(new String(Files.readAllBytes(Paths.get(TWITTER_STREAM_HELP)), StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            System.err.println("OutputManager can't read help file: " + e.getMessage());
-        }
+    public void writeHelp() throws IOException {
+        write(new String(Files.readAllBytes(Paths.get(TWITTER_STREAM_HELP)), StandardCharsets.UTF_8));
     }
 
     private static class TimeOutputManager {

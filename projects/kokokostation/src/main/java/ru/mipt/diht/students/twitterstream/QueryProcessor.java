@@ -11,18 +11,18 @@ import java.util.function.Supplier;
  * Created by mikhail on 16.12.15.
  */
 public class QueryProcessor implements Processor {
-    private static final int MAX_ATTEMPTS = 5,
-            ATTEMPT_WAIT = 1000;
+    private static final int MAX_ATTEMPTS = 5;
+    private static final int ATTEMPT_WAIT = 1000;
 
     private final OutputManager outputManager;
     private final ArgumentInfo argumentInfo;
     private final Twitter twitter;
-    private final Function<String, GeocodingResult[]> geocodingResultProducer;
-    private final Supplier<GeoLocation> nearby;
+    private final Geocoding geocodingResultProducer;
+    private final Nearby nearby;
     private int tweetsCount = 0;
 
     public QueryProcessor(OutputManager outputManager, ArgumentInfo argumentInfo, Twitter twitter,
-                          Function<String, GeocodingResult[]> geocodingResultProducer, Supplier<GeoLocation> nearby) {
+                          Geocoding geocodingResultProducer, Nearby nearby) {
         this.outputManager = outputManager;
         this.argumentInfo = argumentInfo;
         this.twitter = twitter;
@@ -31,7 +31,7 @@ public class QueryProcessor implements Processor {
     }
 
     @Override
-    public void process() {
+    public void process() throws Exception {
         Query[] queries = composeQueries();
 
         for (Query q : queries) {
@@ -75,7 +75,7 @@ public class QueryProcessor implements Processor {
         }
     }
 
-    private Query[] composeQueries() {
+    private Query[] composeQueries() throws Exception {
         if (argumentInfo.getPlace().isEmpty() && !argumentInfo.isNearby()) {
             Query[] result = new Query[1];
             result[0] = new Query(argumentInfo.getQuery());

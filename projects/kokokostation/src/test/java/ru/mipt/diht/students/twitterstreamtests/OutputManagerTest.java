@@ -10,8 +10,9 @@ import java.io.CharArrayWriter;
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Created by mikhail on 29.01.16.
@@ -26,17 +27,17 @@ public class OutputManagerTest {
 
     @Test
     public void testWrite() {
-        ArgumentInfo argumentInfo = new ArgumentInfo(new String[]{});
+        ArgumentInfo argumentInfo = new ArgumentInfo("-q", "test");
         OutputManager outputManager = new OutputManager(argumentInfo, writer);
 
         outputManager.write("test");
 
-        assertEquals("test" + System.lineSeparator(), writer.toString());
+        assertThat(writer.toString(), is("test" + System.lineSeparator()));
     }
 
     @Test
     public void testWriteTweet() {
-        ArgumentInfo argumentInfo = new ArgumentInfo(new String[]{"-q", "test", "-l", "1", "-h"});
+        ArgumentInfo argumentInfo = new ArgumentInfo("-q", "test", "-l", "1", "-h");
 
         Status tweet = mock(Status.class, RETURNS_DEEP_STUBS);
 
@@ -64,18 +65,17 @@ public class OutputManagerTest {
 
         OutputManager outputManager = new OutputManager(argumentInfo, writer);
         for (int i = 0; i < 3; i++) {
-            assertEquals(true, outputManager.writeTweet(tweet));
+            assertThat(outputManager.writeTweet(tweet), is(true));
         }
 
-        assertEquals("5 минут назад @\033[34mПетя\033[0m: ретвитнул @Вася: Поел" + System.lineSeparator() +
+        assertThat(writer.toString(), is("5 минут назад @\033[34mПетя\033[0m: ретвитнул @Вася: Поел" + System.lineSeparator() +
                         "Вчера @\033[34mПетя\033[0m: Поспал (63 ретвита)" + System.lineSeparator() +
-                        "3 дня назад @\033[34mПетя\033[0m: Поел" + System.lineSeparator(),
-                writer.toString());
+                        "3 дня назад @\033[34mПетя\033[0m: Поел" + System.lineSeparator()));
     }
 
     @Test
     public void testHideRetweetsWriteTweet() {
-        ArgumentInfo argumentInfo = new ArgumentInfo(new String[]{"-q", "test", "--hideRetweets", "-l", "1", "-h"});
+        ArgumentInfo argumentInfo = new ArgumentInfo("-q", "test", "--hideRetweets", "-l", "1", "-h");
 
         Status tweet = mock(Status.class, RETURNS_DEEP_STUBS);
 
@@ -94,10 +94,10 @@ public class OutputManagerTest {
         when(tweet.getRetweetCount()).thenReturn(10000013);
 
         OutputManager outputManager = new OutputManager(argumentInfo, writer);
-        assertEquals(false, outputManager.writeTweet(tweet));
-        assertEquals(true, outputManager.writeTweet(tweet));
+        assertThat(outputManager.writeTweet(tweet), is(false));
+        assertThat(outputManager.writeTweet(tweet), is(true));
 
-        assertEquals("Вчера @\033[34mПетя\033[0m: Поспал (10000013 ретвитов)" + System.lineSeparator(),
-                writer.toString());
+        assertThat(writer.toString(),
+                is("Вчера @\033[34mПетя\033[0m: Поспал (10000013 ретвитов)" + System.lineSeparator()));
     }
 }
