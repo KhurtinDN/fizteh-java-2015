@@ -1,6 +1,5 @@
 package ru.mipt.diht.students.miniormtests;
 
-import org.junit.Assert;
 import org.junit.Test;
 import ru.mipt.diht.students.miniorm.Column;
 import ru.mipt.diht.students.miniorm.DatabaseServiceException;
@@ -9,6 +8,10 @@ import java.io.Writer;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.LinkedList;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Created by mikhail on 29.01.16.
@@ -27,20 +30,20 @@ public class ColumnTest {
     @Test
     public void ValidFields() throws NoSuchFieldException, DatabaseServiceException {
         Column integerColumn = new Column("test", TestClass.class.getField("integerField"));
-        Assert.assertEquals(Column.Type.INT, integerColumn.getType());
+        assertThat(integerColumn.getType(), is(Column.Type.INT));
 
         Column booleanColumn = new Column("test", TestClass.class.getField("booleanField"));
-        Assert.assertEquals(true, booleanColumn.checkIfSuits(new Boolean(false)));
-        Assert.assertEquals(false, booleanColumn.checkIfSuits(new LinkedList<>()));
+        assertThat(booleanColumn.checkIfSuits(false), is(true));
+        assertThat(booleanColumn.checkIfSuits(new LinkedList<>()), is(false));
 
         Column doubleColumn = new Column("test", TestClass.class.getField("doubleField"));
-        Assert.assertEquals("12.01", doubleColumn.toSQL(new Double(12.01)));
-        Assert.assertEquals("NULL", doubleColumn.toSQL(null));
+        assertThat(doubleColumn.toSQL(12.01), is("12.01"));
+        assertThat(doubleColumn.toSQL(null), is("NULL"));
 
         Column stringColumn = new Column("test", TestClass.class.getField("stringField"));
-        Assert.assertEquals(true, stringColumn.checkIfSuits("test"));
-        Assert.assertEquals(false, stringColumn.checkIfSuits(new Integer(5)));
-        Assert.assertEquals("\'test\'", stringColumn.toSQL("test"));
+        assertThat(stringColumn.checkIfSuits("test"), is(true));
+        assertThat(stringColumn.checkIfSuits(5), is(false));
+        assertThat(stringColumn.toSQL("test"), is("\'test\'"));
 
         new Column("test", TestClass.class.getField("dateField"));
         new Column("test", TestClass.class.getField("timeField"));
