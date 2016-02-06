@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 class Rhymes {
     private final CountDownLatch countDownLatch;
     private final Participant[] participants;
+
     Rhymes(int participantsNum) {
         countDownLatch = new CountDownLatch(participantsNum);
         participants = new Participant[participantsNum];

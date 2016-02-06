@@ -11,10 +11,10 @@ import java.util.concurrent.Executors;
  * Created by mikhail on 27.01.16.
  */
 class Rollcall {
-    private boolean ready = false;
     private final Random random = new Random(Calendar.getInstance().getTimeInMillis());
     private final CyclicBarrier barrierBefore, barrierAfter;
     private final Participant[] participants;
+    private boolean ready = false;
 
     Rollcall(int participantsNum) {
         participants = new Participant[participantsNum];
@@ -27,7 +27,7 @@ class Rollcall {
             exec.execute(participants[i]);
         }
 
-        while(!ready) {
+        while (!ready) {
             ready = true;
             try {
                 System.out.println("Are you ready?");
@@ -53,7 +53,7 @@ class Rollcall {
 
         @Override
         public void run() {
-            while(true) {
+            while (true) {
                 try {
                     barrierBefore.await();
                     areYouReady();
