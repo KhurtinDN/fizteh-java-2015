@@ -1,7 +1,9 @@
 package ru.mipt.diht.students.collectionquery.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -23,16 +25,10 @@ class Utils {
     }
 
     static <T> List<T> streamToList(Stream<T> stream) {
-        List<T> result = new ArrayList<>();
-        stream.forEach(result::add);
-
-        return result;
+        return stream.collect(Collectors.toList());
     }
 
     static <T> ArrayList<T> arrayListFromElement(T item) {
-        ArrayList<T> newList = new ArrayList<>();
-        newList.add(item);
-
-        return newList;
+        return new ArrayList<>(Arrays.asList(item));
     }
 }
