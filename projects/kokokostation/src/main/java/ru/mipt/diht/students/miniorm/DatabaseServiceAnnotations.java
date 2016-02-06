@@ -8,7 +8,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,24 +15,7 @@ import java.util.Objects;
  * Created by mikhail on 29.01.16.
  */
 public class DatabaseServiceAnnotations {
-    @Retention (RetentionPolicy.RUNTIME)
-    @Target (ElementType.TYPE)
-    public @interface Table {
-        String name() default NO_NAME;
-    }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.FIELD)
-    public @interface Column {
-        String name() default NO_NAME;
-    }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.FIELD)
-    public @interface PrimaryKey {}
-
     private static final String NO_NAME = "";
-
     private final Class<?> type;
 
     public DatabaseServiceAnnotations(Class type) {
@@ -41,23 +23,25 @@ public class DatabaseServiceAnnotations {
     }
 
     public String getTableName() throws DatabaseServiceException {
-        if(!type.isAnnotationPresent(Table.class))
+        if (!type.isAnnotationPresent(Table.class)) {
             throw new DatabaseServiceException("No @Table annotation: " + type.getName());
+        }
 
         Table typeAnnotation = (Table) type.getAnnotation(Table.class);
         return getName(typeAnnotation.name(), type.getName());
     }
 
     private String getFieldName(Field field) throws DatabaseServiceException {
-        if(!field.isAnnotationPresent(Column.class))
+        if (!field.isAnnotationPresent(Column.class)) {
             throw new DatabaseServiceException("No @Field annotation: " + type.getName() + "." + field.getName());
+        }
 
         Column fieldAnnotation = (Column) field.getAnnotation(Column.class);
         return getName(fieldAnnotation.name(), field.getName());
     }
 
     private String getName(String annotationName, String name) {
-        if(Objects.equals(annotationName, NO_NAME)) {
+        if (Objects.equals(annotationName, NO_NAME)) {
             return StringProcessor.fromCamelCaseToLowerUnderscore(name);
         } else {
             return annotationName;
@@ -88,5 +72,22 @@ public class DatabaseServiceAnnotations {
         }
 
         return new Pair<>(columns, primaryKey);
+    }
+
+    @Retention (RetentionPolicy.RUNTIME)
+    @Target (ElementType.TYPE)
+    public @interface Table {
+        String name() default NO_NAME;
+    }
+
+    @Retention (RetentionPolicy.RUNTIME)
+    @Target (ElementType.FIELD)
+    public @interface Column {
+        String name() default NO_NAME;
+    }
+
+    @Retention (RetentionPolicy.RUNTIME)
+    @Target (ElementType.FIELD)
+    public @interface PrimaryKey {
     }
 }

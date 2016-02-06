@@ -7,13 +7,10 @@ import ru.mipt.diht.students.miniorm.DatabaseServiceAnnotations;
 import ru.mipt.diht.students.miniorm.DatabaseServiceException;
 
 import java.io.Writer;
-import java.sql.Date;
-import java.sql.Time;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Created by mikhail on 29.01.16.
@@ -32,7 +29,7 @@ public class DatabaseServiceAnnotationTest {
         assertThat(result.getKey().get(1).getType(), is(Column.Type.BOOLEAN));
     }
 
-    @Test(expected = DatabaseServiceException.class)
+    @Test (expected = DatabaseServiceException.class)
     public void testFirstInvalidTestClass() throws DatabaseServiceException {
         DatabaseServiceAnnotations databaseServiceAnnotations =
                 new DatabaseServiceAnnotations(FirstInvalidTestClass.class);
@@ -43,7 +40,7 @@ public class DatabaseServiceAnnotationTest {
         databaseServiceAnnotations.parseType();
     }
 
-    @Test(expected = DatabaseServiceException.class)
+    @Test (expected = DatabaseServiceException.class)
     public void testSecondInvalidClass() throws DatabaseServiceException {
         new DatabaseServiceAnnotations(SecondInvalidTestClass.class).parseType();
     }
@@ -54,7 +51,7 @@ class FirstInvalidTestClass {
     public int intField;
     public Writer writerField;
 
-    @DatabaseServiceAnnotations.Column(name = "testIntegerField")
+    @DatabaseServiceAnnotations.Column (name = "testIntegerField")
     public Integer integerField;
 
     @DatabaseServiceAnnotations.Column
@@ -67,7 +64,7 @@ class SecondInvalidTestClass {
     public Writer writerField;
 
     @DatabaseServiceAnnotations.PrimaryKey
-    @DatabaseServiceAnnotations.Column(name = "testIntegerField")
+    @DatabaseServiceAnnotations.Column (name = "testIntegerField")
     public Integer integerField;
 
     @DatabaseServiceAnnotations.PrimaryKey

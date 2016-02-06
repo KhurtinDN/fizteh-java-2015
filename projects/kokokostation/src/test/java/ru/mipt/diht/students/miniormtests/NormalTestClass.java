@@ -9,6 +9,15 @@ import java.io.Writer;
  */
 @DatabaseServiceAnnotations.Table (name = "testTable")
 public class NormalTestClass {
+    public int intField;
+    public Writer writerField;
+    @DatabaseServiceAnnotations.Column (name = "testIntegerField")
+    public Integer integerField;
+    @DatabaseServiceAnnotations.PrimaryKey
+    @DatabaseServiceAnnotations.Column
+    public Boolean booleanField;
+    public Double doubleField;
+
     public NormalTestClass(Boolean booleanField, Integer integerField) {
         this.booleanField = booleanField;
         this.integerField = integerField;
@@ -16,16 +25,4 @@ public class NormalTestClass {
 
     public NormalTestClass() {
     }
-
-    public int intField;
-    public Writer writerField;
-
-    @DatabaseServiceAnnotations.Column(name = "testIntegerField")
-    public Integer integerField;
-
-    @DatabaseServiceAnnotations.PrimaryKey
-    @DatabaseServiceAnnotations.Column
-    public Boolean booleanField;
-
-    public Double doubleField;
 }

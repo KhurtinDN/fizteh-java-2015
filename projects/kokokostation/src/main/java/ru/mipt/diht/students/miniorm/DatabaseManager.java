@@ -8,6 +8,8 @@ import java.sql.SQLException;
  */
 public interface DatabaseManager {
     void executeQuery(String query) throws SQLException;
+
     ResultSet executeQueryWithResults(String query) throws SQLException;
+
     void close() throws SQLException;
 }

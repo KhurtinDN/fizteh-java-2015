@@ -10,19 +10,18 @@ import java.sql.Time;
 import java.util.LinkedList;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Created by mikhail on 29.01.16.
  */
 public class ColumnTest {
-    @Test(expected = DatabaseServiceException.class)
+    @Test (expected = DatabaseServiceException.class)
     public void testInvalidIntField() throws NoSuchFieldException, DatabaseServiceException {
         new Column("test", TestClass.class.getField("intField"));
     }
 
-    @Test(expected = DatabaseServiceException.class)
+    @Test (expected = DatabaseServiceException.class)
     public void testInvalidWriterField() throws NoSuchFieldException, DatabaseServiceException {
         new Column("test", TestClass.class.getField("writerField"));
     }

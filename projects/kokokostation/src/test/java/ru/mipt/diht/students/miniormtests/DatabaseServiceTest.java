@@ -11,8 +11,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.*;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by mikhail on 05.02.16.
@@ -43,7 +43,7 @@ public class DatabaseServiceTest {
         assertThat(result.writerField, nullValue());
     }
 
-    @Test(expected = DatabaseServiceException.class)
+    @Test (expected = DatabaseServiceException.class)
     public void testBadQueryById() throws Exception {
         testable.queryById(7);
     }
@@ -80,7 +80,7 @@ public class DatabaseServiceTest {
                 "INSERT INTO testTable (testIntegerField, boolean_field) VALUES (15, true)");
     }
 
-    @Test(expected = DatabaseServiceException.class)
+    @Test (expected = DatabaseServiceException.class)
     public void testBadInsert() throws Exception {
         testable.insert(new NormalTestClass());
     }
@@ -95,7 +95,7 @@ public class DatabaseServiceTest {
                 "UPDATE testTable SET testIntegerField = 15, boolean_field = true WHERE boolean_field = true");
     }
 
-    @Test(expected = DatabaseServiceException.class)
+    @Test (expected = DatabaseServiceException.class)
     public void testBadUpdate() throws Exception {
         testable.update(new NormalTestClass());
     }
@@ -108,7 +108,7 @@ public class DatabaseServiceTest {
                 "DELETE FROM testTable WHERE boolean_field = true");
     }
 
-    @Test(expected = DatabaseServiceException.class)
+    @Test (expected = DatabaseServiceException.class)
     public void testBadDelete() throws Exception {
         testable.delete(7);
     }

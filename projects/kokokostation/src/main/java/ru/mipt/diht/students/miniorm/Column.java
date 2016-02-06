@@ -8,23 +8,9 @@ import java.sql.Time;
  * Created by mikhail on 29.01.16.
  */
 public class Column {
-    public enum Type {INT, BOOLEAN, DOUBLE, TIME, DATE, VARCHAR}
     private final String name;
     private final Field field;
     private final Type type;
-
-    public String getName() {
-        return name;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public Field getField() {
-        return field;
-    }
-
     public Column(String name, Field field) throws DatabaseServiceException {
         this.name = name;
         this.field = field;
@@ -47,6 +33,18 @@ public class Column {
         }
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public Field getField() {
+        return field;
+    }
+
     public String toSQL(Object object) {
         if (object == null) {
             return "NULL";
@@ -60,4 +58,6 @@ public class Column {
     public boolean checkIfSuits(Object object) {
         return field.getType() == object.getClass();
     }
+
+    public enum Type {INT, BOOLEAN, DOUBLE, TIME, DATE, VARCHAR}
 }

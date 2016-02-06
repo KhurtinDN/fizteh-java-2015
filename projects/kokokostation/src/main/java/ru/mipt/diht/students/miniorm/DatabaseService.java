@@ -2,10 +2,6 @@ package ru.mipt.diht.students.miniorm;
 
 import javafx.util.Pair;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,6 +29,7 @@ public class DatabaseService<T> {
         tableName = databaseServiceAnnotations.getTableName();
         this.databaseManager = databaseManager;
     }
+
     public T queryById(Object primaryKey) throws SQLException, InstantiationException, IllegalAccessException, DatabaseServiceException {
         String query = "SELECT * FROM " + tableName + whereForPrimaryKey(primaryKey);
         ResultSet resultSet = databaseManager.executeQueryWithResults(query);
@@ -54,8 +51,9 @@ public class DatabaseService<T> {
     }
 
     public void insert(T item) throws IllegalAccessException, SQLException, DatabaseServiceException {
-        if(primaryKey.getField().get(item) == null)
+        if (primaryKey.getField().get(item) == null) {
             throw new DatabaseServiceException("Primary key can't be null.");
+        }
 
         String query = "INSERT INTO " + tableName + " (";
 
@@ -77,8 +75,9 @@ public class DatabaseService<T> {
     }
 
     public void update(T item) throws DatabaseServiceException, IllegalAccessException, SQLException {
-        if(primaryKey.getField().get(item) == null)
+        if (primaryKey.getField().get(item) == null) {
             throw new DatabaseServiceException("Primary key can't be null.");
+        }
 
         String query = "UPDATE " + tableName + " SET ";
 
