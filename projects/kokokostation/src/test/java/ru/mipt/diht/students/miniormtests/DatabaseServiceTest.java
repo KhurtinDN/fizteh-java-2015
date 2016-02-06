@@ -10,8 +10,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Created by mikhail on 05.02.16.
@@ -37,9 +38,9 @@ public class DatabaseServiceTest {
 
         NormalTestClass result = testable.queryById(true);
 
-        assertEquals(new Integer(7), result.integerField);
-        assertEquals(new Boolean(true), result.booleanField);
-        assertEquals(null, result.writerField);
+        assertThat(result.integerField, is(7));
+        assertThat(result.booleanField, is(true));
+        assertThat(result.writerField, nullValue());
     }
 
     @Test(expected = DatabaseServiceException.class)
@@ -60,12 +61,12 @@ public class DatabaseServiceTest {
 
         List<NormalTestClass> result = testable.queryForAll();
 
-        assertEquals(result.size(), 2);
+        assertThat(result, hasSize(2));
 
         for (NormalTestClass item : result) {
-            assertEquals(new Integer(7), item.integerField);
-            assertEquals(new Boolean(true), item.booleanField);
-            assertEquals(null, item.writerField);
+            assertThat(item.integerField, is(7));
+            assertThat(item.booleanField, is(true));
+            assertThat(item.writerField, nullValue());
         }
     }
 

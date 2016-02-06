@@ -11,7 +11,9 @@ import java.nio.file.Path;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Created by mikhail on 05.02.16.
@@ -26,7 +28,8 @@ public class DatabaseManagerImplTest {
 
         ResultSet resultSet = databaseManager.executeQueryWithResults("SELECT height FROM tuz WHERE width = 1");
         resultSet.next();
-        assertEquals(2, resultSet.getInt("height"));
+
+        assertThat(resultSet.getInt("height"), is(2));
 
         databaseManager.close();
 

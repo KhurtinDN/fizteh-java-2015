@@ -11,7 +11,9 @@ import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Created by mikhail on 29.01.16.
@@ -22,12 +24,12 @@ public class DatabaseServiceAnnotationTest {
         DatabaseServiceAnnotations databaseServiceAnnotations = new DatabaseServiceAnnotations(NormalTestClass.class);
         Pair<List<Column>, Column> result = databaseServiceAnnotations.parseType();
 
-        assertEquals("testTable", databaseServiceAnnotations.getTableName());
-        assertEquals("testIntegerField", result.getKey().get(0).getName());
-        assertEquals("boolean_field", result.getKey().get(1).getName());
-        assertEquals(NormalTestClass.class.getField("booleanField"), result.getValue().getField());
-        assertEquals(Column.Type.INT, result.getKey().get(0).getType());
-        assertEquals(Column.Type.BOOLEAN, result.getKey().get(1).getType());
+        assertThat(databaseServiceAnnotations.getTableName(), is("testTable"));
+        assertThat(result.getKey().get(0).getName(), is("testIntegerField"));
+        assertThat(result.getKey().get(1).getName(), is("boolean_field"));
+        assertThat(result.getValue().getField(), is(NormalTestClass.class.getField("booleanField")));
+        assertThat(result.getKey().get(0).getType(), is(Column.Type.INT));
+        assertThat(result.getKey().get(1).getType(), is(Column.Type.BOOLEAN));
     }
 
     @Test(expected = DatabaseServiceException.class)
@@ -35,8 +37,8 @@ public class DatabaseServiceAnnotationTest {
         DatabaseServiceAnnotations databaseServiceAnnotations =
                 new DatabaseServiceAnnotations(FirstInvalidTestClass.class);
 
-        assertEquals("ru.mipt.diht.students.miniormtests.first_invalid_test_class",
-                databaseServiceAnnotations.getTableName());
+        assertThat(databaseServiceAnnotations.getTableName(),
+                is("ru.mipt.diht.students.miniormtests.first_invalid_test_class"));
 
         databaseServiceAnnotations.parseType();
     }
