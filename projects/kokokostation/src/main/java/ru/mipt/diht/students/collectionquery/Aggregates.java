@@ -23,7 +23,7 @@ public class Aggregates {
     public static <C, T extends Comparable<T>> AggregateFunction<C, T> max(Function<C, T> expression) {
         Collector<C, Wrapper<T>, T> collector = new CompareCollector<>(CompareCollector::max, expression);
 
-        return new AggregateFunctionImplementation<>(collector);
+        return new AggregateFunctionImpl<>(collector);
     }
 
     /**
@@ -37,7 +37,7 @@ public class Aggregates {
     public static <C, T extends Comparable<T>> AggregateFunction<C, T> min(Function<C, T> expression) {
         Collector<C, Wrapper<T>, T> collector = new CompareCollector<>(CompareCollector::min, expression);
 
-        return new AggregateFunctionImplementation<>(collector);
+        return new AggregateFunctionImpl<>(collector);
     }
 
     /**
@@ -79,7 +79,7 @@ public class Aggregates {
             }
         };
 
-        return new AggregateFunctionImplementation<>(collector);
+        return new AggregateFunctionImpl<>(collector);
     }
 
     /**
@@ -123,7 +123,7 @@ public class Aggregates {
                     }
                 };
 
-        return new AggregateFunctionImplementation<>(collector);
+        return new AggregateFunctionImpl<>(collector);
     }
 }
 

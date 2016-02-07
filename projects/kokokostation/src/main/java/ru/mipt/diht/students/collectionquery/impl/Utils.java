@@ -10,12 +10,12 @@ import java.util.stream.StreamSupport;
 /**
  * Created by mikhail on 01.02.16.
  */
-class Utils {
-    static <T> Stream<T> iterableToStream(Iterable<T> iterable) {
+public class Utils {
+    public static <T> Stream<T> iterableToStream(Iterable<T> iterable) {
         return StreamSupport.stream(iterable.spliterator(), false);
     }
 
-    static <T> List<T> iterableToList(Iterable<T> iterable) {
+    public static <T> List<T> iterableToList(Iterable<T> iterable) {
         List<T> result = new ArrayList<>();
         for (T item : iterable) {
             result.add(item);
@@ -24,11 +24,11 @@ class Utils {
         return result;
     }
 
-    static <T> List<T> streamToList(Stream<T> stream) {
+    public static <T> List<T> streamToList(Stream<T> stream) {
         return stream.collect(Collectors.toList());
     }
 
-    static <T> ArrayList<T> arrayListFromElement(T item) {
+    public static <T> ArrayList<T> arrayListFromElement(T item) {
         return new ArrayList<>(Arrays.asList(item));
     }
 }

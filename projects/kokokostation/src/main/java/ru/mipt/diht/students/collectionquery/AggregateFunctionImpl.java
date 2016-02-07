@@ -6,10 +6,10 @@ import java.util.stream.Collector;
 /**
  * Created by mikhail on 01.02.16.
  */
-public class AggregateFunctionImplementation<C, T> implements AggregateFunction<C, T> {
+public class AggregateFunctionImpl<C, T> implements AggregateFunction<C, T> {
     private final Collector<C, ?, T> collector;
 
-    AggregateFunctionImplementation(Collector<C, ?, T> collector) {
+    AggregateFunctionImpl(Collector<C, ?, T> collector) {
         this.collector = collector;
     }
 

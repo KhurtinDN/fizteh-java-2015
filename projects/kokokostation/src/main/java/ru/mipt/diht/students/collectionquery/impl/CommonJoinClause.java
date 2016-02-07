@@ -13,11 +13,11 @@ import java.util.stream.Stream;
 /**
  * Created by mikhail on 02.02.16.
  */
-class CommonJoinClause<I, J> {
-    private List<I> left;
-    private List<J> right;
+public class CommonJoinClause<I, J> {
+    private final List<I> left;
+    private final List<J> right;
 
-    CommonJoinClause(List<I> left, List<J> right) {
+    public CommonJoinClause(List<I> left, List<J> right) {
         this.left = left;
         this.right = right;
     }
@@ -26,7 +26,7 @@ class CommonJoinClause<I, J> {
         this(common.left, common.right);
     }
 
-    Stream<Pair<I, J>> onImpl(BiPredicate<I, J> condition) {
+    public Stream<Pair<I, J>> onImpl(BiPredicate<I, J> condition) {
         List<Pair<I, J>> result = new ArrayList<>();
 
         for (I tItem : left) {
@@ -40,7 +40,7 @@ class CommonJoinClause<I, J> {
         return result.stream();
     }
 
-    <K extends Comparable<?>> Stream<Pair<I, J>> onImpl(
+    public <K extends Comparable<?>> Stream<Pair<I, J>> onImpl(
             Function<I, K> leftKey,
             Function<J, K> rightKey) {
         List<Pair<I, J>> result = new ArrayList<>();
@@ -57,8 +57,12 @@ class CommonJoinClause<I, J> {
         }
 
         for (J jItem : right) {
-            for (I tItem : hashMap.get(rightKey.apply(jItem))) {
-                result.add(new Pair<>(tItem, jItem));
+            K key = rightKey.apply(jItem);
+
+            if (hashMap.containsKey(key)) {
+                for (I tItem : hashMap.get(key)) {
+                    result.add(new Pair<>(tItem, jItem));
+                }
             }
         }
 

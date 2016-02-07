@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by mikhail on 02.02.16.
  */
-class Context<R> {
+public class Context<R> {
     private List<SelectStmt<?, R>> selectStmts = new ArrayList<>();
 
     void add(SelectStmt<?, R> selectStmt) {

@@ -13,7 +13,7 @@ public class OrderByConditions {
      * Ascending comparator.
      *
      * @param expression
-     * @param <T>        - changed
+     * @param <T>
      * @param <R>
      * @return
      */
@@ -29,16 +29,25 @@ public class OrderByConditions {
      * Descending comparator.
      *
      * @param expression
-     * @param <T>        - changed
+     * @param <T>
      * @param <R>
      * @return
      */
     public static <T, R extends Comparable<R>> Comparator<List<T>> desc(Function<T, R> expression) {
-        return (o1, o2) -> -asc(expression).compare(o1, o2);
+        return (o1, o2) -> reverseOrder(asc(expression).compare(o1, o2));
     }
 
     public static <T, R extends Comparable<R>> Comparator<List<T>> desc(AggregateFunction<T, R> expression) {
-        return (o1, o2) -> -asc(expression).compare(o1, o2);
+        return (o1, o2) -> reverseOrder(asc(expression).compare(o1, o2));
     }
 
+    public static int reverseOrder(int order) {
+        if (order < 0) {
+            return 1;
+        } else if (order > 0) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
 }

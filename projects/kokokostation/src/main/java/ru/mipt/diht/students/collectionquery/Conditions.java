@@ -29,28 +29,29 @@ public class Conditions<T> {
      * @return
      */
     public static <T> Predicate<T> like(Function<T, String> expression, String pattern) {
-        String regexp = "";
+        StringBuilder regexp = new StringBuilder();
+        pattern = pattern.toLowerCase();
         boolean inQuotes = false;
 
         for (int i = 0; i < pattern.length(); i++) {
             char c = pattern.charAt(i);
 
             if (c == '%' || c == '_') {
-                String replace = c == '%' ? "*" : ".";
-                regexp += inQuotes ? "\\E" + replace : replace + "\\Q";
-                inQuotes = !inQuotes;
-            } else if (i == 0) {
-                regexp += "\\Q" + c;
-                inQuotes = !inQuotes;
+                String replace = c == '%' ? ".*" : ".";
+                regexp.append((inQuotes ? "\\E" : "") + replace);
+                if (inQuotes) {
+                    inQuotes = false;
+                }
+            } else if (!inQuotes) {
+                regexp.append("\\Q" + c);
+                inQuotes = true;
             } else if (i == pattern.length() - 1) {
-                regexp += c + "\\E";
+                regexp.append(c + "\\E");
             } else {
-                regexp += c;
+                regexp.append(c);
             }
         }
 
-        regexp = regexp.toLowerCase();
-
-        return rlike(t -> expression.apply(t).toLowerCase(), regexp);
+        return rlike(t -> expression.apply(t).toLowerCase(), regexp.toString());
     }
 }

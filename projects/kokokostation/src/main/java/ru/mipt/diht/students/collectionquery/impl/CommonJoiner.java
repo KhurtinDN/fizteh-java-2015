@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 /**
  * Created by mikhail on 02.02.16.
  */
-class CommonJoiner<T> {
+public class CommonJoiner<T> {
     protected final Stream<T> data;
 
     CommonJoiner(Stream<T> data) {

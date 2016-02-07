@@ -2,13 +2,15 @@ package ru.mipt.diht.students.collectionquery.impl;
 
 import javafx.util.Pair;
 import ru.mipt.diht.students.collectionquery.AggregateFunction;
-import ru.mipt.diht.students.collectionquery.AggregateFunctionImplementation;
+import ru.mipt.diht.students.collectionquery.AggregateFunctionImpl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static ru.mipt.diht.students.collectionquery.impl.Utils.streamToList;
 
 public class SelectStmt<T, R> {
     private static final long UNLIMITED = -1;
@@ -70,16 +72,17 @@ public class SelectStmt<T, R> {
         if (orderByComparator != null) {
             finalGroups = finalGroups.sorted(orderByComparator);
         }
-        if (isDistinct) {
-            finalGroups = finalGroups.distinct();
-        }
         if (limit != UNLIMITED) {
             finalGroups = finalGroups.limit(limit);
         }
 
         List<R> result = new ArrayList<>();
-        for (List<T> item : Utils.streamToList(finalGroups)) {
+        for (List<T> item : streamToList(finalGroups)) {
             result.add(makeObject(item));
+        }
+
+        if (isDistinct) {
+            result = streamToList(result.stream().distinct());
         }
 
         return result;
@@ -164,7 +167,7 @@ public class SelectStmt<T, R> {
 
     @SuppressWarnings ("unchecked")
     private Object applySelector(Function<T, ?> selector, List<T> item) {
-        if (selector.getClass() == AggregateFunctionImplementation.class) {
+        if (selector.getClass() == AggregateFunctionImpl.class) {
             return ((AggregateFunction<T, ?>) selector).apply(item);
         } else {
             return selector.apply(item.get(0));
