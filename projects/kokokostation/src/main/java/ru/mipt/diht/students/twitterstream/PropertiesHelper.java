@@ -10,7 +10,9 @@ import java.util.Properties;
 public class PropertiesHelper {
     public static String getProperty(String file, String field) throws IOException {
         Properties properties = new Properties();
-        properties.load(new FileInputStream(file));
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            properties.load(fileInputStream);
+        }
 
         return properties.getProperty(field);
     }
