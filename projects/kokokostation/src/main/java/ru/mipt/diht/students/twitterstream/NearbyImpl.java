@@ -24,10 +24,10 @@ public class NearbyImpl implements Nearby {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,
                     Charset.forName("UTF-8")));
             StringBuilder stringBuilder = new StringBuilder();
-            int cp;
+            String temp;
 
-            while ((cp = bufferedReader.read()) != -1) {
-                stringBuilder.append((char) cp);
+            while ((temp = bufferedReader.readLine()) != null) {
+                stringBuilder.append(temp);
             }
 
             JSONObject jsonObject = new JSONObject(stringBuilder.toString());
