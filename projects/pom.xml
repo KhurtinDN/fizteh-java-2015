@@ -28,10 +28,7 @@
     </properties>
 
     <modules>
-        <module>dkhurtin</module>
         <module>semyonkozloff</module>
-        <module>ale3otik</module>
-        <module>Pitovsky</module>
     </modules>
 
     <dependencyManagement>
